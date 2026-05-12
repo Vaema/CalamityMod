@@ -16,6 +16,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
@@ -34,6 +35,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Abyss;
@@ -57,6 +59,7 @@ using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
+
 
 namespace CalamityMod.Projectiles
 {
@@ -2954,6 +2957,9 @@ namespace CalamityMod.Projectiles
         {
             var owner = Main.player[projectile.owner];
             var cplayer = owner.Calamity();
+            owner.Fishing_GetBait(out Item baitItem);
+            bool reelingIn = projectile.ai[0] == 1;
+            bool lineSnapped = projectile.ai[0] == 2;
 
             //Make sure Victide Snail actually fishes when using a minigame rod
             foreach (var item in Main.ActiveProjectiles)
@@ -3083,6 +3089,7 @@ namespace CalamityMod.Projectiles
             //localAI[1] - The timer for fish to try and bite the hook. When it exceeds 660, it resets to 0.
             //If ai[1] is not 0, this is set to the item ID of the hooked item/NPC
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
+
             switch (owner.Calamity().SelectedFishingMinigame)
             {
                 case CalamityPlayer.FishingMinigames.WulfrumBobber:
@@ -3358,7 +3365,6 @@ namespace CalamityMod.Projectiles
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-                                    owner.Fishing_GetBait(out Item baitItem);
 
                                     // Diminishing returns on bait power beyond 75
                                     int baitPower = baitItem?.bait ?? 0;
@@ -3729,10 +3735,60 @@ namespace CalamityMod.Projectiles
                     }
 
             }
+
+            bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
+            // When using rage bait, gives a chance that your items turn to junk
+            if (baitItem?.type == ModContent.ItemType<RageBait>() && reelingIn && !alreadyJunk && Main.rand.NextBool(RageBait.junkChance.Item1, RageBait.junkChance.Item2) && projectile.localAI[1] != 0)
+            {
+                var junk = Main.rand.Next(3) switch
+                {
+                    0 => ItemID.OldShoe,
+                    1 => ItemID.FishingSeaweed,
+                    _ => ItemID.TinCan,
+                };
+
+                SoundStyle epicFail = new("CalamityMod/Sounds/Item/Swine", 2);
+                SoundEngine.PlaySound(epicFail with { Volume = 0.9f, Pitch = 0.3f }, projectile.Center);
+                if (CalamityWorld.revenge)
+                    owner.Calamity().rage += 25;
+
+                for (int i = 0; i < 12; i++)
+                {
+                    Particle spray = new CustomSpark(projectile.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10), -Vector2.UnitY * Main.rand.NextFloat(3, 8), "CalamityMod/Particles/BloomCircle", true, Main.rand.Next(18, 24) * 5, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0, 0.7f)) * 0.3f, new Vector2(0.8f, 1f), true, false, 0, false, false);
+                    GeneralParticleHandler.SpawnParticle(spray);
+
+                    if (i % 2 == 0)
+                    {
+                        Particle rage = new CustomSpark(owner.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10) + -Vector2.UnitY * 7.5f, -Vector2.UnitY * Main.rand.NextFloat(0.5f, 2f), "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(12, 18) * 4, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.7f, new Vector2(0.7f, 1f), true, false, 0, false, false);
+                        GeneralParticleHandler.SpawnParticle(rage);
+                    }
+                }
+
+                projectile.ai[1] = junk;
+                return false;
+            }
+
+            bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
+            {
+                // Remove any item you would have fished up
+                projectile.ai[1] = 0;
+                // Get rarity of pull
+                int rarity = 0;
+                int roll = Main.rand.Next(1, 100 + 1);
+                if (roll == 1) rarity = 3; // UltraRare (1/100)
+                else if (roll <= 21) rarity = 2; // Rare ~(1/5)
+                else rarity = 1; // Common ~(4/5)
+
+                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                projectile.ai[0] = 2; // snap line
+                return false;
+            }
+
             return false;
         }
         #endregion
-
+        
         #region AI
         public override void AI(Projectile projectile)
         {

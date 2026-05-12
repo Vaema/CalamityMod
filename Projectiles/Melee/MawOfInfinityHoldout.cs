@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Melee
     public class MawOfInfinityHoldout : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override bool useMeleeSpeed => true;
+        public override bool useAttackSpeed => true;
         public override bool useMeleeSize => true;
         public override int swingWidth => 270;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<MawOfInfinity>()).Item;

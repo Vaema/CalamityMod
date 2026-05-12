@@ -1034,16 +1034,14 @@ IVDripOnTheRocks: {
 		'''
 		[EFFECT]
 		[NAME]
-		Counts as an alcohol stack toward Alcohol Poisoning
-		Drinking the same type of alcohol as in the IV drip does not contribute to Alcohol Poisoning
+		Inserted alcohols contribute toward alcohol poisoning
 		{$Common.AlcoholWarning}
 		[c/aaaaaa:Shift-<right> this item in your inventory to empty its contents]
 		[ceffect/drunk:'(drunken mumbling)']
-		      
 		'''
 	Empty: Place an alcoholic beverage on this item in your inventory to pour its contents in
 	CurrentAlcoholText: Filled with
-	SakeAndAleText: Increases melee weapon scale by 15%, but decreases melee speed by 10%
+	SakeAndAleText: Increases melee weapon scale by 25%, but decreases melee speed by 10%
 }
 
 JellyChargedBattery: {
@@ -2236,10 +2234,13 @@ XyksBlessingBlue: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'It's simply too much to turn back now; passion and time have long since stained it.
 		[c/5f8ae1:Have I always been so selfish?']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
 }
 
 XyksBlessingOrange: {
@@ -2247,8 +2248,28 @@ XyksBlessingOrange: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'Even so, the march of time waits for none. Recall that feeling of fulfillment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
+}
+
+FrozenCube: {
+	DisplayName: Frozen Cube
+	Tooltip:
+		'''
+		A frozen block of ice with something inside
+		Summons an Elumphant to sit atop your head and protect you
+		The Elumphant will cycle between shooting cold air that inflicts [cbuff:CalamityMod/WindChilled], and headbutting enemies
+		Elumphant's headbutts only target enemies inflicted with [cbuff:CalamityMod/WindChilled]
+		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
+		[DAMAGELINE]
+		[c/7497ED:'What I wanna know is, where's the mammoth?']
+		'''
+	EquippedDebuff: Current Cold Debuff boost: +{0}%
+	EquippedElumphant: Current Elumphant Power: +{0}%
+	Unequipped: Equip this accessory to view its statistics
 }

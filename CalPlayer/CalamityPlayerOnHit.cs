@@ -86,6 +86,7 @@ namespace CalamityMod.CalPlayer
 
             target.Calamity().IncreasedColdEffects_EskimoSet = eskimoSet;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
+            target.Calamity().IncreasedColdEffects_FrozenCube = frozenCube;
 
             target.Calamity().IncreasedElectricityEffects_Unused = false;
 

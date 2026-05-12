@@ -61,7 +61,6 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
@@ -70,6 +69,7 @@ using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Utilities;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -85,7 +85,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Net;
-using Terraria.WorldBuilding;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
 
@@ -1139,6 +1138,11 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurioGotHit = false;
         public bool scionsCurioVisuals = false;
         public float scionsCurioDebuffDamage = 0;
+        public bool frozenCube = false;
+        public bool frozenCubeVisuals = false;
+        public float frozenCubeDebuffBoost = 0;
+        public float frozenCubeElumphantBoost = 0;
+        public int frozenCubeUsedDefense = 0;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -1418,6 +1422,7 @@ namespace CalamityMod.CalPlayer
         public bool vaporfied = false;
         public bool banishingFire = false;
         public bool wither = false;
+        public bool windChilled = false;
         public bool ManaBurn = false;
 
         /// <summary> Counter variable used to prevent the player from being inflicted with another immobilizing debuff for a short time after being inflicted with one. </summary>
@@ -2522,6 +2527,7 @@ namespace CalamityMod.CalPlayer
             camper = false;
             corrosiveSpine = false;
             scionsCurio = false;
+            frozenCube = false; frozenCubeDebuffBoost = 0; frozenCubeElumphantBoost = 0; frozenCubeUsedDefense = 0;
             rottenDogTooth = false;
             angelicAlliance = false;
             ChaosStone = false;
@@ -2721,6 +2727,7 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
+            windChilled = false;
             ManaBurn = false;
 
             TypelessDebuffMultiplier = new();
@@ -3207,6 +3214,7 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
+            windChilled = false;
             ImmobilityDebuffImmunityTimer = 0;
             TypelessDebuffMultiplier = new();
             HeatDebuffMultiplier = new();
@@ -4291,10 +4299,215 @@ namespace CalamityMod.CalPlayer
                 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles + smallerCheckRadius, smallerCheckRadius, teleportStartY, teleportRangeY, settings);
 
             if (canSpawn)
-            {
                 return (Vector2?)vector;
-            }
+
             return null;
+        }
+
+        /// <summary>
+        /// Returns a random position in the Lihzhard Temple to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetTempleTeleportPosition(Player player)
+        {
+            int foundX = -1;
+            int foundY = -1;
+            bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
+            int xSearchEnd = dungeonOnRightSide ? 20 : Main.maxTilesX - 20;
+
+            if (dungeonOnRightSide)
+            {
+                for (int i = Main.spawnTileX; i >= xSearchEnd; i -= 2)
+                {
+                    for (int j = (int)Main.worldSurface; j < Main.maxTilesY - 210; j++)
+                    {
+                        Tile tile = Framing.GetTileSafely(i, j);
+                        if (tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            foundX = i;
+                            foundY = j;
+                            break;
+                        }
+                    }
+                    if (foundX != -1)
+                        break;
+                }
+            }
+            else
+            {
+                for (int i = Main.spawnTileX; i <= xSearchEnd; i += 2)
+                {
+                    for (int j = (int)Main.worldSurface; j < Main.maxTilesY - 210; j++)
+                    {
+                        Tile tile = Framing.GetTileSafely(i, j);
+                        if (tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            foundX = i;
+                            foundY = j;
+                            break;
+                        }
+                    }
+
+                    if (foundX != -1)
+                        break;
+                }
+            }
+
+            if (foundX == -1)
+                return null;
+
+            int attempts = 25;
+            int rangeX = 300;
+            int rangeY = 300;
+            int randomFluff = 500;
+            Point finalTeleportPoint = Point.Zero;
+            for (int i = 0; i < attempts; i++)
+            {
+                for (int x = 0; x <= rangeX; x++)
+                {
+                    for (int y = 0; y <= rangeY; y++)
+                    {
+                        int teleportPosX = foundX + x + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = foundY + y + Main.rand.Next(-randomFluff, randomFluff);
+                        Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
+                        Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
+                        Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
+
+                        if (!tileAbove.HasTile && tileBelow.HasTile && tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            finalTeleportPoint = new(tile.X(), tile.Y());
+                            if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
+        }
+
+        /// <summary>
+        /// Returns a random position in the Void (Abyss Layer 4) to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetAbyssVoidTeleportPosition(Player player)
+        {
+            bool canSpawn = false;
+            int halfWorldWidth = Main.maxTilesX / 2;
+
+            int abyssStartX = Abyss.AtLeftSideOfWorld ? halfWorldWidth - (halfWorldWidth - 135) + 35 : halfWorldWidth + (halfWorldWidth - 135) - 35;
+            int abyssXRange = 50;
+
+            int teleportStartY = Main.remixWorld ? SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f) : Main.maxTilesY - 300;
+            int teleportRangeY = 80;
+
+            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            {
+                mostlySolidFloor = false,
+                avoidAnyLiquid = false,
+                avoidLava = true,
+                avoidHurtTiles = true,
+                avoidWalls = false,
+                attemptsBeforeGivingUp = 1000,
+                maximumFallDistanceFromOrignalPoint = 10
+            };
+
+            Vector2 teleportPosition = player.CheckForGoodTeleportationSpot(ref canSpawn, abyssStartX, abyssXRange, teleportStartY, teleportRangeY, settings);
+            return canSpawn ? teleportPosition : null;
+        }
+
+        /// <summary>
+        /// Returns a random position in the Forsaken Archives to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetDungeonArchivesTeleportPosition(Player player)
+        {
+            // Define an area around the center to search for a valid spot to tp
+            int teleportStartX = WorldgenManagementSystem.DungeonArchivePos.X;
+            int teleportStartY = WorldgenManagementSystem.DungeonArchivePos.Y;
+
+            // Manually search for the Archives from the bottom of the world if the Archive position isn't saved.
+            if (WorldgenManagementSystem.DungeonArchivePos == Point.Zero)
+            {
+                int foundX = -1;
+                int foundY = -1;
+                bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
+                int xSearchStart = dungeonOnRightSide ? Main.maxTilesX - 20 : 20;
+
+                if (dungeonOnRightSide)
+                {
+                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    {
+                        for (int x = xSearchStart; x >= Main.maxTilesX / 2; x -= 2)
+                        {
+                            Tile tile = Framing.GetTileSafely(x, y);
+                            if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
+                            {
+                                foundX = x;
+                                foundY = y;
+                                break;
+                            }
+                        }
+
+                        if (foundY != -1)
+                            break;
+                    }
+                }
+                else
+                {
+                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    {
+                        for (int x = xSearchStart; x <= Main.maxTilesX / 2; x += 2)
+                        {
+                            Tile tile = Framing.GetTileSafely(x, y);
+                            if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
+                            {
+                                foundX = x;
+                                foundY = y;
+                                break;
+                            }
+                        }
+
+                        if (foundY != -1)
+                            break;
+                    }
+                }
+
+                if (foundY == -1)
+                    return null;
+
+                teleportStartX = foundX;
+                teleportStartY = foundY;
+            }
+
+            int attempts = 25;
+            int rangeX = 100;
+            int rangeY = 200;
+            int randomFluff = 60;
+            Point finalTeleportPoint = Point.Zero;
+            for (int i = 0; i < attempts; i++)
+            {
+                for (int x = -rangeX; x <= rangeX; x++)
+                {
+                    for (int y = 0; y <= rangeY; y++)
+                    {
+                        int teleportPosX = teleportStartX + x + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = teleportStartY + y + Main.rand.Next(-randomFluff, randomFluff);
+                        Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
+                        Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
+                        Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
+
+                        if (!tileAbove.HasTile && tileBelow.HasUnactuatedTile && Main.wallDungeon[tile.WallType])
+                        {
+                            finalTeleportPoint = new(tile.X(), tile.Y());
+                            if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
         }
 
         public static void ModTeleport(Player player, Vector2 pos, bool playSound = true, int style = TeleportationStyleID.RecallPotion)
@@ -5134,6 +5347,9 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            if (Player.Calamity().XykVisualsBlue || Player.Calamity().XykVisualsOrange)
+                Player.wings = 0;
+
             if (ZoneAbyss && Main.netMode != NetmodeID.Server)
             {
                 //Main aura
@@ -5185,6 +5401,14 @@ namespace CalamityMod.CalPlayer
                     subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
                     subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime / 120f);
                 }
+            }
+
+            // Frozen Cube defense cut
+            if (Player.Calamity().frozenCube)
+            {
+                int usedDefense = (Player.statDefense / FrozenCube.usedDefenseDivide);
+                Player.Calamity().frozenCubeUsedDefense = usedDefense;
+                Player.statDefense -= usedDefense;
             }
 
             if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
@@ -5321,16 +5545,18 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            if (Player.Calamity().baconOil && !Player.mount.Active)
+            if ((Player.Calamity().baconOil || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BaconOil)) && !Player.mount.Active)
             {
                 Player.noFallDmg = true;
-                
+
+                float stackScale = (Player.Calamity().baconOil && Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BaconOil)) ? 1.33f : 1;
+
                 float velX = Math.Abs(Player.velocity.X);
                 float velY = Math.Abs(Player.velocity.Y);
 
                 float speedMult = Player.GetBestClassDamage().ApplyTo(1);
-                float maxMoveSpeed = 10.5f * speedMult;
-                float minMoveSpeed = 3; // Minimum move speed to be at if the player can bounce
+                float maxMoveSpeed = 10.5f * speedMult * stackScale;
+                float minMoveSpeed = 3 * stackScale; // Minimum move speed to be at if the player can bounce
                 float hitboxSizeMult = 0.45f;
 
                 bool onPlatform = false;
@@ -5349,9 +5575,9 @@ namespace CalamityMod.CalPlayer
                 bool hitDown =  velY > minMoveSpeed && (Collision.SolidCollision(Player.Bottom + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1) || onPlatform);
                 bool hitUp =  velY > minMoveSpeed && Collision.SolidCollision(Player.Top + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1);
                 bool hitSide = velX > minMoveSpeed && Collision.SolidCollision(Vector2.Lerp(Player.TopLeft, Player.Left, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult)) || Collision.SolidCollision(Vector2.Lerp(Player.TopRight, Player.Right, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult));
-                float acceleration = 0.05f;
+                float acceleration = 0.05f * stackScale;
                 float decceleration = -0.025f / speedMult;
-                float riseSpeed = 0.8f; // The speed the player rises when in water or rain
+                float riseSpeed = 0.8f * stackScale; // The speed the player rises when in water or rain
                 float slipPower = 0.85f; //How strong the slippery effect is
 
                 float bounceReduction = 0.9f;
@@ -5379,7 +5605,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (baconOilSoundCooldown < soundCDMax)
                         baconOilSoundCooldown += 30;
-                    float pitch = 0.55f * Utils.GetLerpValue(0, soundCDMax, baconOilSoundCooldown, true);
+                    float pitch = (0.55f * stackScale) * Utils.GetLerpValue(0, soundCDMax, baconOilSoundCooldown, true);
                     SoundStyle boyoyoing = new("CalamityMod/Sounds/Item/BaconOilBounce");
                     SoundEngine.PlaySound(boyoyoing with { Volume = 0.45f, Pitch = hitSide ? pitch - 0.3f : pitch, MaxInstances = 5 }, Player.Center);
                 }

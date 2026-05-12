@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Melee
     public class LucreciaHoldout : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override bool useMeleeSpeed => true;
+        public override bool useAttackSpeed => true;
         public override bool useMeleeSize => false;
         public override int swingWidth => 310;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<Lucrecia>()).Item;

@@ -1354,11 +1354,11 @@ namespace CalamityMod.CalPlayer
 
             if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0)
             {
-                int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                int cooldownTime = RelicOfResilience.baseCooldown;
                 rOfResilienceCooldown = cooldownTime;
                 Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
                 SoundStyle youGotHit = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
-                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
+                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.5f }, Player.Center);
             }
 
             if (alchFlask)
@@ -1529,6 +1529,7 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
                 else
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, IconToUse);
+                Player.SetImmuneTimeForAllTypes(Player.longInvince ? 120 : 80);
             }
 
             //Dodge activation order is as follows:

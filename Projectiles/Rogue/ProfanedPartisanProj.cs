@@ -65,8 +65,8 @@ namespace CalamityMod.Projectiles.Rogue
                 if (!Main.npc[(int)StuckEnemyID - 1].active)
                 {
                     StuckEnemyID = 0;
-                    Projectile.velocity = -Vector2.UnitY.RotatedByRandom(0.25f) * Main.rand.NextFloat(0, 1f);
                     Projectile.tileCollide = true;
+                    Projectile.timeLeft = ExplodeTime;
                     return;
                 }
                 Projectile.Center = Main.npc[(int)StuckEnemyID - 1].Center + Vector2.UnitX.RotatedBy(StuckEnemyRotation) * StuckEnemyDistance;

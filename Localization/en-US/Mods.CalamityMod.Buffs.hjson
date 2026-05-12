@@ -403,6 +403,22 @@ WeakBrimstoneFlames: {
 	Description: Using the Supreme Witch's power causes you to suffer, but makes your weapons strong
 }
 
+WindChilled: {
+	DisplayName: Wind Chilled
+	Description: Should have worn a coat
+	ItemTooltipPlayer:
+		'''
+		Cold - 2 DPS
+		Reduced movement speed
+		'''
+	ItemTooltipEnemy:
+		'''
+		Cold - 6 DPS
+		1.5x damage if the enemy is inflicted with a Water debuff
+		Enhances Water debuff damage
+		'''
+}
+
 // Mounts
 
 AndromedaBuff: {

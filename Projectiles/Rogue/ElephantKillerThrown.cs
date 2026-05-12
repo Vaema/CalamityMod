@@ -696,7 +696,8 @@ namespace CalamityMod.Projectiles.Rogue
             Asset<Texture2D> flashTip = BloomLine;
             Asset<Texture2D> shineTip = Shine;
 
-            Vector2 generalDrawPos = Projectile.Center - Main.screenPosition + Main.rand.NextVector2Circular(rumble, rumble);
+            Vector2 generalDrawPos = Projectile.Center - Main.screenPosition + Main.rand.NextVector2Circular(rumble, rumble) + 
+                ((mode == gunState.NotThrown || mode == gunState.Stealth) ? new Vector2(0, Owner.gfxOffY) : Vector2.Zero);
             PixelationManager.AddPixelatedDrawer((_) => // The spinnging smear when thrown
             {
                 if (spinFx > 0.001f)

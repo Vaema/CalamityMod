@@ -181,6 +181,12 @@ BaconOil: {
 		Counts as 3 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Provides "good" mobility that scales with your damage stat boosts
+		Counts as 3 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
+		When combined with drinking Bacon Oil straight, mobility becomes zanier
+		'''
 }
 
 BloodyMary: {
@@ -242,7 +248,7 @@ Everclear: {
 		'''
 		{0}% increased damage
 		Reduces life regen by {1} HP/s and defense by {2}%
-		Counts as giving an additional stack of alcohol for {$Buffs.AlcoholPoisoning.DisplayName}
+		Counts as 2 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
 		'''
 }
 
@@ -481,6 +487,15 @@ TequilaSunrise: {
 		'''
 }
 
+TheElixir: {
+	DisplayName: The Elixir
+	Tooltip:
+		'''
+		Functions as a Potion of Return
+		Occasionally sends you... [c/AA23C4:somewhere else]
+		'''
+}
+
 Vodka: {
 	DisplayName: Vodka
 	Tooltip:
@@ -563,6 +578,11 @@ Mangosteen: {
 		{$CommonItemTooltip.MediumStats}
 		'Queen of fruits'
 		'''
+}
+
+QualitySlop: {
+	DisplayName: Quality Slop
+	Tooltip: "{$CommonItemTooltip.MajorStats}"
 }
 
 Salak: {
