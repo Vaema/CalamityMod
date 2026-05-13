@@ -1090,8 +1090,8 @@ namespace CalamityMod.CalPlayer
         public float summonProjCooldown;
         public bool sandElemental = false;
         public bool sandElementalVanity = false;
-        public bool rareSandElemental = false;
-        public bool rareSandElementalVanity = false;
+        public bool oasisElemental = false;
+        public bool oasisElementalVanity = false;
         public bool cloudElemental = false;
         public bool cloudElementalVanity = false;
         public bool brimElemental = false;
@@ -1583,7 +1583,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Elemental in a Bottle. </summary>
         public bool sandEleBuff = false;
         /// <summary> Rare Elemental in a Bottle. </summary>
-        public bool rareSandEleBuff = false;
+        public bool oasisEleBuff = false;
         /// <summary> Eye of the Storm. </summary>
         public bool cloudEleBuff = false;
         /// <summary> Rose Stone. </summary>
@@ -2849,7 +2849,7 @@ namespace CalamityMod.CalPlayer
             cEnergy = false;
             pSoulGuardians = false;
             sandEleBuff = false;
-            rareSandEleBuff = false;
+            oasisEleBuff = false;
             cloudEleBuff = false;
             brimEleBuff = false;
             waterEleBuff = false;
@@ -2866,8 +2866,8 @@ namespace CalamityMod.CalPlayer
             MutatedTruffleBool = false;
             sandElemental = false;
             sandElementalVanity = false;
-            rareSandElemental = false;
-            rareSandElementalVanity = false;
+            oasisElemental = false;
+            oasisElementalVanity = false;
             cloudElemental = false;
             cloudElementalVanity = false;
             brimElemental = false;

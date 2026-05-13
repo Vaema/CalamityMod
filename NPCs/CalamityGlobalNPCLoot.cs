@@ -267,11 +267,11 @@ namespace CalamityMod.NPCs
 
                 // Sand Elemental
                 // Elemental in a Bottle @ 20% Normal, 33.33% Expert+
-                // Rare Elemental in a Bottle @ 10% Normal, 16.67% Expert+
+                // Oasis Elemental in a Bottle @ 10% Normal, 16.67% Expert+
                 // Desert Key @ 10%
                 case NPCID.SandElemental:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<ElementalinaBottle>(), 5, 3));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<RareElementalinaBottle>(), 10, 6));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<OasisElementalinaBottle>(), 10, 6));
                     npcLoot.Add(ItemID.DungeonDesertKey, 10);
                     break;
 
