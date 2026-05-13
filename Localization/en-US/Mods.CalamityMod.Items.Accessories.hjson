@@ -1448,7 +1448,7 @@ OasisElementalinaBottle: {
 	Tooltip:
 		'''
 		Summons an oasis elemental to assist you
-		The elemental fires healing orbs that restore 15 health while you are damaged
+		The elemental fires healing orbs that restore 10 health while you are damaged
 		'''
 }
 
