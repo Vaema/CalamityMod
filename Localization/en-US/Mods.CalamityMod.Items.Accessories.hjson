@@ -795,10 +795,10 @@ FishStocks: {
 		+15% critical strike damage
 		+10% damage reduction
 		+3HP/s life regeneration
-		+40% mining speed
+		+25% mining speed
 		+50 fishing power
-		+1 luck
-		2x coin drops
+		+0.55 luck
+		1.5x coin drops
 		'''
 }
 

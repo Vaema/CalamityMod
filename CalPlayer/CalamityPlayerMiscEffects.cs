@@ -1716,19 +1716,16 @@ namespace CalamityMod.CalPlayer
                 Player.statDefense += (int)(10 * fishStockPower);
                 Player.endurance += 0.1f * fishStockPower;
                 Player.lifeRegen += (int)(6 * fishStockPower);
-                Player.pickSpeed -= 0.40f * fishStockPower;
+                Player.pickSpeed -= 0.25f * fishStockPower;
                 Player.fishingSkill += (int)(50 * fishStockPower);
-                Player.luckMaximumCap += 1f * fishStockPower;
-                Player.luck += 1f * fishStockPower;
-                float CoinMult = MathF.Abs(fishStockPower) * 2;
+                Player.luck += 0.55f * fishStockPower;
+                float CoinMult = MathF.Abs(fishStockPower) * 1.5f;
                 float givenMult = (fishStockPower < 0 ? (1 / CoinMult) : CoinMult);
                 Player.Calamity().coinDropMult = givenMult;
             }
             // Only put away fish stocks if the stocks are even or higher, or if they've already been started to be put away
             float goalVis = (!fishStocks && (fishStockPower >= 0 || fishStockVisual < 0.9f)) ? 0 : 1;
             fishStockVisual = MathF.Round(MathHelper.Lerp(fishStockVisual, goalVis, 0.05f), 4); // Fade in and out the U
-            
-
 
             // The fire boots debuff boosts
             // bootLevel exists SO THAT THEY DO NOT STACK. Please help me maintain my sanity so we're not "fixing" this issue seventy times
