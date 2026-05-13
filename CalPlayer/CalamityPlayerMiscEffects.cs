@@ -975,6 +975,16 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
                 }
             }
+
+            if (Player.sitting.TryGetSittingBlock(Player, out Tile AuricToiletTile))
+            {
+                Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), auricRejectionDamage, 0);
+                Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
+                Player.sitting.SitUp(Player, false);
+                Vector2 yeetVec = new Vector2(Player.direction, -1.5f);
+                Player.velocity += yeetVec * auricRejectionKB;
+            }
         }
         private void HandleBlazingMouseEffects()
         {

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.FurnitureExo;
+﻿using CalamityMod.Items.Placeables.FurnitureAuric;
+using CalamityMod.Items.Placeables.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -50,7 +51,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
 
         public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => FurnitureCommon.ChairMouseOver(i, j, ModContent.ItemType<ExoToilet>(), true);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChairMouseOver(i, j, ModContent.ItemType<AuricToilet>(), true);
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
         {
