@@ -1711,7 +1711,7 @@ namespace CalamityMod.CalPlayer
                 }
                 // Stats
                 Player.GetDamage<GenericDamageClass>() += 0.15f * fishStockPower;
-                Player.GetCritChance<GenericDamageClass>() += 15 * fishStockPower;
+                Player.GetCritChance<GenericDamageClass>() += 10 * fishStockPower;
                 Player.Calamity().critDamage += 0.15f * fishStockPower;
                 Player.statDefense += (int)(10 * fishStockPower);
                 Player.endurance += 0.1f * fishStockPower;
