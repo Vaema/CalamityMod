@@ -1099,7 +1099,7 @@ namespace CalamityMod.Items
             }
             if (item.type == ItemID.ReconScope)
             {
-                player.GetDamage<RangedDamageClass>() += 0.02f; //Total 12% damage
+                player.GetDamage<RangedDamageClass>() += 0.05f; //Total 15% damage
                 player.GetCritChance<RangedDamageClass>() -= 5; //Total 5% crit
             }
             if (item.type == ItemID.SniperScope)
