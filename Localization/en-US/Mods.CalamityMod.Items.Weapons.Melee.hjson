@@ -991,8 +991,10 @@ Pandemic: {
 	DisplayName: Pandemic
 	Tooltip:
 		'''
-		{$Common.YoyoStatsInfinite}
-		Fires plague seekers when enemies are near
+		{$Common.YoyoStats}
+		Each unique enemy struck that is infected with [cbuff:CalamityMod/Plague] increases the yoyo's size, power, and airtime
+		Refreshes [cbuff:CalamityMod/Plague] duration if a target is already infected
+		Counterweights inflict [cbuff:CalamityMod/Plague] and move twice as fast
 		'''
 }
 
