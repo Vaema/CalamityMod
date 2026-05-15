@@ -16,6 +16,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
@@ -34,6 +35,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
+using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Abyss;
@@ -57,6 +59,7 @@ using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
+
 
 namespace CalamityMod.Projectiles
 {
@@ -340,7 +343,8 @@ namespace CalamityMod.Projectiles
             void ApplyGrapeBeer()
             {
                 grapeBeer = true;
-                conditionalHomingRange = 300;
+                var ivDripPlayer = Main.player[projectile.owner].GetModPlayer<IVDripPlayer>();
+                conditionalHomingRange = ivDripPlayer.HasAlcohol(AlcoholType.GrapeBeer) ? 800 : 300;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
                 //Calamity adds a hybrid iframe system when both local and static are set to true, so this works fine for both global and static projectiles.
@@ -2953,6 +2957,9 @@ namespace CalamityMod.Projectiles
         {
             var owner = Main.player[projectile.owner];
             var cplayer = owner.Calamity();
+            owner.Fishing_GetBait(out Item baitItem);
+            bool reelingIn = projectile.ai[0] == 1;
+            bool lineSnapped = projectile.ai[0] == 2;
 
             //Make sure Victide Snail actually fishes when using a minigame rod
             foreach (var item in Main.ActiveProjectiles)
@@ -3082,6 +3089,7 @@ namespace CalamityMod.Projectiles
             //localAI[1] - The timer for fish to try and bite the hook. When it exceeds 660, it resets to 0.
             //If ai[1] is not 0, this is set to the item ID of the hooked item/NPC
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
+
             switch (owner.Calamity().SelectedFishingMinigame)
             {
                 case CalamityPlayer.FishingMinigames.WulfrumBobber:
@@ -3357,7 +3365,6 @@ namespace CalamityMod.Projectiles
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-                                    owner.Fishing_GetBait(out Item baitItem);
 
                                     // Diminishing returns on bait power beyond 75
                                     int baitPower = baitItem?.bait ?? 0;
@@ -3728,10 +3735,60 @@ namespace CalamityMod.Projectiles
                     }
 
             }
+
+            bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
+            // When using rage bait, gives a chance that your items turn to junk
+            if (baitItem?.type == ModContent.ItemType<RageBait>() && reelingIn && !alreadyJunk && Main.rand.NextBool(RageBait.junkChance.Item1, RageBait.junkChance.Item2) && projectile.localAI[1] != 0)
+            {
+                var junk = Main.rand.Next(3) switch
+                {
+                    0 => ItemID.OldShoe,
+                    1 => ItemID.FishingSeaweed,
+                    _ => ItemID.TinCan,
+                };
+
+                SoundStyle epicFail = new("CalamityMod/Sounds/Item/Swine", 2);
+                SoundEngine.PlaySound(epicFail with { Volume = 0.9f, Pitch = 0.3f }, projectile.Center);
+                if (CalamityWorld.revenge)
+                    owner.Calamity().rage += 25;
+
+                for (int i = 0; i < 12; i++)
+                {
+                    Particle spray = new CustomSpark(projectile.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10), -Vector2.UnitY * Main.rand.NextFloat(3, 8), "CalamityMod/Particles/BloomCircle", true, Main.rand.Next(18, 24) * 5, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0, 0.7f)) * 0.3f, new Vector2(0.8f, 1f), true, false, 0, false, false);
+                    GeneralParticleHandler.SpawnParticle(spray);
+
+                    if (i % 2 == 0)
+                    {
+                        Particle rage = new CustomSpark(owner.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10) + -Vector2.UnitY * 7.5f, -Vector2.UnitY * Main.rand.NextFloat(0.5f, 2f), "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(12, 18) * 4, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.7f, new Vector2(0.7f, 1f), true, false, 0, false, false);
+                        GeneralParticleHandler.SpawnParticle(rage);
+                    }
+                }
+
+                projectile.ai[1] = junk;
+                return false;
+            }
+
+            bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
+            {
+                // Remove any item you would have fished up
+                projectile.ai[1] = 0;
+                // Get rarity of pull
+                int rarity = 0;
+                int roll = Main.rand.Next(1, 100 + 1);
+                if (roll == 1) rarity = 3; // UltraRare (1/100)
+                else if (roll <= 21) rarity = 2; // Rare ~(1/5)
+                else rarity = 1; // Common ~(4/5)
+
+                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                projectile.ai[0] = 2; // snap line
+                return false;
+            }
+
             return false;
         }
         #endregion
-
+        
         #region AI
         public override void AI(Projectile projectile)
         {
@@ -3887,20 +3944,14 @@ namespace CalamityMod.Projectiles
             }
 
             #region Flail Extendo Hacks
-            // Very hacky solution for making Dao of Pow's flail throw travel farther and faster
+            // Very hacky solution for making Dao of Pow's flail throw travel faster
             if (projectile.type == ProjectileID.TheDaoofPow)
             {
                 // Guide to ai[0]:
                 // 0: Spinning. 1: Being thrown. 2: Return after throw. 6: Dropped on ground. 4: Return after being dropped.
                 if (projectile.ai[0] == 1f)
                 {
-                    if (projectile.ai[1] > 0f)
-                    {
-                        projectile.ai[2]++;
-                        if (projectile.ai[2] <= 11f) // When ai[1] reaches 14, it starts returning, so this makes it take an extra 11 frames to return
-                            projectile.ai[1]--;
-                    }
-                    else
+                    if (projectile.ai[1] == 0f)
                         projectile.velocity *= 1.33f;
                 }
             }
@@ -3922,15 +3973,10 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.ai[0] == 1f)
                 {
-                    if (projectile.ai[1] > 0f)
-                    {
-                        projectile.ai[2]++;
-                        if (projectile.ai[2] <= 5f) // When ai[1] reaches 12, it starts returning, so this makes it take an extra 5 frames to return
-                            projectile.ai[1]--;
-                    }
-                    else
-                        projectile.velocity *= 1.33f;
+                    if (projectile.ai[1] == 0f)
+                        projectile.velocity *= 1.25f;
                 }
+                // Return speed is also increased using an IL edit, because why does it have a slower return speed than Dao of Pow???
             }
             #endregion
 
@@ -4337,10 +4383,10 @@ namespace CalamityMod.Projectiles
                             grapeBeerHomingPower = 0.015f;
                         }
 
-                            HomingTarget = grapeBeerHomingTarget = target.whoAmI;
+                        HomingTarget = grapeBeerHomingTarget = target.whoAmI;
                         Vector2 targetDirection = projectile.SafeDirectionTo(target.Center);
 
-                        float trackingSpeed = grapeBeerHomingPower;// Vector2.Dot(targetDirection, projectile.velocity.SafeNormalize(Vector2.UnitX)) > 0.835f ? 0.01325f : 0f; // Delicate values, please test changes you make to them
+                        float trackingSpeed = grapeBeerHomingPower;
 
                         var currVelocity = projectile.velocity.Length();
                         if (currVelocity < 8)
@@ -4634,28 +4680,29 @@ namespace CalamityMod.Projectiles
             }
 
             // Old Fashioned buffs (or debuffs) apply if the player has Old Fashioned
-            // IV Drip on the Rocks inherits the same logic as Old Fashioned
             if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
                 modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
-            if (modPlayer.ivDrip && buffedByOldFashioned.HasValue)
-                modifiers.SourceDamage *= buffedByOldFashioned.Value ? IVDripOnTheRocks.DamageBoostMultiplier : IVDripOnTheRocks.DamageReductionMultiplier;
 
-            if (modPlayer.rum && projectile.DamageType.CountsAsClass(DamageClass.Summon))
+            var dripPlayer = player.GetModPlayer<IVDripPlayer>();
+            if (dripPlayer.HasAlcohol(AlcoholType.OldFashioned) && buffedByOldFashioned.HasValue) 
+                modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
+
+            if ((modPlayer.rum || dripPlayer.HasAlcohol(AlcoholType.Rum)) && projectile.DamageType.CountsAsClass(DamageClass.Summon))
             {
                 if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type])
-                {
-                    modifiers.SourceDamage *= Rum.MinionBoost;
-                }
+                    modifiers.SourceDamage *= (modPlayer.rum ? Rum.MinionBoost : 1f) * (dripPlayer.HasAlcohol(AlcoholType.Rum) ? Rum.MinionBoost : 1f);
                 else
-                    modifiers.SourceDamage *= Rum.NonMinionBoost;
+                    modifiers.SourceDamage *= (modPlayer.rum ? Rum.NonMinionBoost : 1f) * (dripPlayer.HasAlcohol(AlcoholType.Rum) ? Rum.NonMinionBoost : 1f);
             }
-            if (modPlayer.moscowMule || modPlayer.bloodyMary)
+
+            if (modPlayer.moscowMule || modPlayer.bloodyMary || dripPlayer.HasAlcohol(AlcoholType.MoscowMule) || dripPlayer.HasAlcohol(AlcoholType.BloodyMary))
             {
                 if (projectile.DamageType == DamageClass.Summon || (PierceResistNPC.exemptProjectiles.Contains(projectile.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(projectile.type) && PierceResistNPC.singleHitboxExemptProjectiles[projectile.type])))
                 {
-                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? 0.7f : 1f) * (modPlayer.bloodyMary ? 0.33f : 1f));
+                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? MoscowMule.PierceDamageMultiplier : 1f) * (modPlayer.bloodyMary ? BloodyMary.PierceDamageMultiplier : 1f) * (dripPlayer.HasAlcohol(AlcoholType.MoscowMule) ? MoscowMule.PierceDamageMultiplier : 1f) * (dripPlayer.HasAlcohol(AlcoholType.BloodyMary) ? BloodyMary.PierceDamageMultiplier : 1f));
                 }
             }
+
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
                 // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula
@@ -4809,7 +4856,8 @@ namespace CalamityMod.Projectiles
             {
                 var player = Main.player[projectile.owner];
                 float burnRatio = (-player.statMana / 100) * ChaosStone.DamageMultPer100Mana;
-                target.Calamity().manaBurn += damageDone * burnRatio * (player.Calamity().oldFashioned ? OldFashioned.DamageBoostMultiplier : 1) * (player.Calamity().ivDrip ? IVDripOnTheRocks.DamageBoostMultiplier : 1) * (player.Calamity().vodka ? 1+Vodka.DebuffBoost : 1);
+                var dripPlayer = player.GetModPlayer<IVDripPlayer>();
+                target.Calamity().manaBurn += damageDone * burnRatio * (dripPlayer.HasAlcohol(AlcoholType.OldFashioned) ? OldFashioned.DamageBoostMultiplier : 1) * (dripPlayer.HasAlcohol(AlcoholType.OldFashioned) ? OldFashioned.DamageBoostMultiplier : 1) * (player.Calamity().vodka ? 1+Vodka.DebuffBoost : 1);
                 target.Calamity().playerManaBurnIntensity = -player.statMana / (float)player.statManaMax2;
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     ManaBurnSyncPacket.Send(target);

@@ -264,7 +264,7 @@ namespace CalamityMod.Projectiles.Melee
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearThin").Value;
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
             Vector2 vel = Projectile.rotation.ToRotationVector2();
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + ((Owner.direction == -1) ? MathHelper.Pi - MathHelper.PiOver4 : MathHelper.PiOver4);

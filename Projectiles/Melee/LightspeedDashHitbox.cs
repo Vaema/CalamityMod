@@ -28,7 +28,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float hitboxSize = Projectile.width * Projectile.scale;
+            return CalamityUtils.CircularHitboxCollision(Projectile.Center, hitboxSize, targetHitbox);
+        }
         public override void AI()
         {
             // Go where the player is going

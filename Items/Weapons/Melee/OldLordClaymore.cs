@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 76;
             Item.height = 76;
-            Item.damage = 144;
+            Item.damage = 100;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.crit = 11;
             Item.useAnimation = Item.useTime = 90; // Yes it's actually supposed to be this slow

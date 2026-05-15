@@ -8,6 +8,11 @@ AlcoholPoisoning: {
 	Description: You drank too much and you are now dying
 }
 
+BaconOilBuff: {
+	DisplayName: Bacon Oil
+	Description: Oh gosh you spilled it all over yourself!
+}
+
 BloodyMaryBuff: {
 	DisplayName: Bloody Mary
 	Description: Increased enemy spawn rates, reduced piercing weapon effectiveness
@@ -398,6 +403,22 @@ WeakBrimstoneFlames: {
 	Description: Using the Supreme Witch's power causes you to suffer, but makes your weapons strong
 }
 
+WindChilled: {
+	DisplayName: Wind Chilled
+	Description: Should have worn a coat
+	ItemTooltipPlayer:
+		'''
+		Cold - 2 DPS
+		Reduced movement speed
+		'''
+	ItemTooltipEnemy:
+		'''
+		Cold - 6 DPS
+		1.5x damage if the enemy is inflicted with a Water debuff
+		Enhances Water debuff damage
+		'''
+}
+
 // Mounts
 
 AndromedaBuff: {
@@ -735,6 +756,11 @@ Soaring: {
 SulphurskinBuff: {
 	DisplayName: Sulphurskin
 	Description: The sulphuric waters have a lesser effect on you
+}
+
+SwinesWrathBuff: {
+	DisplayName: Swine's Wrath
+	Description: Divine essence is rejecting your body
 }
 
 WeaponImbueBrimstone: {
@@ -1756,6 +1782,15 @@ Shadowflame: {
 ForbiddenStealthSummonTagBuff: {
 	DisplayName: Forbidden Stealth Summon Tag Buff
 	Description: If you're seeing this, something went horribly wrong
+}
+
+Malnourished: {
+	DisplayName: Malnourished
+	Description:
+		'''
+		Minor reductions to all stats
+		Your liver feels stronger!
+		'''
 }
 
 SeaKingsAssurance: {

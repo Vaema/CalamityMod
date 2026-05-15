@@ -173,7 +173,10 @@ namespace CalamityMod.Items
             //Add "Uses X Minion Slots right above "Uses X Mana"
             if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0)
             {
-                tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText(ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(ItemID.Sets.StaffMinionSlotsRequired[item.type])));
+                float cost = ItemID.Sets.StaffMinionSlotsRequired[item.type];
+                if (item.type == ModContent.ItemType<YharonsKindleStaff>() && Main.LocalPlayer.Calamity().fadedIdolatry)
+                    cost--;
+                tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText(cost > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(cost)));
             }
 
 
@@ -1510,6 +1513,18 @@ namespace CalamityMod.Items
         #region Enchanted Rarity Text Drawing
         public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
         {
+            if (line.Mod == "Terraria" && item.type == ModContent.ItemType<ElephantKiller>() && CalamityClientConfig.Instance.TextEffects && line.Name == "Damage")
+            {
+                string fakeLine = line.Text.Replace(" " + RogueDamageClass.Instance.DisplayName.ToString(), DamageClass.Ranged.DisplayName.ToString());
+                float fade = Utils.GetLerpValue(18, 120, Main.LocalPlayer.Calamity().elephantKillerJoke, true);
+
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, fakeLine, new Vector2(line.X, line.Y), line.Color * (1 - fade), line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, new Vector2(line.X, line.Y), line.Color * fade, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+                
+                return false;
+            }
+                
+
             if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingBlue>() && CalamityClientConfig.Instance.TextEffects)
             {
                 Color rarityColor = Color.White;
@@ -1518,17 +1533,15 @@ namespace CalamityMod.Items
                 float rate = Main.GlobalTimeWrappedHourly * 6;
                 List<Color> eColors = new List<Color>()
                 {
-                    Color.DodgerBlue,
-                    Color.Cyan,
-                    Color.RoyalBlue
+                    XyksBlessingBlue.baseMainColor,
+                    XyksBlessingBlue.baseAccentColor,
                 };
                 int colorIndex = (int)(rate / 2 % eColors.Count);
                 Color currentColor = eColors[colorIndex];
                 Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
 
                 Vector2 backScale = line.BaseScale;
-                Color backColor = usedColor;
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
@@ -1536,19 +1549,19 @@ namespace CalamityMod.Items
                 int draws = 20;
                 for (int i = 0; i < draws; i++)
                 {
+                    float clrProgress = Utils.GetLerpValue(0, draws - 1, i, true);
                     Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / 20f).ToRotationVector2() * (3.5f);
-                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, backColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, Color.Lerp(usedColor, XyksBlessingBlue.animEffectColor, clrProgress), line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
                 }
                 Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                 Texture2D square = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
 
                 Vector2 drawPosition = basePosition;
-                Color drawColor = backColor;
                 Vector2 rotationPoint = texture.Size() * 0.5f;
                 int length = line.Text.Length;
                 for (int i = 0; i < 8; i++)
                 {
-                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 23 + Vector2.UnitX * (i % 2 == 0 ? -10 * i : 10 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(0.3f - 0.02f * i, 1 + 0.35f * i) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
+                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 23 + Vector2.UnitX * (i % 2 == 0 ? -10 * i : 10 * i), null, usedColor, (MathHelper.PiOver2), rotationPoint, new Vector2(0.3f - 0.02f * i, 1 + 0.35f * i) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
                 }
                 for (int i = 0; i < 10; i++)
                 {
@@ -1557,10 +1570,11 @@ namespace CalamityMod.Items
                     float squareSine = (float)Math.Sin(i * 2.5f / MathHelper.Pi);
                     float clockSine = (float)Math.Sin((float)Math.Pow(Utils.GetLerpValue(0, 110, ((int)(Main.GlobalTimeWrappedHourly * (60 + i * 2)) % 120)), 5));
                     Vector2 weirdPos = Vector2.UnitX * 53 * i * (Utils.GetLerpValue(20, 0, i, true)) + Vector2.UnitY * -23 * squareSine * sine2 + new Vector2(5, 10);
+                    float clrProgress = Utils.GetLerpValue(0, 9, i, true);
                     for (int t = 0; t < 3; t++)
-                        Main.EntitySpriteDraw(square, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), 0, square.Size() * 0.5f, (1.2f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                        Main.EntitySpriteDraw(square, basePosition + weirdPos, null, Color.Lerp(usedColor, XyksBlessingBlue.animEffectColor, clrProgress) * (1 - 0.03f * i), 0, square.Size() * 0.5f, (1.2f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
                     for (int t = 0; t < 3; t++)
-                        Main.EntitySpriteDraw(texture, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), 0, texture.Size() * 0.5f, (0.65f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                        Main.EntitySpriteDraw(texture, basePosition + weirdPos, null, Color.Lerp(usedColor, XyksBlessingBlue.animEffectColor, clrProgress) * (1 - 0.03f * i), 0, texture.Size() * 0.5f, (0.65f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
                 }
 
                 Main.spriteBatch.End();
@@ -1579,38 +1593,35 @@ namespace CalamityMod.Items
                 float rate = Main.GlobalTimeWrappedHourly * 6;
                 List<Color> eColors = new List<Color>()
                 {
-                    new Color(248, 117, 52),
-                    Color.Gold,
-                    Color.Orange
+                    XyksBlessingOrange.baseMainColor,
+                    XyksBlessingOrange.baseAccentColor,
                 };
                 int colorIndex = (int)(rate / 2 % eColors.Count);
                 Color currentColor = eColors[colorIndex];
                 Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
 
                 Vector2 backScale = line.BaseScale;
-                Color backColor = usedColor;
-
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
 
                 int draws = 20;
                 for (int i = 0; i < draws; i++)
                 {
+                    float clrProgress = Utils.GetLerpValue(0, draws - 1, i, true);
                     Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / 20f).ToRotationVector2() * (3.5f);
-                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, backColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, Color.Lerp(usedColor, XyksBlessingOrange.animEffectColor, clrProgress), line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
                 }
                 Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                 Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/SquareRotated").Value;
                 Texture2D square = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSquareParticleThick").Value;
 
                 Vector2 drawPosition = basePosition;
-                Color drawColor = backColor;
                 Vector2 rotationPoint = texture.Size() * 0.5f;
                 int length = line.Text.Length;
                 for (int i = 0; i < 8; i++)
                 {
-                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 23 + Vector2.UnitX * (i % 2 == 0 ? -10 * i : 10 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(0.3f - 0.02f * i, 1 + 0.35f * i) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
+                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 23 + Vector2.UnitX * (i % 2 == 0 ? -10 * i : 10 * i), null, usedColor, (MathHelper.PiOver2), rotationPoint, new Vector2(0.3f - 0.02f * i, 1 + 0.35f * i) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
                 }
                 for (int i = 0; i < 10; i++)
                 {
@@ -1618,10 +1629,11 @@ namespace CalamityMod.Items
                     float squareSine = (float)Math.Sin(i * 2.5f / MathHelper.Pi);
                     float clockSine = (float)Math.Sin((float)Math.Pow(Utils.GetLerpValue(0, 110, ((int)(Main.GlobalTimeWrappedHourly * (60 + i * 2)) % 120)), 5));
                     Vector2 weirdPos = Vector2.UnitX * 53 * i * (Utils.GetLerpValue(20, 0, i, true)) + Vector2.UnitY * 23 * squareSine + Vector2.UnitY * 5.5f * sine + new Vector2(5, 10);
+                    float clrProgress = Utils.GetLerpValue(0, 9, i, true);
                     for (int t = 0; t < 3; t++)
-                        Main.EntitySpriteDraw(square, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), clockSine * MathHelper.PiOver2 + MathHelper.PiOver4, square.Size() * 0.5f, (1 - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                        Main.EntitySpriteDraw(square, basePosition + weirdPos, null, Color.Lerp(usedColor, XyksBlessingOrange.animEffectColor, clrProgress) * (1 - 0.03f * i), clockSine * MathHelper.PiOver2 + MathHelper.PiOver4, square.Size() * 0.5f, (1 - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
                     for (int t = 0; t < 3; t++)
-                        Main.EntitySpriteDraw(texture2, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), clockSine * MathHelper.PiOver2, texture2.Size() * 0.5f, (0.6f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                        Main.EntitySpriteDraw(texture2, basePosition + weirdPos, null, Color.Lerp(usedColor, XyksBlessingOrange.animEffectColor, clrProgress) * (1 - 0.03f * i), clockSine * MathHelper.PiOver2, texture2.Size() * 0.5f, (0.6f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
                 }
 
                 Main.spriteBatch.End();

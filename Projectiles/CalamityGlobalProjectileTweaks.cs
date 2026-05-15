@@ -188,6 +188,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PalladiumDrill, standardDrillTweaks },
                 { ProjectileID.PartyBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.PurpleCounterweight, counterweightTweaks },
+                { ProjectileID.PurpleLaser, Do(LocalIFrames(10 * 5)) }, // Laser Rifle, accounting for extra updates
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
                 { ProjectileID.RedCounterweight, counterweightTweaks },
@@ -491,7 +492,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PulseBolt, defaultIFrames },
                 { ProjectileID.PureSpray, defaultIFrames },
                 { ProjectileID.PurificationPowder, defaultIFrames },
-                { ProjectileID.PurpleLaser, defaultIFrames },
                 { ProjectileID.PygmySpear, defaultIFrames },
                 { ProjectileID.QuarterNote, defaultIFrames },
                 { ProjectileID.RainbowFlare, defaultIFrames },

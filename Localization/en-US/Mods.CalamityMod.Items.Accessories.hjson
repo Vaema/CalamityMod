@@ -251,7 +251,7 @@ FadedIdolatry: {
 	DisplayName: Faded Idolatry
 	Tooltip:
 		'''
-		For each Fiery Draconid you have summoned, you gain 1 minion slot
+		Summoned [i:CalamityMod/YharonsKindleStaff] Fiery Draconids cost one less minion slot
 		[c/ffe100:'Once everything has crumbled to dust, what will be left of the world you created?']
 		'''
 }
@@ -592,7 +592,7 @@ CrushingEgo: {
 	DisplayName: Crushing Ego
 	Tooltip:
 		'''
-		Multiplies all damage by 1.2x, but at the cost of taking 15% increased damage
+		Multiplies all damage by 1.3x, but at the cost of taking 20% increased damage
 		[c/ff00ff:'Don the mask of arrogance, and dance by your lonesome. Once the ball has gone quiet, you'll be the last man standing.']
 		'''
 }
@@ -776,6 +776,30 @@ FeatherCrown: {
 FilthyGlove: {
 	DisplayName: Filthy Glove
 	Tooltip: Stealth strikes have +8 armor penetration and deal 8% more damage
+}
+
+FishStocks: {
+	DisplayName: Fish Stocks
+	Tooltip:
+		'''
+		Pulls up a view of the fish stocks
+		Provides stats that are multiplied by the state of fish stocks
+		When unequipped, the effects will only be disabled once stocks are even or higher
+		'''
+	HoldShiftTooltip:
+		'''
+		Stats include:
+		+10 defense
+		+15% damage
+		+10% critical strike chance
+		+15% critical strike damage
+		+10% damage reduction
+		+3HP/s life regeneration
+		+25% mining speed
+		+50 fishing power
+		+0.55 luck
+		1.5x coin drops
+		'''
 }
 
 FlameLickedShell: {
@@ -1032,12 +1056,16 @@ IVDripOnTheRocks: {
 	DisplayName: IV Drip on the Rocks
 	Tooltip:
 		'''
-		Multiplies most non-weapon, non-debuff damage by {0}x
-		Multiplies all weapon damage by {1}x
-		Counts as an alcohol stack toward Alcohol Poisoning
+		[EFFECT]
+		[NAME]
+		Inserted alcohols contribute toward alcohol poisoning
 		{$Common.AlcoholWarning}
+		[c/aaaaaa:Shift-<right> this item in your inventory to empty its contents]
 		[ceffect/drunk:'(drunken mumbling)']
 		'''
+	Empty: Place an alcoholic beverage on this item in your inventory to pour its contents in
+	CurrentAlcoholText: Filled with
+	SakeAndAleText: Increases melee weapon scale by 25%, but decreases melee speed by 10%
 }
 
 JellyChargedBattery: {
@@ -1067,7 +1095,7 @@ LeviathanAmbergris: {
 	DisplayName: Leviathan Ambergris
 	Tooltip:
 		'''
-		120% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
+		100% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
 		Your dashes are empowered by water, knocking back and damaging enemies with vicious currents that inflict [cbuff:CalamityMod/RiptideDebuff]
 		Visual effects are reduced if visibility is disabled
 		'''
@@ -2230,10 +2258,13 @@ XyksBlessingBlue: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'It's simply too much to turn back now; passion and time have long since stained it.
 		[c/5f8ae1:Have I always been so selfish?']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
 }
 
 XyksBlessingOrange: {
@@ -2241,8 +2272,28 @@ XyksBlessingOrange: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'Even so, the march of time waits for none. Recall that feeling of fulfillment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
+}
+
+FrozenCube: {
+	DisplayName: Frozen Cube
+	Tooltip:
+		'''
+		A frozen block of ice with something inside
+		Summons an Elumphant to sit atop your head and protect you
+		The Elumphant will cycle between shooting cold air that inflicts [cbuff:CalamityMod/WindChilled], and headbutting enemies
+		Elumphant's headbutts only target enemies inflicted with [cbuff:CalamityMod/WindChilled]
+		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
+		[DAMAGELINE]
+		[c/7497ED:'What I wanna know is, where's the mammoth?']
+		'''
+	EquippedDebuff: Current Cold Debuff boost: +{0}%
+	EquippedElumphant: Current Elumphant Power: +{0}%
+	Unequipped: Equip this accessory to view its statistics
 }

@@ -1,10 +1,15 @@
-﻿using Terraria;
+﻿using CalamityMod.DataStructures;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Alcohol
 {
     public class EverclearBuff : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            AlcoholLevel = 2
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
