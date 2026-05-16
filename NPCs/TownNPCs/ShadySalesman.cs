@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Placeables;
@@ -27,7 +28,14 @@ namespace CalamityMod.NPCs.TownNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 9;
+            Main.npcFrameCount[Type] = 10;
+            NPCID.Sets.AttackFrameCount[Type] = 1;
+            NPCID.Sets.DangerDetectRange[Type] = 700;
+            NPCID.Sets.AttackType[Type] = 1;
+            NPCID.Sets.AttackTime[Type] = 30;
+            NPCID.Sets.AttackAverageChance[Type] = 10;
+            NPCID.Sets.HatOffsetY[Type] = 18;
+
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPCID.Sets.NoTownNPCHappiness[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -139,18 +147,18 @@ namespace CalamityMod.NPCs.TownNPCs
             shop.Add<TheHousingContract>()
                 .Add<RageBait>()
                 .Add<TheConcoction>()
-                .Add<CombatVoucher>()
-                .Add<AggressiveVoucher>()
-                .Add<CombatVoucher>()
-                .Add<UnbreakableVoucher>()
-                .Add<HurriedVoucher>()
+                .Add<CombatVoucher>(Condition.DownedGoblinArmy)
+                .Add<AggressiveVoucher>(Condition.DownedGoblinArmy)
+                .Add<CombatVoucher>(Condition.DownedGoblinArmy)
+                .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy)
+                .Add<HurriedVoucher>(Condition.DownedGoblinArmy)
                 .Add<OddVoucher>()
                 .Add<TheElixir>()
                 .Add<TrustyOldRod>()
                 .Add<GluttonyBlender>()
                 .Add<GreedPot>()
                 .Add<TheMonument>()
-                //.Add<FishStocks>()
+                .Add<FishStocks>()
                 .Add<TheSandwich>()
                 .Add<BaconOil>()
                 .Add<ElephantKiller>(Condition.Hardmode)
@@ -166,9 +174,9 @@ namespace CalamityMod.NPCs.TownNPCs
                 if (!NPC.IsABestiaryIconDummy)
                 {
                     if (NPC.direction == 1)
-                        NPC.spriteDirection = -1;
-                    else if (NPC.direction == -1)
                         NPC.spriteDirection = 1;
+                    else if (NPC.direction == -1)
+                        NPC.spriteDirection = -1;
 
                     if (NPC.velocity.X == 0f)
                     {
