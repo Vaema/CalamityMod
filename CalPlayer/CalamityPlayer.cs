@@ -873,6 +873,11 @@ namespace CalamityMod.CalPlayer
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
+        public bool fishStocks = false;
+        public float fishStockVisual = 0;
+        public float fishStockPower = 0;
+        public float fishStockSlidingPower = 0;
+        public (float, float, float, float, float) fishStockOldPower = (0, 0, 0, 0, 0);
         /// <summary> Used to toggle dust spawned while swinging, through accessory visibility. </summary>
         public bool magmaStoneVisuals = true;
         public bool eGauntlet = false;
@@ -1044,6 +1049,10 @@ namespace CalamityMod.CalPlayer
         /// At 0f, the player has regular crit damage. At 1f, the player has +100% crit damage.
         /// </summary>
         public float critDamage = 0;
+        /// <summary>
+        /// Multiplies the amount of coins the player gets from enemies.
+        /// </summary>
+        public float coinDropMult = 1f;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
@@ -1140,6 +1149,11 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurioGotHit = false;
         public bool scionsCurioVisuals = false;
         public float scionsCurioDebuffDamage = 0;
+        public bool frozenCube = false;
+        public bool frozenCubeVisuals = false;
+        public float frozenCubeDebuffBoost = 0;
+        public float frozenCubeElumphantBoost = 0;
+        public int frozenCubeUsedDefense = 0;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -1419,6 +1433,7 @@ namespace CalamityMod.CalPlayer
         public bool vaporfied = false;
         public bool banishingFire = false;
         public bool wither = false;
+        public bool windChilled = false;
         public bool ManaBurn = false;
 
         /// <summary> Counter variable used to prevent the player from being inflicted with another immobilizing debuff for a short time after being inflicted with one. </summary>
@@ -2437,6 +2452,7 @@ namespace CalamityMod.CalPlayer
             teslaVisuals = true;
             cryogenSoul = false;
             ascendantInsignia = false;
+            fishStocks = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
             eGauntletVisuals = true;
@@ -2526,6 +2542,7 @@ namespace CalamityMod.CalPlayer
             camper = false;
             corrosiveSpine = false;
             scionsCurio = false;
+            frozenCube = false; frozenCubeDebuffBoost = 0; frozenCubeElumphantBoost = 0; frozenCubeUsedDefense = 0;
             rottenDogTooth = false;
             angelicAlliance = false;
             ChaosStone = false;
@@ -2725,6 +2742,7 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
+            windChilled = false;
             ManaBurn = false;
 
             TypelessDebuffMultiplier = new();
@@ -3115,6 +3133,7 @@ namespace CalamityMod.CalPlayer
             holyInfernoFadeIntensity = 0f;
             spiritOriginCritBoost = 0;
             critDamage = 0f;
+            coinDropMult = 1f;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0;
@@ -3211,6 +3230,7 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
+            windChilled = false;
             ImmobilityDebuffImmunityTimer = 0;
             TypelessDebuffMultiplier = new();
             HeatDebuffMultiplier = new();
@@ -5343,6 +5363,9 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            if (Player.Calamity().XykVisualsBlue || Player.Calamity().XykVisualsOrange)
+                Player.wings = 0;
+
             if (ZoneAbyss && Main.netMode != NetmodeID.Server)
             {
                 //Main aura
@@ -5394,6 +5417,14 @@ namespace CalamityMod.CalPlayer
                     subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
                     subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime / 120f);
                 }
+            }
+
+            // Frozen Cube defense cut
+            if (Player.Calamity().frozenCube)
+            {
+                int usedDefense = (Player.statDefense / FrozenCube.usedDefenseDivide);
+                Player.Calamity().frozenCubeUsedDefense = usedDefense;
+                Player.statDefense -= usedDefense;
             }
 
             if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now

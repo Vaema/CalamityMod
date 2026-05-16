@@ -284,6 +284,11 @@ namespace CalamityMod.CalPlayer
 
             if (damage == 10.0 && hitDirection == 0 && damageSource.SourceOtherIndex == 8)
             {
+                if (fishStocks && fishStockPower < 0)
+                {
+                    string year = DateTime.Now.ToString("yy");
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name, year));
+                }
                 if (alcoholPoisoning)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AlcoholBig" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
@@ -480,6 +485,9 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit NPC
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            if (Player.Calamity().coinDropMult != 1)
+                target.Calamity().coinDropMult = Player.Calamity().coinDropMult;
+
             if (target.HasBuff<SmashedEvil>())
             {
                 //This is essentially 10 AP, but independent of armor amount

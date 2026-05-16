@@ -778,6 +778,30 @@ FilthyGlove: {
 	Tooltip: Stealth strikes have +8 armor penetration and deal 8% more damage
 }
 
+FishStocks: {
+	DisplayName: Fish Stocks
+	Tooltip:
+		'''
+		Pulls up a view of the fish stocks
+		Provides stats that are multiplied by the state of fish stocks
+		When unequipped, the effects will only be disabled once stocks are even or higher
+		'''
+	HoldShiftTooltip:
+		'''
+		Stats include:
+		+10 defense
+		+15% damage
+		+10% critical strike chance
+		+15% critical strike damage
+		+10% damage reduction
+		+3HP/s life regeneration
+		+25% mining speed
+		+50 fishing power
+		+0.55 luck
+		1.5x coin drops
+		'''
+}
+
 FlameLickedShell: {
 	DisplayName: Flame-Licked Shell
 	Tooltip:
@@ -2234,10 +2258,13 @@ XyksBlessingBlue: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'It's simply too much to turn back now; passion and time have long since stained it.
 		[c/5f8ae1:Have I always been so selfish?']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
 }
 
 XyksBlessingOrange: {
@@ -2245,8 +2272,28 @@ XyksBlessingOrange: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'Even so, the march of time waits for none. Recall that feeling of fulfillment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
+}
+
+FrozenCube: {
+	DisplayName: Frozen Cube
+	Tooltip:
+		'''
+		A frozen block of ice with something inside
+		Summons an Elumphant to sit atop your head and protect you
+		The Elumphant will cycle between shooting cold air that inflicts [cbuff:CalamityMod/WindChilled], and headbutting enemies
+		Elumphant's headbutts only target enemies inflicted with [cbuff:CalamityMod/WindChilled]
+		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
+		[DAMAGELINE]
+		[c/7497ED:'What I wanna know is, where's the mammoth?']
+		'''
+	EquippedDebuff: Current Cold Debuff boost: +{0}%
+	EquippedElumphant: Current Elumphant Power: +{0}%
+	Unequipped: Equip this accessory to view its statistics
 }

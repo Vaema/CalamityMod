@@ -1892,6 +1892,9 @@ DukeEditFailed:
         #region On Kill Main Hook
         public override void OnKill(NPC npc)
         {
+            if (npc.Calamity().coinDropMult != 1)
+                npc.value = (int)(npc.value * npc.Calamity().coinDropMult);
+
             // Boss Rush on-kill effects
             if (BossRushEvent.BossRushActive)
             {

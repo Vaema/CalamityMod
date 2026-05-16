@@ -177,7 +177,7 @@ MarkofProvidence: {
 		Summons the Ceaseless Void
 		Despawns on the surface
 		'''
-	SpawnSignus: Summons Signus, Envoy of the Devourer
+	SpawnSignus: Summons Signus
 	SpawnWeaver: Summons the Storm Weaver
 }
 
