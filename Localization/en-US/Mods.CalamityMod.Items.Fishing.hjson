@@ -372,6 +372,15 @@ TheDevourerofCods: {
 		'''
 }
 
+TrustyOldRod: {
+	DisplayName: Trusty Old Rod
+	Tooltip:
+		'''
+		This ol' thing has never failed to pull in a big haul
+		Who knows what it will reel in next!
+		'''
+}
+
 VerstaltiteFishingRod: {
 	DisplayName: Verstaltite Fishing Rod
 	Tooltip:
@@ -391,6 +400,15 @@ WulfrumRod: {
 }
 
 // Bait
+RageBait: {
+	DisplayName: Rage Bait
+	Tooltip:
+		'''
+		The absolute best bait on the market! And for so cheap too...
+		Even comes with free Sonar Potion effect!
+		'''
+}
+
 GrandMarquisBait: {
 	DisplayName: Grand Marquis Bait
 	Tooltip: ""

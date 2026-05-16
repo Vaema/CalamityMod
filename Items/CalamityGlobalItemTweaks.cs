@@ -49,22 +49,21 @@ namespace CalamityMod.Items
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) }, // VANILLA: 70 DMG, 20 UT
                 { ItemID.AntlionClaw, Do(UseExact(10)) }, // Mandible Blade. VANILLA: 18 UT
                 { ItemID.AquaScepter, Do(DamageRatio(0.9f)) }, // VANILLA: 27 DMG. Uses ratios due to remix seed
-                { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) }, // VANILLA: 45 DMG, 11 UT
+                { ItemID.Bananarang, Do(DamageExact(60)) }, // VANILLA: 45 DMG
                 { ItemID.BatScepter, Do(DamageExact(50)) }, // VANILLA: 45 DMG
                 { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(131), UseAnimationExact(40), KnockbackExact(8)) }, // VANILLA: 52 DMG, 20 UT, 6.5 KB
-                { ItemID.BeeGun, Do(DamageExact(11), ManaExact(4)) }, // VANILLA: 9 DMG, 5 MANA
+                { ItemID.BeeGun, Do(DamageExact(11)) }, // VANILLA: 9 DMG
                 { ItemID.BeeKeeper, Do(UseTurn, DamageExact(32)) }, // VANILLA: 30 DMG
                 { ItemID.Beenade, Do(UseTimeExact(22), ShootSpeedExact(10f)) }, // VANILLA: 15 UT, 6 VEL
                 { ItemID.BeesKnees, Do(DamageExact(21), UseExact(35)) }, // VANILLA: 23 DMG, 23 UT
                 { ItemID.Bladetongue, Do(UseTurn, DamageExact(120), UseExact(22)) }, // VANILLA: 55 DMG, 28 UT
-                { ItemID.BlizzardStaff, Do(DamageExact(41), ManaExact(7)) }, // VANILLA: 58 DMG, 9 MANA
+                { ItemID.BlizzardStaff, Do(DamageExact(41)) }, // VANILLA: 58 DMG
                 { ItemID.BloodyMachete, Do(DamageExact(24)) }, // VANILLA: 20 DMG
                 { ItemID.Blowgun, Do(DamageExact(40), ShootSpeedExact(15f)) }, // VANILLA: 27 DMG, 13 VEL
                 { ItemID.BluePhaseblade, phaseblade },
                 { ItemID.BluePhasesaber, phasesaber },
                 { ItemID.BoneSword, Do(UseTurn, DamageExact(25)) }, // VANILLA: 19 DMG
                 { ItemID.BookofSkulls, Do(DamageExact(27), ManaExact(13), ShootSpeedExact(5.5f)) }, // VANILLA: 29 DMG, 18 MANA, 3.5 VEL
-                { ItemID.BookStaff, Do(ManaExact(14)) }, // Tome of Infinite Wisdom. VANILLA: 20 MANA
                 { ItemID.Boomstick, Do(DamageExact(11)) }, // VANILLA: 14 DMG
                 { ItemID.BreakerBlade, Do(UseTurn, DamageExact(140)) }, // VANILLA: 70 DMG
                 { ItemID.CandyCornRifle, Do(DamageExact(66)) }, // VANILLA: 44 DMG
@@ -96,7 +95,7 @@ namespace CalamityMod.Items
                 { ItemID.DarkLance, Do(TrueMelee, DamageExact(40)) }, // VANILLA: 34 DMG
                 { ItemID.DartRifle, Do(DamageExact(58)) }, // VANILLA: 52 DMG
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(22)) }, // VANILLA: 150 DMG, 16 UT
-                { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // VANILLA: 39 DMG. Compensation for removing aerial multiplier
+                { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane. VANILLA: 39 DMG. Compensation for removing aerial multiplier
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon. VANILLA: 180 DMG
                 { ItemID.DeadlySphereStaff, Do(DamageExact(50)) }, // VANILLA: 40 DMG
                 { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(65), ShootSpeedExact(15f)) }, // VANILLA: 57 DMG, 9 VEL
@@ -114,10 +113,10 @@ namespace CalamityMod.Items
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(13)) }, // VANILLA: 20 UT
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration. VANILLA: 25 DMG, 30 UT
                 { ItemID.Flamarang, Do(DamageExact(37)) }, // VANILLA: 49 DMG
-                { ItemID.Flamelash, Do(DamageExact(36), ManaExact(18)) }, // VANILLA: 32 DMG, 21 MANA
+                { ItemID.Flamelash, Do(DamageExact(36)) }, // VANILLA: 32 DMG
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) }, // VANILLA: 35 DMG, 7 VEL
-                { ItemID.FlowerofFire, Do(DamageRatio(0.78f), ManaExact(7)) }, // VANILLA: 48 DMG, 12 MANA. Uses ratios due to remix seed
-                { ItemID.FlowerofFrost, Do(DamageExact(70), UseExact(22), ManaExact(7), ShootSpeedExact(14)) }, // VANILLA: 60 DMG, 12 UT, 11 MANA, 9 VEL
+                { ItemID.FlowerofFire, Do(DamageRatio(0.78f)) }, // VANILLA: 48 DMG. Uses ratios due to remix seed
+                { ItemID.FlowerPow, Do(DamageExact(80)) }, // Displays as 160 damage. VANILLA: 65 DMG (displays as 130)
                 { ItemID.FlyingKnife, Do(DamageExact(53)) }, // VANILLA: 40 DMG
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) }, // VANILLA: 49 DMG
                 { ItemID.Gatligator, Do(UseExact(6)) }, // VANILLA: 7 UT
@@ -147,18 +146,17 @@ namespace CalamityMod.Items
                 { ItemID.KOCannon, Do(DamageRatio(2.65f)) }, // VANILLA: 40 DMG. Uses ratios due to remix seed
                 { ItemID.Kraken, Do(DamageExact(65)) }, // VANILLA: 95 DMG
                 { ItemID.LaserMachinegun, Do(DamageExact(49)) }, // VANILLA: 60 DMG
-                { ItemID.LaserRifle, Do(DamageExact(46), UseExact(10), ManaExact(4)) }, // VANILLA: 29 DMG, 12 UT, 8 MANA
-                { ItemID.LastPrism, Do(DamageExact(57), ManaExact(10)) }, // VANILLA: 100 DMG, 12 MANA
+                { ItemID.LaserRifle, Do(DamageExact(46)) }, // VANILLA: 29 DMG
+                { ItemID.LastPrism, Do(DamageExact(57)) }, // VANILLA: 100 DMG
                 { ItemID.LeadShortsword, Do(TrueMelee, DamageExact(11)) }, // VANILLA: 9 DMG
                 { ItemID.LeafBlower, Do(DamageExact(61)) }, // VANILLA: 48 DMG
                 { ItemID.LightDisc, Do(DamageExact(80), ShootSpeedExact(18)) }, // VANILLA: 60 DMG, 16 VEL
                 { ItemID.LunarFlareBook, Do(DamageExact(110)) }, // VANILLA: 100 DMG
                 { ItemID.MagicalHarp, Do(DamageExact(50), ShootSpeedExact(12f)) }, // VANILLA: 42 DMG, 4.5 VEL
-                { ItemID.MagicMissile, Do(DamageExact(23), UseAnimationExact(20), UseTimeExact(10), ManaExact(10)) }, // VANILLA: 35 DMG, 22 UT/UA, 14 MANA
+                { ItemID.MagicMissile, Do(DamageExact(23), UseAnimationExact(20), UseTimeExact(10)) }, // VANILLA: 35 DMG, 22 UT/UA
                 { ItemID.Marrow, Do(DamageExact(60)) }, // VANILLA: 53 DMG
-                { ItemID.MedusaHead, Do(DamageExact(75), ManaExact(6)) }, // VANILLA: 40 DMG, 15 MANA
+                { ItemID.MedusaHead, Do(DamageExact(75)) }, // VANILLA: 40 DMG
                 { ItemID.Meowmere, Do(UseMeleeSpeed, DamageExact(240)) }, // VANILLA: 200 DMG
-                { ItemID.MeteorStaff, Do(DamageExact(58), ManaExact(7), ShootSpeedExact(13f)) }, // VANILLA: 50 DMG, 9 MANA, 10 VEL
                 { ItemID.MiniNukeI, Do(DamageExact(90)) }, // VANILLA: 75 DMG
                 { ItemID.MiniNukeII, Do(DamageExact(90)) },
                 { ItemID.Minishark, Do(DamageExact(4)) }, // VANILLA: 6 DMG
@@ -175,7 +173,7 @@ namespace CalamityMod.Items
                 { ItemID.MythrilRepeater, Do(UseExact(16)) }, // VANILLA: 20 UT
                 { ItemID.MythrilSword, Do(UseTurn, DamageExact(70), UseExact(8)) }, // VANILLA: 50 DMG, 20 UT
                 { ItemID.NailGun, Do(DamageExact(77)) }, // VANILLA: 85 DMG
-                { ItemID.NettleBurst, Do(DamageExact(65), ManaExact(10)) }, // VANILLA: 35 DMG, 12 MANA
+                { ItemID.NettleBurst, Do(DamageExact(65)) }, // VANILLA: 35 DMG
                 { ItemID.NightsEdge, Do(TrueMelee, DamageExact(45)) }, // VANILLA: 40 DMG
                 { ItemID.NorthPole, Do(UseMeleeSpeed) },
                 { ItemID.OrangePhaseblade, phaseblade },
@@ -199,9 +197,9 @@ namespace CalamityMod.Items
                 { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) }, // VANILLA: 8 KB
                 { ItemID.PurplePhaseblade, phaseblade },
                 { ItemID.PurplePhasesaber, phasesaber },
-                { ItemID.PygmyStaff, Do(DamageExact(63)) }, // VANILLA: 40 DMG
-                { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) }, // VANILLA: 45 DMG, 20 MANA
-                { ItemID.RainbowRod, Do(DamageExact(40), KnockbackExact(8f), ManaExact(13)) }, // VANILLA: 50 DMG, 6 KB, 21 MANA
+                { ItemID.PygmyStaff, Do(DamageExact(60)) }, // VANILLA: 40 DMG
+                { ItemID.RainbowGun, Do(DamageExact(60)) }, // VANILLA: 45 DMG
+                { ItemID.RainbowRod, Do(DamageExact(40), KnockbackExact(8f)) }, // VANILLA: 50 DMG, 6 KB
                 { ItemID.Rally, Do(DamageExact(18)) }, // VANILLA: 14 DMG
                 { ItemID.RavenStaff, Do(DamageExact(36)) }, // VANILLA: 55 DMG
                 { ItemID.RazorbladeTyphoon, Do(DamageExact(103)) }, // VANILLA: 85 DMG
@@ -231,7 +229,7 @@ namespace CalamityMod.Items
                 { ItemID.SpaceGun, Do(DamageExact(23)) }, // VANILLA: 17 DMG
                 { ItemID.Spear, Do(TrueMelee, DamageExact(14)) }, // VANILLA: 8 DMG
                 { ItemID.SpectreStaff, Do(DamageExact(72)) }, // VANILLA: 65 DMG
-                { ItemID.SpiritFlame, Do(UseExact(20), ManaExact(11), ShootSpeedExact(2f)) }, // VANILLA: 22 UT, 14 MANA, 3 VEL
+                { ItemID.SpiritFlame, Do(UseExact(20), ShootSpeedExact(2f)) }, // VANILLA: 22 UT, 3 VEL
                 { ItemID.StaffofEarth, Do(DamageExact(150)) }, // VANILLA: 125 DMG
                 { ItemID.StarCannon, Do(UseExact(18)) }, // VANILLA: 12 UT
                 { ItemID.StardustDragonStaff, Do(DamageExact(20)) }, // VANILLA: 40 DMG
@@ -256,7 +254,7 @@ namespace CalamityMod.Items
                 { ItemID.TitaniumSword, Do(UseTurn, DamageExact(192)) }, // VANILLA: 61 DMG
                 { ItemID.TitaniumTrident, Do(TrueMelee, DamageExact(144), ShootSpeedExact(6.5f)) }, // VANILLA: 48 DMG, 5 VEL
                 { ItemID.TopazStaff, Do(ManaExact(2)) }, // VANILLA: 5 MANA
-                { ItemID.ToxicFlask, Do(DamageExact(62), UseExact(33), ManaExact(20)) }, // VANILLA: 52 DMG, 45 UT, 30 MANA
+                { ItemID.ToxicFlask, Do(DamageExact(62), UseExact(33)) }, // VANILLA: 52 DMG, 45 UT
                 { ItemID.Toxikarp, Do(UseExact(9)) }, // VANILLA: 10 UT
                 { ItemID.Trident, Do(TrueMelee, DamageExact(20)) }, // VANILLA: 14 DMG
                 { ItemID.Trimarang, Do(DamageExact(24)) }, // VANILLA: 21 DMG
@@ -266,10 +264,9 @@ namespace CalamityMod.Items
                 { ItemID.TungstenBullet, Do(DamageExact(8)) }, // VANILLA: 9 DMG
                 { ItemID.TungstenShortsword, Do(TrueMelee, DamageExact(15)) }, // VANILLA: 10 DMG
                 { ItemID.UnholyArrow, Do(DamageExact(11)) }, // VANILLA: 12 DMG
-                { ItemID.UnholyTrident, Do(DamageRatio(0.91f), ManaRatio(0.78f)) }, // VANILLA: 88 DMG, 19 MANA. Uses ratios due to remix seed
+                { ItemID.UnholyTrident, Do(DamageRatio(0.91f)) }, // VANILLA: 88 DMG. Uses ratios due to remix seed
                 { ItemID.Uzi, Do(UseExact(8)) }, // VANILLA: 9 UT
                 { ItemID.ValkyrieYoyo, Do(DamageExact(48)) }, // VANILLA: 70 DMG. Has the same stats as Red's Throw
-                { ItemID.VenomStaff, Do(UseExact(27)) }, // VANILLA: 30 UT
                 { ItemID.WaspGun, Do(DamageExact(41)) }, // VANILLA: 31 DMG
                 { ItemID.WaterBolt, Do(DamageExact(23)) }, // VANILLA: 19 DMG
                 { ItemID.WhitePhaseblade, phaseblade },

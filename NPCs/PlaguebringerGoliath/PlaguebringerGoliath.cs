@@ -83,13 +83,13 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             }
         }
 
-        public static int StingerDamage = 28; // 112
-        public static int NukeDamage = 35; // 140; Also applies to GFB Peanuts and Gauss Nukes
+        public static int StingerDamage = 25; // 100
+        public static int NukeDamage = 30; // 120; Also applies to GFB Peanuts and Gauss Nukes
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 90; // 180
+            NPC.damage = 75; // 150
             NPC.npcSlots = 64f;
             NPC.width = 198;
             NPC.height = 198;
@@ -1378,7 +1378,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     target.AddBuff(BuffID.Poisoned, 480);
                     target.AddBuff(BuffID.Venom, 480);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 360);
+                target.AddBuff(ModContent.BuffType<Plague>(), 240);
             }
         }
     }

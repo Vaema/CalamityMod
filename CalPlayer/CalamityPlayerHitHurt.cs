@@ -284,6 +284,11 @@ namespace CalamityMod.CalPlayer
 
             if (damage == 10.0 && hitDirection == 0 && damageSource.SourceOtherIndex == 8)
             {
+                if (fishStocks && fishStockPower < 0)
+                {
+                    string year = DateTime.Now.ToString("yy");
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name, year));
+                }
                 if (alcoholPoisoning)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AlcoholBig" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
@@ -480,6 +485,9 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit NPC
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            if (Player.Calamity().coinDropMult != 1)
+                target.Calamity().coinDropMult = Player.Calamity().coinDropMult;
+
             if (target.HasBuff<SmashedEvil>())
             {
                 //This is essentially 10 AP, but independent of armor amount
@@ -595,7 +603,19 @@ namespace CalamityMod.CalPlayer
         {
             if (proj.npcProj || proj.trap)
                 return;
-                
+
+            //Add raider crit before hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance += Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance += VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance += RaidersTalisman.RaiderBonus;
+            }
+
+
             modifiers.CritDamage += critDamage;
 
             // All Calamity multipliers are added together to prevent insane exponential stacking
@@ -1342,11 +1362,11 @@ namespace CalamityMod.CalPlayer
 
             if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0)
             {
-                int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                int cooldownTime = RelicOfResilience.baseCooldown;
                 rOfResilienceCooldown = cooldownTime;
                 Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
                 SoundStyle youGotHit = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
-                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
+                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.5f }, Player.Center);
             }
 
             if (alchFlask)
@@ -1517,6 +1537,7 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
                 else
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, IconToUse);
+                Player.SetImmuneTimeForAllTypes(Player.longInvince ? 120 : 80);
             }
 
             //Dodge activation order is as follows:
@@ -1624,8 +1645,8 @@ namespace CalamityMod.CalPlayer
 
             #region Player Incoming Damage Multiplier (Increases)
             double damageMult = 1D;
-            if (dArtifact) // Dimensional Soul Artifact increases incoming damage by 15%.
-                damageMult += 0.15;
+            if (crushingEgo)
+                damageMult += 0.2;
             if (enraged) // Demonshade Enrage
                 damageMult += DemonshadeHelm.MultDamageTakenBoost;
 
@@ -2348,7 +2369,6 @@ namespace CalamityMod.CalPlayer
                             }
                         }
                     }
-
                     fleshTotemManaStorage = 0;
                 }
 
@@ -2877,8 +2897,9 @@ namespace CalamityMod.CalPlayer
                 defenseDamageRecoveryFrames = 0;
 
             // Directly add the base defense damage recovery time to whatever recovery time the player already has.
-            int baseTime = DefenseDamageBaseRecoveryTime * (moonshine ? 3 : 1);
+            int baseTime = DefenseDamageBaseRecoveryTime * (moonshine ? 3 : 1) * (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine) ? 3 : 1);
             totalDefenseDamageRecoveryFrames = defenseDamageRecoveryFrames + baseTime;
+
             if (totalDefenseDamageRecoveryFrames > DefenseDamageMaxRecoveryTime)
                 totalDefenseDamageRecoveryFrames = DefenseDamageMaxRecoveryTime;
 

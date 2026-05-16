@@ -188,6 +188,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PalladiumDrill, standardDrillTweaks },
                 { ProjectileID.PartyBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.PurpleCounterweight, counterweightTweaks },
+                { ProjectileID.PurpleLaser, Do(LocalIFrames(10 * 5)) }, // Laser Rifle, accounting for extra updates
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
                 { ProjectileID.RedCounterweight, counterweightTweaks },
@@ -213,7 +214,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(90)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
-                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3), TimeLeftExact(1920)) },
+                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 
@@ -491,7 +492,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PulseBolt, defaultIFrames },
                 { ProjectileID.PureSpray, defaultIFrames },
                 { ProjectileID.PurificationPowder, defaultIFrames },
-                { ProjectileID.PurpleLaser, defaultIFrames },
                 { ProjectileID.PygmySpear, defaultIFrames },
                 { ProjectileID.QuarterNote, defaultIFrames },
                 { ProjectileID.RainbowFlare, defaultIFrames },

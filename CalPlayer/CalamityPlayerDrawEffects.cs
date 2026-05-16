@@ -584,6 +584,9 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.vHex && drawInfo.shadow == 0f)
                 VulnerabilityHex.DrawEffects(drawInfo);
+
+            if (calamityPlayer.windChilled && drawInfo.shadow == 0f)
+                WindChilled.DrawEffects(drawInfo);
             #endregion
 
             if (calamityPlayer.fortunesFavor && drawInfo.shadow == 0f)

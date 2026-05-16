@@ -52,7 +52,6 @@ CrimulanSpike.DisplayName: Crimulan Spike
 CursedFire.DisplayName: Eye Fire
 DarkEnergyBall.DisplayName: Dark Energy
 DarkEnergyBall2.DisplayName: Dark Energy
-DarkOrb.DisplayName: Dark Orb
 DesertScourgeDiveSplash.DisplayName: Desert Scourge Dive Splash
 DesertScourgeSpit.DisplayName: Scourge Spit
 DestroyerCursedLaser.DisplayName: Cursed Laser
@@ -61,7 +60,6 @@ DeusMine.DisplayName: Astral Mine
 DeusRitualDrama.DisplayName: Deus Ritual Drama
 DoGBeam.DisplayName: Portal Laser
 DoGBeamPortal.DisplayName: Beam Portal
-DoGDeath.DisplayName: Death Beam
 DoGDeathBoom.DisplayName: Cosmic Explosion
 DoGFire.DisplayName: "[ceffect/dog:Faith Incinerator]"
 DoGLaserWalls.DisplayName: "[ceffect/dog:God's Bane Doombeam Array]"
@@ -70,7 +68,6 @@ DoGP1EndPortal.DisplayName: Portal
 DoGRiftCrack.DisplayName: DoG Distortion Crack
 DoGTeleportRift.DisplayName: DoG Distortion Rift
 DraedonSummonLaser.DisplayName: Giant Fuck-off Deathray of Doom
-DyingSun.DisplayName: Dying Sun
 EssenceDust.DisplayName: Cosmic Dust
 Flare.DisplayName: Flare
 FlareBomb.DisplayName: Flare Bomb
@@ -162,7 +159,6 @@ ShadowflameFireball.DisplayName: Shadowflame Fireball
 Shadowflamethrower.DisplayName: Shadowflame Breath
 SignusScythe.DisplayName: Scythe
 SirenSong.DisplayName: Musical Note
-SkyFlare.DisplayName: Sky Flare
 SkyFlareRevenge.DisplayName: Sky Flare
 SporeGasPlantera.DisplayName: Spore Gas
 StormWeaverFrostWaveTelegraph.DisplayName: Frost Wave Telegraph

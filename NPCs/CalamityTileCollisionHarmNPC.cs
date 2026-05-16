@@ -136,11 +136,9 @@ namespace CalamityMod.NPCs
                                 {
                                     Vector2 pulseVel = -safeVel;
                                     Particle pulse1 = new CustomSpark(npc.Center, pulseVel * 2, "CalamityMod/Particles/BloomCircle", false, (int)(23 * MathF.Pow(scale, 2)), 0.6f * MathF.Pow(scale, 2), Color.DodgerBlue, new Vector2(2f, 1f), shrinkSpeed: -0.1f / scale, noShrink: true, glowCenter: true, glowOpacity: 0.8f);
-                                    GeneralParticleHandler.SpawnParticle(pulse1);
-                                    pulse1.Pixelate = true;
+                                    GeneralParticleHandler.SpawnParticle(pulse1, true);
                                     Particle pulse2 = new CustomSpark(npc.Center, pulseVel, "CalamityMod/Particles/BloomRing", false, (int)(18 * MathF.Pow(scale, 2)), 0.5f * MathF.Pow(scale, 2), Color.Blue, new Vector2(4f, 0.7f), shrinkSpeed: -0.3f / scale, noShrink: true);
-                                    GeneralParticleHandler.SpawnParticle(pulse2);
-                                    pulse2.Pixelate = true;
+                                    GeneralParticleHandler.SpawnParticle(pulse2, true);
                                 }
 
 
