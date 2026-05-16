@@ -1,0 +1,365 @@
+﻿using System;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+
+namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
+{
+    public partial class HorribleHog
+    {
+        public void MainBehavior_EngageAnimation(Player target)
+        {
+            if (Timer >= 45f)
+            {
+                if (Timer == 45f)
+                    SoundEngine.PlaySound(SoundID.ForceRoarPitched, NPC.Center);
+
+                if (Timer % 10f == 0f)
+                {
+                    PulseRing hogRoar = new(NPC.Center, Vector2.Zero, Color.Red, 0f, 1.2f, 20);
+                    GeneralParticleHandler.SpawnParticle(hogRoar, true);
+                }
+            }
+
+            if (Timer >= 120f)
+                SwitchBehavior(specificAttack: BehaviorState.ChasePlayer);
+
+            NPC.velocity.X *= 0.9f;
+            NPC.spriteDirection = (target.Center.X > NPC.Center.X).ToDirectionInt();
+        }
+
+        public void MainBehavior_LaughADeadPlayer()
+        {
+            if (NPC.velocity.Y == 0f)
+            {
+                // LMFAOOOOOOOOOOOOOOOOOOOOOOOO
+                if (!SoundEngine.TryGetActiveSound(DeathLaughSoundSlot, out var _))
+                {
+                    DeathLaughSoundSlot = SoundEngine.PlaySound(CackleSound, NPC.Center, (activeSound) =>
+                    {
+                        activeSound.Position = NPC.Center;
+                        return AIState == (int)BehaviorState.LaughAtDeadPlayer;
+                    });
+                }
+
+                NPC.direction *= -1;
+                NPC.velocity.Y -= 4f;
+            }
+
+            SearchForTargetEveryFrame = true;
+            NPC.defense = 30;
+            NPC.damage = 0;
+            NPC.velocity.X *= 0.92f;
+
+            float targetAngle = NPC.direction < 0 ? MathHelper.ToRadians(50f) : MathHelper.ToRadians(-50f);
+            NPC.rotation = (NPC.velocity.Y != 0f) ? NPC.rotation.AngleLerp(targetAngle, 0.075f) : 0f;
+
+            if (Timer >= 130f || NPC.justHit)
+            {
+                BehaviorState nextAttack = NPC.HasValidTarget ? BehaviorState.ChasePlayer : BehaviorState.Idle;
+                SwitchBehavior(specificAttack: nextAttack);
+            }
+        }
+
+        public void MainBehavior_DespawnAnimation()
+        {
+            // Jump into the ground and dig away.
+            if (Timer < DigTowardsTarget_PreJumpTime)
+            {
+                NPC.velocity.X *= 0.8f;
+                HorizontalShakeStrength = Utils.Remap(Timer, 0, DigTowardsTarget_PreJumpTime - 5, 0f, 6f, true);
+                SetSquashVectors(new Vector2(1.24f, 0.84f));
+            }
+
+            if (Timer == DigTowardsTarget_PreJumpTime)
+            {
+                NPC.velocity.Y -= 6f;
+                NPC.velocity.X += 4f * NPC.direction;
+                HorizontalShakeStrength = 0f;
+
+                SoundEngine.PlaySound(RetreatSound, NPC.Center);
+                SetSquashVectors();
+            }
+
+            if (Timer > DigTowardsTarget_PreJumpTime)
+            {
+                if (NPC.velocity.Y == 0f)
+                {
+                    int dustAmt = Main.rand.Next(10, 15);
+                    for (int i = 0; i < dustAmt; i++)
+                    {
+                        Vector2 dustPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                        Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, -2f));
+                        Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                    }
+
+                    int dustCloudAmt = Main.rand.Next(9, 13);
+                    for (int i = 0; i < dustCloudAmt; i++)
+                    {
+                        Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                        Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-2f, -1f));
+                        Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
+                        float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                        TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(1.2f, 1.4f), 1f, Main.rand.Next(45, 55), rotationSpeed);
+                        GeneralParticleHandler.SpawnParticle(dustCloud, true);
+                    }
+
+                    CalamityUtils.AddScreenshakeAt(NPC.Center, 5f);
+                    SoundEngine.PlaySound(SoundID.Item70, NPC.Center);
+
+                    NPC.active = false;
+                    NPC.netUpdate = true;
+                }
+            }
+
+            float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
+            NPC.rotation = idealRotation;
+        }
+
+        public void MainBehavior_DeathAnimation()
+        {
+            if (Timer == 240f)
+            {
+                // Create smoke and throw up a big green "5000" on death just like the pigs in Angry Birds
+                for (int i = 0; i < 17; i++)
+                {
+                    int goreType = Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1);
+                    Gore.NewGorePerfect(NPC.position, Main.rand.NextVector2Circular(2f, 2f), goreType);
+                }
+
+                CombatText.NewText(NPC.Hitbox, Color.LawnGreen, 5000);
+                SoundEngine.PlaySound(NPC.DeathSound, NPC.Center);
+
+                NPC.life = 0;
+                NPC.checkDead();
+                NPC.HitEffect();
+                NPC.netUpdate = true;
+            }
+
+            NPC.damage = 0;
+            NPC.dontTakeDamage = true;
+
+            if (NPC.velocity.Y == 0f)
+                NPC.velocity.X *= 0.96f;
+        }
+
+        public void MainBehavior_Idle(Player target)
+        {
+            bool targetIsVisible = target.Distance(NPC.Center) <= EngageDistance && Collision.CanHit(NPC, target);
+            bool wasHitByNearestTarget = NPC.HasValidTarget && NPC.justHit;
+            if (targetIsVisible || wasHitByNearestTarget)
+            {
+                SwitchBehavior(specificAttack: BehaviorState.EngageAnimation);
+                RunEyeGlintEffect(0.4f);
+            }
+
+            // Standing still, occasionally switch directions.
+            if (LocalAIState == 0f)
+            {
+                //if (Timer > 0f && Timer % 45f == 0f && Main.rand.NextBool(12))
+                //{
+                //    Timer = 0f;
+                //    LocalAIState = 1f;
+                //    NPC.netUpdate = true;
+                //}
+
+                if (NPC.velocity.Y == 0f)
+                    NPC.velocity.X *= 0.8f;
+
+                if (Timer % 45f == 0f && Main.rand.NextBool(4))
+                    NPC.direction *= -1;
+            }
+
+            // Walking around aimlessly.
+            if (LocalAIState == 1f)
+            {
+                if (Timer > 0f && Timer % 45f == 0f && Main.rand.NextBool(6))
+                {
+                    Timer = 0f;
+                    LocalAIState = 0f;
+                    NPC.netUpdate = true;
+                }
+
+                if (MathF.Abs(NPC.velocity.X) < Idle_MaxSpeed)
+                    NPC.velocity.X += Idle_MaxAcceleration * NPC.direction;
+
+                bool shouldJump = NPC.collideX || IsNPCApproachingHole();
+                if (NPC.velocity.Y == 0f && shouldJump)
+                    NPC.velocity.Y -= 6f;
+            }
+
+            // Idle sounds.
+            if (NPC.soundDelay == 0f && Main.rand.NextBool(250))
+            {
+                SetSquashVectors(squashVector: new Vector2(1.24f, 0.84f));
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                NPC.soundDelay = Main.rand.Next(30, 45);
+            }
+
+            NPC.chaseable = false;
+            SearchForTargetEveryFrame = true;
+        }
+
+        public void MainBehavior_DigTowardsTarget(Player target)
+        {
+            // Initial animation. 
+            if (LocalAIState == 0f)
+            {
+                if (Timer < DigTowardsTarget_PreJumpTime)
+                {
+                    NPC.velocity.X *= 0.8f;
+                    HorizontalShakeStrength = Utils.Remap(Timer, 0, DigTowardsTarget_PreJumpTime - 5, 0f, 6f, true);
+                    SetSquashVectors(new Vector2(1.24f, 0.84f));
+                }
+
+                if (Timer == DigTowardsTarget_PreJumpTime)
+                {
+                    NPC.velocity.Y -= 6f;
+                    HorizontalShakeStrength = 0f;
+                    SetSquashVectors(squashVector: new Vector2(0.84f, 1.24f));
+                    SoundEngine.PlaySound(JumpSound, NPC.Center);
+                }
+
+                if (Timer > DigTowardsTarget_PreJumpTime)
+                {
+                    if (NPC.velocity.Y == 0f)
+                    {
+                        int dustAmt = Main.rand.Next(10, 15);
+                        for (int i = 0; i < dustAmt; i++)
+                        {
+                            Vector2 dustPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                            Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, -2f));
+                            Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                        }
+
+                        int dustCloudAmt = Main.rand.Next(9, 13);
+                        for (int i = 0; i < dustCloudAmt; i++)
+                        {
+                            Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                            Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-2f, -1f));
+                            Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
+                            float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                            TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(1.2f, 1.4f), 1f, Main.rand.Next(45, 55), rotationSpeed);
+                            GeneralParticleHandler.SpawnParticle(dustCloud, true);
+                        }
+
+                        SoundEngine.PlaySound(SoundID.Item70, NPC.Center);
+                        LocalAIState = 1f;
+                        Timer = 0f;
+                        SetSquashVectors();
+                        NPC.netUpdate = true;
+                    }
+                }
+            }
+
+            // Search for a position around the player to emerge.
+            if (LocalAIState == 1f)
+            {
+                NPC.damage = 0;
+                NPC.dontTakeDamage = true;
+                NPC.Opacity = 0f;
+
+                // Find closest spot around player.
+                if (Timer <= DigTowardsTarget_FindSuitablePositionTime)
+                {
+                    DiggingEmergeSpot = FindSuitableGround(target.Bottom.ToTileCoordinates()).ToWorldCoordinates();
+                }
+                else
+                {
+                    float distanceInterpolant = Utils.GetLerpValue(800f, 200f, target.Distance(DiggingEmergeSpot), true);
+                    float screenshake = Utils.Remap(Timer, DigTowardsTarget_FindSuitablePositionTime, DigTowardsTraget_MaxDiggingTime, 1f, 4f, true) * distanceInterpolant;
+                    target.SetScreenshake(screenshake);
+                }
+
+                if (Main.rand.NextBool(3))
+                {
+                    int dustAmt = Main.rand.Next(1, 3);
+                    for (int i = 0; i < dustAmt; i++)
+                    {
+                        Vector2 dustPosition = DiggingEmergeSpot + Main.rand.NextVector2Circular(NPC.width, 0f);
+                        Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-5f, -3f));
+                        Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                    }
+                }
+
+                int dustCloudAmt = Main.rand.Next(1, 3);
+                for (int i = 0; i < dustCloudAmt; i++)
+                {
+                    Vector2 spawnPosition = DiggingEmergeSpot + Main.rand.NextVector2Circular(NPC.width, 0f);
+                    Vector2 velocity = new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-5f, -3f));
+                    Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
+                    float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                    TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(0.6f, 0.8f), 1f, Main.rand.Next(25, 45), rotationSpeed);
+                    GeneralParticleHandler.SpawnParticle(dustCloud, true, Enums.GeneralDrawLayer.BeforeSolidTiles);
+                }
+
+                // Play digging sounds.
+                if (Timer <= DigTowardsTarget_FindSuitablePositionTime)
+                {
+                    if (!SoundEngine.TryGetActiveSound(DiggingSoundSlot, out _))
+                    {
+                        DiggingSoundSlot = SoundEngine.PlaySound(DiggingSlowSound, NPC.Center, (activeSound) =>
+                        {
+                            activeSound.Position = DiggingEmergeSpot;
+                            return AIState == (int)BehaviorState.DigTowardsTarget && Timer <= 120;
+                        });
+                    }
+                }
+                else
+                {
+                    if (!SoundEngine.TryGetActiveSound(DiggingSoundSlot, out _))
+                    {
+                        DiggingSoundSlot = SoundEngine.PlaySound(DiggingFastSound, NPC.Center, (activeSound) =>
+                        {
+                            activeSound.Position = DiggingEmergeSpot;
+                            activeSound.Volume = 1.5f;
+                            return AIState == (int)BehaviorState.DigTowardsTarget && Timer >= 120 && Timer <= 180;
+                        });
+                    }
+                }
+
+                // Jump out.
+                if (Timer >= DigTowardsTraget_MaxDiggingTime)
+                {
+                    CalamityUtils.AddScreenshakeAt(DiggingEmergeSpot, 4f);
+                    SoundEngine.PlaySound(SoundID.Item70, DiggingEmergeSpot);
+
+                    NPC.Center = DiggingEmergeSpot;
+                    NPC.velocity = CalamityUtils.GetProjectilePhysicsFiringVelocity(NPC.Center, target.Center, NPC.gravity, 7f) * new Vector2(1f, 1.45f);
+                    SpawnJumpParticles();
+
+                    LocalAIState = 2f;
+                    Timer = 0f;
+                    NPC.netUpdate = true;
+                }
+
+                AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 0f, 0.15f);
+                NPC.rotation = NPC.rotation.AngleLerp(0f, 0.075f);
+                SpriteRotation = SpriteRotation.AngleLerp(0f, 0.075f);
+            }
+
+            // Land after jumping and go back to attacking.
+            if (LocalAIState == 2f)
+            {
+                NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 1f, 0.085f);
+                if (NPC.velocity.Y == 0f && Timer > 2f)
+                {
+                    RunEyeGlintEffect(0.4f);
+                    SwitchBehavior(specificAttack: BehaviorState.ChasePlayer);
+                }
+
+                float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
+                NPC.rotation = idealRotation;
+                NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
+            }
+
+            DigTimer = 0f;
+            SearchForTargetEveryFrame = true;
+        }
+    }
+}

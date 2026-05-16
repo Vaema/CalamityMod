@@ -1,4 +1,4 @@
-﻿using CalamityMod.NPCs.NormalNPCs;
+﻿using CalamityMod.NPCs.NormalNPCs.HorribleHog;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;

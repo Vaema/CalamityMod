@@ -18,6 +18,8 @@ namespace CalamityMod.Projectiles.Enemy
         private static Asset<Texture2D> ZombieArmTexture;
         private static Asset<Texture2D> BackglowTexture;
 
+        private static SoundStyle ZombieEmergeSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogZombieEmerge");
+
         public List<int> Zombies = new()
         {
             NPCID.Zombie,
@@ -165,8 +167,7 @@ namespace CalamityMod.Projectiles.Enemy
                 GeneralParticleHandler.SpawnParticle(dustCloud, true);
             }
 
-            SoundEngine.PlaySound(SoundID.Item70, Projectile.Center);
-            SoundEngine.PlaySound(SoundID.ZombieMoan, Projectile.Center);
+            SoundEngine.PlaySound(ZombieEmergeSound, Projectile.Center);
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)

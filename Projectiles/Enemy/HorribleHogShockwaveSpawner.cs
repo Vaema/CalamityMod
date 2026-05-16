@@ -12,17 +12,19 @@ namespace CalamityMod.Projectiles.Enemy
     {
         public int OwnerIndex;
 
-        public ref float Timer => ref Projectile.ai[0];
+        public int ShockwaveCounter;
 
-        public ref float SpawnInterval => ref Projectile.ai[1];
+        public int Timer;
 
-        public ref float MaxShockwaves => ref Projectile.ai[2];
+        public ref float SpawnInterval => ref Projectile.ai[0];
 
-        public ref float ShockwaveCounter => ref Projectile.localAI[0];
+        public ref float MaxShockwaves => ref Projectile.ai[1];
 
-        public ref float Direction => ref Projectile.localAI[1];
+        public ref float Direction => ref Projectile.ai[2];
 
-        public ref float MaxHeightMultiplier => ref Projectile.localAI[2];
+        public ref float MinHeightMultiplier => ref Projectile.localAI[0];
+
+        public ref float MaxHeightMultiplier => ref Projectile.localAI[1];
 
         public new string LocalizationCategory => "Projectiles.Enemy";
 
@@ -41,11 +43,15 @@ namespace CalamityMod.Projectiles.Enemy
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(OwnerIndex);
+            writer.Write(ShockwaveCounter);
+            writer.Write(Timer);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             OwnerIndex = reader.ReadInt32();
+            ShockwaveCounter = reader.ReadInt32();
+            Timer = reader.ReadInt32();
         }
 
         public override bool ShouldUpdatePosition() => false;
@@ -101,8 +107,8 @@ namespace CalamityMod.Projectiles.Enemy
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    float heightMultiplier = MathHelper.Lerp(1f, MaxHeightMultiplier, ShockwaveCounter / MaxShockwaves);
-                    Projectile.NewProjectile(Projectile.GetItemSource_FromThis(), shockwaveSpawnPosition, Vector2.Zero, ModContent.ProjectileType<HorribleHogShockwave>(), Projectile.damage, Projectile.knockBack, ai1: heightMultiplier, ai2: OwnerIndex);
+                    float shockwaveHeight = MathHelper.Lerp(MinHeightMultiplier, MaxHeightMultiplier, ShockwaveCounter / MaxShockwaves);
+                    Projectile.NewProjectile(Projectile.GetItemSource_FromThis(), shockwaveSpawnPosition, Vector2.Zero, ModContent.ProjectileType<HorribleHogShockwave>(), Projectile.damage, Projectile.knockBack, ai1: shockwaveHeight, ai2: OwnerIndex);
                 }
 
                 ShockwaveCounter++;

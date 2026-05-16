@@ -2,6 +2,7 @@
 using CalamityMod.Effects;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.NormalNPCs.HorribleHog;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -357,7 +358,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     // Reminder to do short transformation animations for these later.
                     if (projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder)
                     {
-                        npc.Transform(ModContent.NPCType<HorribleHog>());
+                        npc.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
                     }
                     else if (projectile.type == ProjectileID.PurificationPowder)
                     {

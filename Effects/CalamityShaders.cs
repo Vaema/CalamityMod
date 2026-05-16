@@ -260,6 +260,9 @@ namespace CalamityMod.Effects
 
         // Distorts a texture using a sine wave of specified amplitude and frequency either vertically or horizontally.
         internal static Asset<Effect> SineWaveDistortionShader;
+
+        // The swirling aura effect seen around Horrible Hog while its idling.
+        internal static Asset<Effect> HorribleHogAuraShader;
         #endregion
 
         #region Big E's Shaders
@@ -525,6 +528,9 @@ namespace CalamityMod.Effects
 
             SineWaveDistortionShader = LoadShader("SineWaveDistortionShader");
             RegisterMiscShader(SineWaveDistortionShader, "SinePass", "SineWaveDistortion");
+
+            HorribleHogAuraShader = LoadShader("HorribleHogAuraShader");
+            RegisterMiscShader(HorribleHogAuraShader, "ScaryAuraPass", "HorribleHogAura");
             #endregion
 
             #region Loading Big E's Shaders
