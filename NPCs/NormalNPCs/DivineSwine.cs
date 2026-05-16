@@ -11,6 +11,7 @@ using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions.Food;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Utilities.Daybreak;
@@ -34,6 +35,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public enum BehaviorState
         {
+            PiggyTransformation = -1,
             IdleAndFly,
             OfferingAccepted,
             OfferingFailed
@@ -192,7 +194,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             Lighting.AddLight(NPC.Center, DivineYellow.ToVector3() * NPC.scale * 0.825f);
 
-            if (AIState != (int)BehaviorState.OfferingAccepted && AIState != (int)BehaviorState.OfferingFailed)
+            if (AIState != (int)BehaviorState.PiggyTransformation && AIState != (int)BehaviorState.OfferingAccepted && AIState != (int)BehaviorState.OfferingFailed)
             {
                 AdditionalBrightness = MathHelper.Lerp(AdditionalBrightness, 0f, 0.05f);
                 GlowingVisualScale = MathHelper.Lerp(GlowingVisualScale, 1f, 0.05f);
@@ -294,7 +296,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         float sparkleScale = Utils.Remap(Timer, 0f, 180f, 0.2f, 0.8f, true);
 
                         QuickSparkleParticle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor, sparkleScale * Main.rand.NextFloat(0.5f, 1f), Main.rand.Next(20, 30));
-                        GeneralParticleHandler.QueueParticleForNextFrame(sparkle, true);
+                        GeneralParticleHandler.SpawnParticle(sparkle, true);
                     }
                 }
 
@@ -435,7 +437,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     Color sparkleColor = Utils.SelectRandom(Main.rand, drawColorBlue, drawColorYellow);
 
                     QuickSparkleParticle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor, Main.rand.NextFloat(0.2f, 0.3f), Main.rand.Next(30, 45));
-                    GeneralParticleHandler.QueueParticleForNextFrame(sparkle, true);
+                    GeneralParticleHandler.SpawnParticle(sparkle, true);
                 }
             }
         }
@@ -546,7 +548,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                         if (player.talkNPC != npc.whoAmI && !player.tileInteractionHappened)
                         {
-                            npc.ModNPC<DivineSwine>().AcceptOffering(TryOfferingPlatinumToSwine());
+                            bool offeringState = TryOfferingPlatinumToSwine();
+                            npc.ModNPC<DivineSwine>().AcceptOffering(offeringState);
+                            if (Main.netMode == NetmodeID.MultiplayerClient)
+                                DivineSwineOfferingPacket.Send(npc.ModNPC<DivineSwine>(), offeringState);
                         }
                     }
                 }

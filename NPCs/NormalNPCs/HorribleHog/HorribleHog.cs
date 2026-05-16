@@ -37,6 +37,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         public enum BehaviorState
         {
             // Transitional behaviors.
+            PiggyTransformation = -5,
             EngageAnimation = -4,
             LaughAtDeadPlayer = -3,
             DespawnAnimation = -2,

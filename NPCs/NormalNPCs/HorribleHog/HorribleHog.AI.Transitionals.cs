@@ -49,14 +49,14 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             }
 
             SearchForTargetEveryFrame = true;
-            NPC.defense = 30;
+            NPC.defense = 60;
             NPC.damage = 0;
             NPC.velocity.X *= 0.92f;
 
             float targetAngle = NPC.direction < 0 ? MathHelper.ToRadians(50f) : MathHelper.ToRadians(-50f);
             NPC.rotation = (NPC.velocity.Y != 0f) ? NPC.rotation.AngleLerp(targetAngle, 0.075f) : 0f;
 
-            if (Timer >= 130f || NPC.justHit)
+            if (Timer >= 130f)
             {
                 BehaviorState nextAttack = NPC.HasValidTarget ? BehaviorState.ChasePlayer : BehaviorState.Idle;
                 SwitchBehavior(specificAttack: nextAttack);

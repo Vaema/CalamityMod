@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CalamityMod.Particles;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -74,6 +75,25 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.rotation += Projectile.velocity.X * 0.035f;
             if (Projectile.velocity.Y < 8f)
                 Projectile.velocity.Y += 0.125f;
+
+            int vomitAmt = Main.rand.Next(1, 3);
+            for (int i = 0; i < vomitAmt; i++)
+            {
+                Vector2 velocity = Projectile.oldVelocity * Main.rand.NextFloat(-0.8f, -0.6f);
+                int dustType = Utils.SelectRandom(Main.rand, DustID.ToxicBubble, DustID.GreenBlood, DustID.Blood);
+                int dust = Dust.NewDust(Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height), 1, 1, dustType, velocity.X, velocity.Y, Scale: Main.rand.NextFloat(1f, 1.4f));
+                Main.dust[dust].noGravity = true;
+            }
+
+            if (Main.rand.NextBool(6))
+            {
+                Vector2 velocity = Projectile.oldVelocity.RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(-1.8f, -0.6f) * Projectile.direction;
+                Color color = Color.Lerp(Color.DarkOliveGreen, Color.Green, Main.rand.NextFloat());
+                float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                TimedSmokeParticle vomit = new(Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height), velocity, color, color, Main.rand.NextFloat(0.4f, 0.6f), Main.rand.NextFloat(0.8f, 1f), Main.rand.Next(25, 35), rotationSpeed);
+                GeneralParticleHandler.SpawnParticle(vomit, false, Enums.GeneralDrawLayer.BeforeProjectiles);
+            }
         }
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)

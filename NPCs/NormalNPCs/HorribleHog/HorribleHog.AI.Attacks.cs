@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -714,6 +716,16 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                             if (projectileType == ModContent.ProjectileType<HorribleHogVomitBomb>())
                                 Main.projectile[vomit].ai[1] = NPC.whoAmI;
                         }
+                    }
+
+                    int vomitAmt = Main.rand.Next(12, 19);
+                    for (int i = 0; i < vomitAmt; i++)
+                    {
+                        Vector2 velocity = CalamityUtils.GetProjectilePhysicsFiringVelocity(NPC.Center, target.Center + new Vector2(Main.rand.NextFloat(-16f, 16f), 0f), 0.125f, Main.rand.NextFloat(5f, 8f));
+                        velocity.X *= Main.rand.NextFloat(1f, 2f);
+                        int dustType = Utils.SelectRandom(Main.rand, DustID.ToxicBubble, DustID.GreenBlood, DustID.Blood);
+
+                        Dust.NewDust(NPC.Center, 1, 1, dustType, velocity.X, velocity.Y, Scale: Main.rand.NextFloat(1.8f, 2.4f));                    
                     }
 
                     SoundEngine.PlaySound(VomitSound with { Volume = 1.3f }, NPC.Center);

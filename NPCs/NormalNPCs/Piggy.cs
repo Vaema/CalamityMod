@@ -3,9 +3,14 @@ using CalamityMod.Effects;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.NormalNPCs.HorribleHog;
+using CalamityMod.Particles;
+using CalamityMod.Systems.Graphic.PixelationSystem;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -21,13 +26,42 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public enum BehaviorState
         {
+            DivineSwineTransformation = -2,
+            HorribleHogTransformation = -1,
             IdleAndWalk,
             Running,
         }
 
+        private static Asset<Texture2D> SpotlightTexture;
+        private static Asset<Texture2D> BloomCircle;
+        private static Asset<Texture2D> BloomFlare;
+        private static Asset<Texture2D> ShineFlare;
+
         private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/Piggy/PiggyIdle", 3);
 
+        private static SoundStyle DivineSwine_CoinFailSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineCoinFail", 3);
+        private static SoundStyle DivineSwine_SwineSpeakLoopingSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineNearbyLoop")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0,
+        };
+
+        private static SoundStyle HorribleHog_CackleSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogCackle");
+        private static SoundStyle HorribleHog_IdleSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogIdle", 2)
+        {
+            PitchVariance = 0.25f,
+        };
+        private static SoundStyle HorribleHog_DevilsTongueLoopingSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogNearbyLoop")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0
+        };
+
         public Vector2 SquashVector;
+
+        public SlotId NearbySoundSlot;
 
         public static float MaxAcceleration_Walking => 0.035f;
         public static float MaxAcceleration_Running => 0.085f;
@@ -39,6 +73,17 @@ namespace CalamityMod.NPCs.NormalNPCs
         public ref float AIState => ref NPC.ai[1];
 
         public ref float LocalAIState => ref NPC.ai[2];
+
+        public override void Load()
+        {
+            if (Main.dedServ)
+                return;
+
+            SpotlightTexture = ModContent.Request<Texture2D>("Terraria/Images/Extra_60");
+            BloomCircle = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            BloomFlare = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BloomFlare");
+            ShineFlare = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ShineFlare");
+        }
 
         public override void SetStaticDefaults()
         {
@@ -82,22 +127,24 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Force bestiary unlock
-            //if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
-            //{
-            //    Main.BestiaryTracker.Kills.RegisterKill(NPC);
-            //}
-
             if (NPC.direction == 0)
                 NPC.direction = Utils.SelectRandom(Main.rand, -1, 1);
 
             switch ((BehaviorState)AIState)
             {
+                case BehaviorState.DivineSwineTransformation:
+                    MainBehavior_DivineSwineTransformation();
+                    break;
+
+                case BehaviorState.HorribleHogTransformation:
+                    MainBehavior_HorribleHogTransformation();
+                    break;
+
                 case BehaviorState.IdleAndWalk:
                     MainBehavior_IdleAndWalk();
                     break;
 
-                case BehaviorState.Running:
+               case BehaviorState.Running:
                     MainBehavior_Running();
                     break;
             }
@@ -108,7 +155,115 @@ namespace CalamityMod.NPCs.NormalNPCs
             Timer++;
         }
 
-        private void MainBehavior_IdleAndWalk()
+        public void MainBehavior_DivineSwineTransformation()
+        {
+            NPC.velocity.X *= 0.9f;
+            NPC.rotation = 0f;
+            if (!SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
+                NearbySoundSlot = SoundEngine.PlaySound(DivineSwine_SwineSpeakLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+
+            float lightSpawnDistance = MathHelper.Lerp(52f, 84f, Timer / 180f);
+            int lightAmt = Main.rand.Next(1, 2);
+            for (int i = 0; i < lightAmt; i++)
+            {
+                Vector2 lightSpawnPosition = NPC.Center + Main.rand.NextVector2Unit() * lightSpawnDistance * Main.rand.NextFloat(0.7f, 1f);
+                Vector2 lightVelocity = (NPC.Center - lightSpawnPosition).SafeNormalize(Vector2.UnitY) * Main.rand.NextFloat(3f, 4f);
+                float lightScale = Utils.Remap(Timer, 0f, 180f, 0.3f, 0.9f, true);
+
+                SquishyLightParticle meatLight = new(lightSpawnPosition, lightVelocity, lightScale, Color.White, Main.rand.Next(30, 45));
+                GeneralParticleHandler.SpawnParticle(meatLight, true);
+            }
+
+            int sparkleSpawnRate = (int)Utils.Remap(Timer, 0f, 180f, 45, 5, true);
+            if (Main.rand.NextBool(sparkleSpawnRate))
+            {
+                int sparkleAmt = Main.rand.Next(1, 3);
+                for (int i = 0; i < sparkleAmt; i++)
+                {
+                    Vector2 spawnPosition = NPC.Center + Main.rand.NextVector2Unit() * lightSpawnDistance * Main.rand.NextFloat(0.8f, 1.2f);
+                    Color drawColorBlue = Color.Lerp(new Color(44, 166, 247), new Color(123, 197, 247), Main.rand.NextFloat());
+                    Color drawColorYellow = Color.Lerp(new Color(249, 197, 42), new Color(249, 221, 142), Main.rand.NextFloat());
+                    Color sparkleColor = Utils.SelectRandom(Main.rand, drawColorBlue, drawColorYellow);
+                    float sparkleScale = Utils.Remap(Timer, 0f, 180f, 0.2f, 0.8f, true);
+
+                    QuickSparkleParticle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor, sparkleScale * Main.rand.NextFloat(0.5f, 1f), Main.rand.Next(20, 30));
+                    GeneralParticleHandler.SpawnParticle(sparkle, true);
+                }
+            }
+
+            if (Timer >= 30f && Main.rand.NextBool(10))
+            {
+                Vector2 spawnPosition = NPC.Center + new Vector2(Main.rand.NextFloat(-16f, 16f), Main.rand.NextFloat(-212f, -154f));
+                Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(0.25f, 0.75f);
+                Color featherColor = Color.Lerp(Color.Lerp(new Color(27, 103, 155), new Color(83, 184, 255), Main.rand.NextFloat()), new Color(221, 253, 255), Main.rand.NextFloat(0.4f));
+                float scale = Main.rand.NextFloat(0.8f, 1f);
+                
+                FeatherParticle feather = new(spawnPosition, velocity, featherColor, scale, Main.rand.Next(75, 90), null, 0.9f, false, false, true);
+                GeneralParticleHandler.SpawnParticle(feather, manualDrawLayerOverride: Enums.GeneralDrawLayer.BeforeNPCs);
+            }
+
+            if (Timer >= 180f)
+            {
+                CustomPulse lightRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 2f, 75);
+                GeneralParticleHandler.SpawnParticle(lightRing);
+
+                BloomParticle bloom = new(NPC.Center, Vector2.Zero, Color.White, 0f, 2f, 125);
+                for (int i = 0; i < 3; i++)
+                    GeneralParticleHandler.SpawnParticle(bloom);
+
+                for (int i = 0; i < 25; i++)
+                {
+                    QuickSparkleParticle sparkle = new(NPC.Center, Main.rand.NextVector2Circular(15f, 15f), Color.White, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(45, 60));
+                    SquishyLightParticle light = new(NPC.Center, Main.rand.NextVector2Circular(5f, 5f), Main.rand.NextFloat(0.6f, 0.8f), Color.White, Main.rand.Next(45, 60));
+                    GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? sparkle : light, true);
+                }
+
+                SoundEngine.PlaySound(DivineSwine_CoinFailSound, NPC.Center);
+                if (SoundEngine.TryGetActiveSound(NearbySoundSlot, out var activeSound))
+                    activeSound.Stop();
+
+                NPC.Transform(ModContent.NPCType<DivineSwine>());
+                NPC.netUpdate = true;
+            }
+        }
+
+        public void MainBehavior_HorribleHogTransformation()
+        {
+            // 16MAY2026: fryzahh
+            // Needs to be changed once Horrible Hog's spritesheet is finished. If it is not before this PR is merged please notify me immediately.
+
+            NPC.velocity.X *= 0.9f;
+            NPC.rotation = 0f;
+            if (!SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
+                NearbySoundSlot = SoundEngine.PlaySound(HorribleHog_DevilsTongueLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+
+            float smokeOpacity = Utils.GetLerpValue(0f, 45f, Timer, true);
+            int circlingSmokeAmount = Main.rand.Next(2, 5);
+            for (int i = 0; i < circlingSmokeAmount; i++)
+            {
+                Vector2 spawnDistanceVariance = Main.rand.NextVector2Circular(50f, 50f);
+                Vector2 spawnPosition = NPC.Center + spawnDistanceVariance;
+                Vector2 velocity = spawnDistanceVariance.SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(2f, 5f);
+                Color color = Color.Lerp(new(30, 30, 30), Color.Crimson, Main.rand.Next(2));
+                int lifetime = Main.rand.Next(30, 45);
+                float scale = Main.rand.NextFloat(1f, 1.2f);
+
+                HeavySmokeParticle circlingSmoke = new(spawnPosition, velocity, color, lifetime, scale, smokeOpacity, 0.01f, affectedByLight: true);
+                GeneralParticleHandler.SpawnParticle(circlingSmoke, true);
+            }
+
+            if (Timer >= 180f)
+            {
+                SoundEngine.PlaySound(HorribleHog_CackleSound, NPC.Center);
+                if (SoundEngine.TryGetActiveSound(NearbySoundSlot, out var activeSound))
+                    activeSound.Stop();
+
+                NPC.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
+                NPC.netUpdate = true;
+            }
+        }
+
+        public void MainBehavior_IdleAndWalk()
         {
             // Idling.
             if (LocalAIState == 0f)
@@ -177,7 +332,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.075f);
         }
 
-        private void MainBehavior_Running()
+        public void MainBehavior_Running()
         {
             // Run in a random direction until collision with a wall is made.
             if (LocalAIState == 0f)
@@ -238,6 +393,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.075f);
         }
 
+        public void TransformIntoVariant(int type)
+        {
+            if (type == ModContent.NPCType<DivineSwine>())
+                AIState = (int)BehaviorState.DivineSwineTransformation;
+            if (type == ModContent.NPCType<HorribleHog.HorribleHog>())
+                AIState = (int)BehaviorState.HorribleHogTransformation;
+
+            LocalAIState = 0f;
+            Timer = 0f;
+            NPC.netUpdate = true;
+        }
+
         private bool HoleBelow()
         {
             int npcWidthInTiles = NPC.width / 16;
@@ -259,12 +426,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             return true;
         }
 
+        private bool NearbySoundCallbackMethod(ActiveSound soundInstance)
+        {
+            float interpolant = Utils.GetLerpValue(0f, 75f, Timer, true) * Utils.GetLerpValue(180f, 130f, Timer, true);
+            soundInstance.Position = NPC.Center;
+            soundInstance.Volume = interpolant;
+            return NPC.active;
+        }
+
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (spawnInfo.Player.Calamity().ZoneSulphur || spawnInfo.Player.Calamity().ZoneSunkenSea)
-            {
                 return 0f;
-            }
             return SpawnCondition.TownCritter.Chance * 0.005f;
         }
 
@@ -336,7 +509,52 @@ namespace CalamityMod.NPCs.NormalNPCs
             Vector2 scale = SquashVector * NPC.scale;
             SpriteEffects spriteEffects = NPC.spriteDirection < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             spriteBatch.Draw(baseTexture, NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, spriteEffects, 0f);
+
+            spriteBatch.End(out var snapshot);
+
+            // Draw the transformation visuals when needed.
+            if (AIState == (int)BehaviorState.DivineSwineTransformation)
+                Draw_DivineSwineTransformationVisuals(spriteBatch, screenPos);
+
+            spriteBatch.Begin(snapshot);
             return false;
+        }
+
+        private void Draw_DivineSwineTransformationVisuals(SpriteBatch spriteBatch, Vector2 screenPos)
+        {
+            Vector2 baseDrawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
+            float interpolant = CalamityUtils.SineOutEasing(Utils.GetLerpValue(0f, 120f, Timer, true), 1);
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
+            // Spotlight from heaven.
+            float spotlightInterpolant = CalamityUtils.SineInOutEasing(Utils.GetLerpValue(0f, 30f, Timer, true) * Utils.GetLerpValue(180f, 150f, Timer, true), 1);
+            Vector2 spotlightDrawPosition = baseDrawPosition + Vector2.UnitY * -84f;
+            Vector2 spotlightScale = new Vector2(1.3f * spotlightInterpolant, 1.6f);
+            Vector2 spotlightOrigin = new Vector2(SpotlightTexture.Width() * 0.5f, SpotlightTexture.Height());
+            spriteBatch.Draw(SpotlightTexture.Value, spotlightDrawPosition, null, Color.White with { A = 0 } * spotlightInterpolant, 0f, spotlightOrigin, spotlightScale, SpriteEffects.FlipVertically, 0f);
+            
+            spriteBatch.End();
+
+            var pixelationLease = RenderTargetPool.Shared.Rent(Main.graphics.GraphicsDevice, Main.screenWidth / 2, Main.screenHeight / 2, RenderTargetDescriptor.Default);
+            using (pixelationLease.Scope(clearColor: Color.Transparent))
+            {
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, PixelationManager.PixelationMatrix);
+
+                // Typical bloom effects.
+                float flareRotation = (float)(Main.timeForVisualEffects / 150f) + NPC.whoAmI;
+                spriteBatch.Draw(BloomFlare.Value, baseDrawPosition, null, Color.White with { A = 0 } * interpolant * 0.5f, flareRotation, BloomFlare.Size() * 0.5f, 0.2f * interpolant, 0, 0f);
+                spriteBatch.Draw(BloomFlare.Value, baseDrawPosition, null, Color.White with { A = 0 } * interpolant, flareRotation * -0.6f, BloomFlare.Size() * 0.5f, 0.15f * interpolant, 0, 0f);
+
+                spriteBatch.Draw(BloomCircle.Value, baseDrawPosition, null, Color.White with { A = 0 } * interpolant, 0f, BloomCircle.Size() * 0.5f, 0.2f * interpolant, 0, 0f);
+                spriteBatch.Draw(ShineFlare.Value, baseDrawPosition, null, Color.White with { A = 0 } * interpolant, 0f, ShineFlare.Size() * 0.5f, 0.1f * interpolant, 0, 0f);
+
+                spriteBatch.End();
+            }
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Draw(pixelationLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
+            spriteBatch.End();
         }
     }
 
@@ -351,18 +569,22 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                bool targetsArePigs = npc.type == ModContent.NPCType<Piggy>() || npc.type == ModContent.NPCType<PiggyGold>();
-                if (projectile.Hitbox.Intersects(npc.Hitbox) && targetsArePigs)
+                bool targetIsPiggy = npc.type == ModContent.NPCType<Piggy>() || npc.type == ModContent.NPCType<PiggyGold>();
+                if (!targetIsPiggy)
+                    continue;
+
+                if (projectile.Hitbox.Intersects(npc.Hitbox))
                 {
-                    // 11APR2026: fryzahh
-                    // Reminder to do short transformation animations for these later.
-                    if (projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder)
+                    bool notTransformingAlready = npc.ai[0] > -1;
+                    if (!notTransformingAlready)
+                        return;
+
+                    if (targetIsPiggy && npc.ModNPC<Piggy>().AIState > -1)
                     {
-                        npc.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
-                    }
-                    else if (projectile.type == ProjectileID.PurificationPowder)
-                    {
-                        npc.Transform(ModContent.NPCType<DivineSwine>());
+                        if (projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder)
+                            npc.ModNPC<Piggy>().TransformIntoVariant(ModContent.NPCType<HorribleHog.HorribleHog>());
+                        else if (projectile.type == ProjectileID.PurificationPowder)
+                            npc.ModNPC<Piggy>().TransformIntoVariant(ModContent.NPCType<DivineSwine>());
                     }
                 }
             }

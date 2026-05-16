@@ -2,6 +2,7 @@
 using CalamityMod.Effects;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Potions.Food;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Utilities.Daybreak;
@@ -66,6 +67,10 @@ namespace CalamityMod.Items.Tools
                 if (player.altFunctionUse == 2)
                     modPlayer.EjectMiscUpgrades = true;
                 modPlayer.DoingVomitAnimation = true;
+
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                    DisgustingMeatPlayerSyncPacket.Send(modPlayer);
+
                 return true;
             }
 
@@ -140,9 +145,9 @@ namespace CalamityMod.Items.Tools
 
         public static int VomitMaxTime => 130;
 
-        public bool EjectMiscUpgrades = false;
-
         public bool DoingVomitAnimation = false;
+
+        public bool EjectMiscUpgrades = false;
 
         public int VomitTime = 0;
 
@@ -199,6 +204,8 @@ namespace CalamityMod.Items.Tools
                     VomitTime = 0;
                     DoingVomitAnimation = false;
                     EjectMiscUpgrades = false;
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        DisgustingMeatPlayerSyncPacket.Send(this);
                 }
 
                 VomitTime++;
