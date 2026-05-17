@@ -165,7 +165,7 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 7).
                 AddIngredient<CoreofCalamity>().
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentStardust, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -135,7 +135,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<SpeedBlaster>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(3).
+                AddIngredient(ItemID.FragmentVortex, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

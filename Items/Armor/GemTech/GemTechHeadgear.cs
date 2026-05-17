@@ -4,6 +4,7 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -150,7 +151,11 @@ namespace CalamityMod.Items.Armor.GemTech
         {
             CreateRecipe().
                 AddIngredient<ExoPrism>(10).
-                AddIngredient<GalacticaSingularity>(3).
+                AddIngredient(ItemID.FragmentSolar, 5).
+                AddIngredient(ItemID.FragmentVortex, 5).
+                AddIngredient(ItemID.FragmentNebula, 5).
+                AddIngredient(ItemID.FragmentStardust, 5).
+                AddIngredient<MeldBlob>(5).
                 AddIngredient<CoreofCalamity>(2).
                 AddTile<DraedonsForge>().
                 SortBeforeFirstRecipesOf(ModContent.ItemType<GemTechBodyArmor>()).

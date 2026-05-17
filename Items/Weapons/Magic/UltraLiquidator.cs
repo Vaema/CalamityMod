@@ -72,7 +72,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<InfernalRift>().
                 AddIngredient(ItemID.AquaScepter).
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentNebula, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

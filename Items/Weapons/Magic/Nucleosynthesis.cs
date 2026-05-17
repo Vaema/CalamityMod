@@ -86,7 +86,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<Photosynthesis>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(3).
+                AddIngredient(ItemID.FragmentNebula, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
