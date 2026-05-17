@@ -1,10 +1,12 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -21,6 +23,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<RiptideDebuff>()];
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 0.5f;
         }
         public override void SetDefaults()
         {

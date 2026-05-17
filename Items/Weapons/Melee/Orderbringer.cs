@@ -33,11 +33,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public bool spawnProj = true;
         public bool spawnTrueMeleeProj = true;
         public bool playSound = true;
+        public float scaling = 1;
         public override void SetStaticDefaults()
         {
             CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ElementalMix>()];
         }
-        public float scaling = 1;
         public override void SetDefaults()
         {
             Item.width = Item.height = 112;

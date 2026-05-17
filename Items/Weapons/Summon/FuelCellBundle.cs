@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FuelCellBundle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Plague>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 32;
