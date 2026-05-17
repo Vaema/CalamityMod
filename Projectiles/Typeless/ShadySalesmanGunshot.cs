@@ -3,36 +3,58 @@ using System.Collections.Generic;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class ShadySalesmanGunshot : ModProjectile
+    public class ShadySalesmanGunshot : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetDefaults()
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
+            Projectile.width = 12;
+            Projectile.height = 12;
             Projectile.friendly = true;
             Projectile.hostile = false;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = 600;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 10;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.extraUpdates = 8;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.usesLocalNPCImmunity = true;
+
         }
 
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, Color.Khaki.ToVector3() * 0.2f);
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            // Shift the projectile up to about the center of the salesman and override its speed
+            if (source is EntitySource_Parent parentSource && parentSource.Entity is NPC npc && npc.type == ModContent.NPCType<ShadySalesman>())
+            {
+                Projectile.position.Y -= 4f;
+
+                float rotation = npc.ai[2];
+                Vector2 barrelDirection = rotation.ToRotationVector2();
+
+                if (npc.spriteDirection == -1)
+                    barrelDirection.X *= -1;
+
+                float speed = Projectile.velocity.Length();
+                Projectile.velocity = barrelDirection * speed;
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

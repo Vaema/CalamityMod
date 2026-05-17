@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
@@ -12,6 +13,7 @@ using CalamityMod.Items.SummonItems.TownPets;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -172,11 +174,14 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void FindFrame(int frameHeight)
         {
-            if (NPC.ai[0] == 12f)
+            if (NPC.ai[0] == 12f) // Attacking
             {
+                NPC.spriteDirection = NPC.direction;
+
                 NPC.frameCounter = 0;
                 NPC.frame.Y = frameHeight * 9;
             }
+
             else if (NPC.velocity.Y == 0f)
             {
                 if (!NPC.IsABestiaryIconDummy)
@@ -203,6 +208,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
                     NPC.frame.Y = frameHeight;
             }
+
             else
             {
                 NPC.frameCounter = 0.0;
@@ -328,8 +334,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void TownNPCAttackStrength(ref int damage, ref float knockback)
         {
-            damage = 25;
-            knockback = 3f;
+            damage = 10;
+            knockback = 1f;
         }
 
         public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
@@ -351,13 +357,22 @@ namespace CalamityMod.NPCs.TownNPCs
             randExtraCooldown = 10;
         }
 
-        public override void DrawTownAttackGun(ref Texture2D item, ref Rectangle itemFrame, ref float scale, ref int horizontalHoldoutOffset)
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            item = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
-            itemFrame = new Rectangle(0, 0, item.Width, item.Height);
-            horizontalHoldoutOffset = -21;
+            // Manually draw gun frame when attacking
+            if (NPC.ai[0] == 12f && !NPC.IsABestiaryIconDummy)
+            {
+                Texture2D gunTex = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
+                int holdoutOffset = -21;
+                Vector2 origin = NPC.spriteDirection == -1 ? new Vector2(gunTex.Width + holdoutOffset, gunTex.Height / 2f) : new Vector2(-holdoutOffset, gunTex.Height / 2f);
+                Vector2 drawPos = NPC.Center - screenPos + new Vector2(0f, 8f);
+                float rotation = NPC.ai[2] * ((float)Math.PI / 2f) * NPC.spriteDirection;
+
+                spriteBatch.Draw(gunTex, drawPos, null, drawColor, rotation, origin, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+            }
         }
     }
+
 
     public class ShadySalesmanSpawnSystem : ModSystem
     {
