@@ -908,6 +908,11 @@ namespace CalamityMod.CalPlayer
             int scoriaOreID = ModContent.TileType<ScoriaOre>();
             int abyssKelpID = ModContent.TileType<AbyssKelp>();
 
+            // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
+            // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
+            // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
+            // 25FEB2025 Ozzatron: Added external bool to control Auric Rejection immunity from the ore.
+            bool rejectionImmunity = auricSet || seraphTracers || Player.creativeGodMode || externalAuricRejectionImmunity;
             int auricRejectionDamage = 300;
             float auricRejectionKB = Player.noKnockback ? 20f : 40f;
 
@@ -944,11 +949,6 @@ namespace CalamityMod.CalPlayer
                         Player.AddBuff(BuffID.Burning, 2);
                 }
 
-                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
-                // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
-                // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
-                // 25FEB2025 Ozzatron: Added external bool to control Auric Rejection immunity from the ore.
-                bool rejectionImmunity = auricSet || seraphTracers || Player.creativeGodMode || externalAuricRejectionImmunity;
                 bool oreRejection = (tile.TileType == auricOreID) && !rejectionImmunity;
 
                 // Repulsers always perform this effect because they are player-placed tiles made for this exact purpose
@@ -976,7 +976,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (Player.sitting.TryGetSittingBlock(Player, out Tile AuricToiletTile))
+            if (Player.sitting.TryGetSittingBlock(Player, out Tile AuricToiletTile) && !rejectionImmunity)
             {
                 Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), auricRejectionDamage, 0);
                 Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
