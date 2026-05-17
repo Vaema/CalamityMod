@@ -12,10 +12,13 @@ using CalamityMod.Items.SummonItems.TownPets;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Chat;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.Localization;
@@ -316,6 +319,38 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasArrived", Main.npc[myIndex].GetFullNetName()), new Color(50, 125, 255));
             }
+        }
+
+        public override void TownNPCAttackStrength(ref int damage, ref float knockback)
+        {
+            damage = 25;
+            knockback = 3f;
+        }
+
+        public override void TownNPCAttackProj(ref int projType, ref int attackDelay)
+        {
+            projType = ModContent.ProjectileType<ShadySalesmanGunshot>();
+            attackDelay = 1;
+        }
+
+        public override void TownNPCAttackProjSpeed(ref float multiplier, ref float gravityCorrection, ref float randomOffset)
+        {
+            multiplier = 8f;
+            gravityCorrection = 0f;
+            randomOffset = 0f;
+        }
+
+        public override void TownNPCAttackCooldown(ref int cooldown, ref int randExtraCooldown)
+        {
+            cooldown = 75;
+            randExtraCooldown = 10;
+        }
+
+        public override void DrawTownAttackGun(ref Texture2D item, ref Rectangle itemFrame, ref float scale, ref int horizontalHoldoutOffset)
+        {
+            item = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
+            itemFrame = new Rectangle(0, 0, item.Width, item.Height);
+            horizontalHoldoutOffset = -21;
         }
     }
 
