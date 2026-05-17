@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Tools
         {
             Item.width = 80;
             Item.height = 66;
-            Item.damage = 110;
+            Item.damage = 70;
             Item.crit = 10;
             Item.knockBack = 7f;
             Item.useTime = 8;
@@ -48,76 +48,6 @@ namespace CalamityMod.Items.Tools
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            if (player.whoAmI == Main.myPlayer)
-            {
-                if (player.itemAnimation == (int)(player.itemAnimationMax * 0.1) ||
-                    player.itemAnimation == (int)(player.itemAnimationMax * 0.3) ||
-                    player.itemAnimation == (int)(player.itemAnimationMax * 0.5) ||
-                    player.itemAnimation == (int)(player.itemAnimationMax * 0.7) ||
-                    player.itemAnimation == (int)(player.itemAnimationMax * 0.9))
-                {
-                    float sparkYVel = 0f;
-                    float sparkXVel = 0f;
-                    float sparkYSpawn = 0f;
-                    float sparkXSpawn = 0f;
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.9))
-                    {
-                        sparkYVel = -7f;
-                    }
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.7))
-                    {
-                        sparkYVel = -6f;
-                        sparkXVel = 2f;
-                    }
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.5))
-                    {
-                        sparkYVel = -4f;
-                        sparkXVel = 4f;
-                    }
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.3))
-                    {
-                        sparkYVel = -2f;
-                        sparkXVel = 6f;
-                    }
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.1))
-                    {
-                        sparkXVel = 7f;
-                    }
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.7))
-                    {
-                        sparkXSpawn = 26f;
-                    }
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.3))
-                    {
-                        sparkXSpawn -= 4f;
-                        sparkYSpawn -= 20f;
-                    }
-                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.1))
-                    {
-                        sparkYSpawn += 6f;
-                    }
-                    if (player.direction == -1)
-                    {
-                        if (player.itemAnimation == (int)(player.itemAnimationMax * 0.9))
-                        {
-                            sparkXSpawn -= 8f;
-                        }
-                        if (player.itemAnimation == (int)(player.itemAnimationMax * 0.7))
-                        {
-                            sparkXSpawn -= 6f;
-                        }
-                    }
-                    sparkYVel *= 1.5f;
-                    sparkXVel *= 1.5f;
-                    sparkXSpawn *= (float)player.direction;
-                    sparkYSpawn *= player.gravDir;
-                    var source = player.GetSource_ItemUse(Item);
-                    int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(Item.damage * 0.2f);
-                    int spark = Projectile.NewProjectile(source, (float)(hitbox.X + hitbox.Width / 2) + sparkXSpawn, (float)(hitbox.Y + hitbox.Height / 2) + sparkYSpawn, (float)player.direction * sparkXVel, sparkYVel * player.gravDir, ProjectileID.Spark, damage, 0f, player.whoAmI);
-                    if (spark.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[spark].DamageType = DamageClass.Melee;
-                }
-            }
             if (Main.rand.NextBool(4))
             {
                 int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
@@ -129,7 +59,7 @@ namespace CalamityMod.Items.Tools
             if (hit.Crit)
             {
                 var source = player.GetSource_ItemUse(Item);
-                int boom = Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), Item.damage, Item.knockBack, player.whoAmI, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
+                int boom = Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), (int)(Item.damage * 0.33f), Item.knockBack, player.whoAmI, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
                 if (boom.WithinBounds(Main.maxProjectiles))
                     Main.projectile[boom].DamageType = DamageClass.Melee;
             }

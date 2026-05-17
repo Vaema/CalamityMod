@@ -243,7 +243,6 @@ InfernaCutter: {
 	Tooltip:
 		'''
 		Critical hits with the blade cause small explosions
-		Generates a number of small sparks when swung
 		'''
 }
 
