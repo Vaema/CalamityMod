@@ -240,10 +240,7 @@ HurriedVoucher: {
 
 InfernaCutter: {
 	DisplayName: Inferna Cutter
-	Tooltip:
-		'''
-		Critical hits with the blade cause small explosions
-		'''
+	Tooltip: Critical hits with the blade cause small explosions
 }
 
 MarniteDeconstructor: {
