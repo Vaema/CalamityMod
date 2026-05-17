@@ -1097,6 +1097,11 @@ namespace CalamityMod.Items
             {
                 player.Calamity().critDamage += 0.15f;
             }
+            if (item.type == ItemID.ReconScope)
+            {
+                player.GetDamage<RangedDamageClass>() += 0.05f; //Total 15% damage
+                player.GetCritChance<RangedDamageClass>() -= 5; //Total 5% crit
+            }
             if (item.type == ItemID.SniperScope)
             {
                 player.GetDamage<RangedDamageClass>() -= 0.1f; //Total 0% damage

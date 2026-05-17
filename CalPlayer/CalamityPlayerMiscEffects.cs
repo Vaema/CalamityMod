@@ -16,6 +16,7 @@ using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Auric;
@@ -279,14 +280,14 @@ namespace CalamityMod.CalPlayer
             if ((XykVisualsBlue || XykVisualsOrange))
             {
                 bool Orange = XykVisualsOrange;
-                Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
+                Color effectColor = Orange ? XyksBlessingOrange.baseMainColor : XyksBlessingBlue.baseMainColor;
 
                 float rate = Main.GlobalTimeWrappedHourly * 12;
                 List<Color> eColors = new List<Color>()
                 {
-                    Orange ? new Color(248, 117, 52) : Color.DodgerBlue,
-                    Orange ? Color.Gold : Color.Cyan,
-                    Orange ? Color.Orange : Color.RoyalBlue
+                    Orange ? XyksBlessingOrange.baseMainColor : XyksBlessingBlue.baseMainColor,
+                    Orange ? XyksBlessingOrange.baseAccentColor : XyksBlessingBlue.baseAccentColor,
+                    Orange ? XyksBlessingOrange.baseEffectColor : XyksBlessingBlue.baseEffectColor
                 };
                 int colorIndex = (int)(rate / 2 % eColors.Count);
                 Color currentColor = eColors[colorIndex];
@@ -295,7 +296,10 @@ namespace CalamityMod.CalPlayer
 
                 bool rageOrAdren = (Player.Calamity().rageModeActive || Player.Calamity().adrenalineModeActive);
                 bool rageAndAdren = (Player.Calamity().rageModeActive && Player.Calamity().adrenalineModeActive);
-                Color attemptColor = (rageAndAdren ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Player.Calamity().adrenalineModeActive ? Color.MediumSpringGreen : Player.Calamity().rageModeActive ? Color.Crimson : effectColor);
+                Color dashColor = Orange ? XyksBlessingOrange.animEffectColor : XyksBlessingBlue.animEffectColor;
+                Color attemptColor = (rageAndAdren ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : 
+                    Player.Calamity().adrenalineModeActive ? Color.MediumSpringGreen : Player.Calamity().rageModeActive ? Color.Crimson :
+                    Player.dashDelay == -1 ? dashColor : effectColor);
                 XykFXColor = Color.Lerp(XykFXColor, attemptColor, rageOrAdren ? 0.05f : 0.25f);
 
 
@@ -970,6 +974,16 @@ namespace CalamityMod.CalPlayer
                     }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
                 }
+            }
+
+            if (Player.sitting.TryGetSittingBlock(Player, out Tile AuricToiletTile))
+            {
+                Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), auricRejectionDamage, 0);
+                Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
+                Player.sitting.SitUp(Player, false);
+                Vector2 yeetVec = new Vector2(Player.direction, -1.5f);
+                Player.velocity += yeetVec * auricRejectionKB;
             }
         }
         private void HandleBlazingMouseEffects()
@@ -1687,6 +1701,41 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+            float minVis = 0.001f;
+            if (fishStockVisual > minVis) // Fish stock effects are active as long as the UI exists, even if the player removes the item
+            {
+                fishStockSlidingPower = MathHelper.Lerp(fishStockSlidingPower, fishStockPower, 0.05f);
+                if (Player.miscCounter % 60 == 0)
+                {
+                    bool isExtreme = fishStockPower > 1.5f || fishStockPower < -1.5f;
+                    float smallJump = Main.rand.NextBool(4) ? 0.55f : 0;
+                    float bigJump = Main.rand.NextBool(isExtreme ? 7 : 10) ? 1.8f : 0;
+                    int riseOrFall = Main.rand.NextBool() ? -1 : 1;
+                    float newFishStockPower = Math.Clamp(fishStockPower + (Main.rand.NextFloat(0.1f, 0.2f) + Math.Max(smallJump, bigJump)) * riseOrFall, -2, 2);
+                    fishStockOldPower = // Cycle each power point up as the new point is gotten
+                        (fishStockPower,
+                        fishStockOldPower.Item1,
+                        fishStockOldPower.Item2,
+                        fishStockOldPower.Item3,
+                        fishStockOldPower.Item4);
+                }
+                // Stats
+                Player.GetDamage<GenericDamageClass>() += 0.15f * fishStockPower;
+                Player.GetCritChance<GenericDamageClass>() += 10 * fishStockPower;
+                Player.Calamity().critDamage += 0.15f * fishStockPower;
+                Player.statDefense += (int)(10 * fishStockPower);
+                Player.endurance += 0.1f * fishStockPower;
+                Player.lifeRegen += (int)(6 * fishStockPower);
+                Player.pickSpeed -= 0.25f * fishStockPower;
+                Player.fishingSkill += (int)(50 * fishStockPower);
+                Player.luck += 0.55f * fishStockPower;
+                float CoinMult = MathF.Abs(fishStockPower) * 1.5f;
+                float givenMult = (fishStockPower < 0 ? (1 / CoinMult) : CoinMult);
+                Player.Calamity().coinDropMult = givenMult;
+            }
+            // Only put away fish stocks if the stocks are even or higher, or if they've already been started to be put away
+            float goalVis = (!fishStocks && (fishStockPower >= 0 || fishStockVisual < 0.9f)) ? 0 : 1;
+            fishStockVisual = MathF.Round(MathHelper.Lerp(fishStockVisual, goalVis, 0.05f), 4); // Fade in and out the U
 
             // The fire boots debuff boosts
             // bootLevel exists SO THAT THEY DO NOT STACK. Please help me maintain my sanity so we're not "fixing" this issue seventy times

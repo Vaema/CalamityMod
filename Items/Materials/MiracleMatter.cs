@@ -88,7 +88,11 @@ namespace CalamityMod.Items.Materials
                 AddIngredient<ExoPrism>(5).
                 AddIngredient<LifeAlloy>().
                 AddIngredient<AscendantSpiritEssence>().
-                AddIngredient<GalacticaSingularity>(3).
+                AddIngredient(ItemID.FragmentSolar, 3).
+                AddIngredient(ItemID.FragmentVortex, 3).
+                AddIngredient(ItemID.FragmentNebula, 3).
+                AddIngredient(ItemID.FragmentStardust, 3).
+                AddIngredient<MeldBlob>(3).
                 AddIngredient<CoreofCalamity>().
                 AddTile<DraedonsForge>().
                 Register();

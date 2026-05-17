@@ -151,7 +151,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<MysteriousCircuitry>(15).
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient(ItemID.LunarBar, 10).
-                AddIngredient<GalacticaSingularity>(4).
+                AddIngredient(ItemID.FragmentVortex, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

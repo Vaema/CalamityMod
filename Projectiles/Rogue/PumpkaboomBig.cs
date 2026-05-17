@@ -254,8 +254,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localAI[1] = 5; // Reset firing state
             if (flungState != -1f)
             {
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/PumpkinExplode1") with { Pitch = 0f, Volume = 0.75f }, Projectile.Center);
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/FlakKrakenShoot") with { Pitch = 0f, Volume = 0.6f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/PumpkinExplode1") with { Pitch = 0f, Volume = 0.6f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/FlakKrakenShoot") with { Pitch = 0f, Volume = 0.5f }, Projectile.Center);
 
                 if (Main.myPlayer == Projectile.owner)
                 {

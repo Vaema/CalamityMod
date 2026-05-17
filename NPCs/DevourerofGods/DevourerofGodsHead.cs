@@ -2678,6 +2678,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                 GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<NavyPrismTorch>(), dropRate, dropMin, dropMax), true);
                 GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RefractivePrismTorch>(), dropRate, dropMin, dropMax), true);
                 GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SulphurousTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ThermalTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CausticTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<KelpTorch>(), dropRate, dropMin, dropMax), true);
             }
 
             // Trophy (always directly from boss, never in bag)

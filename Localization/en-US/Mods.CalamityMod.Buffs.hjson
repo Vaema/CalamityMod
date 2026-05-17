@@ -1600,9 +1600,9 @@ PuffWarriorBuff: {
 	Description: It confidently and excitedly protects you
 }
 
-RareSandElemental: {
-	DisplayName: Rare Sand Elemental
-	Description: The Sand Elemental will heal you
+OasisElementalBuff: {
+	DisplayName: Oasis Elemental
+	Description: The Oasis Elemental will heal you
 }
 
 ResurrectionButterflyBuff: {
