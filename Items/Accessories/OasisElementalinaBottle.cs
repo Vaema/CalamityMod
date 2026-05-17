@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,8 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [LegacyName("WifeinaBottlewithBoobs")] // Yes, that was the actual name.
-    public class RareElementalinaBottle : ModItem, ILocalizedModType
+    [LegacyName("WifeinaBottlewithBoobs", "RareElementalinaBottle")] // Yes, that was the actual name.
+    public class OasisElementalinaBottle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
@@ -38,12 +39,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.rareSandElemental = true;
+            modPlayer.oasisElemental = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<RareSandElemental>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<OasisElementalBuff>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<RareSandElemental>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<OasisElementalBuff>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SandElementalHealer>()] < 1)
                 {
@@ -59,12 +60,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.rareSandElementalVanity = true;
+            modPlayer.oasisElementalVanity = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<RareSandElemental>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<OasisElementalBuff>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<RareSandElemental>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<OasisElementalBuff>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SandElementalHealer>()] < 1)
                 {

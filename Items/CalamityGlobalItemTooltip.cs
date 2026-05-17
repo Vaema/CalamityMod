@@ -820,7 +820,11 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("RifleScope2"));
             }
             if (item.type == ItemID.ReconScope)
+            {
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ReconScope1"));
+                EditTooltipByNum(1, (line) => line.Text += AddedTooltip("ReconScope2"));
+            }
             if (item.type == ItemID.SniperScope)
             {
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SniperScope"));
