@@ -172,7 +172,12 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void FindFrame(int frameHeight)
         {
-            if (NPC.velocity.Y == 0f)
+            if (NPC.ai[0] == 12f)
+            {
+                NPC.frameCounter = 0;
+                NPC.frame.Y = frameHeight * 9;
+            }
+            else if (NPC.velocity.Y == 0f)
             {
                 if (!NPC.IsABestiaryIconDummy)
                 {
