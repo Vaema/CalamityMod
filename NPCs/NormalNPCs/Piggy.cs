@@ -97,6 +97,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetDefaults()
         {
+            NPC.chaseable = false;
             NPC.damage = 0;
             NPC.width = 26;
             NPC.height = 26;
