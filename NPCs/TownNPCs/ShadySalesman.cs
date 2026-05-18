@@ -1,24 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.SummonItems.TownPets;
 using CalamityMod.Items.Tools;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -31,6 +38,8 @@ namespace CalamityMod.NPCs.TownNPCs
     [AutoloadHead]
     public class ShadySalesman : ModNPC
     {
+        public bool hasFiredShotThisAttack = false;
+        public int attackFrameTimer = 0;
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 10;
@@ -43,6 +52,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPCID.Sets.NoTownNPCHappiness[Type] = true;
+            NPCID.Sets.IsTownChild[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
@@ -60,7 +70,7 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.aiStyle = NPCAIStyleID.Passive;
             NPC.damage = 10;
             NPC.defense = 15;
-            NPC.lifeMax = 2000;
+            NPC.lifeMax = 250;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.99f;
@@ -109,6 +119,46 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void AI()
         {
             NPC.homeless = true;
+
+            if (NPC.ai[0] == 12f) // Attacking
+            {
+                attackFrameTimer++;
+
+                if (attackFrameTimer >= 3 && !hasFiredShotThisAttack) // Delay effects spawning by 2 frames to give the NPC time to turn around after being set to attack
+                {
+                    Texture2D gunTex = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
+                    int holdoutOffset = -21;
+
+                    Vector2 gunDrawPos = NPC.Center + new Vector2(0f, 8f);
+                    float rotation = NPC.ai[2] * ((float)Math.PI / 2f) * NPC.spriteDirection;
+
+                    // Match the pos calculations from PostDraw
+                    Vector2 origin = NPC.spriteDirection == -1 ? new Vector2(gunTex.Width + holdoutOffset, gunTex.Height / 2f) : new Vector2(-holdoutOffset, gunTex.Height / 2f);
+                    Vector2 muzzleLocal = NPC.spriteDirection == -1 ? new Vector2(0f, 6f) : new Vector2(gunTex.Width, 6f);
+                    Vector2 muzzlePos = gunDrawPos + (muzzleLocal - origin).RotatedBy(rotation);
+                    Vector2 barrelDirection = new Vector2(NPC.spriteDirection, 0f).RotatedBy(rotation);
+
+                    // Spawn effects
+                    Particle bloom = new CustomSpark(muzzlePos, Vector2.Zero, "CalamityMod/Particles/BrightFlash", false, 5, 0.18f, Color.Khaki, Vector2.One, true, true, glowOpacity: 0.45f, colorFadeSpeed: 8);
+                    GeneralParticleHandler.SpawnParticle(bloom, true);
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Vector2 vel = barrelDirection.RotatedByRandom(0.18f) * Main.rand.NextFloat(3f, 7f);
+
+                        Particle spark = new CustomSpark(muzzlePos, vel, "CalamityMod/Particles/FadeLine", false, Main.rand.Next(10, 18), 0.18f, new Color(255, 230, 140), new Vector2(0.5f, 1f), true, shrinkSpeed: 0.4f, colorFadeSpeed: 10);
+                        GeneralParticleHandler.SpawnParticle(spark, true);
+                    }
+                    SoundEngine.PlaySound(ElephantKiller.Shot with { Volume = 0.9f, PitchVariance = 0.15f, MaxInstances = 3 }, NPC.Center);
+
+                    hasFiredShotThisAttack = true;
+                }
+            }
+            else
+            {
+                hasFiredShotThisAttack = false;
+                attackFrameTimer = 0; // Reset the frame counter when not attacking
+            }
         }
 
         private static bool IsNpcOnscreen(Vector2 center)
@@ -166,7 +216,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<FishStocks>()
                 .Add<TheSandwich>()
                 .Add<BaconOil>()
-                .Add<ElephantKiller>(Condition.Hardmode)
                 .Add<OmniGun>(Condition.DownedGolem)
                 
                 .Register();
@@ -213,6 +262,21 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 NPC.frameCounter = 0.0;
                 NPC.frame.Y = 0;
+            }
+        }
+
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            // Manually draw gun frame when attacking
+            if (NPC.ai[0] == 12f && !NPC.IsABestiaryIconDummy)
+            {
+                Texture2D gunTex = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
+                int holdoutOffset = -21;
+                Vector2 origin = NPC.spriteDirection == -1 ? new Vector2(gunTex.Width + holdoutOffset, gunTex.Height / 2f) : new Vector2(-holdoutOffset, gunTex.Height / 2f);
+                Vector2 drawPos = NPC.Center - screenPos + new Vector2(0f, 8f);
+                float rotation = NPC.ai[2] * ((float)Math.PI / 2f) * NPC.spriteDirection;
+
+                spriteBatch.Draw(gunTex, drawPos, null, drawColor, rotation, origin, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
             }
         }
 
@@ -357,19 +421,36 @@ namespace CalamityMod.NPCs.TownNPCs
             randExtraCooldown = 10;
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        // Spawn the effects used for Tinkerer's Voucher failing when below 1 life
+        public override void HitEffect(NPC.HitInfo hit)
         {
-            // Manually draw gun frame when attacking
-            if (NPC.ai[0] == 12f && !NPC.IsABestiaryIconDummy)
+            if (NPC.life <= 0)
             {
-                Texture2D gunTex = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
-                int holdoutOffset = -21;
-                Vector2 origin = NPC.spriteDirection == -1 ? new Vector2(gunTex.Width + holdoutOffset, gunTex.Height / 2f) : new Vector2(-holdoutOffset, gunTex.Height / 2f);
-                Vector2 drawPos = NPC.Center - screenPos + new Vector2(0f, 8f);
-                float rotation = NPC.ai[2] * ((float)Math.PI / 2f) * NPC.spriteDirection;
+                for (int d = 0; d < 10; d++)
+                {
+                    for (int smokeCount = 0; smokeCount < 3; smokeCount++)
+                    {
+                        Vector2 velocity = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(3f, 12f);
+                        Color smokeStart = Main.rand.NextBool() ? Color.Gray : Color.LightGray;
+                        Color smokeEnd = Color.DimGray;
+                        float smokeSize = Main.rand.NextFloat(0.9f, 2f);
 
-                spriteBatch.Draw(gunTex, drawPos, null, drawColor, rotation, origin, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
+                        Particle smoke = new SmallSmokeParticle(NPC.Center, velocity, smokeStart, smokeEnd, smokeSize, Main.rand.Next(90, 140));
+                        GeneralParticleHandler.SpawnParticle(smoke);
+                    }
+
+                    Particle skull = new DesertProwlerSkullParticle(NPC.Center, new Vector2(2.5f, 2.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), Main.rand.NextBool() ? Color.LightGray : Color.Silver, Color.Gray, Main.rand.NextFloat(0.15f, 0.5f), Main.rand.Next(100, 190));
+                    GeneralParticleHandler.SpawnParticle(skull);
+                }
+                SoundEngine.PlaySound(SoundID.NPCDeath6, NPC.Center);
             }
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            var hardmode = npcLoot.DefineConditionalDropSet(DropHelper.Hardmode());
+            hardmode.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, ModContent.ItemType<ElephantKiller>()));
+
         }
     }
 
@@ -380,7 +461,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void PreUpdateWorld()
         {
-            if(Main.dayTime)
+            if (Main.dayTime)
             {
                 CanSpawnTonight = true;
                 return;
@@ -404,7 +485,7 @@ namespace CalamityMod.NPCs.TownNPCs
                     return;
             }
 
-            if(!Main.rand.NextBool(4))
+            if (!Main.rand.NextBool(4))
             {
                 CanSpawnTonight = false;
                 return;

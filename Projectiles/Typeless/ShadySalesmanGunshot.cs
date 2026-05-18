@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
     public class ShadySalesmanGunshot : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public new string LocalizationCategory => "Projectiles.Typeless";
 
         public override void SetDefaults()
         {
