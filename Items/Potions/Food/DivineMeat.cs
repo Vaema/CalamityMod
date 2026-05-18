@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Potions.Food
             Item.maxStack = 1;
             Item.UseSound = SoundID.Item2;
             Item.useStyle = ItemUseStyleID.EatFood;
-            Item.buffType = BuffID.WellFed;
+            Item.buffType = BuffID.WellFed2;
             Item.buffTime = CalamityUtils.MinutesToFrames(30);
             Item.useTurn = true;
             Item.consumable = false;
