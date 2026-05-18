@@ -778,8 +778,6 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Permanent Buff
-        /// <summary> If true, the player has spawned in Punch Card through its one-time chat easter egg. </summary>
-        public bool spawnedPunchCard = false;
         /// <summary> If true, the player has consumed Celestial Onion. </summary>
         public bool extraAccessoryML = false;
         /// <summary> If true, the player has consumed Comet Shard. </summary>
@@ -1101,8 +1099,8 @@ namespace CalamityMod.CalPlayer
         public float summonProjCooldown;
         public bool sandElemental = false;
         public bool sandElementalVanity = false;
-        public bool rareSandElemental = false;
-        public bool rareSandElementalVanity = false;
+        public bool oasisElemental = false;
+        public bool oasisElementalVanity = false;
         public bool cloudElemental = false;
         public bool cloudElementalVanity = false;
         public bool brimElemental = false;
@@ -1594,7 +1592,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Elemental in a Bottle. </summary>
         public bool sandEleBuff = false;
         /// <summary> Rare Elemental in a Bottle. </summary>
-        public bool rareSandEleBuff = false;
+        public bool oasisEleBuff = false;
         /// <summary> Eye of the Storm. </summary>
         public bool cloudEleBuff = false;
         /// <summary> Rose Stone. </summary>
@@ -1869,7 +1867,6 @@ namespace CalamityMod.CalPlayer
         #region Saving And Loading
         public override void Initialize()
         {
-            spawnedPunchCard = false;
             extraAccessoryML = false;
             eCore = false;
             mFruit = false;
@@ -1921,7 +1918,6 @@ namespace CalamityMod.CalPlayer
         public override void SaveData(TagCompound tag)
         {
             var boost = new List<string>();
-            boost.AddWithCondition("spawnedPunchCard", spawnedPunchCard);
             boost.AddWithCondition("extraAccessoryML", extraAccessoryML);
             boost.AddWithCondition("etherealCore", eCore);
             boost.AddWithCondition("miracleFruit", mFruit);
@@ -2011,7 +2007,6 @@ namespace CalamityMod.CalPlayer
         public override void LoadData(TagCompound tag)
         {
             var boost = tag.GetList<string>("boost");
-            spawnedPunchCard = boost.Contains("spawnedPunchCard");
             extraAccessoryML = boost.Contains("extraAccessoryML");
             eCore = boost.Contains("etherealCore");
             mFruit = boost.Contains("miracleFruit");
@@ -2864,7 +2859,7 @@ namespace CalamityMod.CalPlayer
             cEnergy = false;
             pSoulGuardians = false;
             sandEleBuff = false;
-            rareSandEleBuff = false;
+            oasisEleBuff = false;
             cloudEleBuff = false;
             brimEleBuff = false;
             waterEleBuff = false;
@@ -2881,8 +2876,8 @@ namespace CalamityMod.CalPlayer
             MutatedTruffleBool = false;
             sandElemental = false;
             sandElementalVanity = false;
-            rareSandElemental = false;
-            rareSandElementalVanity = false;
+            oasisElemental = false;
+            oasisElementalVanity = false;
             cloudElemental = false;
             cloudElementalVanity = false;
             brimElemental = false;

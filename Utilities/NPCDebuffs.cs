@@ -279,7 +279,7 @@ namespace CalamityMod
                 { ModContent.NPCType<DevourerofGodsBody>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsTail>(), immuneToEverything },
 
-                { ModContent.NPCType<Yharon>(), new(GeneralImmunityStatus.None, new int[] { BuffID.OnFire, ModContent.BuffType<Dragonfire>() }) },
+                { ModContent.NPCType<Yharon>(), new(GeneralImmunityStatus.None, new int[] { BuffID.OnFire, ModContent.BuffType<Dragonfire>(), ModContent.BuffType<AuricRebuke>() }) },
 
                 { ModContent.NPCType<ThanatosHead>(), immuneToEverything },
                 { ModContent.NPCType<ThanatosBody1>(), immuneToEverything },

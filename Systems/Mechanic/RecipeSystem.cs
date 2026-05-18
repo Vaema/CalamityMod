@@ -739,6 +739,7 @@ namespace CalamityMod.Systems
             {
                 { Vanilla(ItemID.MiniNukeI), Disable },
                 { Vanilla(ItemID.MiniNukeII), Disable },
+                { Vanilla(ItemID.ReconScope), Disable },
 
                 // Make various things cheaper (sorted by progression)
                 { Vanilla(ItemID.Leather), ChangeIngredientStack(ItemID.RottenChunk, 2) },
@@ -1724,6 +1725,13 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
+
+            // Tiershift Recon Scope to post Plantera.
+            r = Recipe.Create(ItemID.ReconScope);
+            r.AddIngredient(ItemID.RifleScope);
+            r.AddIngredient(ItemID.PutridScent);
+            r.AddTile(TileID.TinkerersWorkbench);
+            r.Register();
 
             // Tiershift Mini Nuke 1s to post Moon Lord.
             r = Recipe.Create(ItemID.MiniNukeI, 333);

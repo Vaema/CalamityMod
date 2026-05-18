@@ -537,7 +537,7 @@ namespace CalamityMod.World
         public static void GenerateAuricLandMines()
         {
             int landMineID = ModContent.TileType<AuricLandMineTile>();
-            int landMineChance = Main.zenithWorld ? 150 : 300;
+            int landMineChance = Main.zenithWorld ? 125 : 300;
             float maxDepth = Main.maxTilesY * (Main.zenithWorld ? 0.75f : 0.5f); // depth increased in gfb due to the evil columns that extend further downward
             for (int x = 0; x < Main.maxTilesX; x++)
             {
