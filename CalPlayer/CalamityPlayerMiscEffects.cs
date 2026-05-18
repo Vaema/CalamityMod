@@ -1718,6 +1718,7 @@ namespace CalamityMod.CalPlayer
                         fishStockOldPower.Item2,
                         fishStockOldPower.Item3,
                         fishStockOldPower.Item4);
+                    fishStockPower = newFishStockPower;
                 }
                 // Stats
                 Player.GetDamage<GenericDamageClass>() += 0.15f * fishStockPower;
