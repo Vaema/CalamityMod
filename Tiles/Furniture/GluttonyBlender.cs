@@ -230,7 +230,7 @@ namespace CalamityMod.Tiles.Furniture
                 }
             }
 
-            if (Projectile.timeLeft == 1)
+            if (Projectile.timeLeft == 1 && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int itemDrop = Main.rand.NextBool(GluttonyBlender.OneInXChanceForGoodSlop) ? ModContent.ItemType<QualitySlop>() : ModContent.ItemType<DisgustingSlop>();
                 int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, itemDrop);
