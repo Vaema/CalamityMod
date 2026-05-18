@@ -10,7 +10,6 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class GluttonyBlender : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
-        public const int OneInXChanceForGoodSlop = 5;
 
         public override void SetDefaults()
         {
