@@ -1258,8 +1258,8 @@ ThrowingBrick: {
 	DisplayName: Throwing Brick
 	Tooltip:
 		'''
-		Prove its resistance by throwing it upwards and catching it with your face
-		Throws a brick that shatters if stealth is full
+		Stealth strikes cause the brick to shatter
+		'Prove its resistance by throwing it upwards and catching it with your face'
 		'''
 }
 

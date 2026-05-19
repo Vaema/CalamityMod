@@ -103,10 +103,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public bool IsAtHp_Acceptance => NPC.life < 2;
 
         public bool IsAtBrothers => IsAtHp_BH3 && FinishedBH3;
-        public bool IsAtSeekers => IsAtHp_BH4 && FinishedBH4;
+        public bool IsAtSeekers => lifeRatio <= 0.2f;
         public bool IsAtSep2 => IsAtHp_BH5 && FinishedBH5;
 
-        public const int PermafrostAbsoluteZeroDamage = 3725;
+        public const int PermafrostAbsoluteZeroDamage = 1400;
         private const float PermafrostPhotonRipperDashVelocity = 6f;
         private const float PermafrostPhotonRipperMinDistanceFromTarget = 64f;
         private const float PermafrostPhotonRipperDashAcceleration = 0.3f;
@@ -119,20 +119,20 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public bool canDespawn = false;
         public bool despawnProj = false;
         public bool startText = false;
-        public bool startBattle = false; //100%
-        public bool hasSummonedSepulcher1 = false; //100%
-        public bool startSecondAttack = false; //80%
-        public bool startThirdAttack = false; //60%
-        public bool halfLife = false; //40%
-        public bool startFourthAttack = false; //30%
-        public bool secondStage = false; //20%
-        public bool startFifthAttack = false; //10%
-        public bool gettingTired = false; //8%
-        public bool hasSummonedSepulcher2 = false; //8%
-        public bool gettingTired2 = false; //6%
-        public bool gettingTired3 = false; //4%
-        public bool gettingTired4 = false; //2%
-        public bool gettingTired5 = false; //1%
+        public bool startBattle = false;
+        public bool hasSummonedSepulcher1 = false;
+        public bool startSecondAttack = false;
+        public bool startThirdAttack = false;
+        public bool halfLife = false;
+        public bool startFourthAttack = false;
+        public bool hasSummonedSeekers = false;
+        public bool startFifthAttack = false;
+        public bool gettingTired = false;
+        public bool hasSummonedSepulcher2 = false;
+        public bool gettingTired2 = false;
+        public bool gettingTired3 = false;
+        public bool gettingTired4 = false;
+        public bool gettingTired5 = false;
         public bool willCharge = false;
         public bool canFireSplitingFireball = true;
         public bool fireFireblastFirst = true;
@@ -364,7 +364,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             writer.Write(startFourthAttack);
             writer.Write(startFifthAttack);
             writer.Write(halfLife);
-            writer.Write(secondStage);
+            writer.Write(hasSummonedSeekers);
             writer.Write(hasSummonedSepulcher2);
             writer.Write(gettingTired);
             writer.Write(gettingTired2);
@@ -416,7 +416,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             startFourthAttack = reader.ReadBoolean();
             startFifthAttack = reader.ReadBoolean();
             halfLife = reader.ReadBoolean();
-            secondStage = reader.ReadBoolean();
+            hasSummonedSeekers = reader.ReadBoolean();
             hasSummonedSepulcher2 = reader.ReadBoolean();
             gettingTired = reader.ReadBoolean();
             gettingTired2 = reader.ReadBoolean();
@@ -2070,7 +2070,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             if (IsAtSeekers)
             {
-                if (!secondStage)
+                if (!hasSummonedSeekers)
                 {
                     if (!BossRushEvent.BossRushActive)
                     {
@@ -2113,7 +2113,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
 
                     SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact, player.Center);
-                    secondStage = true;
+                    hasSummonedSeekers = true;
                 }
             }
 

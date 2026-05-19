@@ -385,6 +385,9 @@ namespace CalamityMod.Projectiles
                         grapeBeer = true;
                 }
 
+                // Apply some parent information to children
+                if (parent.Calamity().ParentNPCIndex != -1)
+                    ParentNPCIndex = parent.Calamity().ParentNPCIndex;
                 if (parent.Calamity().IgnoreBoCIllusions)
                     IgnoreBoCIllusions = true;
 
@@ -424,8 +427,14 @@ namespace CalamityMod.Projectiles
             }
 
         }
-        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
-        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
+        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(ParentNPCIndex);
+        }
+        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader)
+        {
+            ParentNPCIndex = binaryReader.ReadInt32();
+        }
         #endregion On Spawn
 
         #region Set Defaults
@@ -4816,9 +4825,17 @@ namespace CalamityMod.Projectiles
 
         #region Modify Hit Player
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
-        {
+        {                
             modifiers.FinalDamage.Flat -= flatDR;
             modifiers.FinalDamage *= 1f - multiplicativeDR;
+
+            // Reduce projectile damage if the enemy is inflicted with Whispering Death
+            if (ParentNPCIndex != -1)
+            {
+                NPC npc = Main.npc[(int)ParentNPCIndex];
+                if (npc.active && npc.Calamity().whisperingDeath)
+                    modifiers.FinalDamage *= 1f - WhisperingDeath.EnemyDamageReduction;
+            }
         }
         #endregion
 

@@ -63,7 +63,7 @@ namespace CalamityMod.Items
                 { ItemID.BluePhaseblade, phaseblade },
                 { ItemID.BluePhasesaber, phasesaber },
                 { ItemID.BoneSword, Do(UseTurn, DamageExact(25)) }, // VANILLA: 19 DMG
-                { ItemID.BookofSkulls, Do(DamageExact(27), ManaExact(13), ShootSpeedExact(5.5f)) }, // VANILLA: 29 DMG, 18 MANA, 3.5 VEL
+                { ItemID.BookofSkulls, Do(ShootSpeedExact(5.5f)) }, // VANILLA: 3.5 VEL
                 { ItemID.Boomstick, Do(DamageExact(11)) }, // VANILLA: 14 DMG
                 { ItemID.BreakerBlade, Do(UseTurn, DamageExact(140)) }, // VANILLA: 70 DMG
                 { ItemID.CandyCornRifle, Do(DamageExact(66)) }, // VANILLA: 44 DMG
