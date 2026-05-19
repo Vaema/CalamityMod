@@ -196,8 +196,58 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override string GetChat()
         {
+            WeightedRandom<string> dialogue = new WeightedRandom<string>();
 
-            return "dialogue";
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal2"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal3"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal5"));
+            dialogue.Add(this.GetLocalizedValue("Chat.Normal6"));
+
+            if (Main.raining)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Rain"));
+            }
+
+            if (Main._shouldUseWindyDayMusic)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.WindyDay"));
+            }
+
+            if (Main.LocalPlayer.ZoneDesert)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Desert"));
+            }
+
+            if (Main.LocalPlayer.ZoneSnow)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Tundra"));
+            }
+
+            if (Main.LocalPlayer.ZoneGraveyard)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Graveyard"));
+            }
+
+            if (Main.bloodMoon)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.BloodMoon3"));
+            }
+
+            if (Main.hardMode)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.Hardmode"));
+            }
+
+            if (NPC.downedMoonlord)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.MoonLordDefeated"));
+            }
+
+            return dialogue;
         }
 
         public override void SetChatButtons(ref string button, ref string button2)
