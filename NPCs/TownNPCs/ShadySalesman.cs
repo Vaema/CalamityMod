@@ -90,27 +90,41 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override List<string> SetNPCNameList() => ModContent.GetInstance<TownPiggy>().SetNPCNameList();
 
+        public override void SendExtraAI(System.IO.BinaryWriter writer)
+        {
+            writer.Write(hasFiredShotThisAttack);
+            writer.Write(attackFrameTimer);
+        }
+        public override void ReceiveExtraAI(System.IO.BinaryReader reader)
+        {
+            hasFiredShotThisAttack = reader.ReadBoolean();
+            attackFrameTimer = reader.ReadInt32();
+        }
+
         public override bool PreAI()
         {
             if (Main.dayTime && !IsNpcOnscreen(NPC.Center))
             {
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                    Main.NewText(Language.GetTextValue("LegacyMisc.35", NPC.FullName), 50, 125, 255);
-                else
-                    ChatHelper.BroadcastChatMessage(NetworkText.FromKey("LegacyMisc.35", NPC.GetFullNetName()), new Color(50, 125, 255));
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                        Main.NewText(Language.GetTextValue("LegacyMisc.35", NPC.FullName), 50, 125, 255);
+                    else
+                        ChatHelper.BroadcastChatMessage(NetworkText.FromKey("LegacyMisc.35", NPC.GetFullNetName()), new Color(50, 125, 255));
 
-                if (CalamityWorld.unlockedTownPig)
-                {
-                    string name = NPC.GivenName;
-                    NPC.Transform(ModContent.NPCType<TownPiggy>());
-                    NPC.GivenName = name;
-                }
-                else
-                {
-                    NPC.active = false;
-                    NPC.netSkip = -1;
-                }
-                return false;
+                    if (CalamityWorld.unlockedTownPig)
+                    {
+                        string name = NPC.GivenName;
+                        NPC.Transform(ModContent.NPCType<TownPiggy>());
+                        NPC.GivenName = name;
+                    }
+                    else
+                    {
+                        NPC.active = false;
+                        NPC.netSkip = -1;
+                    }
+                    return false;
+                }  
             }
 
             return true;
