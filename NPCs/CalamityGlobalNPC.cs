@@ -876,6 +876,7 @@ namespace CalamityMod.NPCs
             ActiveSicknessDebuffMultiplier = SicknessDebuffMultiplier;
             ActiveElectricDebuffMultiplier = ElectricDebuffMultiplier;
             ActiveWaterDebuffMultiplier = WaterDebuffMultiplier;
+            ActiveTypelessDebuffMultiplier = TypelessDebuffMultiplier;
 
             if (irradiated)
             {
@@ -1015,7 +1016,7 @@ namespace CalamityMod.NPCs
                 int dmg = 0;
                 if (glaiveShredTimer > 0)
                 {
-                    dmg += 120; // 60 DPS
+                    dmg += 200; // 100 DPS
                     glaiveShredTimer--;
                 }
                 if (blazingStarShredTimer > 0)
