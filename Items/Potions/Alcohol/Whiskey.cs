@@ -4,6 +4,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -34,17 +35,18 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(227, 148, 11),
                 new Color(235, 177, 5),
                 new Color(250, 190, 12)
             };
+            ItemID.Sets.IsFood[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.DefaultToFood(18, 32, ModContent.BuffType<WhiskeyBuff>(), CalamityUtils.MinutesToFrames(6), true);
-
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
         }
@@ -55,6 +57,11 @@ namespace CalamityMod.Items.Potions.Alcohol
                 AddIngredient(ItemID.SpicyPepper).
                 AddTile(TileID.Kegs).
                 Register();
+        }
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.itemLocation.X += 2 * player.direction;
+            player.itemLocation.Y -= 7;
         }
     }
 }

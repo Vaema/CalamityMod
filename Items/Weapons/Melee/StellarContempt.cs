@@ -39,7 +39,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<FallenPaladinsHammer>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentSolar, 5).
+                AddIngredient<CoreofCalamity>(2).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

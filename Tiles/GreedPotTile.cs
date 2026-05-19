@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Particles;
@@ -75,9 +72,15 @@ namespace CalamityMod.Tiles
         {
             Tile tile = Main.tile[x, y];
 
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<GreedPotTile>())
+                return false;
+
             int style = 0, alt = 0;
             TileObjectData.GetTileInfo(tile, ref style, ref alt);
             TileObjectData data = TileObjectData.GetTileData(tile.TileType, style, alt);
+
+            if (data == null)
+                return false;
 
             int sheetSquare = 16 + data.CoordinatePadding;
             int FrameX = tile.TileFrameX / sheetSquare % data.Width;

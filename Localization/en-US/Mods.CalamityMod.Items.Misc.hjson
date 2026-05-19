@@ -329,3 +329,9 @@ LegendaryShortTooltip:
 	[c/FF6F00:Tales of legends past radiate around you...]
 	[c/BABABA:Hold Shift to listen closer]
 	'''
+
+// Add "Can be extractinated" line in 1.4.5 port
+DisgustingSlop: {
+	DisplayName: Disgusting Slop
+	Tooltip: ""
+}

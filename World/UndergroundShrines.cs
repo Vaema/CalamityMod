@@ -433,7 +433,7 @@ namespace CalamityMod.World
             int foodType = Utils.SelectRandom(WorldGen.genRand, ItemID.ChristmasPudding, ItemID.SugarCookie, ItemID.GingerbreadCookie);
             List<ChestItem> contents = new List<ChestItem>()
             {
-                new ChestItem(ItemType<TundraLeash>(), 1),
+                new ChestItem(ItemType<FrozenCube>(), 1),
                 new ChestItem(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.FrozenKey, 1),
                 new ChestItem(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
@@ -446,7 +446,7 @@ namespace CalamityMod.World
             {
                 contents = new List<ChestItem>()
             {
-                new ChestItem(ItemType<TundraLeash>(), 1),
+                new ChestItem(ItemType<FrozenCube>(), 1),
                 new ChestItem(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.FrozenKey, 1),
                 new ChestItem(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),

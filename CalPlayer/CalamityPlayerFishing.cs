@@ -438,6 +438,10 @@ namespace CalamityMod.CalPlayer
             if (Player.ZoneSkyHeight && fishingRod.type == ModContent.ItemType<HeronRod>())
                 fishingLevel = fishingLevel * HeronRod.FishingPowerBiomeMult;
 
+            // Rage bait gives free sonar effect
+            if (bait.type == ModContent.ItemType<RageBait>())
+                Player.sonarPotion = true;
+
             // Prevent the player from fishing if they have the Bloodworm
             if (bait.type == ModContent.ItemType<BloodwormItem>())
             {

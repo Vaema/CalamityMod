@@ -938,9 +938,9 @@ namespace CalamityMod.Items
         {
             // Xyk 3MARCH2026: Doesn't work on any non use style 1 items currently, Doze will fix it
             if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
-                scale += 0.15f;
+                scale += 0.25f;
             if (item.CountsAsClass<MeleeDamageClass>() && (player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Ale) || player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Sake)))
-                scale += 0.15f;
+                scale += 0.25f;
         }
         public override void UpdateArmorSet(Player player, string set)
         {
@@ -1097,6 +1097,11 @@ namespace CalamityMod.Items
             {
                 player.Calamity().critDamage += 0.15f;
             }
+            if (item.type == ItemID.ReconScope)
+            {
+                player.GetDamage<RangedDamageClass>() += 0.05f; //Total 15% damage
+                player.GetCritChance<RangedDamageClass>() -= 5; //Total 5% crit
+            }
             if (item.type == ItemID.SniperScope)
             {
                 player.GetDamage<RangedDamageClass>() -= 0.1f; //Total 0% damage
@@ -1191,6 +1196,7 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.GravityGlobe)
             {
+                player.noFallDmg = true;
                 player.GetJumpState<GravityJump>().Enable();
                 if (player.Calamity().justChangedGravity)
                 {

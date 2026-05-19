@@ -70,6 +70,7 @@ namespace CalamityMod
             AcidRainEvent.CountdownUntilForcedAcidRain = 0;
 
             HasGeneratedLuminitePlanetoids = false; //Allow generating planetoids in other worlds
+            DownedBossSystem.ResetAllFlags();
         }
         #endregion
 

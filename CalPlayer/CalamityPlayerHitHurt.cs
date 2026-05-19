@@ -284,6 +284,11 @@ namespace CalamityMod.CalPlayer
 
             if (damage == 10.0 && hitDirection == 0 && damageSource.SourceOtherIndex == 8)
             {
+                if (fishStocks && fishStockPower < 0)
+                {
+                    string year = DateTime.Now.ToString("yy");
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name, year));
+                }
                 if (alcoholPoisoning)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AlcoholBig" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
@@ -480,6 +485,9 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit NPC
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            if (Player.Calamity().coinDropMult != 1)
+                target.Calamity().coinDropMult = Player.Calamity().coinDropMult;
+
             if (target.HasBuff<SmashedEvil>())
             {
                 //This is essentially 10 AP, but independent of armor amount
@@ -719,70 +727,10 @@ namespace CalamityMod.CalPlayer
             if (npc.Calamity().antlionCloudDebuffTimer > 0)
                 modifiers.SourceDamage *= AntlionSkewer.CloudDamageDebuffMult;
 
-            // Enemies deal less contact damage while sick, due to being weakened.
-            if (npc.poisoned)
-            {
-                float damageReductionFromPoison = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromPoison *= 2f;
-                    else
-                        damageReductionFromPoison /= 2f;
-                }
-                damageReductionFromPoison = 1f - damageReductionFromPoison;
-
-                modifiers.SourceDamage *= damageReductionFromPoison;
-            }
-
-            if (npc.venom)
-            {
-                float damageReductionFromVenom = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromVenom *= 2f;
-                    else
-                        damageReductionFromVenom /= 2f;
-                }
-                damageReductionFromVenom = 1f - damageReductionFromVenom;
-
-                modifiers.SourceDamage *= damageReductionFromVenom;
-            }
-
-            if (npc.Calamity().astralInfection)
-            {
-                float damageReductionFromAstralInfection = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromAstralInfection *= 2f;
-                    else
-                        damageReductionFromAstralInfection /= 2f;
-                }
-                damageReductionFromAstralInfection = 1f - damageReductionFromAstralInfection;
-
-                modifiers.SourceDamage *= damageReductionFromAstralInfection;
-            }
-
-            if (npc.Calamity().plague)
-            {
-                float damageReductionFromPlague = (float)((npc.Calamity().irradiated? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromPlague *= 2f;
-                    else
-                        damageReductionFromPlague /= 2f;
-                }
-                damageReductionFromPlague = 1f - damageReductionFromPlague;
-
-                modifiers.SourceDamage *= damageReductionFromPlague;
-            }
-
+            // Whispering Death makes enemies deal less damage
             if (npc.Calamity().whisperingDeath)
             {
-                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.1f);
+                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * WhisperingDeath.EnemyDamageReduction);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -1354,11 +1302,11 @@ namespace CalamityMod.CalPlayer
 
             if (rOfResilienceCooldown == 0 && rOfResilienceEffect > 0)
             {
-                int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                int cooldownTime = RelicOfResilience.baseCooldown;
                 rOfResilienceCooldown = cooldownTime;
                 Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
                 SoundStyle youGotHit = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
-                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
+                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.5f }, Player.Center);
             }
 
             if (alchFlask)
@@ -1529,6 +1477,7 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
                 else
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, IconToUse);
+                Player.SetImmuneTimeForAllTypes(Player.longInvince ? 120 : 80);
             }
 
             //Dodge activation order is as follows:

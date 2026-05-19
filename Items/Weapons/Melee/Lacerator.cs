@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", Main.zenithWorld ? "\n" + this.GetLocalizedValue("GFBFlavor") : "");
 
         public override void AddRecipes()
         {

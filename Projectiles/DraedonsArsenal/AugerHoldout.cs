@@ -235,7 +235,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Texture2D blade = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade").Value;
             Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
             Vector2 vel = Projectile.rotation.ToRotationVector2();
             float randSize = Main.rand.NextFloat(0.8f, 1f);
             Color drawColor = Projectile.GetAlpha(lightColor);

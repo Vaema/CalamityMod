@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Accessories
     public enum AlcoholType
     {
         None,
+        BaconOil,
         BloodyMary,
         CaribbeanRum,
         CinnamonRoll,
@@ -39,7 +40,7 @@ namespace CalamityMod.Items.Accessories
         Whiskey,
         WhiteWine,
         Ale,
-        Sake
+        Sake,
     }
 
     public interface IAlcoholItem
@@ -57,14 +58,14 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            Main.RegisterItemAnimation(Item.type, new Terraria.DataStructures.DrawAnimationVertical(1, 25));
+            Main.RegisterItemAnimation(Item.type, new Terraria.DataStructures.DrawAnimationVertical(1, 26));
             ItemID.Sets.AnimatesAsSoul[Item.type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 58;
-            Item.height = 62;
+            Item.height = 60;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
@@ -189,7 +190,6 @@ namespace CalamityMod.Items.Accessories
                 if (effectLine != null)
                 {
                     effectLine.Text = this.GetLocalizedValue("Empty");
-                    effectLine.OverrideColor = Color.Gray;
                 }
                 nameLine?.Hide();
                 return;
@@ -220,12 +220,27 @@ namespace CalamityMod.Items.Accessories
         {
             Texture2D texture = TextureAssets.Item[Item.type].Value;
 
-            int frameHeight = texture.Height / 25;
+            int frameHeight = texture.Height / 26;
             int frameIndex = (int)currentAlcoholType;
 
             Rectangle targetFrame = new Rectangle(0, frameIndex * frameHeight, texture.Width, frameHeight);
 
             spriteBatch.Draw(texture, position, targetFrame, drawColor, 0f, origin, scale, SpriteEffects.None, 0f);
+            return false;
+        }
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = TextureAssets.Item[Item.type].Value;
+
+            int frameHeight = texture.Height / 26;
+            int frameIndex = (int)currentAlcoholType;
+
+            Rectangle targetFrame = new Rectangle(0, frameIndex * frameHeight, texture.Width, frameHeight);
+
+            Vector2 drawPosition = Item.position - Main.screenPosition + new Vector2(Item.width / 2, Item.height - frameHeight / 2);
+            Vector2 origin = targetFrame.Size() / 2f;
+
+            spriteBatch.Draw(texture, drawPosition, targetFrame, lightColor, rotation, origin, scale, SpriteEffects.None, 0f);
             return false;
         }
     }

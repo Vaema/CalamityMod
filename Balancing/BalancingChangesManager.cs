@@ -195,9 +195,6 @@ namespace CalamityMod.Balancing
             // 75% resist to Plaguenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.25f, ProjectileType<PlaguenadeBee>(), ProjectileType<PlaguenadeProj>()))));
 
-            // 70% resist to Stardust Dragon Staff.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.3f, ProjectileID.StardustDragon1, ProjectileID.StardustDragon2, ProjectileID.StardustDragon3, ProjectileID.StardustDragon4))));
-
             // 50% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(ResistTrueMelee(0.5f))));
 
@@ -209,6 +206,9 @@ namespace CalamityMod.Balancing
 
             //45% resist to Duststorm in a Bottle
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<DuststormCloud>(), ProjectileType<DuststormCloudExplosion>(), ProjectileType<DuststormInABottleProj>()))));
+
+            // 40% resist to Stardust Dragon Staff.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.6f, ProjectileID.StardustDragon1, ProjectileID.StardustDragon2, ProjectileID.StardustDragon3, ProjectileID.StardustDragon4))));
 
             // 35% resist to Aerial Bane.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2BetsyArrow))));
@@ -251,9 +251,6 @@ namespace CalamityMod.Balancing
             // 50% resist to Galactus Blade.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.5f, ProjectileType<GalacticaComet>())));
 
-            // 40% resist to Pristine Fury's alt fire.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.6f, ProjectileType<PristineSecondary>())));
-
             // 40% resist to Stellar Torus Staff.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<DarkEnergy>(), new ProjectileResistBalancingRule(0.6f, ProjectileType<StellarTorusBeam>())));
             #endregion
@@ -270,9 +267,6 @@ namespace CalamityMod.Balancing
 
             // 50% resist to Legion of Celestia.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<CelestialAxeMinion>()))));
-
-            // 50% resist to Pristine Fury's alt fire.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<PristineSecondary>()))));
 
             // 50% resist to Tactician's Trump Card's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<TacticiansElectricBoom>()))));

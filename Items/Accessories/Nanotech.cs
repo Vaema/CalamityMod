@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -39,6 +40,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RogueEmblem>().
                 AddIngredient<VampiricTalisman>().
                 AddIngredient<ElectriciansGlove>().
+                AddIngredient(ItemID.LunarBar, 8).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();

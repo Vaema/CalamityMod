@@ -798,6 +798,15 @@ GloomTorch: {
 	Tooltip: ""
 }
 
+GluttonyBlender: {
+	DisplayName: Gluttony Blender
+	Tooltip:
+		'''
+		A strange industrial contraption which appears to process food
+		Has the potential to turn food into something more nutritious... maybe
+		'''
+}
+
 LanternCenter: {
 	DisplayName: Lantern Center
 	Tooltip: Lights up the night sky with celebratory lanterns

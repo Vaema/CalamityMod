@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150), DefaultIDStaticIFrames) },
-                { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
+                { ProjectileID.Flamarang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FlamingJack, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FlowerPetal, Do(MaxUpdatesExact(4), LocalIFrames(10)) }, // Orichalcum armor
                 { ProjectileID.FlyingKnife, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
