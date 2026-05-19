@@ -29,9 +29,11 @@ using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
@@ -90,6 +92,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override List<string> SetNPCNameList() => ModContent.GetInstance<TownPiggy>().SetNPCNameList();
 
+        public override void PartyHatPosition(ref Vector2 position, ref SpriteEffects spriteEffects) => position.X -= 4f * NPC.direction;
+
         public override void SendExtraAI(System.IO.BinaryWriter writer)
         {
             writer.Write(hasFiredShotThisAttack);
@@ -138,40 +142,44 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 attackFrameTimer++;
 
-                if (attackFrameTimer >= 3 && !hasFiredShotThisAttack) // Delay effects spawning by 2 frames to give the NPC time to turn around after being set to attack
+                if (attackFrameTimer >= 3 && !hasFiredShotThisAttack)
                 {
-                    Texture2D gunTex = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
-                    int holdoutOffset = -21;
-
-                    Vector2 gunDrawPos = NPC.Center + new Vector2(0f, 8f);
-                    float rotation = NPC.ai[2] * ((float)Math.PI / 2f) * NPC.spriteDirection;
-
-                    // Match the pos calculations from PostDraw
-                    Vector2 origin = NPC.spriteDirection == -1 ? new Vector2(gunTex.Width + holdoutOffset, gunTex.Height / 2f) : new Vector2(-holdoutOffset, gunTex.Height / 2f);
-                    Vector2 muzzleLocal = NPC.spriteDirection == -1 ? new Vector2(0f, 6f) : new Vector2(gunTex.Width, 6f);
-                    Vector2 muzzlePos = gunDrawPos + (muzzleLocal - origin).RotatedBy(rotation);
-                    Vector2 barrelDirection = new Vector2(NPC.spriteDirection, 0f).RotatedBy(rotation);
-
-                    // Spawn effects
-                    Particle bloom = new CustomSpark(muzzlePos, Vector2.Zero, "CalamityMod/Particles/BrightFlash", false, 5, 0.18f, Color.Khaki, Vector2.One, true, true, glowOpacity: 0.45f, colorFadeSpeed: 8);
-                    GeneralParticleHandler.SpawnParticle(bloom, true);
-
-                    for (int i = 0; i < 8; i++)
+                    if (Main.netMode != NetmodeID.Server)
                     {
-                        Vector2 vel = barrelDirection.RotatedByRandom(0.18f) * Main.rand.NextFloat(3f, 7f);
+                        Texture2D gunTex = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
+                        int holdoutOffset = -21;
 
-                        Particle spark = new CustomSpark(muzzlePos, vel, "CalamityMod/Particles/FadeLine", false, Main.rand.Next(10, 18), 0.18f, new Color(255, 230, 140), new Vector2(0.5f, 1f), true, shrinkSpeed: 0.4f, colorFadeSpeed: 10);
-                        GeneralParticleHandler.SpawnParticle(spark, true);
+                        Vector2 gunDrawPos = NPC.Center + new Vector2(0f, 8f);
+                        float rotation = NPC.ai[2] * ((float)Math.PI / 2f) * NPC.spriteDirection;
+
+                        Vector2 origin = NPC.spriteDirection == -1 ? new Vector2(gunTex.Width + holdoutOffset, gunTex.Height / 2f) : new Vector2(-holdoutOffset, gunTex.Height / 2f);
+                        Vector2 muzzleLocal = NPC.spriteDirection == -1 ? new Vector2(0f, 6f) : new Vector2(gunTex.Width, 6f);
+                        Vector2 muzzlePos = gunDrawPos + (muzzleLocal - origin).RotatedBy(rotation);
+                        Vector2 barrelDirection = new Vector2(NPC.spriteDirection, 0f).RotatedBy(rotation);
+
+                        Particle bloom = new CustomSpark(muzzlePos, Vector2.Zero, "CalamityMod/Particles/BrightFlash", false, 5, 0.18f, Color.Khaki, Vector2.One, true, true, glowOpacity: 0.45f, colorFadeSpeed: 8);
+                        GeneralParticleHandler.SpawnParticle(bloom, true);
+
+                        for (int i = 0; i < 8; i++)
+                        {
+                            Vector2 vel = barrelDirection.RotatedByRandom(0.18f) * Main.rand.NextFloat(3f, 7f);
+                            Particle spark = new CustomSpark(muzzlePos, vel, "CalamityMod/Particles/FadeLine", false, Main.rand.Next(10, 18), 0.18f, new Color(255, 230, 140), new Vector2(0.5f, 1f), true, shrinkSpeed: 0.4f, colorFadeSpeed: 10);
+                            GeneralParticleHandler.SpawnParticle(spark, true);
+                        }
+                        SoundEngine.PlaySound(ElephantKiller.Shot with { Volume = 0.9f, PitchVariance = 0.15f, MaxInstances = 3 }, NPC.Center);
                     }
-                    SoundEngine.PlaySound(ElephantKiller.Shot with { Volume = 0.9f, PitchVariance = 0.15f, MaxInstances = 3 }, NPC.Center);
-
                     hasFiredShotThisAttack = true;
-                }
+                    NPC.netUpdate = true;
+                }   
             }
             else
             {
-                hasFiredShotThisAttack = false;
-                attackFrameTimer = 0; // Reset the frame counter when not attacking
+                if (hasFiredShotThisAttack)
+                {
+                    hasFiredShotThisAttack = false;
+                    NPC.netUpdate = true; // Syncs state exit
+                }
+                attackFrameTimer = 0;
             }
         }
 
@@ -188,13 +196,13 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override string GetChat()
         {
-            return "Ooooo, you want my wares dontcha? Yeah, yeah you do.";
+
+            return "dialogue";
         }
 
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = Language.GetTextValue("LegacyInterface.28");
-            button2 = "Donation";// this.GetLocalizedValue("RefundButton"); ;
         }
 
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
@@ -202,10 +210,6 @@ namespace CalamityMod.NPCs.TownNPCs
             if (firstButton)
             {
                 shopName = "Shop";
-            }
-            else
-            {
-                Main.npcChatText = "A donation? How generous!";
             }
         }
 
