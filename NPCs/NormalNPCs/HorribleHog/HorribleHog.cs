@@ -11,6 +11,7 @@ using CalamityMod.Items.Tools;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -107,11 +108,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         public float AfterimageTrailOpacity;
 
-        public float PriitiveTrailOpacity;
-
         public float HorizontalShakeStrength;
 
         public float DevilsTongueVolumeMultiplier;
+
+        public float TintStrength;
 
         /// <summary>
         /// Used as a shader parameter to rotate the already-drawn sprite of Horrible Hog directly regardless of the rotation value of <see cref="NPC.rotation"/>. <br></br>
@@ -128,6 +129,10 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         public Vector2 SquashVector;
 
         public Vector2 SquashVectorTarget;
+
+        public Color TintColor;
+
+        public Color TintColorTarget;
 
         public SlotId DeathLaughSoundSlot;
 
@@ -317,11 +322,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         {
             int attackCountersLength = reader.ReadByte();
             for (int i = 0; i < attackCountersLength; i++)
-                PreviousAttackCounters.Add((BehaviorState)reader.ReadByte(), (int)reader.ReadByte());
+                PreviousAttackCounters[(BehaviorState)reader.ReadByte()] = (int)reader.ReadByte();
 
             int attackWeightsLength = reader.ReadByte();
             for (int i = 0; i < attackWeightsLength; i++)
-                AttackWeights.Add((BehaviorState)reader.ReadByte(), (float)reader.ReadByte());
+                AttackWeights[(BehaviorState)reader.ReadByte()] = (float)reader.ReadByte();
 
             reader.ReadFlags(out SearchForTargetEveryFrame, out HasPlayedEngageAnimation, out HasPlayedDeathAnimation, out ReadyToPlayLaughingAnimation);
             LastPlayerPosition = reader.ReadPackedWorldPosition();
@@ -335,6 +340,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         {
             if (!HasPlayedDeathAnimation)
             {
+                NPC.velocity.X = 6f * -NPC.oldVelocity.X.DirectionalSign();
+                NPC.velocity.Y = -10f;
                 NPC.life = NPC.lifeMax;
                 HasPlayedDeathAnimation = true;
                 SwitchBehavior(specificAttack: BehaviorState.DeathAnimation);
@@ -419,6 +426,10 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             switch ((BehaviorState)AIState)
             {
+                case BehaviorState.PiggyTransformation:
+                    MainBehavior_PiggyTransformation();
+                    break;
+
                 case BehaviorState.EngageAnimation:
                     MainBehavior_EngageAnimation(target);
                     break;
@@ -466,6 +477,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             SquashVector = Vector2.Lerp(SquashVector, SquashVectorTarget, 0.125f);
             EyeGlintScale = MathHelper.Lerp(EyeGlintScale, 0f, 0.125f);
+            TintColor = Color.Lerp(TintColor, TintColorTarget, 0.125f);
+            TintStrength = MathHelper.Lerp(TintStrength, 0, 0.125f);
             NPC.StepUpBlocks();
             Timer++;
         }
@@ -542,6 +555,23 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             KillChargeHitboxProjectile();
 
             NPC.netUpdate = true;
+        }
+
+        public void TransformIntoPiggy()
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                // Run packet here if necessary.
+            }
+
+            SwitchBehavior(specificAttack: BehaviorState.PiggyTransformation);
+        }
+
+        public bool TryTransformingIntoPiggy()
+        {
+            if (AIState == (int)BehaviorState.PiggyTransformation || AIState == (int)BehaviorState.DespawnAnimation || AIState == (int)BehaviorState.DeathAnimation)
+                return false;
+            return true;
         }
 
         private int GetMaxAttackValue(BehaviorState attack)
@@ -777,7 +807,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             Vector2 drawPosition = NPC.Center + new Vector2(0f, NPC.gfxOffY - yOffset) - screenPos;
 
             // Background effect when Horrible Hog is idling and its nearby loop is playing.
-            if (DevilsTongueVolumeMultiplier > 0.05f)
+            if (DevilsTongueVolumeMultiplier > 0.05f && AIState != (int)BehaviorState.PiggyTransformation)
             {
                 using (spriteBatch.Scope())
                 {
@@ -792,7 +822,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     auraShader.Parameters["maxPixelFadeDistance"].SetValue(0.485f);
                     auraShader.Parameters["pixelationFactor"].SetValue(Main.ScreenSize.ToVector2() * 0.25f);
                     auraShader.Parameters["spiralTimeOffset"].SetValue(new Vector2(-0.08f, -0.05f));
-                    auraShader.Parameters["vortexDarkColor"].SetValue(new Color(40, 40, 40).ToVector3());
+                    auraShader.Parameters["vortexDarkColor"].SetValue(new Color(8, 8, 8).ToVector3());
                     auraShader.Parameters["vortexBrightColor"].SetValue(Color.Crimson.ToVector3());
 
                     Main.graphics.GraphicsDevice.Textures[1] = VortexTextureSecondary.Value;
@@ -818,22 +848,33 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             // Horrible Hog and its afterimage trail.
             using (spriteBatch.Scope())
             {
-                Effect rotateSpriteShader = CalamityShaders.RotateSprite.Value;
-                rotateSpriteShader.Parameters["rotation"].SetValue(SpriteRotation);
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, rotateSpriteShader, Main.GameViewMatrix.TransformationMatrix);
-
-                if (CalamityClientConfig.Instance.Afterimages && AfterimageTrailOpacity > 0.05f)
+                using var lease = RenderTargetPool.Shared.Rent(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight, RenderTargetDescriptor.Default);
+                using (lease.Scope(clearColor: Color.Transparent))
                 {
-                    for (int i = 0; i < NPC.oldPos.Length; i++)
-                    {
-                        Color afterimageColor = Color.Red * AfterimageTrailOpacity * 0.76f;
-                        afterimageColor *= (float)(NPC.oldPos.Length - i) / (float)NPC.oldPos.Length;
-                        Vector2 afterimageDrawPosition = NPC.oldPos[i] - Vector2.UnitY * yOffset + NPC.Size * 0.5f - screenPos;
-                        spriteBatch.Draw(baseTexture, afterimageDrawPosition, NPC.frame, NPC.GetAlpha(afterimageColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, effects, 0f);
-                    }
-                }
-                spriteBatch.Draw(baseTexture, drawPosition + Main.rand.NextVector2Circular(HorizontalShakeStrength, 0f), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, effects, 0f);
+                    Effect rotateSpriteShader = CalamityShaders.RotateSprite.Value;
+                    rotateSpriteShader.Parameters["rotation"].SetValue(SpriteRotation);
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, rotateSpriteShader, Matrix.Identity);
 
+                    if (CalamityClientConfig.Instance.Afterimages && AfterimageTrailOpacity > 0.05f)
+                    {
+                        for (int i = 0; i < NPC.oldPos.Length; i++)
+                        {
+                            Color afterimageColor = Color.Red * AfterimageTrailOpacity * 0.76f;
+                            afterimageColor *= (float)(NPC.oldPos.Length - i) / (float)NPC.oldPos.Length;
+                            Vector2 afterimageDrawPosition = NPC.oldPos[i] - Vector2.UnitY * yOffset + NPC.Size * 0.5f - screenPos;
+                            spriteBatch.Draw(baseTexture, afterimageDrawPosition, NPC.frame, NPC.GetAlpha(afterimageColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, effects, 0f);
+                        }
+                    }
+
+                    spriteBatch.Draw(baseTexture, drawPosition + Main.rand.NextVector2Circular(HorizontalShakeStrength, 0f), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, effects, 0f);
+                    spriteBatch.End();
+                }
+
+                Effect tintShader = CalamityShaders.BasicTintShader.Value;
+                tintShader.Parameters["uColor"].SetValue(TintColor.ToVector3());
+                tintShader.Parameters["uOpacity"].SetValue(TintStrength);
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, tintShader, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.Draw(lease.Target, Vector2.Zero, Color.White);
                 spriteBatch.End();
             }
 
@@ -857,6 +898,21 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             }
 
             return false;
+        }
+
+        private void EffectChaining_ApplyTintShader()
+        {
+            Effect tintShader = CalamityShaders.BasicTintShader.Value;
+            tintShader.Parameters["uColor"].SetValue(TintColor.ToVector3());
+            tintShader.Parameters["uOpacity"].SetValue(TintStrength);
+            tintShader.Techniques[0].Passes[0].Apply();
+        }
+
+        private void EffectChaining_ApplySpriteRotationShader()
+        {
+            Effect rotateSpriteShader = CalamityShaders.RotateSprite.Value;
+            rotateSpriteShader.Parameters["rotation"].SetValue(SpriteRotation);
+            rotateSpriteShader.Techniques[0].Passes[0].Apply();
         }
 
         private void SetSquashVectors(Vector2? squashVectorTarget = null, Vector2? squashVector = null)

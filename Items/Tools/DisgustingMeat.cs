@@ -3,6 +3,7 @@ using CalamityMod.Effects;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Potions.Food;
 using CalamityMod.Packets;
+using CalamityMod.Packets.Worlds;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Utilities.Daybreak;
@@ -55,7 +56,7 @@ namespace CalamityMod.Items.Tools
 
         public override bool CanUseItem(Player player)
         {
-            DisgustingMeatAnimationPlayer modPlayer = player.GetModPlayer<DisgustingMeatAnimationPlayer>();
+            DisgustingMeatPlayer modPlayer = player.GetModPlayer<DisgustingMeatPlayer>();
             return !modPlayer.DoingVomitAnimation;
         }
 
@@ -63,13 +64,10 @@ namespace CalamityMod.Items.Tools
         {
             if (player.ItemTimeIsZero)
             {
-                DisgustingMeatAnimationPlayer modPlayer = player.GetModPlayer<DisgustingMeatAnimationPlayer>();
+                DisgustingMeatPlayer modPlayer = player.GetModPlayer<DisgustingMeatPlayer>();
                 if (player.altFunctionUse == 2)
                     modPlayer.EjectMiscUpgrades = true;
                 modPlayer.DoingVomitAnimation = true;
-
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                    DisgustingMeatPlayerSyncPacket.Send(modPlayer);
 
                 return true;
             }
@@ -139,7 +137,7 @@ namespace CalamityMod.Items.Tools
         }
     }
 
-    public class DisgustingMeatAnimationPlayer : ModPlayer
+    public class DisgustingMeatPlayer : ModPlayer
     {
         public static int VomitEjectTime => 75;
 
@@ -151,6 +149,24 @@ namespace CalamityMod.Items.Tools
 
         public int VomitTime = 0;
 
+        public override void SyncPlayer(int toWho, int fromWho, bool newPlayer) => DisgustingMeatPlayerSyncPacket.Send(this, toWho, fromWho);
+
+        public override void CopyClientState(ModPlayer targetCopy)
+        {
+            DisgustingMeatPlayer clientClone = (DisgustingMeatPlayer)targetCopy;
+            clientClone.DoingVomitAnimation = DoingVomitAnimation;
+            clientClone.EjectMiscUpgrades = EjectMiscUpgrades;
+            clientClone.VomitTime = VomitTime;
+            clientClone.Player.eyeHelper.CurrentEyeFrame = Player.eyeHelper.CurrentEyeFrame;
+        }
+
+        public override void SendClientChanges(ModPlayer clientPlayer)
+        {
+            DisgustingMeatPlayer clientClone = (DisgustingMeatPlayer)clientPlayer;
+            if (clientClone.DoingVomitAnimation != DoingVomitAnimation)
+                DisgustingMeatPlayerSyncPacket.Send(this);
+        }
+
         public override void UpdateDead()
         {
             DoingVomitAnimation = false;
@@ -160,10 +176,7 @@ namespace CalamityMod.Items.Tools
 
         public override void PostUpdateMiscEffects()
         {
-            if (Player.whoAmI != Main.myPlayer)
-                return;
-
-            if (DoingVomitAnimation)
+            if (Player.whoAmI == Main.myPlayer && DoingVomitAnimation)
             {
                 // Eject all necessary items at once.
                 if (VomitTime == VomitEjectTime)
@@ -172,59 +185,57 @@ namespace CalamityMod.Items.Tools
                     SoundEngine.PlaySound(SoundID.NPCDeath13, Player.Center);
                 }
 
-                // Vomit particles bleeehhhhggghghghgh
-                if (VomitTime >= VomitEjectTime && VomitTime <= VomitMaxTime)
-                {
-                    if (Main.rand.NextBool(2))
-                    {
-                        int dustAmt = Main.rand.Next(2, 5);
-                        for (int i = 0; i < dustAmt; i++)
-                        {
-                            int dustType = Utils.SelectRandom(Main.rand, DustID.ToxicBubble, DustID.GreenBlood, DustID.Blood);
-                            Vector2 spawnPosition = Player.Center + new Vector2(9f * Player.direction, -8f);
-                            Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(20f) + Player.headRotation) * Main.rand.NextFloat(6f, 8f) * Player.direction;
-                            Dust.NewDust(spawnPosition, 1, 1, dustType, velocity.X, velocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
-                        }
-                    }
-
-                    if (Main.rand.NextBool(3))
-                    {
-                        Vector2 spawnPosition = Player.Center - new Vector2(9f * Player.direction, 8f);
-                        Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(20f) + Player.headRotation) * Main.rand.NextFloat(6f, 8f) * Player.direction;
-                        Color color = Color.Lerp(Color.DarkOliveGreen, Color.Green, Main.rand.NextFloat());
-                        float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
-
-                        TimedSmokeParticle vomit = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(0.3f, 0.5f), Main.rand.NextFloat(0.8f, 1f), Main.rand.Next(30, 45), rotationSpeed);
-                        GeneralParticleHandler.SpawnParticle(vomit, true);
-                    }
-                }
-
                 if (VomitTime >= VomitMaxTime)
                 {
                     VomitTime = 0;
                     DoingVomitAnimation = false;
                     EjectMiscUpgrades = false;
-                    if (Main.netMode == NetmodeID.MultiplayerClient)
-                        DisgustingMeatPlayerSyncPacket.Send(this);
                 }
 
                 VomitTime++;
+            }
+
+            // Vomit particles bleeehhhhggghghghgh
+            if (VomitTime >= VomitEjectTime && VomitTime <= VomitMaxTime)
+            {
+                if (Main.rand.NextBool(2))
+                {
+                    int dustAmt = Main.rand.Next(2, 5);
+                    for (int i = 0; i < dustAmt; i++)
+                    {
+                        int dustType = Utils.SelectRandom(Main.rand, DustID.ToxicBubble, DustID.GreenBlood, DustID.Blood);
+                        Vector2 spawnPosition = Player.Center + new Vector2(9f * Player.direction, -8f);
+                        Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(20f) + Player.headRotation) * Main.rand.NextFloat(6f, 8f) * Player.direction;
+                        Dust.NewDust(spawnPosition, 1, 1, dustType, velocity.X, velocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                    }
+                }
+
+                if (Main.rand.NextBool(3))
+                {
+                    Vector2 spawnPosition = Player.Center - new Vector2(9f * Player.direction, 8f);
+                    Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(20f) + Player.headRotation) * Main.rand.NextFloat(6f, 8f) * Player.direction;
+                    Color color = Color.Lerp(Color.DarkOliveGreen, Color.Green, Main.rand.NextFloat());
+                    float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                    TimedSmokeParticle vomit = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(0.3f, 0.5f), Main.rand.NextFloat(0.8f, 1f), Main.rand.Next(30, 45), rotationSpeed);
+                    GeneralParticleHandler.SpawnParticle(vomit, true);
+                }
             }
         }
 
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
         {
-            if (VomitTime >= 0 && DoingVomitAnimation)
+            if (DoingVomitAnimation)
             {
                 // Rapidly shift between random angles while vomiting.
                 float interpolant = Utils.GetLerpValue(0f, VomitEjectTime, VomitTime, true) * Utils.GetLerpValue(VomitMaxTime, VomitMaxTime - 15, VomitTime, true);
                 float idealRotationDegrees = MathHelper.Lerp(0f, 15f, interpolant);
-                drawInfo.drawPlayer.headRotation = MathHelper.ToRadians(Main.rand.NextFloat(-idealRotationDegrees, idealRotationDegrees));
+                Player.headRotation = MathHelper.ToRadians(Main.rand.NextFloat(-idealRotationDegrees, idealRotationDegrees));
 
                 // Close the eyes as well.
-                drawInfo.drawPlayer.eyeHelper.CurrentEyeFrame = Terraria.GameContent.PlayerEyeHelper.EyeFrame.EyeHalfClosed;
+                Player.eyeHelper.CurrentEyeFrame = Terraria.GameContent.PlayerEyeHelper.EyeFrame.EyeHalfClosed;
                 if (VomitTime >= VomitEjectTime)
-                    drawInfo.drawPlayer.eyeHelper.CurrentEyeFrame = Terraria.GameContent.PlayerEyeHelper.EyeFrame.EyeClosed;
+                    Player.eyeHelper.CurrentEyeFrame = Terraria.GameContent.PlayerEyeHelper.EyeFrame.EyeClosed;
             }
         }
 
@@ -260,20 +271,21 @@ namespace CalamityMod.Items.Tools
                     if (NPC.peddlersSatchelWasUsed || NPC.combatBookWasUsed || NPC.combatBookVolumeTwoWasUsed)
                     {
                         TryDropBoosterItem(ref NPC.peddlersSatchelWasUsed, ItemID.PeddlersSatchel);
+                        if (Main.netMode != NetmodeID.SinglePlayer)
+                            DisableNPCUpgradesSyncPacket.Send(0);
+
                         TryDropBoosterItem(ref NPC.combatBookWasUsed, ItemID.CombatBook);
+                        if (Main.netMode != NetmodeID.SinglePlayer)
+                            DisableNPCUpgradesSyncPacket.Send(1);
+
                         TryDropBoosterItem(ref NPC.combatBookVolumeTwoWasUsed, ItemID.CombatBookVolumeTwo);
-                        NetMessage.SendData(MessageID.WorldData);
+                        if (Main.netMode != NetmodeID.SinglePlayer)
+                            DisableNPCUpgradesSyncPacket.Send(2);
                     }
                 }
 
                 // Artisan Loaf.
                 TryDropBoosterItem(ref Player.ateArtisanBread, ItemID.ArtisanLoaf);
-
-                // Torch God's Favor.
-                TryDropBoosterItem(ref Player.unlockedBiomeTorches, ItemID.TorchGodsFavor);
-
-                // Minecart Upgrade Kit.
-                TryDropBoosterItem(ref Player.unlockedSuperCart, ItemID.MinecartPowerup);
             }
             else
             {
@@ -331,7 +343,11 @@ namespace CalamityMod.Items.Tools
                 }
             }
 
-            NetMessage.SendData(MessageID.SyncPlayer, -1, -1, null, Player.whoAmI);
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                NetMessage.SendData(MessageID.SyncPlayer, -1, -1, null, Player.whoAmI);
+                DisgustingMeatPlayerSyncPacket.Send(this);
+            }
         }
 
         private void TryDropBoosterItem(ref bool condition, int itemType)

@@ -4,11 +4,101 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 {
     public partial class HorribleHog
     {
+        public void MainBehavior_PiggyTransformation()
+        {
+            NPC.ShowNameOnHover = false;
+            NPC.dontTakeDamage = true;
+            NPC.damage = 0;
+            NPC.velocity.X *= 0.9f;
+            NPC.rotation *= 0.9f;
+            SpriteRotation *= 0.9f;
+
+            float volumeMultiplier = Utils.GetLerpValue(0f, 45f, Timer, true) * Utils.GetLerpValue(240f, 190f, Timer, true);
+            DevilsTongueVolumeMultiplier = volumeMultiplier;
+
+            float tintStrength = Utils.GetLerpValue(0f, 45f, Timer, true);
+            TintStrength = tintStrength;
+            TintColorTarget = Color.White;
+
+            float shakeStrength = Utils.Remap(Timer, 0f, 180f, 0f, 5f, true);
+            HorizontalShakeStrength = shakeStrength;
+
+            float distanceFromHog = Main.LocalPlayer.Distance(NPC.Center);
+            if (distanceFromHog < 400f)
+            {
+                float screenshakeStrength = Utils.Remap(distanceFromHog, 400f, 100f, 0f, 3f, true) * Utils.GetLerpValue(0f, 180f, Timer, true);
+                Main.LocalPlayer.SetScreenshake(screenshakeStrength);
+            }
+
+            float smokeOpacity = 1.2f * Utils.GetLerpValue(0f, 45f, Timer, true);
+            int smokeAmt = Main.rand.Next(2, 5);
+            for (int i = 0; i < smokeAmt; i++)
+            {
+                Color color = Color.Lerp(new(30, 30, 30), Color.Crimson, Main.rand.NextBool(3) ? Main.rand.NextFloat(0.2f, 0.8f) : Main.rand.Next(2));
+                int lifetime = Main.rand.Next(30, 45);
+                float scale = Main.rand.NextFloat(1.4f, 1.6f);
+
+                HeavySmokeParticle circlingSmoke = new(NPC.Center, Main.rand.NextVector2Circular(16f, 16f), color, lifetime, scale, smokeOpacity, 0.01f, affectedByLight: true);
+                GeneralParticleHandler.SpawnParticle(circlingSmoke, true, Enums.GeneralDrawLayer.BeforeNPCs);
+            }
+
+            float particleStrengthInterpolant = Utils.GetLerpValue(0f, 180f, Timer, true);
+            int lightSpawnRate = (int)MathHelper.Lerp(8, 1, particleStrengthInterpolant);
+            if (Main.rand.NextBool(lightSpawnRate))
+            {
+                int lightAmt = (int)MathHelper.Lerp(1, 6, particleStrengthInterpolant);
+                for (int i = 0; i < Main.rand.Next(1, lightAmt + 1); i++)
+                {
+                    float lightSpeed = MathHelper.Lerp(2f, 4f, particleStrengthInterpolant) * tintStrength;
+                    float lightScale = MathHelper.Lerp(0.5f, 0.8f, particleStrengthInterpolant) * Main.rand.NextFloat(0.5f, 1f) * tintStrength;
+
+                    SquishyLightParticle transformLight = new(NPC.Center, Main.rand.NextVector2Circular(lightSpeed, lightSpeed), lightScale, Color.White, Main.rand.Next(30, 45));
+                    GeneralParticleHandler.SpawnParticle(transformLight, true, Enums.GeneralDrawLayer.AfterNPCs);
+                }
+            }
+
+            if (Timer % 30 == 0f)
+            {
+                float glowRingScale = Utils.Remap(Timer, 0f, 240f, 0.6f, 1.8f, true);
+                Color glowRingColor = Color.Lerp(Color.Crimson, Color.White, Utils.GetLerpValue(0f, 240f, Timer, true));
+                CustomPulse transformRing = new(NPC.Center, Vector2.Zero, glowRingColor, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, glowRingScale, 45);
+                GeneralParticleHandler.SpawnParticle(transformRing, false);
+            }
+
+            if (Timer >= 240f)
+            {
+                BloomParticle bloom = new(NPC.Center, Vector2.Zero, Color.White, 0f, 2.4f, 125);
+                for (int i = 0; i < 3; i++)
+                    GeneralParticleHandler.SpawnParticle(bloom, false, Enums.GeneralDrawLayer.AfterNPCs);
+
+                CustomPulse glowRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 3f, 75);
+                GeneralParticleHandler.SpawnParticle(glowRing, false, Enums.GeneralDrawLayer.AfterNPCs);
+
+                for (int i = 0; i < 25; i++)
+                {
+                    QuickSparkleParticle sparkle = new(NPC.Center, Main.rand.NextVector2Circular(16f, 16f), Color.White, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(45, 60));
+                    SquishyLightParticle light = new(NPC.Center, Main.rand.NextVector2Circular(8f, 8f), Main.rand.NextFloat(0.6f, 0.8f), Color.White, Main.rand.Next(45, 60));
+                    GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? sparkle : light, true, Enums.GeneralDrawLayer.AfterNPCs);
+                }
+
+                SoundEngine.PlaySound(SoundID.Item29 with { Pitch = 0.25f, Volume = 0.25f }, NPC.Center);
+                if (SoundEngine.TryGetActiveSound(DevilsTongueSlot, out var activeSound))
+                    activeSound.Stop();
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.Transform(ModContent.NPCType<Piggy>());
+                    NPC.netUpdate = true;
+                }
+            }
+        }
+
         public void MainBehavior_EngageAnimation(Player target)
         {
             if (Timer >= 45f)
@@ -121,29 +211,48 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         public void MainBehavior_DeathAnimation()
         {
-            if (Timer == 240f)
+            SetSquashVectors(VelocityBasedSquashNStretch);
+            NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
+            SpriteRotation -= (MathHelper.TwoPi / 15f) * NPC.direction;
+            TintColor = Color.Red;
+
+            if (Timer > 2 && (NPC.collideX || NPC.collideY || Collision.SolidCollision(NPC.position, NPC.width, NPC.height)))
             {
-                // Create smoke and throw up a big green "5000" on death just like the pigs in Angry Birds
-                for (int i = 0; i < 17; i++)
+                if (MiscAttackCounter >= 3)
                 {
-                    int goreType = Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1);
-                    Gore.NewGorePerfect(NPC.position, Main.rand.NextVector2Circular(2f, 2f), goreType);
+                    // Create smoke and throw up a big green "5000" on death just like the pigs in Angry Birds
+                    for (int i = 0; i < 17; i++)
+                    {
+                        int goreType = Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1);
+                        Gore.NewGorePerfect(NPC.position, Main.rand.NextVector2Circular(2f, 2f), goreType);
+                    }
+
+                    CombatText.NewText(NPC.Hitbox, Color.LawnGreen, 5000);
+                    SoundEngine.PlaySound(NPC.DeathSound, NPC.Center);
+                    Collision.HitTiles(NPC.position, NPC.velocity, NPC.width, NPC.height);
+
+                    NPC.life = 0;
+                    NPC.checkDead();
+                    NPC.HitEffect();
+                    NPC.netUpdate = true;
+                }
+                else
+                {
+                    SoundEngine.PlaySound(NPC.HitSound, NPC.Center);
+                    TintStrength = 0.75f;
+
+                    MiscAttackCounter++;
+                    NPC.velocity.X = NPC.oldVelocity.X * 0.6f;
+                    NPC.velocity.Y = -8f;
+
+                    NPC.netUpdate = true;
                 }
 
-                CombatText.NewText(NPC.Hitbox, Color.LawnGreen, 5000);
-                SoundEngine.PlaySound(NPC.DeathSound, NPC.Center);
-
-                NPC.life = 0;
-                NPC.checkDead();
-                NPC.HitEffect();
-                NPC.netUpdate = true;
+                CalamityUtils.AddScreenshakeAt(NPC.Center, 4f);
             }
 
             NPC.damage = 0;
             NPC.dontTakeDamage = true;
-
-            if (NPC.velocity.Y == 0f)
-                NPC.velocity.X *= 0.96f;
         }
 
         public void MainBehavior_Idle(Player target)
@@ -159,12 +268,12 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             // Standing still, occasionally switch directions.
             if (LocalAIState == 0f)
             {
-                //if (Timer > 0f && Timer % 45f == 0f && Main.rand.NextBool(12))
-                //{
-                //    Timer = 0f;
-                //    LocalAIState = 1f;
-                //    NPC.netUpdate = true;
-                //}
+                if (Timer > 0f && Timer % 45f == 0f && Main.rand.NextBool(12))
+                {
+                    Timer = 0f;
+                    LocalAIState = 1f;
+                    NPC.netUpdate = true;
+                }
 
                 if (NPC.velocity.Y == 0f)
                     NPC.velocity.X *= 0.8f;

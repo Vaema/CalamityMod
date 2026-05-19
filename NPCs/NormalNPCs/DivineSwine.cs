@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public Vector2 IdleMovementVector;
 
-        private SlotId SwineSpeakSoundSlot;
+        public SlotId SwineSpeakSoundSlot;
 
         public static float MaxSpeed => 0.38f;
         public static float MaxAcceleration => 0.06f;
@@ -128,8 +128,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.immortal = true;
             NPC.noGravity = true;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PiggyBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
@@ -175,6 +173,10 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             switch ((BehaviorState)AIState)
             {
+                case BehaviorState.PiggyTransformation:
+                    MainBehavior_PiggyTransformation();
+                    break;
+
                 case BehaviorState.IdleAndFly:
                     MainBehavior_IdleAndFly();
                     break;
@@ -208,6 +210,94 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             NPC.rotation = NPC.velocity.X * 0.12f;
             Timer++;
+        }
+
+        public void MainBehavior_PiggyTransformation()
+        {
+            NPC.velocity *= 0f;
+            NPC.ShowNameOnHover = false;
+            NPC.dontTakeDamage = true;
+
+            // Shrink the sigil and start tinting white.
+            float dissolveStrength = CalamityUtils.SineInOutEasing(Utils.GetLerpValue(0f, 240f, Timer, true), 1);
+            DivineSwineTintStrength = dissolveStrength;
+            GlowingVisualScale = 1f - dissolveStrength;
+            AdditionalBrightness = MathHelper.Lerp(0f, 50f, dissolveStrength);
+
+            // Shake the screen slightly while the player is near Divine Swine.
+            float distanceFromSwine = Main.LocalPlayer.Distance(NPC.Center);
+            if (distanceFromSwine < 400f)
+            {
+                float shakeStrength = Utils.Remap(distanceFromSwine, 400f, 100f, 0f, 3f, true) * Utils.GetLerpValue(0f, 180f, Timer, true);
+                Main.LocalPlayer.SetScreenshake(shakeStrength);
+            }
+
+            // Typical glowy particle VFX.
+            float particleStrengthInterpolant = Utils.GetLerpValue(0f, 180f, Timer, true);
+            int lightSpawnRate = (int)MathHelper.Lerp(8, 1, particleStrengthInterpolant);
+            if (Main.rand.NextBool(lightSpawnRate))
+            {
+                int lightAmt = (int)MathHelper.Lerp(1, 6, particleStrengthInterpolant);
+                for (int i = 0; i < Main.rand.Next(1, lightAmt + 1); i++)
+                {
+                    float lightSpeed = MathHelper.Lerp(6f, 12f, particleStrengthInterpolant);
+                    float lightScale = MathHelper.Lerp(0.5f, 0.8f, particleStrengthInterpolant) * Main.rand.NextFloat(0.5f, 1f);
+
+                    SquishyLightParticle transformLight = new(NPC.Center, Main.rand.NextVector2Circular(lightSpeed, lightSpeed), lightScale, Color.White, Main.rand.Next(30, 45));
+                    GeneralParticleHandler.SpawnParticle(transformLight, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                }
+            }
+
+            if (Main.rand.NextBool(lightSpawnRate + 2))
+            {
+                int sparkleAmt = (int)MathHelper.Lerp(1, 5, particleStrengthInterpolant);
+                for (int i = 0; i < Main.rand.Next(1, sparkleAmt + 1); i++)
+                {
+                    float sparkleSpeed = MathHelper.Lerp(8f, 18f, particleStrengthInterpolant);
+                    float sparkleScale = MathHelper.Lerp(0.2f, 0.5f, particleStrengthInterpolant) * Main.rand.NextFloat(0.5f, 1f);
+                    Color drawColorBlue = Color.Lerp(new Color(44, 166, 247), new Color(123, 197, 247), Main.rand.NextFloat());
+                    Color drawColorYellow = Color.Lerp(new Color(249, 197, 42), new Color(249, 221, 142), Main.rand.NextFloat());
+                    Color sparkleColor = Utils.SelectRandom(Main.rand, drawColorBlue, drawColorYellow);
+
+                    QuickSparkleParticle transformSparkle = new(NPC.Center, Main.rand.NextVector2Circular(sparkleSpeed, sparkleSpeed), sparkleColor, sparkleScale, Main.rand.Next(30, 45));
+                    GeneralParticleHandler.SpawnParticle(transformSparkle, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                }
+            }
+
+            if (Timer >= 180f && Timer % 15f == 0f)
+            {
+                float glowRingScale = Utils.Remap(Timer, 180f, 240f, 1.6f, 2.2f, true);
+                CustomPulse transformRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, glowRingScale, 45);
+                GeneralParticleHandler.SpawnParticle(transformRing, false, Enums.GeneralDrawLayer.AfterNPCs);
+            }
+
+            if (Timer >= 240f)
+            {
+                CustomPulse glowRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 3f, 75);
+                GeneralParticleHandler.SpawnParticle(glowRing, false, Enums.GeneralDrawLayer.AfterNPCs);
+
+                BloomParticle bloom = new(NPC.Center, Vector2.Zero, Color.White, 0f, 2f, 125);
+                for (int i = 0; i < 3; i++)
+                    GeneralParticleHandler.SpawnParticle(bloom, false, Enums.GeneralDrawLayer.AfterNPCs);
+
+                for (int i = 0; i < 25; i++)
+                {
+                    QuickSparkleParticle sparkle = new(NPC.Center, Main.rand.NextVector2Circular(20f, 20f), Color.White, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(45, 60));
+                    SquishyLightParticle light = new(NPC.Center, Main.rand.NextVector2Circular(10f, 10f), Main.rand.NextFloat(0.6f, 0.8f), Color.White, Main.rand.Next(45, 60));
+                    GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? sparkle : light, true, Enums.GeneralDrawLayer.AfterNPCs);
+                }
+
+                SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out var activeSound))
+                    activeSound.Stop();
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.Transform(ModContent.NPCType<Piggy>());
+                    NPC.netUpdate = true;
+                }
+            }
         }
 
         public void MainBehavior_IdleAndFly()
@@ -393,6 +483,26 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.ShowNameOnHover = false;
         }
 
+        public void TransformIntoPiggy()
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                // run packet here if necessary.
+            }
+
+            AIState = (int)BehaviorState.PiggyTransformation;
+            LocalAIState = 0f;
+            Timer = 0f;
+            NPC.netUpdate = true;
+        }
+        
+        public bool TryTransformingIntoPiggy()
+        {
+            if (AIState == (int)BehaviorState.PiggyTransformation)
+                return false;
+            return true;
+        }
+
         public void AvoidTileCollision(float maxSpeed, float turnAwayStrength = 0.125f)
         {
             float distanceToCollisionLeft = CalamityUtils.DistanceToTileCollisionHit(NPC.Center, NPC.velocity.RotatedBy(MathHelper.PiOver2), 32, ShouldAvoidTile) ?? 10000f;
@@ -457,7 +567,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void SoundEffects()
         {
-            if (NPC.soundDelay == 0 && Main.rand.NextBool(200) && (AIState != (int)BehaviorState.OfferingAccepted || AIState != (int)BehaviorState.OfferingFailed))
+            if (NPC.soundDelay == 0 && Main.rand.NextBool(200) && AIState == (int)BehaviorState.IdleAndFly)
             {
                 SoundEngine.PlaySound(IdleSound, NPC.Center);
                 SquashVector = Utils.SelectRandom(Main.rand, new Vector2(1.4f, 0.7f), new Vector2(0.7f, 1.4f));
@@ -479,7 +589,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             soundInstance.Position = NPC.Center;
 
             float idealPitch = 0f;
-            if (AIState == (int)BehaviorState.OfferingAccepted && Timer <= 180f)
+            bool raisePitchDuringBehavior = AIState == (int)BehaviorState.OfferingAccepted || AIState == (int)BehaviorState.PiggyTransformation;
+            if (raisePitchDuringBehavior)
                 idealPitch = 0.4f;
 
             float volumeInterpolant = Utils.Remap(NPC.Distance(Main.LocalPlayer.Center), 600f, 100f, 0.1f, 0.7f, true) * GlowingVisualScale;
@@ -607,6 +718,11 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     NPC.frameCounter = 0;
                 }
+
+                Timer++;
+                if (Timer >= 3600)
+                    Timer = 0f;
+
                 return;
             }
 
@@ -621,54 +737,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                 return false;
             }
 
+            spriteBatch.End(out var snapshot);
+
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             SpriteEffects spriteEffects = NPC.spriteDirection < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            var device = Main.graphics.GraphicsDevice;
-            using var glowingBullshitLease = RenderTargetPool.Shared.Rent(device, (int)(Main.screenWidth * 0.5f), (int)(Main.screenHeight * 0.5f), RenderTargetDescriptor.Default);
-
-            spriteBatch.End(out var snapshot);
-
-            // Buncha yellow-colored bloom stuff to look like a glowing sun.
-            using (glowingBullshitLease.Scope(clearColor: Color.Black))
-            {
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, PixelationManager.PixelationMatrix);
-
-                float bloomFlareScale = MathHelper.Lerp(0.4f, 0.7f, MathF.Sin((float)Main.timeForVisualEffects / 60f) * 0.5f + 0.5f) * GlowingVisualScale;
-                spriteBatch.Draw(BloomFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), MathHelper.PiOver4, BloomFlare.Size() * 0.5f, bloomFlareScale, 0, 0f);
-
-                spriteBatch.Draw(ShineFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (1f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, bloomFlareScale, 0, 0f);
-                spriteBatch.Draw(MagicStarCircle.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, 0.5f * GlowingVisualScale, 0, 0f);
-
-                spriteBatch.End();
-
-                Effect chromaAbberShader = CalamityShaders.ChromaticAbberationShader.Value;
-                chromaAbberShader.Parameters["abberationStrength"].SetValue(10f);
-                chromaAbberShader.Parameters["impactPosition"].SetValue(drawPosition);
-
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, chromaAbberShader, PixelationManager.PixelationMatrix);
-
-                float starRingScale = MathHelper.Lerp(0.7f, 1f, MathF.Sin((float)Main.timeForVisualEffects / 180f) * 0.5f + 0.5f) * GlowingVisualScale;
-                spriteBatch.Draw(FadedStarRing.Value, drawPosition, null, NPC.GetAlpha(DivineBlue with { A = 0 }) * (0.7f + AdditionalBrightness), (float)(Main.timeForVisualEffects / 720f) + NPC.whoAmI, FadedStarRing.Size() * 0.5f, starRingScale, 0, 0f);
-
-                spriteBatch.End();
-            }
-
-            // Redraw at double the scale to pixelate the contents + add a distortion shader for more of that "divine" feeling.
-            float distortionStrength = 0.03f;
-            Vector2 targetDrawPosition = Main.ScreenSize.ToVector2() * 0.5f * distortionStrength;
-            Effect distortionShader = CalamityShaders.BasicTextureDistortionShader.Value;
-            distortionShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            distortionShader.Parameters["noiseScale"].SetValue(1.3f);
-            distortionShader.Parameters["distortionStrength"].SetValue(distortionStrength);
-            distortionShader.Parameters["timeOffset"].SetValue(new Vector2(-0.02f, 0.01f));
-
-            device.Textures[1] = DistortionTexture.Value;
-            device.SamplerStates[1] = SamplerState.LinearWrap;
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, distortionShader, Main.GameViewMatrix.TransformationMatrix);
-            spriteBatch.Draw(glowingBullshitLease.Target, targetDrawPosition, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            // Draw the cool glowing sigil behind the Divine Swine.
+            Draw_DivineSigiliGlowyBullshit(spriteBatch, drawPosition);
 
             // Subtractive backing images.
             spriteBatch.SetBlendState(CalamityUtils.SubtractiveBlending);
@@ -704,6 +780,65 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             spriteBatch.Begin(snapshot);
             return false;
+        }
+
+        public void Draw_DivineSigiliGlowyBullshit(SpriteBatch spriteBatch, Vector2 drawPosition)
+        {
+            using var glowingBullshitLease = RenderTargetPool.Shared.Rent(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight, RenderTargetDescriptor.Default);
+            using var pixelationLease = RenderTargetPool.Shared.Rent(Main.graphics.GraphicsDevice, Main.screenWidth / 2, Main.screenHeight / 2, RenderTargetDescriptor.Default);
+
+            // Buncha yellow-colored bloom stuff to look like a glowing sun.
+            using (spriteBatch.Scope())
+            {
+                using (glowingBullshitLease.Scope(clearColor: Color.Transparent))
+                {
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+
+                    float bloomFlareScale = MathHelper.Lerp(0.4f, 0.7f, MathF.Sin((float)Main.timeForVisualEffects / 60f) * 0.5f + 0.5f) * GlowingVisualScale;
+                    spriteBatch.Draw(BloomFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), MathHelper.PiOver4, BloomFlare.Size() * 0.5f, bloomFlareScale, 0, 0f);
+
+                    spriteBatch.Draw(ShineFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (1f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, bloomFlareScale, 0, 0f);
+                    spriteBatch.Draw(MagicStarCircle.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, 0.5f * GlowingVisualScale, 0, 0f);
+
+                    spriteBatch.End();
+
+                    Effect chromaAbberShader = CalamityShaders.ChromaticAbberationShader.Value;
+                    chromaAbberShader.Parameters["abberationStrength"].SetValue(10f);
+                    chromaAbberShader.Parameters["impactPosition"].SetValue(drawPosition);
+
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, chromaAbberShader, Matrix.Identity);
+
+                    float starRingScale = MathHelper.Lerp(0.7f, 1f, MathF.Sin((float)Main.timeForVisualEffects / 180f) * 0.5f + 0.5f) * GlowingVisualScale;
+                    spriteBatch.Draw(FadedStarRing.Value, drawPosition, null, NPC.GetAlpha(DivineBlue with { A = 0 }) * (0.7f + AdditionalBrightness), (float)(Main.timeForVisualEffects / 720f) + NPC.whoAmI, FadedStarRing.Size() * 0.5f, starRingScale, 0, 0f);
+
+                    spriteBatch.End();
+                }
+            }
+
+            float distortionStrength = 0.034f;
+            using (spriteBatch.Scope())
+            {
+                using (pixelationLease.Scope(clearColor: Color.Transparent))
+                {
+                    Effect distortionShader = CalamityShaders.BasicTextureDistortionShader.Value;
+                    distortionShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                    distortionShader.Parameters["noiseScale"].SetValue(1.3f);
+                    distortionShader.Parameters["distortionStrength"].SetValue(distortionStrength);
+                    distortionShader.Parameters["timeOffset"].SetValue(new Vector2(-0.02f, 0.01f));
+
+                    Main.graphics.GraphicsDevice.Textures[1] = DistortionTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, distortionShader, PixelationManager.PixelationMatrix);
+                    spriteBatch.Draw(glowingBullshitLease.Target, Vector2.Zero, Color.White);
+                    spriteBatch.End();
+                }
+            }
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
+            Vector2 targetDrawPosition = Main.ScreenSize.ToVector2() * 0.5f * distortionStrength;
+            spriteBatch.Draw(pixelationLease.Target, targetDrawPosition, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
         }
 
         public void Draw_OfferingAcceptedVisual(SpriteBatch spriteBatch, Vector2 drawPosition)
@@ -743,56 +878,91 @@ namespace CalamityMod.NPCs.NormalNPCs
         public void Draw_BestiaryPortrait(SpriteBatch spriteBatch)
         {
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
-            Vector2 drawPosition = NPC.Center;
+            float floatHeight = MathHelper.Lerp(-8f, 8f, MathF.Sin((float)Timer / 150f) * 0.5f + 0.5f);
+            Vector2 drawPosition = NPC.Center + Vector2.UnitY * floatHeight;
+            Matrix pixelationMatrix = Main.Transform * Matrix.CreateScale(0.5f, 0.5f, 1f);
 
-            var device = Main.graphics.GraphicsDevice;
-            using var glowingBullshitLease = RenderTargetPool.Shared.Rent(device, Main.screenWidth, Main.screenHeight, RenderTargetDescriptor.Default);
-
-            spriteBatch.End(out var snapshot);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-
-            float bloomFlareScale = MathHelper.Lerp(0.15f, 0.3f, MathF.Sin((float)Main.timeForVisualEffects / 60f) * 0.5f + 0.5f);
-            spriteBatch.Draw(BloomFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow) * 0.6f, MathHelper.PiOver4, BloomFlare.Size() * 0.5f, bloomFlareScale, 0, 0f);
-
-            spriteBatch.Draw(ShineFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow) * 0.8f, 0f, MagicStarCircle.Size() * 0.5f, bloomFlareScale, 0, 0f);
-            spriteBatch.Draw(MagicStarCircle.Value, drawPosition, null, NPC.GetAlpha(DivineYellow) * 0.6f, 0f, MagicStarCircle.Size() * 0.5f, 0.25f, 0, 0f);
-
-            spriteBatch.End();
-
-            Effect chromaAbberShader = CalamityShaders.ChromaticAbberationShader.Value;
-            chromaAbberShader.Parameters["abberationStrength"].SetValue(10f);
-            chromaAbberShader.Parameters["impactPosition"].SetValue(drawPosition);
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, chromaAbberShader, Main.Transform);
-
-            float starRingScale = MathHelper.Lerp(0.2f, 0.4f, MathF.Sin((float)Main.timeForVisualEffects / 180f) * 0.5f + 0.5f);
-            spriteBatch.Draw(FadedStarRing.Value, drawPosition, null, NPC.GetAlpha(DivineBlue) * 0.8f, (float)(Main.timeForVisualEffects / 720f) + NPC.whoAmI, FadedStarRing.Size() * 0.5f, starRingScale, 0, 0f);
-
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, CalamityUtils.SubtractiveBlending, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-
-            int backShadowCount = 3;
-            for (int i = 0; i < backShadowCount; i++)
+            RasterizerState previousRasterizerState = spriteBatch.GraphicsDevice.RasterizerState;
+            Rectangle previousScissorRectangle = spriteBatch.GraphicsDevice.ScissorRectangle;
+            using (spriteBatch.Scope())
             {
-                float rotation = (float)(Main.timeForVisualEffects / MathHelper.Pi * 0.08f) + NPC.whoAmI;
-                Vector2 backglowDrawPosition = drawPosition + Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / backShadowCount + rotation) * 6f;
-                spriteBatch.Draw(baseTexture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.White) * 0.9f, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0f);
+                var device = Main.graphics.GraphicsDevice;
+                using var glowingBullshitLease = RenderTargetPool.Shared.Rent(device, Main.screenWidth, Main.screenHeight, RenderTargetDescriptor.Default);
+                using var pixelationLease = RenderTargetPool.Shared.Rent(device, Main.screenWidth / 2, Main.screenHeight / 2, RenderTargetDescriptor.Default);
+                using (glowingBullshitLease.Scope(clearColor: Color.Transparent))
+                {
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+
+                    float bloomFlareScale = MathHelper.Lerp(0.15f, 0.3f, MathF.Sin((float)Main.timeForVisualEffects / 60f) * 0.5f + 0.5f);
+                    spriteBatch.Draw(BloomFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow) with { A = 0 } * 0.4f, MathHelper.PiOver4, BloomFlare.Size() * 0.5f, bloomFlareScale, 0, 0f);
+
+                    spriteBatch.Draw(ShineFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow) with { A = 0 } * 0.7f, 0f, MagicStarCircle.Size() * 0.5f, bloomFlareScale, 0, 0f);
+                    spriteBatch.Draw(MagicStarCircle.Value, drawPosition, null, NPC.GetAlpha(DivineYellow) with { A = 0 } * 0.5f, 0f, MagicStarCircle.Size() * 0.5f, 0.25f, 0, 0f);
+
+                    Effect chromaAbberShader = CalamityShaders.ChromaticAbberationShader.Value;
+                    chromaAbberShader.Parameters["abberationStrength"].SetValue(10f);
+                    chromaAbberShader.Parameters["impactPosition"].SetValue(drawPosition);
+
+                    spriteBatch.End();
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, chromaAbberShader, Matrix.Identity);
+
+                    float starRingScale = MathHelper.Lerp(0.2f, 0.4f, MathF.Sin((float)Main.timeForVisualEffects / 180f) * 0.5f + 0.5f);
+                    spriteBatch.Draw(FadedStarRing.Value, drawPosition, null, NPC.GetAlpha(DivineBlue) with { A = 0 } * 0.8f, (float)(Main.timeForVisualEffects / 720f) + NPC.whoAmI, FadedStarRing.Size() * 0.5f, starRingScale, 0, 0f);
+
+                    spriteBatch.End();
+                }
+
+                using (pixelationLease.Scope(clearColor: Color.Transparent))
+                {
+                    float distortionStrength = 0.0212f;
+                    Effect distortionShader = CalamityShaders.BasicTextureDistortionShader.Value;
+                    distortionShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                    distortionShader.Parameters["noiseScale"].SetValue(2.3f);
+                    distortionShader.Parameters["distortionStrength"].SetValue(distortionStrength);
+                    distortionShader.Parameters["timeOffset"].SetValue(new Vector2(-0.02f, 0.01f));
+
+                    Main.graphics.GraphicsDevice.Textures[1] = DistortionTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, distortionShader, pixelationMatrix);
+
+                    Vector2 targetDrawPosition = Main.ScreenSize.ToVector2() * 0.5f * distortionStrength;
+                    spriteBatch.Draw(glowingBullshitLease.Target, targetDrawPosition, Color.White with { A = 0 });
+
+                    spriteBatch.End();
+                }
+
+                spriteBatch.GraphicsDevice.RasterizerState = previousRasterizerState;
+                spriteBatch.GraphicsDevice.ScissorRectangle = previousScissorRectangle;
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, previousRasterizerState, null, Main.UIScaleMatrix);
+
+                spriteBatch.Draw(pixelationLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
+
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, CalamityUtils.SubtractiveBlending, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+
+                int backShadowCount = 3;
+                for (int i = 0; i < backShadowCount; i++)
+                {
+                    float rotation = (float)(Main.timeForVisualEffects / MathHelper.Pi * 0.08f) + NPC.whoAmI;
+                    Vector2 backglowDrawPosition = drawPosition + Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / backShadowCount + rotation) * 6f;
+                    spriteBatch.Draw(baseTexture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.White) * 0.9f, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0f);
+                }
+
+                int backShadowCount2 = 6;
+                for (int i = 0; i < backShadowCount2; i++)
+                {
+                    float rotation = (float)(Main.timeForVisualEffects / MathHelper.Pi * 0.06f) + NPC.whoAmI;
+                    Vector2 backglowDrawPosition = drawPosition + Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / backShadowCount2 + rotation) * 12f;
+                    spriteBatch.Draw(baseTexture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.White) * 0.7f, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0f);
+                }
+
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+                spriteBatch.Draw(baseTexture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0f);
+
+                spriteBatch.End();
             }
-
-            int backShadowCount2 = 6;
-            for (int i = 0; i < backShadowCount2; i++)
-            {
-                float rotation = (float)(Main.timeForVisualEffects / MathHelper.Pi * 0.06f) + NPC.whoAmI;
-                Vector2 backglowDrawPosition = drawPosition + Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / backShadowCount2 + rotation) * 12f;
-                spriteBatch.Draw(baseTexture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.White) * 0.7f, NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0f);
-            }
-
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-            spriteBatch.Draw(baseTexture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0f);
-
-            spriteBatch.End();
-            spriteBatch.Begin(snapshot);
         }
     }
 }

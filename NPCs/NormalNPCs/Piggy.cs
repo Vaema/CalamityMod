@@ -194,7 +194,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (Timer >= 30f && Main.rand.NextBool(10))
             {
-                Vector2 spawnPosition = NPC.Center + new Vector2(Main.rand.NextFloat(-16f, 16f), Main.rand.NextFloat(-212f, -154f));
+                Vector2 spawnPosition = NPC.Center + new Vector2(Main.rand.NextFloat(-16f, 16f), Main.rand.NextFloat(-144f, -134f));
                 Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(0.25f, 0.75f);
                 Color featherColor = Color.Lerp(Color.Lerp(new Color(27, 103, 155), new Color(83, 184, 255), Main.rand.NextFloat()), new Color(221, 253, 255), Main.rand.NextFloat(0.4f));
                 float scale = Main.rand.NextFloat(0.8f, 1f);
@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 GeneralParticleHandler.SpawnParticle(feather, manualDrawLayerOverride: Enums.GeneralDrawLayer.BeforeNPCs);
             }
 
-            if (Timer >= 180f)
+            if (Timer >= 180f && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 CustomPulse lightRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 2f, 75);
                 GeneralParticleHandler.SpawnParticle(lightRing);
@@ -259,8 +259,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (SoundEngine.TryGetActiveSound(NearbySoundSlot, out var activeSound))
                     activeSound.Stop();
 
-                NPC.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
-                NPC.netUpdate = true;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
+                    NPC.netUpdate = true;
+                }
             }
         }
 
@@ -398,12 +401,21 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (type == ModContent.NPCType<DivineSwine>())
                 AIState = (int)BehaviorState.DivineSwineTransformation;
-            if (type == ModContent.NPCType<HorribleHog.HorribleHog>())
+            else if (type == ModContent.NPCType<HorribleHog.HorribleHog>())
                 AIState = (int)BehaviorState.HorribleHogTransformation;
+            else
+                AIState = (int)BehaviorState.IdleAndWalk;
 
             LocalAIState = 0f;
             Timer = 0f;
             NPC.netUpdate = true;
+        }
+
+        public bool TryTransformingIntoVariant()
+        {
+            if (AIState == (int)BehaviorState.DivineSwineTransformation || AIState == (int)BehaviorState.HorribleHogTransformation)
+                return false;
+            return true;
         }
 
         private bool HoleBelow()
@@ -529,11 +541,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             // Spotlight from heaven.
-            float spotlightInterpolant = CalamityUtils.SineInOutEasing(Utils.GetLerpValue(0f, 30f, Timer, true) * Utils.GetLerpValue(180f, 150f, Timer, true), 1);
-            Vector2 spotlightDrawPosition = baseDrawPosition + Vector2.UnitY * -84f;
-            Vector2 spotlightScale = new Vector2(1.3f * spotlightInterpolant, 1.6f);
+            float spotlightOpacity = CalamityUtils.SineInOutEasing(Utils.GetLerpValue(0f, 30f, Timer, true) * Utils.GetLerpValue(180f, 150f, Timer, true), 1);
+            Vector2 spotlightDrawPosition = baseDrawPosition + Vector2.UnitY * -16f;
+            Vector2 spotlightScale = new Vector2(1.3f * interpolant, 1.6f);
             Vector2 spotlightOrigin = new Vector2(SpotlightTexture.Width() * 0.5f, SpotlightTexture.Height());
-            spriteBatch.Draw(SpotlightTexture.Value, spotlightDrawPosition, null, Color.White with { A = 0 } * spotlightInterpolant, 0f, spotlightOrigin, spotlightScale, SpriteEffects.FlipVertically, 0f);
+            spriteBatch.Draw(SpotlightTexture.Value, spotlightDrawPosition, null, Color.White with { A = 0 } * spotlightOpacity, 0f, spotlightOrigin, spotlightScale, SpriteEffects.FlipVertically, 0f);
             
             spriteBatch.End();
 
@@ -556,39 +568,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             spriteBatch.Draw(pixelationLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
             spriteBatch.End();
-        }
-    }
-
-    public class PiggyTransformationProjectile : GlobalProjectile
-    {
-        public override bool AppliesToEntity(Projectile entity, bool lateInstantiation)
-        {
-            return entity.type == ProjectileID.VilePowder || entity.type == ProjectileID.ViciousPowder || entity.type == ProjectileID.PurificationPowder;
-        }
-
-        public override void AI(Projectile projectile)
-        {
-            foreach (NPC npc in Main.ActiveNPCs)
-            {
-                bool targetIsPiggy = npc.type == ModContent.NPCType<Piggy>() || npc.type == ModContent.NPCType<PiggyGold>();
-                if (!targetIsPiggy)
-                    continue;
-
-                if (projectile.Hitbox.Intersects(npc.Hitbox))
-                {
-                    bool notTransformingAlready = npc.ai[0] > -1;
-                    if (!notTransformingAlready)
-                        return;
-
-                    if (targetIsPiggy && npc.ModNPC<Piggy>().AIState > -1)
-                    {
-                        if (projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder)
-                            npc.ModNPC<Piggy>().TransformIntoVariant(ModContent.NPCType<HorribleHog.HorribleHog>());
-                        else if (projectile.type == ProjectileID.PurificationPowder)
-                            npc.ModNPC<Piggy>().TransformIntoVariant(ModContent.NPCType<DivineSwine>());
-                    }
-                }
-            }
         }
     }
 }
