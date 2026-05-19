@@ -2392,7 +2392,7 @@ namespace CalamityMod.CalPlayer
 
             if (bloomStoneTotalHeal > 0)
             {
-                float healRateDiv = (Player.statLife >= Player.statLifeMax ? 5 : // 5 times as slow if at max hp already (overheal prevention)
+                float healRateDiv = (Player.statLife >= Player.statLifeMax ? 2 : // 2 times as slow if at max hp already (overheal prevention)
                 bloomStoneBuffedHealRateTimer > 0 ? Utils.Remap(bloomStoneBuffedHealRateTimer, 90, 0, 0.5f, 1f, true) // 2 times faster if pollen buffed, scales back down to regular speed as the buff fades
                 : 1); // Regular speed
                 bloomStoneHealRate = 1 / healRateDiv;

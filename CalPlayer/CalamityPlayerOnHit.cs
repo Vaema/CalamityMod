@@ -1289,7 +1289,7 @@ namespace CalamityMod.CalPlayer
                     //Nanotech has the same heal as Electrician's glove
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, electricianGlove ? 2f : 3f);
 
-                if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
+                if (proj.CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {
