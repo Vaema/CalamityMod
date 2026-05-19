@@ -4621,15 +4621,15 @@ namespace CalamityMod.Projectiles
         }
         public override void GrapplePullSpeed(Projectile projectile, Player player, ref float speed)
         {
+            if (player.Calamity().bloomStone)
+                speed += 6f;
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
-            if (player.Calamity().bloomStone)
-                mult += 0.5f;
-            speed *= mult;
 
+            speed *= mult;
             if (player.velocity.Length() > 2f)
             {
                 player.Calamity().hookPullVisuals = 60;
@@ -4637,13 +4637,13 @@ namespace CalamityMod.Projectiles
         }
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
         {
+            if (player.Calamity().bloomStone)
+                speed += 6f;
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
-            if (player.Calamity().bloomStone)
-                mult += 0.5f;
             speed *= mult;
         }
         #endregion
