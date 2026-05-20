@@ -234,7 +234,6 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.velocity.Y = -JumpAndDash_MaxJumpHeight * 1.2f;
                 NPC.velocity.X += JumpAndDash_MaxDashSpeed * 0.4f * NPC.direction;
                 DoJumpEffects();
-                SoundEngine.PlaySound(JumpSound, NPC.Center);
             }
 
             if (Timer <= HogCharge_PreDashTime)
@@ -345,7 +344,6 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                     DoJumpEffects();
                     SetSquashVectors(new Vector2(0.84f, 1.14f));
-                    SoundEngine.PlaySound(JumpSound, NPC.Center);
                     HorizontalShakeStrength = 0f;
                 }
 
