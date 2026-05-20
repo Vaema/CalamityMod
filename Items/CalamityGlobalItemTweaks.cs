@@ -41,9 +41,9 @@ namespace CalamityMod.Items
             currentTweaks = new SortedDictionary<int, IItemTweak[]>
             {
                 #region CATEGORY 1: Weapon Balancing
-                { ItemID.AdamantiteGlaive, Do(TrueMelee, DamageExact(69), UseExact(7), ShootSpeedExact(18f)) }, // VANILLA: 49 DMG, 25 UT, 5 VEL
+                { ItemID.AdamantiteGlaive, Do(TrueMelee, DamageExact(66), UseExact(7), ShootSpeedExact(18f)) }, // VANILLA: 49 DMG, 25 UT, 5 VEL
                 { ItemID.AdamantiteRepeater, Do(UseExact(14)) }, // VANILLA: 18 UT
-                { ItemID.AdamantiteSword, Do(UseTurn, DamageExact(75), UseExact(7)) }, // VANILLA: 61 DMG, 21 UT
+                { ItemID.AdamantiteSword, Do(UseTurn, DamageExact(72), UseExact(7)) }, // VANILLA: 61 DMG, 21 UT
                 { ItemID.AmberStaff, Do(UseTimeExact(15), UseAnimationExact(45), ReuseDelayExact(15)) }, // VANILLA: 28 UT/UA, 0 RUD
                 { ItemID.AmethystStaff, Do(ManaExact(2)) }, // VANILLA: 5 MANA
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) }, // VANILLA: 70 DMG, 20 UT
@@ -236,7 +236,6 @@ namespace CalamityMod.Items
                 { ItemID.StormTigerStaff, Do(DamageExact(49)) }, // Desert Tiger Staff. VANILLA: 41 DMG
                 { ItemID.StylistKilLaKillScissorsIWish, Do(UseTurn, DamageExact(21)) }, // Stylish Scissors. VANILLA: 14 DMG
                 { ItemID.Stynger, Do(DamageExact(75)) }, // VANILLA: 45 DMG
-                { ItemID.SuperStarCannon, Do(DamageExact(55)) }, // VANILLA: 60 DMG
                 { ItemID.Swordfish, Do(TrueMelee, DamageExact(24)) }, // VANILLA: 19 DMG
                 { ItemID.TacticalShotgun, Do(DamageExact(34)) }, // VANILLA: 29 DMG
                 { ItemID.TaxCollectorsStickOfDoom, Do(UseTurn, DamageExact(70), UseExact(12)) }, // Classy Cane. VANILLA: 16 DMG, 15 UT
@@ -251,13 +250,12 @@ namespace CalamityMod.Items
                 { ItemID.ThunderSpear, Do(UseMeleeSpeed) }, // Storm Spear
                 { ItemID.ThunderStaff, Do(DamageExact(18)) }, // Thunder Zapper. VANILLA: 20 DMG
                 { ItemID.TitaniumRepeater, Do(DamageExact(52)) }, // VANILLA: 43 DMG
-                { ItemID.TitaniumSword, Do(UseTurn, DamageExact(192)) }, // VANILLA: 61 DMG
+                { ItemID.TitaniumSword, Do(UseTurn, DamageExact(185)) }, // VANILLA: 61 DMG
                 { ItemID.TitaniumTrident, Do(TrueMelee, DamageExact(144), ShootSpeedExact(6.5f)) }, // VANILLA: 48 DMG, 5 VEL
                 { ItemID.TopazStaff, Do(ManaExact(2)) }, // VANILLA: 5 MANA
                 { ItemID.ToxicFlask, Do(DamageExact(62), UseExact(33)) }, // VANILLA: 52 DMG, 45 UT
                 { ItemID.Toxikarp, Do(UseExact(9)) }, // VANILLA: 10 UT
                 { ItemID.Trident, Do(TrueMelee, DamageExact(20)) }, // VANILLA: 14 DMG
-                { ItemID.Trimarang, Do(DamageExact(24)) }, // VANILLA: 21 DMG
                 { ItemID.TrueExcalibur, Do(TrueMelee, DamageExact(112)) }, // VANILLA: 72 DMG
                 { ItemID.TrueNightsEdge, Do(DamageExact(105)) }, // VANILLA: 70 DMG
                 { ItemID.Tsunami, Do(DamageExact(45)) }, // VANILLA: 53 DMG

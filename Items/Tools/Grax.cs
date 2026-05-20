@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Tools
 
         public static float DamageBoost = 0.15f;
         public static int DefenseBoost = 15;
-        public static int GraxBoostDuration = CalamityUtils.SecondsToFrames(10);
+        public static int GraxBoostDuration = CalamityUtils.SecondsToFrames(15);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), DefenseBoost, GraxBoostDuration.FramesToSeconds());
         public override void SetStaticDefaults()
         {

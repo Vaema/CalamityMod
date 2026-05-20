@@ -143,8 +143,14 @@ CausticStaff: {
 	Tooltip:
 		'''
 		Summons a mini dragon to fight for you
-		The dragon inflicts several debilitating debuffs
-		The debuffs are only applied if you are holding a summon weapon or tool
+		The dragon attacks faster and inflicts more debuffs the more are summoned
+		'''
+	HoldShiftTooltip:
+		'''
+		Always inflicts [cbuff:OnFire3]
+		Inflicts [cbuff:CursedInferno] with 2 dragons summoned
+		Inflicts [cbuff:CalamityMod/Shadowflame] and [cbuff:Venom] with 3 dragons summoned
+		Inflicts [cbuff:Ichor] and [cbuff:CalamityMod/MarkedforDeath] with 4 dragons summoned
 		'''
 }
 
