@@ -12,6 +12,12 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SealedSingularity : RogueWeapon
     {
+        /// <summary>
+        /// Falloff per target hit simultaneously by the aura. Resets every hit interval
+        /// </summary>
+        public static float FalloffPerTargetHitByAura => 0.1f;
+        public static float FallofPerTargetHitByBomb => 0.1f;
+
         public override void SetDefaults()
         {
             Item.width = 32;

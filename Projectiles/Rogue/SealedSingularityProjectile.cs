@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
@@ -98,6 +99,11 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (AIState == 1)
             {
+                if (Timer % 30 == 0) //reset hit immunity every 30 frames & reset the pierce falloff too
+                {
+                    Projectile.ResetImmunity();
+                    Projectile.numHits = 0;
+                }
                 Projectile.timeLeft++;
                 Projectile.rotation += 0.175f * Projectile.direction;
                 Projectile.velocity = new Vector2(
@@ -136,8 +142,6 @@ namespace CalamityMod.Projectiles.Rogue
             if (Timer > TimerMax && AIState == 0)
             {
                 var sizee = Stealth ? 900 : 600;
-                Projectile.localNPCHitCooldown = 30;
-                Projectile.ResetLocalNPCHitImmunity();
                 Projectile.tileCollide = false;
                 Timer = 0;
                 TimerMax = Stealth ? 600 : 300;
@@ -150,6 +154,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Timer = 0;
                 TimerMax = 300;
                 Projectile.ResetLocalNPCHitImmunity();
+                Projectile.numHits = 0;
                 if (Main.myPlayer == Projectile.owner)
                     for (int index = 0; index < 3; ++index)
                     {
@@ -164,6 +169,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Timer >= TimerMax && AIState == 2)
             {
                 Projectile.Resize(300, 300);
+                Projectile.numHits = 0;
                 Projectile.ResetLocalNPCHitImmunity();
                 Projectile.Damage();
 
@@ -335,9 +341,11 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 case 1:
                     modifiers.SourceDamage /= 20;
+                    modifiers.SourceDamage *= MathF.Pow(1 - SealedSingularity.FalloffPerTargetHitByAura, Projectile.numHits);
                     return;
                 case 2:
                     modifiers.SourceDamage *= 2;
+                    modifiers.SourceDamage *= MathF.Pow(1 - SealedSingularity.FallofPerTargetHitByBomb, Projectile.numHits);
                     return;
             }
         }
