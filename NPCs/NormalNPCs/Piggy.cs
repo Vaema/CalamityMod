@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 0;
             NPC.width = 42;
             NPC.height = 28;
-            NPC.lifeMax = 200;
+            NPC.lifeMax = 300;
             NPC.aiStyle = -1;
             NPC.knockBackResist = 1.15f;
             NPC.HitSound = SoundID.NPCHit1;
