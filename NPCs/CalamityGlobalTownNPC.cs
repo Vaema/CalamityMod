@@ -1234,7 +1234,7 @@ namespace CalamityMod.NPCs
         public void BoundNPCSafety(Mod mod, NPC npc)
         {
             // Make Bound Town NPCs take no damage
-            if (CalamityNPCTypeSets.BoundTownNPC[npc.type])
+            if (CalamityNPCSets.BoundTownNPC[npc.type])
                 npc.dontTakeDamageFromHostiles = true;
         }
 
