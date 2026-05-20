@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Armor
         {
             //These tag damage fields determine the damage of the spawned eater. The resulting number from each is added together
             //So, 0.5 multiplicative and 10 flat would make the damage be 50% of the spawning hit's damage, plus 10 more.
-            //If you want entirely flt, set multiplicative to 0. If you want entirely multiplicative, set flat to 0.
+            //If you want entirely flat, set multiplicative to 0. If you want entirely multiplicative, set flat to 0.
             MultiplicativeTagDamage = 0.25f,
             FlatTagDamage = 5,
             AllowsWhipStacking = true,
@@ -57,7 +57,6 @@ namespace CalamityMod.Items.Armor
             if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
             summonTag.TagItem = Type;
-            CalamityBuffSets.SummonTagDebuff.Add(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(),summonTag);
         }
 
         public override void SetDefaults()

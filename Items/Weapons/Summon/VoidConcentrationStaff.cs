@@ -44,7 +44,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
             summonTag.TagItem = Type;
-            CalamityBuffSets.SummonTagDebuff.Add(ModContent.BuffType<VoidConcentrationSummonTagBuff>(), summonTag);
         }
 
         public override void SetDefaults()

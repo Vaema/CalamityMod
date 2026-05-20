@@ -8,6 +8,9 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Summon;
 using ReLogic.Reflection;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,7 +29,9 @@ namespace CalamityMod.Systems.Collections
         /// Also used to remove buffs when contacting the Whispering Maelstrom in the Get fixed boi seed.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] BuffedByAmalgam = Factory.CreateBoolSet(BuffID.ObsidianSkin, BuffID.Regeneration, BuffID.Swiftness, BuffID.Gills, BuffID.Ironskin, BuffID.ManaRegeneration,
+        public static bool[] BuffedByAmalgam = Factory.CreateNamedSet("BuffedByAmalgam")
+            .Description("Allows this buff to have its duration extended with The Amalgam equipped. Also used to remove buffs when contacting the Whispering Maelstrom in Get fixed boi.")
+            .RegisterBoolSet(BuffID.ObsidianSkin, BuffID.Regeneration, BuffID.Swiftness, BuffID.Gills, BuffID.Ironskin, BuffID.ManaRegeneration,
                 BuffID.MagicPower, BuffID.Featherfall, BuffID.Spelunker, BuffID.Invisibility, BuffID.Shine, BuffID.NightOwl, BuffID.Battle, BuffID.Thorns, BuffID.WaterWalking,
                 BuffID.Archery, BuffID.Hunter, BuffID.Gravitation, BuffID.Tipsy, BuffID.WellFed, BuffID.WellFed2, BuffID.WellFed3, BuffID.Honey, BuffID.WeaponImbueVenom,
                 BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold, BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti,
@@ -45,7 +50,9 @@ namespace CalamityMod.Systems.Collections
         /// Used by The Amalgam to prevent removing their persistence when the accessory is unequipped.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] IsPersistentBuff = Factory.CreateBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold,
+        public static bool[] IsPersistentBuff = Factory.CreateNamedSet("IsPersistentBuff")
+            .Description("Prevents persistent buffs from having their persistence removed by The Amalgam when it is unequipped.")
+            .RegisterBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold,
                 BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(),
                 BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(), BuffType<BaconOilBuff>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(),
                 BuffType<EvergreenGinBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<ManhattanBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(),
@@ -54,10 +61,12 @@ namespace CalamityMod.Systems.Collections
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>
-        /// This general-purpose set has several different uses, including reducing buff duration with Radiance, Crown Jewel and its upgrades' debuff effects, and removing debuffs with Cleansing Jelly and its upgrades' auras.<br/>
+        /// This general-purpose set has several different uses, including Crown Jewel and its upgrades' debuff effects, and removing debuffs with Cleansing Jelly and its upgrades' auras.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] IsDebuff = Factory.CreateBoolSet(BuffID.Poisoned, BuffID.Darkness, BuffID.Cursed, BuffID.OnFire, BuffID.Bleeding, BuffID.Confused, BuffID.Slow, BuffID.Weak,
+        public static bool[] IsDebuff = Factory.CreateNamedSet("IsDebuff")
+            .Description("General-purpose set with several different uses, including Crown Jewel line regen, removal via Cleansing Jelly line aura, etc.")
+            .RegisterBoolSet(BuffID.Poisoned, BuffID.Darkness, BuffID.Cursed, BuffID.OnFire, BuffID.Bleeding, BuffID.Confused, BuffID.Slow, BuffID.Weak,
                 BuffID.Silenced, BuffID.BrokenArmor, BuffID.CursedInferno, BuffID.Frostburn, BuffID.Chilled, BuffID.Frozen, BuffID.Burning, BuffID.Suffocation, BuffID.Ichor,
                 BuffID.Venom, BuffID.Blackout, BuffID.Electrified, BuffID.Rabies, BuffID.Webbed, BuffID.Stoned, BuffID.Dazed, BuffID.VortexDebuff, BuffID.WitheredArmor, BuffID.WitheredWeapon, BuffID.ShadowFlame,
                 BuffID.OgreSpit, BuffID.BetsysCurse, BuffID.Wet, BuffID.Slimed, BuffID.OnFire3, BuffID.Frostburn2, BuffType<SulphuricPoisoning>(), BuffType<Shadowflame>(), BuffType<Daybroken>(), BuffType<BrimstoneFlames>(), BuffType<BurningBlood>(),
@@ -74,7 +83,9 @@ namespace CalamityMod.Systems.Collections
         /// Used to prevent "whip stacking", the ability to grant the player multiple whip buff effects at once.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] IsSummonTagBuff = Factory.CreateBoolSet(BuffID.CoolWhipPlayerBuff, BuffID.ScytheWhipPlayerBuff, BuffID.SwordWhipPlayerBuff, BuffID.ThornWhipPlayerBuff, BuffType<ProfanedCrystalWhipBuff>());
+        public static bool[] IsSummonTagBuff = Factory.CreateNamedSet("IsSummonTagBuff")
+            .Description("Whip tag buffs for the player, used to prevent whip stacking.")
+            .RegisterBoolSet(BuffID.CoolWhipPlayerBuff, BuffID.ScytheWhipPlayerBuff, BuffID.SwordWhipPlayerBuff, BuffID.ThornWhipPlayerBuff, BuffType<ProfanedCrystalWhipBuff>());
 
         /// <summary>
         /// Associates a buff type with its <see cref="SummonTag"/> structure. If a buff type is not a key in this dictionary, then it has no associated <see cref="SummonTag"/>.<br/>
@@ -91,7 +102,10 @@ namespace CalamityMod.Systems.Collections
             { BuffID.ScytheWhipEnemyDebuff, SummonTag.DarkHarvest },
             { BuffID.SwordWhipNPCDebuff, SummonTag.Durendal },
             { BuffID.ThornWhipNPCDebuff, SummonTag.Snapthorn },
-            { BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag }
+            { BuffType<CnidarianSummonTagBuff>(), Cnidarian.summonTag },
+            { BuffType<ForbiddenStealthSummonTagBuff>(), ForbiddenCirclet.summonTag },
+            { BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag },
+            { BuffType<VoidConcentrationSummonTagBuff>(), VoidConcentrationStaff.summonTag }
         };
     }
 }

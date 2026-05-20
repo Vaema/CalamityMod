@@ -735,7 +735,7 @@ namespace CalamityMod.Items
             }
             #endregion
 
-            // Whip tag is dynamically generated for all whips based on the SummonTagDebuffDict, so we'll remove the vanilla tag tootlips.
+            // Whip tag is dynamically generated for all whips based on the SummonTagDebuff dictionary, so we'll remove the vanilla tag tootlips.
             #region Whip Tag removal
             // Additive tag changes
             if (item.type == ItemID.BlandWhip)
