@@ -31,16 +31,16 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] BuffedByAmalgam = Factory.CreateNamedSet("BuffedByAmalgam")
             .Description("Allows this buff to have its duration extended with The Amalgam equipped. Also used to remove buffs when contacting the Whispering Maelstrom in Get fixed boi.")
-            .RegisterBoolSet(BuffID.ObsidianSkin, BuffID.Regeneration, BuffID.Swiftness, BuffID.Gills, BuffID.Ironskin, BuffID.ManaRegeneration,
-                BuffID.MagicPower, BuffID.Featherfall, BuffID.Spelunker, BuffID.Invisibility, BuffID.Shine, BuffID.NightOwl, BuffID.Battle, BuffID.Thorns, BuffID.WaterWalking,
-                BuffID.Archery, BuffID.Hunter, BuffID.Gravitation, BuffID.Tipsy, BuffID.WellFed, BuffID.WellFed2, BuffID.WellFed3, BuffID.Honey, BuffID.WeaponImbueVenom,
-                BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold, BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti,
-                BuffID.WeaponImbuePoison, BuffID.Lucky, BuffID.Mining, BuffID.Heartreach, BuffID.Calm, BuffID.Builder, BuffID.Titan, BuffID.Flipper, BuffID.Summoning, BuffID.Dangersense,
-                BuffID.AmmoReservation, BuffID.Lifeforce, BuffID.Endurance, BuffID.Rage, BuffID.Inferno, BuffID.Wrath, BuffID.Lovestruck, BuffID.Stinky, BuffID.Fishing, BuffID.Sonar,
-                BuffID.Crate, BuffID.Warmth, BuffID.SugarRush, BuffType<AnechoicCoatingBuff>(), BuffType<AstralInjectionBuff>(), BuffType<BaguetteBuff>(), BuffType<BloodfinBoost>(),
-                BuffType<BoundingBuff>(), BuffType<CalciumBuff>(), BuffType<CeaselessHunger>(), BuffType<GravityNormalizerBuff>(), BuffType<Omniscience>(), BuffType<PhotosynthesisBuff>(),
-                BuffType<ShadowBuff>(), BuffType<Soaring>(), BuffType<SulphurskinBuff>(), BuffType<WeaponImbueBrimstone>(), BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(),
-                BuffType<Zen>(), BuffType<Zerg>(), BuffType<BaconOilBuff>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(), BuffType<EvergreenGinBuff>(),
+            .RegisterBoolSet(BuffID.ObsidianSkin, BuffID.Regeneration, BuffID.Swiftness, BuffID.Gills, BuffID.Ironskin, BuffID.ManaRegeneration, BuffID.MagicPower, BuffID.Featherfall,
+                BuffID.Spelunker, BuffID.Invisibility, BuffID.Shine, BuffID.NightOwl, BuffID.Battle, BuffID.Thorns, BuffID.WaterWalking, BuffID.Archery, BuffID.Hunter, BuffID.Gravitation,
+                BuffID.Tipsy, BuffID.WellFed, BuffID.WellFed2, BuffID.WellFed3, BuffID.Honey, BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire,
+                BuffID.WeaponImbueGold, BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffID.Lucky, BuffID.Mining,
+                BuffID.Heartreach, BuffID.Calm, BuffID.Builder, BuffID.Titan, BuffID.Flipper, BuffID.Summoning, BuffID.Dangersense, BuffID.AmmoReservation, BuffID.Lifeforce, BuffID.Endurance,
+                BuffID.Rage, BuffID.Inferno, BuffID.Wrath, BuffID.Lovestruck, BuffID.Stinky, BuffID.Fishing, BuffID.Sonar, BuffID.Crate, BuffID.Warmth, BuffID.SugarRush,
+                BuffType<AnechoicCoatingBuff>(), BuffType<AstralInjectionBuff>(), BuffType<BaguetteBuff>(), BuffType<BloodfinBoost>(), BuffType<BoundingBuff>(), BuffType<CalciumBuff>(),
+                BuffType<CeaselessHunger>(), BuffType<GravityNormalizerBuff>(), BuffType<Omniscience>(), BuffType<PhotosynthesisBuff>(), BuffType<ShadowBuff>(), BuffType<Soaring>(),
+                BuffType<SulphurskinBuff>(), BuffType<WeaponImbueBrimstone>(), BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(), BuffType<Zen>(), BuffType<Zerg>(),
+                BuffType<BaconOilBuff>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(), BuffType<EvergreenGinBuff>(),
                 BuffType<PurpleHazeBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(), BuffType<MoscowMuleBuff>(),
                 BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(), BuffType<StarBeamRyeBuff>(), BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(),
                 BuffType<Trippy>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
@@ -52,12 +52,12 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] IsPersistentBuff = Factory.CreateNamedSet("IsPersistentBuff")
             .Description("Prevents persistent buffs from having their persistence removed by The Amalgam when it is unequipped.")
-            .RegisterBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold,
-                BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(),
-                BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(), BuffType<BaconOilBuff>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(),
-                BuffType<EvergreenGinBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<ManhattanBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(),
-                BuffType<MoscowMuleBuff>(), BuffType<OldFashionedBuff>(), BuffType<PurpleHazeBuff>(), BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(),
-                BuffType<StarBeamRyeBuff>(), BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
+            .RegisterBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold, BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites,
+                BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(), BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(),
+                BuffType<BaconOilBuff>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(), BuffType<EvergreenGinBuff>(),
+                BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<ManhattanBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(), BuffType<MoscowMuleBuff>(),
+                BuffType<OldFashionedBuff>(), BuffType<PurpleHazeBuff>(), BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(), BuffType<StarBeamRyeBuff>(),
+                BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>
@@ -66,17 +66,17 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] IsDebuff = Factory.CreateNamedSet("IsDebuff")
             .Description("General-purpose set with several different uses, including Crown Jewel line regen, removal via Cleansing Jelly line aura, etc.")
-            .RegisterBoolSet(BuffID.Poisoned, BuffID.Darkness, BuffID.Cursed, BuffID.OnFire, BuffID.Bleeding, BuffID.Confused, BuffID.Slow, BuffID.Weak,
-                BuffID.Silenced, BuffID.BrokenArmor, BuffID.CursedInferno, BuffID.Frostburn, BuffID.Chilled, BuffID.Frozen, BuffID.Burning, BuffID.Suffocation, BuffID.Ichor,
-                BuffID.Venom, BuffID.Blackout, BuffID.Electrified, BuffID.Rabies, BuffID.Webbed, BuffID.Stoned, BuffID.Dazed, BuffID.VortexDebuff, BuffID.WitheredArmor, BuffID.WitheredWeapon, BuffID.ShadowFlame,
-                BuffID.OgreSpit, BuffID.BetsysCurse, BuffID.Wet, BuffID.Slimed, BuffID.OnFire3, BuffID.Frostburn2, BuffType<SulphuricPoisoning>(), BuffType<Shadowflame>(), BuffType<Daybroken>(), BuffType<BrimstoneFlames>(), BuffType<BurningBlood>(),
-                BuffType<BrainRot>(), BuffType<ElementalMix>(), BuffType<GodSlayerInferno>(), BuffType<AstralInfectionDebuff>(), BuffType<HolyFlames>(),
-                BuffType<Irradiated>(), BuffType<Plague>(), BuffType<CrushDepth>(), BuffType<HadopelagicPressure>(), BuffType<RiptideDebuff>(), BuffType<MarkedforDeath>(),
-                BuffType<HeavyBleeding>(), BuffType<Laceration>(), BuffType<AbsorberAffliction>(), BuffType<ArmorCrunch>(), BuffType<Crumbling>(), BuffType<Vaporfied>(), BuffType<Eutrophication>(),
-                BuffType<Dragonfire>(), BuffType<VermillionFlux>(), BuffType<AuricRebuke>(), BuffType<StaticDischarge>(), BuffType<Nightwither>(), BuffType<Voidfrost>(),
-                BuffType<VulnerabilityHex>(), BuffType<MiracleBlight>(), BuffType<WhisperingDeath>(), BuffType<FrozenLungs>(), BuffType<FishAlert>(), BuffType<HolyInferno>(),
-                BuffType<IcarusFolly>(), BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SagePoison>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>(), BuffType<ManaBurn>(), 
-                BuffType<DemonicFlames>(), BuffType<Bane>(), BuffType<Shred>(), BuffType<WindChilled>());
+            .RegisterBoolSet(BuffID.Poisoned, BuffID.Darkness, BuffID.Cursed, BuffID.OnFire, BuffID.Bleeding, BuffID.Confused, BuffID.Slow, BuffID.Weak, BuffID.Silenced, BuffID.BrokenArmor,
+                BuffID.CursedInferno, BuffID.Frostburn, BuffID.Chilled, BuffID.Frozen, BuffID.Burning, BuffID.Suffocation, BuffID.Ichor, BuffID.Venom, BuffID.Blackout, BuffID.Electrified,
+                BuffID.Rabies, BuffID.Webbed, BuffID.Stoned, BuffID.Dazed, BuffID.VortexDebuff, BuffID.WitheredArmor, BuffID.WitheredWeapon, BuffID.ShadowFlame, BuffID.OgreSpit, BuffID.BetsysCurse,
+                BuffID.Wet, BuffID.Slimed, BuffID.OnFire3, BuffID.Frostburn2, BuffType<SulphuricPoisoning>(), BuffType<Shadowflame>(), BuffType<Daybroken>(), BuffType<BrimstoneFlames>(), BuffType<BurningBlood>(),
+                BuffType<BrainRot>(), BuffType<ElementalMix>(), BuffType<GodSlayerInferno>(), BuffType<AstralInfectionDebuff>(), BuffType<HolyFlames>(), BuffType<Irradiated>(),
+                BuffType<Plague>(), BuffType<CrushDepth>(), BuffType<HadopelagicPressure>(), BuffType<RiptideDebuff>(), BuffType<MarkedforDeath>(), BuffType<HeavyBleeding>(),
+                BuffType<Laceration>(), BuffType<AbsorberAffliction>(), BuffType<ArmorCrunch>(), BuffType<Crumbling>(), BuffType<Vaporfied>(), BuffType<Eutrophication>(), BuffType<Dragonfire>(),
+                BuffType<VermillionFlux>(), BuffType<AuricRebuke>(), BuffType<StaticDischarge>(), BuffType<Nightwither>(), BuffType<Voidfrost>(), BuffType<VulnerabilityHex>(),
+                BuffType<MiracleBlight>(), BuffType<WhisperingDeath>(), BuffType<FrozenLungs>(), BuffType<FishAlert>(), BuffType<HolyInferno>(), BuffType<IcarusFolly>(),
+                BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SagePoison>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>(),
+                BuffType<ManaBurn>(), BuffType<DemonicFlames>(), BuffType<Bane>(), BuffType<Shred>(), BuffType<WindChilled>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is a whip tag buff on the player.<br/>

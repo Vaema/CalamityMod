@@ -13,11 +13,6 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override int ProjectileType => ModContent.ProjectileType<GildedProboscisProj>();
 
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
-        }
         public override bool SizeModifiers => false;
         public override void SetDefaults()
         {

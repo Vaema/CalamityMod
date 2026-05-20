@@ -18,10 +18,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
-        }
         public override void SetDefaults()
         {
             Item.width = 40;
