@@ -265,16 +265,10 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void AddShops()
         {
-
             NPCShop shop = new(Type);
             shop.Add<TheHousingContract>()
                 .Add<RageBait>()
                 .Add<TheConcoction>()
-                .Add<CombatVoucher>(Condition.DownedGoblinArmy)
-                .Add<AggressiveVoucher>(Condition.DownedGoblinArmy)
-                .Add<CombatVoucher>(Condition.DownedGoblinArmy)
-                .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy)
-                .Add<HurriedVoucher>(Condition.DownedGoblinArmy)
                 .Add<OddVoucher>()
                 .Add<TheElixir>()
                 .Add<TrustyOldRod>()
@@ -284,6 +278,11 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<FishStocks>()
                 .Add<TheSandwich>()
                 .Add<BaconOil>()
+                .Add<CombatVoucher>(Condition.DownedGoblinArmy)
+                .Add<AggressiveVoucher>(Condition.DownedGoblinArmy)
+                .Add<CombatVoucher>(Condition.DownedGoblinArmy)
+                .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy)
+                .Add<HurriedVoucher>(Condition.DownedGoblinArmy)
                 .Add<OmniGun>(Condition.DownedGolem)
                 
                 .Register();
@@ -291,6 +290,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void FindFrame(int frameHeight)
         {
+            NPC.gfxOffY = -2f;
+
             if (NPC.ai[0] == 12f) // Attacking
             {
                 NPC.spriteDirection = NPC.direction;
@@ -339,7 +340,7 @@ namespace CalamityMod.NPCs.TownNPCs
             if (NPC.ai[0] == 12f && !NPC.IsABestiaryIconDummy)
             {
                 Texture2D gunTex = TextureAssets.Item[ModContent.ItemType<ElephantKiller>()].Value;
-                int holdoutOffset = -21;
+                int holdoutOffset = -2;
                 Vector2 origin = NPC.spriteDirection == -1 ? new Vector2(gunTex.Width + holdoutOffset, gunTex.Height / 2f) : new Vector2(-holdoutOffset, gunTex.Height / 2f);
                 Vector2 drawPos = NPC.Center - screenPos + new Vector2(0f, 8f);
                 float rotation = NPC.ai[2] * ((float)Math.PI / 2f) * NPC.spriteDirection;
