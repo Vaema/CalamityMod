@@ -10,6 +10,16 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 {
     public partial class HorribleHog
     {
+        #region Static Behavior Properties
+        public static float EngageDistance => 300f;
+        public static float Idle_MaxSpeed => 2f;
+        public static float Idle_MaxAcceleration => 0.125f;
+
+        public static int DigTowardsTarget_PreJumpTime => 30;
+        public static int DigTowardsTarget_FindSuitablePositionTime => 120;
+        public static int DigTowardsTraget_MaxDiggingTime => 180;
+        #endregion
+
         public void MainBehavior_PiggyTransformation()
         {
             NPC.ShowNameOnHover = false;
@@ -36,30 +46,33 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 Main.LocalPlayer.SetScreenshake(screenshakeStrength);
             }
 
-            float smokeOpacity = 1.2f * Utils.GetLerpValue(0f, 45f, Timer, true);
-            int smokeAmt = Main.rand.Next(2, 5);
-            for (int i = 0; i < smokeAmt; i++)
+            if (Timer >= 45f)
             {
-                Color color = Color.Lerp(new(30, 30, 30), Color.Crimson, Main.rand.NextBool(3) ? Main.rand.NextFloat(0.2f, 0.8f) : Main.rand.Next(2));
-                int lifetime = Main.rand.Next(30, 45);
-                float scale = Main.rand.NextFloat(1.4f, 1.6f);
-
-                HeavySmokeParticle circlingSmoke = new(NPC.Center, Main.rand.NextVector2Circular(16f, 16f), color, lifetime, scale, smokeOpacity, 0.01f, affectedByLight: true);
-                GeneralParticleHandler.SpawnParticle(circlingSmoke, true, Enums.GeneralDrawLayer.BeforeNPCs);
-            }
-
-            float particleStrengthInterpolant = Utils.GetLerpValue(0f, 180f, Timer, true);
-            int lightSpawnRate = (int)MathHelper.Lerp(8, 1, particleStrengthInterpolant);
-            if (Main.rand.NextBool(lightSpawnRate))
-            {
-                int lightAmt = (int)MathHelper.Lerp(1, 6, particleStrengthInterpolant);
-                for (int i = 0; i < Main.rand.Next(1, lightAmt + 1); i++)
+                float smokeOpacity = 1.2f * Utils.GetLerpValue(45f, 75f, Timer, true);
+                int smokeAmt = Main.rand.Next(2, 5);
+                for (int i = 0; i < smokeAmt; i++)
                 {
-                    float lightSpeed = MathHelper.Lerp(2f, 4f, particleStrengthInterpolant) * tintStrength;
-                    float lightScale = MathHelper.Lerp(0.5f, 0.8f, particleStrengthInterpolant) * Main.rand.NextFloat(0.5f, 1f) * tintStrength;
+                    Color color = Color.Lerp(new(30, 30, 30), Color.Crimson, Main.rand.NextBool(3) ? Main.rand.NextFloat(0.2f, 0.8f) : Main.rand.Next(2));
+                    int lifetime = Main.rand.Next(30, 45);
+                    float scale = Main.rand.NextFloat(1.4f, 1.6f);
 
-                    SquishyLightParticle transformLight = new(NPC.Center, Main.rand.NextVector2Circular(lightSpeed, lightSpeed), lightScale, Color.White, Main.rand.Next(30, 45));
-                    GeneralParticleHandler.SpawnParticle(transformLight, true, Enums.GeneralDrawLayer.AfterNPCs);
+                    HeavySmokeParticle circlingSmoke = new(NPC.Center, Main.rand.NextVector2Circular(16f, 16f), color, lifetime, scale, smokeOpacity, 0.01f, affectedByLight: true);
+                    GeneralParticleHandler.SpawnParticle(circlingSmoke, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                }
+
+                float particleStrengthInterpolant = Utils.GetLerpValue(0f, 180f, Timer, true);
+                int lightSpawnRate = (int)MathHelper.Lerp(8, 1, particleStrengthInterpolant);
+                if (Main.rand.NextBool(lightSpawnRate))
+                {
+                    int lightAmt = (int)MathHelper.Lerp(1, 6, particleStrengthInterpolant);
+                    for (int i = 0; i < Main.rand.Next(1, lightAmt + 1); i++)
+                    {
+                        float lightSpeed = MathHelper.Lerp(2f, 4f, particleStrengthInterpolant) * tintStrength;
+                        float lightScale = MathHelper.Lerp(0.5f, 0.8f, particleStrengthInterpolant) * Main.rand.NextFloat(0.5f, 1f) * tintStrength;
+
+                        SquishyLightParticle transformLight = new(NPC.Center, Main.rand.NextVector2Circular(lightSpeed, lightSpeed), lightScale, Color.White, Main.rand.Next(30, 45));
+                        GeneralParticleHandler.SpawnParticle(transformLight, true, Enums.GeneralDrawLayer.AfterNPCs);
+                    }
                 }
             }
 
@@ -155,53 +168,69 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         public void MainBehavior_DespawnAnimation()
         {
-            // Jump into the ground and dig away.
-            if (Timer < DigTowardsTarget_PreJumpTime)
-            {
-                NPC.velocity.X *= 0.8f;
-                HorizontalShakeStrength = Utils.Remap(Timer, 0, DigTowardsTarget_PreJumpTime - 5, 0f, 6f, true);
-                SetSquashVectors(new Vector2(1.24f, 0.84f));
-            }
+            NPC.damage = 0;
 
-            if (Timer == DigTowardsTarget_PreJumpTime)
+            // Wait until Hog hits the ground before running the actual animation.
+            if (LocalAIState == 0f)
             {
-                NPC.velocity.Y -= 6f;
-                NPC.velocity.X += 4f * NPC.direction;
-                HorizontalShakeStrength = 0f;
-
-                SoundEngine.PlaySound(RetreatSound, NPC.Center);
-                SetSquashVectors();
-            }
-
-            if (Timer > DigTowardsTarget_PreJumpTime)
-            {
-                if (NPC.velocity.Y == 0f)
+                if (NPC.velocity.Y == 0f && Timer > 3f)
                 {
-                    int dustAmt = Main.rand.Next(10, 15);
-                    for (int i = 0; i < dustAmt; i++)
-                    {
-                        Vector2 dustPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
-                        Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, -2f));
-                        Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
-                    }
-
-                    int dustCloudAmt = Main.rand.Next(9, 13);
-                    for (int i = 0; i < dustCloudAmt; i++)
-                    {
-                        Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
-                        Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-2f, -1f));
-                        Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
-                        float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
-
-                        TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(1.2f, 1.4f), 1f, Main.rand.Next(45, 55), rotationSpeed);
-                        GeneralParticleHandler.SpawnParticle(dustCloud, true);
-                    }
-
-                    CalamityUtils.AddScreenshakeAt(NPC.Center, 5f);
-                    SoundEngine.PlaySound(SoundID.Item70, NPC.Center);
-
-                    NPC.active = false;
+                    LocalAIState = 1f;
+                    Timer = 0f;
                     NPC.netUpdate = true;
+                }
+
+                NPC.GravityMultiplier *= 2f;
+            }
+
+            if (LocalAIState == 1f)
+            {
+                // Jump into the ground and dig away.
+                if (Timer < DigTowardsTarget_PreJumpTime)
+                {
+                    NPC.velocity.X *= 0.8f;
+                    HorizontalShakeStrength = Utils.Remap(Timer, 0, DigTowardsTarget_PreJumpTime - 5, 0f, 6f, true);
+                    SetSquashVectors(new Vector2(1.24f, 0.84f));
+                }
+
+                if (Timer == DigTowardsTarget_PreJumpTime)
+                {
+                    NPC.velocity.Y -= 6f;
+                    NPC.velocity.X += 4f * NPC.direction;
+                    HorizontalShakeStrength = 0f;
+                    SetSquashVectors();
+                }
+
+                if (Timer > DigTowardsTarget_PreJumpTime)
+                {
+                    if (NPC.velocity.Y == 0f)
+                    {
+                        int dustAmt = Main.rand.Next(10, 15);
+                        for (int i = 0; i < dustAmt; i++)
+                        {
+                            Vector2 dustPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                            Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, -2f));
+                            Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                        }
+
+                        int dustCloudAmt = Main.rand.Next(9, 13);
+                        for (int i = 0; i < dustCloudAmt; i++)
+                        {
+                            Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                            Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-2f, -1f));
+                            Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
+                            float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                            TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(1.2f, 1.4f), 1f, Main.rand.Next(45, 55), rotationSpeed);
+                            GeneralParticleHandler.SpawnParticle(dustCloud, true);
+                        }
+
+                        CalamityUtils.AddScreenshakeAt(NPC.Center, 5f);
+                        SoundEngine.PlaySound(SoundID.Item70, NPC.Center);
+
+                        NPC.active = false;
+                        NPC.netUpdate = true;
+                    }
                 }
             }
 
@@ -262,7 +291,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             if (targetIsVisible || wasHitByNearestTarget)
             {
                 SwitchBehavior(specificAttack: BehaviorState.EngageAnimation);
-                RunEyeGlintEffect(0.4f);
+                DoEyeGlintEffect(0.4f);
             }
 
             // Standing still, occasionally switch directions.
@@ -307,6 +336,22 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 SoundEngine.PlaySound(IdleSound, NPC.Center);
                 NPC.soundDelay = Main.rand.Next(30, 45);
             }
+
+            // Spawn ambient mist around itself while it idles.
+            Rectangle tileWorkSpace = GetTileWorkSpaceForMist();
+            int tileWorkSpaceWithWidth = tileWorkSpace.X + tileWorkSpace.Width;
+            int tileWorkSpaceWithHeight = tileWorkSpace.Y + tileWorkSpace.Height;
+            for (int x = tileWorkSpace.X; x < tileWorkSpaceWithWidth; x++)
+            {
+                for (int y = tileWorkSpace.Y; y < tileWorkSpaceWithHeight; y++)
+                {
+                    TrySpawningMist(x, y);
+                }
+            }
+
+            // Tint slightly black.
+            TintColor = Color.Black;
+            TintStrength = 0.6f;
 
             NPC.chaseable = false;
             SearchForTargetEveryFrame = true;
@@ -440,7 +485,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                     NPC.Center = DiggingEmergeSpot;
                     NPC.velocity = CalamityUtils.GetProjectilePhysicsFiringVelocity(NPC.Center, target.Center, NPC.gravity, 7f) * new Vector2(1f, 1.45f);
-                    SpawnJumpParticles();
+                    DoJumpEffects();
 
                     LocalAIState = 2f;
                     Timer = 0f;
@@ -458,7 +503,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 1f, 0.085f);
                 if (NPC.velocity.Y == 0f && Timer > 2f)
                 {
-                    RunEyeGlintEffect(0.4f);
+                    DoEyeGlintEffect(0.4f);
                     SwitchBehavior(specificAttack: BehaviorState.ChasePlayer);
                 }
 

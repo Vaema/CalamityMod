@@ -63,12 +63,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         private static SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/HorribleHogHit", 3);
         private static SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/HorribleHogDeath");
         private static SoundStyle CackleSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogCackle");
-        private static SoundStyle DashGruntSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogDashGrunt");
+        private static SoundStyle HiccupSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogHiccup", 2);
         private static SoundStyle JumpSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogJump", 2);
         private static SoundStyle GroundImpactSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogGroundImpact", 2);
         private static SoundStyle VomitChargeUpSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogVomitChargeUp", 2);
         private static SoundStyle VomitSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogVomit", 2);
-        private static SoundStyle RetreatSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogRetreat");
         private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogIdle", 2)
         {
             PitchVariance = 0.25f,
@@ -114,12 +113,6 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         public float TintStrength;
 
-        /// <summary>
-        /// Used as a shader parameter to rotate the already-drawn sprite of Horrible Hog directly regardless of the rotation value of <see cref="NPC.rotation"/>. <br></br>
-        /// Used in cases where Horrible Hog needs to spin while also squashing and stretching. <see cref="NPC.rotation"/> is used for the spritebatch-drawn texture <br></br>
-        /// and needs to rotate towards the NPC's velocity in order for the squashed sprite to face the correct direction. This parameter is then used and a shader is <br></br>
-        /// then applied to the spritebatch to rotate the sprite differently from the value passed in spritebatch's Draw call.
-        /// </summary>
         public float SpriteRotation;
 
         public Vector2 LastPlayerPosition;
@@ -147,63 +140,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         public static int MaxAttacks_JumpAndDash => Main.expertMode ? 3 : 2;
         public static int MaxAttacks_VomitBarrage => Main.expertMode ? 2 : 1;
         public static int MaxAttacksPerCycle => CalamityWorld.revenge ? 5 : Main.expertMode ? 4 : 3;
-
-        public static int Damage_HogCharge => 10;
-        public static int Damage_ShockwaveProjectile => 10;
-        public static int Damage_ShockwaveRubbleProjectile => 12;
-        public static int Damage_VomitChunkProjectile => 12;
-        public static int Damage_VomitBombProjectile => 18;
-        public static int Damage_VomitEyeProjectile => 14;
-
-        public static float EngageDistance => 300f;
-        public static float Idle_MaxSpeed => 2f;
-        public static float Idle_MaxAcceleration => 0.125f;
-
+     
         public static int MaxTimeToStartDigging => 300;
-
-        public static int DigTowardsTarget_PreJumpTime => 30;
-        public static int DigTowardsTarget_FindSuitablePositionTime => 120;
-        public static int DigTowardsTraget_MaxDiggingTime => 180;
-
-        public static int ChaseTime => 180;
-        public static float ChasePlayer_MaxSpeed => 5f;
-        public static float ChasePlayer_MaxAcceleration => 0.3f;
-
-        public static int HogCharge_PreChargeTime => 75;
-        public static int HogCharge_ChargingTime => 240;
-        public static int HogCharge_ChargeCooldownTime => CalamityWorld.revenge ? -20 : Main.expertMode ? -30 : -45;
-        public static int HogCharge_PreDashTime => 45;
-        public static int HogCharge_DashTime => 20;
-        public static int HogCharge_MaxCharges => CalamityWorld.revenge ? 4 : Main.expertMode ? 3 : 2;
-        public static float HogCharge_MaxSpeed => CalamityWorld.revenge ? 18f : Main.expertMode ? 15f : 12f;
-        public static float HogCharge_MaxAcceleration => CalamityWorld.revenge ? 0.425f : Main.expertMode ? 0.4f : 0.375f;
-        public static float HogCharge_MaxSlowdownDistance => CalamityWorld.revenge ? 64f : Main.expertMode ? 96f : 128f;
-
-        public static int JumpAndDash_PreJumpTime => 75;
-        public static int JumpAndDash_JumpPreDashTime => 45;
-        public static int JumpAndDash_DashTime => 20;
-        public static int JumpAndDash_CooldownTime => 60;
-        public static int JumpAndDash_PreVomitTime => 60;
-        public static int JumpAndDash_PreGroundPoundTime => 45;
-        public static int JumpAndDash_MaxVomitChunks => CalamityWorld.revenge ? 5 : Main.expertMode ? 4 : 3;
-        public static int JumpAndDash_VomitTimeInterval => CalamityWorld.revenge ? 10 : 15;
-        public static int JumpAndDash_MaxBounces => Main.expertMode ? 3 : 2;
-        public static float JumpAndDash_MaxJumpHeight => 14f;
-        public static float JumpAndDash_MaxDashSpeed => 20f;
-        public static float JumpAndDash_MaxBounceSpeed => CalamityWorld.revenge ? 16f : Main.expertMode ? 14f : 12f;
-
-        public static int HorribleHoller_RoarTime => 75;
-        public static int HorribleHoller_PostRoarCooldownTime => 30;
-        public static int HorribleHoller_MaxZombies => 3;
-
-        public static int VomitBarrage_PreJumpTime => 75;
-        public static int VomitBarrage_VomitTime => 25;
-        public static int VomitBarrage_PostVomitCooldown => 100;
-        public static int VomitBarrage_MaxVomitChunks => CalamityWorld.revenge ? 10 : Main.expertMode ? 8 : 6;
-        public static int VomitBarrage_MinVomitBombs => CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 0;
-        public static int VomitBarrage_MaxVomitBombs => CalamityWorld.death ? 6 : CalamityWorld.revenge ? 5 : Main.expertMode ? 3 : 4;
-        public static float VomitBarrage_MaxSpeed => 8f;
-        public static float VomitBarrage_MaxAcceleration => 0.45f;
         #endregion
 
         public ref float Timer => ref NPC.ai[0];
@@ -224,7 +162,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         {
             get
             {
-                float stretch = MathHelper.Clamp(NPC.velocity.Length() / 20f * 0.1f, 1f, 1.05f);
+                float stretch = Utils.Remap(NPC.velocity.Length(), 0f, 20f, 1f, 1.08f);
                 Vector2 stretchedVector = new(1f * stretch, 1f - 1f * stretch * 0.3f);
                 return stretchedVector;
             }
@@ -557,15 +495,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             NPC.netUpdate = true;
         }
 
-        public void TransformIntoPiggy()
-        {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                // Run packet here if necessary.
-            }
-
-            SwitchBehavior(specificAttack: BehaviorState.PiggyTransformation);
-        }
+        public void TransformIntoPiggy() => SwitchBehavior(specificAttack: BehaviorState.PiggyTransformation);
 
         public bool TryTransformingIntoPiggy()
         {
@@ -705,7 +635,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             return NPC.active && DevilsTongueVolumeMultiplier >= 0.05f;
         }
 
-        private void SpawnJumpParticles(int dustCloudMin = 10, int dustCloudMax = 14, int dirtDustMin = 14, int dirtDustMax = 18)
+        private void DoJumpEffects(int dustCloudMin = 10, int dustCloudMax = 14, int dirtDustMin = 14, int dirtDustMax = 18)
         {
             // Do fart in a jar visuals when Hog does a jump mid-air.
             float tileCollisionDistance = CalamityUtils.DistanceToTileCollisionHit(NPC.Bottom, Vector2.UnitY, 10) ?? 9999f;
@@ -749,7 +679,80 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     Vector2 velocity = NPC.velocity * (Main.rand.NextFloat(0.1f, 0.2f) + i * 0.025f);
                     Dust.NewDust(NPC.Bottom, 0, 0, DustID.Dirt, velocity.X, velocity.Y);
                 }
+
+                SoundEngine.PlaySound(JumpSound, NPC.Bottom);
             }
+        }
+
+        private void TrySpawningMist(int x, int y)
+        {
+            if (!WorldGen.InWorld(x, y, 10) || Main.tile[x, y] == null)
+                return;
+
+            Tile tile = Main.tile[x, y];
+            if (!tile.HasTile || tile.Slope > 0 || tile.IsHalfBlock || !Main.tileSolid[Main.tile[x, y].TileType])
+                return;
+
+            tile = Main.tile[x, y - 1];
+            if (tile.LiquidAmount > 0 && tile.Slope <= 0)
+            {
+                for (int i = tile.Y() - 1; i > tile.Y() - 50; i--)
+                {
+                    Tile liquidTile = Main.tile[x, i];
+                    Tile liquidTileUnderOne = Main.tile[x, i + 1];
+                    Tile liquidTileUnderTwo = Main.tile[x, i + 2];
+                    if (liquidTile.LiquidAmount == 0 && !WorldGen.SolidTile(liquidTile) && !WorldGen.SolidTile(liquidTileUnderOne) && !WorldGen.SolidTile(liquidTileUnderTwo))
+                    {
+                        if (Main.rand.NextBool(240))
+                        {
+                            SpawnFloorMist(x, i + 1);
+                            if (Main.rand.NextBool(3))
+                                SpawnFloorMist(x, i + 2);
+                        }
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if (!WorldGen.SolidTile(tile) && Main.rand.NextBool(240))
+                {
+                    SpawnFloorMist(x, y + 1);
+                    if (Main.rand.NextBool(3))
+                        SpawnFloorMist(x, y);
+                }
+            }
+            
+        }
+
+        private Rectangle GetTileWorkSpaceForMist()
+        {
+            Point point = NPC.Center.ToTileCoordinates();
+            int width = 30;
+            int height = 10;
+            return new Rectangle(point.X - width / 2, point.Y - height / 2, width, height);
+        }
+
+        private void SpawnFloorMist(int x, int y)
+        {
+            int textureIndex = Main.rand.Next(GoreID.AmbientFloorCloud1, GoreID.AmbientFloorCloud4 + 1);
+
+            Vector2 position = new Point(x, y - 1).ToWorldCoordinates();
+            Vector2 velocity = Vector2.UnitX * Main.rand.NextFloat(0.2f, 0.4f) * Main.WindForVisuals;
+            Color mistColor = Color.Lerp(new(30, 30, 30), Color.Crimson, Main.rand.NextBool(3) ? Main.rand.NextFloat(0.2f, 0.8f) : Main.rand.Next(2));
+            Color color = Color.Lerp(Lighting.GetColor(new Point(x, y)), mistColor, 0.5f);
+
+            float yOffset = 16f * Main.rand.NextFloat();
+            position.Y -= yOffset;
+            if (yOffset > 4f)
+                textureIndex = GoreID.AmbientFloorCloud4;
+
+            float scale = Main.rand.NextFloat(0.8f, 1.6f) + Main.rand.NextFloat() * 0.2f;
+            float baseOpacity = Main.rand.NextFloat(0.8f, 1.2f) * Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 1200f, 600f, 0.3f, 1f, true);
+            int lifetime = Main.rand.Next(480, 720);
+
+            GraveyardMistParticle floorMist = new(position, velocity, color, scale, baseOpacity, lifetime, textureIndex);
+            GeneralParticleHandler.SpawnParticle(floorMist);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -797,7 +800,10 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
+            {
+                Draw_ScaryEvilFuckedUpAura(spriteBatch, screenPos, true);
                 return true;
+            }
 
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
             SpriteEffects effects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -808,42 +814,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             // Background effect when Horrible Hog is idling and its nearby loop is playing.
             if (DevilsTongueVolumeMultiplier > 0.05f && AIState != (int)BehaviorState.PiggyTransformation)
-            {
-                using (spriteBatch.Scope())
-                {
-                    float radiusBasedOpacity = Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 250f, 750f, 1f, 0.15f, true);
-
-                    Effect auraShader = CalamityShaders.HorribleHogAuraShader.Value;
-                    auraShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-                    auraShader.Parameters["colorPaletteLimit"].SetValue(16f);
-                    auraShader.Parameters["spiralArms"].SetValue(5f);
-                    auraShader.Parameters["spiralAdditionalAngle"].SetValue(6f);
-                    auraShader.Parameters["minPixelFadeDistance"].SetValue(0.125f);
-                    auraShader.Parameters["maxPixelFadeDistance"].SetValue(0.485f);
-                    auraShader.Parameters["pixelationFactor"].SetValue(Main.ScreenSize.ToVector2() * 0.25f);
-                    auraShader.Parameters["spiralTimeOffset"].SetValue(new Vector2(-0.08f, -0.05f));
-                    auraShader.Parameters["vortexDarkColor"].SetValue(new Color(8, 8, 8).ToVector3());
-                    auraShader.Parameters["vortexBrightColor"].SetValue(Color.Crimson.ToVector3());
-
-                    Main.graphics.GraphicsDevice.Textures[1] = VortexTextureSecondary.Value;
-                    Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
-
-                    Main.graphics.GraphicsDevice.Textures[2] = VortexDistortionTexture.Value;
-                    Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.LinearWrap;
-
-                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, auraShader, Main.GameViewMatrix.TransformationMatrix);
-
-                    spriteBatch.Draw(VortexTexture.Value, drawPosition, null, Color.White * radiusBasedOpacity * DevilsTongueVolumeMultiplier, 0f, VortexTexture.Size() * 0.5f, 1f, 0, 0f);
-
-                    spriteBatch.End();
-                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-
-                    float bloomCircleOpacity = MathHelper.Lerp(0.6f, 0.9f, MathF.Sin((float)Main.timeForVisualEffects / 75f + NPC.whoAmI * 0.5f + 0.5f)) * radiusBasedOpacity;
-                    spriteBatch.Draw(BloomCircle.Value, drawPosition, null, Color.Crimson with { A = 0 } * bloomCircleOpacity * DevilsTongueVolumeMultiplier, 0f, BloomCircle.Size() * 0.5f, 1.2f, 0, 0f);
-
-                    spriteBatch.End();
-                }
-            }
+                Draw_ScaryEvilFuckedUpAura(spriteBatch, screenPos);
 
             // Horrible Hog and its afterimage trail.
             using (spriteBatch.Scope())
@@ -878,11 +849,6 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 spriteBatch.End();
             }
 
-            // Debugging text for tracking attacks.
-            //string attack = $"{(BehaviorState)AIState}";
-            //Vector2 stringDrawPosition = drawPosition - Vector2.UnitY * 64f;
-            //ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, attack, stringDrawPosition, Color.LawnGreen, 0f, Vector2.One, Vector2.One);
-
             // Eye glint.
             if (EyeGlintScale > 0.05f)
             {
@@ -900,19 +866,86 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             return false;
         }
 
-        private void EffectChaining_ApplyTintShader()
+        private void Draw_ScaryEvilFuckedUpAura(SpriteBatch spriteBatch, Vector2 screenPos, bool bestiary = false)
         {
-            Effect tintShader = CalamityShaders.BasicTintShader.Value;
-            tintShader.Parameters["uColor"].SetValue(TintColor.ToVector3());
-            tintShader.Parameters["uOpacity"].SetValue(TintStrength);
-            tintShader.Techniques[0].Passes[0].Apply();
-        }
+            RasterizerState previousRasterizerState = spriteBatch.GraphicsDevice.RasterizerState;
+            Rectangle previousScissorRectangle = spriteBatch.GraphicsDevice.ScissorRectangle;
 
-        private void EffectChaining_ApplySpriteRotationShader()
-        {
-            Effect rotateSpriteShader = CalamityShaders.RotateSprite.Value;
-            rotateSpriteShader.Parameters["rotation"].SetValue(SpriteRotation);
-            rotateSpriteShader.Techniques[0].Passes[0].Apply();
+            using (spriteBatch.Scope())
+            {
+                Vector2 drawPosition = NPC.Center - screenPos;
+                float radiusBasedOpacity = Utils.Remap(Main.LocalPlayer.Distance(NPC.Center), 250f, 750f, 1f, 0.15f, true);
+                float generalEffectOpacity = bestiary ? MathHelper.Lerp(0.5f, 1f, MathF.Sin((float)Main.timeForVisualEffects / 75f) * 0.5f + 0.5f) : radiusBasedOpacity * DevilsTongueVolumeMultiplier;
+                float generalEffectScale = bestiary ? 0.5f : 1f;
+                Matrix transformatiomMatrix = bestiary ? Main.UIScaleMatrix : Main.GameViewMatrix.TransformationMatrix;
+
+                Effect auraShader = CalamityShaders.HorribleHogAuraShader.Value;
+                auraShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                auraShader.Parameters["colorPaletteLimit"].SetValue(16f);
+                auraShader.Parameters["spiralArms"].SetValue(5f);
+                auraShader.Parameters["spiralAdditionalAngle"].SetValue(6f);
+                auraShader.Parameters["minPixelFadeDistance"].SetValue(0.145f);
+                auraShader.Parameters["maxPixelFadeDistance"].SetValue(0.485f);
+                auraShader.Parameters["pixelationFactor"].SetValue(Main.ScreenSize.ToVector2() * 0.25f);
+                auraShader.Parameters["spiralTimeOffset"].SetValue(new Vector2(-0.08f, -0.05f));
+                auraShader.Parameters["vortexDarkColor"].SetValue(new Color(8, 8, 8).ToVector3());
+                auraShader.Parameters["vortexBrightColor"].SetValue(Color.Crimson.ToVector3());
+
+                Main.graphics.GraphicsDevice.Textures[1] = VortexTextureSecondary.Value;
+                Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+
+                Main.graphics.GraphicsDevice.Textures[2] = VortexDistortionTexture.Value;
+                Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.PointWrap;
+
+                // More accurate pixelation for the bestiary.
+                if (bestiary)
+                {
+                    auraShader.Parameters["pixelationFactor"].SetValue(Main.ScreenSize.ToVector2());
+                    Matrix pixelationMatrix = Matrix.CreateScale(0.5f, 0.5f, 1f);
+                    using var pixelationLease = RenderTargetPool.Shared.Rent(Main.graphics.GraphicsDevice, Main.screenWidth / 2, Main.screenHeight / 2, RenderTargetDescriptor.Default);
+                    using (pixelationLease.Scope(clearColor: Color.Transparent))
+                    {
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, auraShader, pixelationMatrix);
+
+                        spriteBatch.Draw(VortexTexture.Value, drawPosition, null, Color.White * generalEffectOpacity, 0f, VortexTexture.Size() * 0.5f, 1f * generalEffectScale, 0, 0f);
+
+                        spriteBatch.End();
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, pixelationMatrix);
+
+                        float bloomCircleOpacity = MathHelper.Lerp(0.6f, 0.9f, MathF.Sin((float)Main.timeForVisualEffects / 75f + NPC.whoAmI) * 0.5f + 0.5f) * generalEffectOpacity;
+                        spriteBatch.Draw(BloomCircle.Value, drawPosition, null, Color.Crimson with { A = 0 } * bloomCircleOpacity, 0f, BloomCircle.Size() * 0.5f, 1.2f * generalEffectScale, 0, 0f);
+
+                        spriteBatch.End();
+                    }
+
+                    spriteBatch.GraphicsDevice.RasterizerState = previousRasterizerState;
+                    spriteBatch.GraphicsDevice.ScissorRectangle = previousScissorRectangle;
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, previousRasterizerState, null, transformatiomMatrix);
+
+                    spriteBatch.Draw(pixelationLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
+
+                    spriteBatch.End();
+                }
+                else
+                {
+                    spriteBatch.GraphicsDevice.RasterizerState = previousRasterizerState;
+                    spriteBatch.GraphicsDevice.ScissorRectangle = previousScissorRectangle;
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, previousRasterizerState, auraShader, transformatiomMatrix);
+
+                    spriteBatch.Draw(VortexTexture.Value, drawPosition, null, Color.White * generalEffectOpacity, 0f, VortexTexture.Size() * 0.5f, 1f * generalEffectScale, 0, 0f);
+
+                    spriteBatch.End();
+
+                    spriteBatch.GraphicsDevice.RasterizerState = previousRasterizerState;
+                    spriteBatch.GraphicsDevice.ScissorRectangle = previousScissorRectangle;
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, previousRasterizerState, null, transformatiomMatrix);
+
+                    float bloomCircleOpacity = MathHelper.Lerp(0.6f, 0.9f, MathF.Sin((float)Main.timeForVisualEffects / 75f + NPC.whoAmI) * 0.5f + 0.5f) * generalEffectOpacity;
+                    spriteBatch.Draw(BloomCircle.Value, drawPosition, null, Color.Crimson with { A = 0 } * bloomCircleOpacity, 0f, BloomCircle.Size() * 0.5f, 1.2f * generalEffectScale, 0, 0f);
+
+                    spriteBatch.End();
+                }
+            }
         }
 
         private void SetSquashVectors(Vector2? squashVectorTarget = null, Vector2? squashVector = null)
@@ -922,7 +955,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 SquashVector = squashVector.Value;
         }
 
-        private void RunEyeGlintEffect(float scale)
+        private void DoEyeGlintEffect(float scale)
         {
             EyeGlintScale = scale;
             float pitch = Utils.Remap(scale, 0.4f, 1f, 0.7f, 0.9f, true);

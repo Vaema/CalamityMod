@@ -14,6 +14,55 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 {
     public partial class HorribleHog
     {
+        #region Static Behavior Properties
+        public static int Damage_HogCharge => 10;
+        public static int Damage_ShockwaveProjectile => 10;
+        public static int Damage_ShockwaveRubbleProjectile => 12;
+        public static int Damage_VomitChunkProjectile => 12;
+        public static int Damage_VomitBombProjectile => 18;
+        public static int Damage_VomitEyeProjectile => 14;
+
+        public static int ChaseTime => 180;
+        public static float ChasePlayer_MaxSpeed => 5f;
+        public static float ChasePlayer_MaxAcceleration => 0.3f;
+
+        public static int HogCharge_PreChargeTime => 75;
+        public static int HogCharge_ChargingTime => 240;
+        public static int HogCharge_ChargeCooldownTime => CalamityWorld.revenge ? -20 : Main.expertMode ? -30 : -45;
+        public static int HogCharge_PreDashTime => 45;
+        public static int HogCharge_DashTime => 20;
+        public static int HogCharge_MaxCharges => CalamityWorld.revenge ? 4 : Main.expertMode ? 3 : 2;
+        public static float HogCharge_MaxSpeed => CalamityWorld.revenge ? 18f : Main.expertMode ? 15f : 12f;
+        public static float HogCharge_MaxAcceleration => CalamityWorld.revenge ? 0.425f : Main.expertMode ? 0.4f : 0.375f;
+        public static float HogCharge_MaxSlowdownDistance => CalamityWorld.revenge ? 64f : Main.expertMode ? 96f : 128f;
+
+        public static int JumpAndDash_PreJumpTime => 75;
+        public static int JumpAndDash_JumpPreDashTime => 45;
+        public static int JumpAndDash_DashTime => 20;
+        public static int JumpAndDash_CooldownTime => 60;
+        public static int JumpAndDash_PreVomitTime => 60;
+        public static int JumpAndDash_PreGroundPoundTime => 45;
+        public static int JumpAndDash_MaxVomitChunks => CalamityWorld.revenge ? 5 : Main.expertMode ? 4 : 3;
+        public static int JumpAndDash_VomitTimeInterval => CalamityWorld.revenge ? 10 : 15;
+        public static int JumpAndDash_MaxBounces => Main.expertMode ? 3 : 2;
+        public static float JumpAndDash_MaxJumpHeight => 14f;
+        public static float JumpAndDash_MaxDashSpeed => 20f;
+        public static float JumpAndDash_MaxBounceSpeed => CalamityWorld.revenge ? 16f : Main.expertMode ? 14f : 12f;
+
+        public static int HorribleHoller_RoarTime => 75;
+        public static int HorribleHoller_PostRoarCooldownTime => 30;
+        public static int HorribleHoller_MaxZombies => 3;
+
+        public static int VomitBarrage_PreJumpTime => 75;
+        public static int VomitBarrage_VomitTime => 25;
+        public static int VomitBarrage_PostVomitCooldown => 100;
+        public static int VomitBarrage_MaxVomitChunks => CalamityWorld.revenge ? 10 : Main.expertMode ? 8 : 6;
+        public static int VomitBarrage_MinVomitBombs => CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 0;
+        public static int VomitBarrage_MaxVomitBombs => CalamityWorld.death ? 6 : CalamityWorld.revenge ? 5 : Main.expertMode ? 3 : 4;
+        public static float VomitBarrage_MaxSpeed => 8f;
+        public static float VomitBarrage_MaxAcceleration => 0.45f;
+        #endregion
+
         public void MainBehavior_ChasePlayer(Player target)
         {
             // Whenever the player is able to be hit, don't modify velocity mid-air.
@@ -68,7 +117,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 {
                     Timer = 0f;
                     LocalAIState = 1f;
-                    SoundEngine.PlaySound(DashGruntSound, NPC.Center);
+                    SoundEngine.PlaySound(SoundID.Zombie38, NPC.Center);
                     NPC.netUpdate = true;
                 }
 
@@ -95,7 +144,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                     AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 0f, 0.15f);
                     if (Timer == -10 && !finishedWithCharges)
-                        RunEyeGlintEffect(0.4f);
+                        DoEyeGlintEffect(0.4f);
                 }
                 else
                 {
@@ -184,7 +233,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             {
                 NPC.velocity.Y = -JumpAndDash_MaxJumpHeight * 1.2f;
                 NPC.velocity.X += JumpAndDash_MaxDashSpeed * 0.4f * NPC.direction;
-                SpawnJumpParticles();
+                DoJumpEffects();
                 SoundEngine.PlaySound(JumpSound, NPC.Center);
             }
 
@@ -202,7 +251,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
                     LastPlayerPosition = target.Center;
                     if (Timer == HogCharge_PreDashTime - 10)
-                        RunEyeGlintEffect(0.6f);
+                        DoEyeGlintEffect(0.6f);
                 }
             }
 
@@ -214,7 +263,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 SetSquashVectors(new Vector2(1.12f, 0.96f));
                 SpriteRotation = 0f;
                 NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
-                SoundEngine.PlaySound(DashGruntSound, NPC.Center);
+                SoundEngine.PlaySound(SoundID.Zombie38, NPC.Center);
             }
 
             if (Timer >= HogCharge_PreDashTime && Timer <= HogCharge_PreDashTime + HogCharge_DashTime)
@@ -294,7 +343,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.velocity.Y = -JumpAndDash_MaxJumpHeight;
                     NPC.velocity.X += JumpAndDash_MaxDashSpeed * 0.2f * NPC.direction;
 
-                    SpawnJumpParticles();
+                    DoJumpEffects();
                     SetSquashVectors(new Vector2(0.84f, 1.14f));
                     SoundEngine.PlaySound(JumpSound, NPC.Center);
                     HorizontalShakeStrength = 0f;
@@ -309,7 +358,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     SpriteRotation -= (MathHelper.TwoPi / 20f) * NPC.direction;
                     AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 1f, 0.15f);
                     if (Timer == JumpAndDash_JumpPreDashTime + JumpAndDash_PreJumpTime - 10)
-                        RunEyeGlintEffect(0.4f);
+                        DoEyeGlintEffect(0.4f);
                 }
 
                 if (Timer == JumpAndDash_JumpPreDashTime + JumpAndDash_PreJumpTime)
@@ -319,7 +368,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                     SpriteRotation = 0f;
                     NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
-                    SoundEngine.PlaySound(DashGruntSound, NPC.Center);
+                    SoundEngine.PlaySound(SoundID.Zombie38, NPC.Center);
                 }
 
                 if (Timer >= JumpAndDash_JumpPreDashTime + JumpAndDash_PreJumpTime && Timer <= JumpAndDash_JumpPreDashTime + JumpAndDash_PreJumpTime + JumpAndDash_DashTime)
@@ -439,7 +488,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.velocity *= 0.98f;
                 NPC.GravityMultiplier *= 0.84f;
                 if (Timer == JumpAndDash_PreVomitTime - 10)
-                    RunEyeGlintEffect(0.6f);
+                    DoEyeGlintEffect(0.6f);
             }
 
             if (Timer >= JumpAndDash_PreVomitTime)
@@ -544,7 +593,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.velocity *= 0.96f;
                     NPC.GravityMultiplier *= 0.4f;
                     if (Timer == JumpAndDash_PreGroundPoundTime - 10)
-                        RunEyeGlintEffect(0.6f);
+                        DoEyeGlintEffect(0.6f);
                 }
                 else
                 {
@@ -667,9 +716,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.velocity.X = -12f * NPC.direction;
 
                     HorizontalShakeStrength = 0f;
-                    SpawnJumpParticles(6, 9);
+                    DoJumpEffects(6, 9);
                     SetSquashVectors(squashVector: new Vector2(0.84f, 1.14f));
-                    SoundEngine.PlaySound(JumpSound, NPC.Center);
                 }
 
                 if (Timer >= VomitBarrage_PreJumpTime && Timer <= VomitBarrage_PreJumpTime + VomitBarrage_VomitTime)
@@ -751,10 +799,29 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     SwitchBehavior(BehaviorState.VomitBarrage, null, [.. possibleAttacks]);
                 }
 
+                // Do a small hiccup/burp after the attack.
+                int burpTime = VomitBarrage_PostVomitCooldown / 2;
+                if (Timer == burpTime)
+                {
+                    SoundEngine.PlaySound(HiccupSound with { Volume = 1.25f }, NPC.Center);
+                    SetSquashVectors(squashVector: new Vector2(0.84f, 1.14f));
+                    NPC.velocity.Y = -4.25f;
+
+                    int burpDustAmt = Main.rand.Next(6, 10);
+                    for (int i = 0; i < burpDustAmt; i++)
+                    {
+                        Vector2 spawnPosition = NPC.Center + new Vector2(8f * NPC.direction, -8f);
+                        Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.ToRadians(20f) + NPC.rotation) * Main.rand.NextFloat(3f, 5f) * NPC.direction;
+                        Dust.NewDust(spawnPosition, 1, 1, DustID.FartInAJar, velocity.X, velocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                    }
+                }
+
                 if (NPC.velocity.Y == 0f)
                     NPC.velocity.X *= 0.9f;
 
                 float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.135f * (NPC.velocity.Y < 0).ToDirectionInt() : 0f;
+                if (Timer >= burpTime && Timer <= VomitBarrage_PostVomitCooldown)
+                    targetAngle = (NPC.velocity.Y != 0f) ? (NPC.direction < 0 ? MathHelper.ToRadians(30f) : MathHelper.ToRadians(-30f)) : 0f;
                 NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.125f);
                 NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
             }

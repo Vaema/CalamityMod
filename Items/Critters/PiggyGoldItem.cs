@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Critters
 {
-    public class PiggyItem : ModItem, ILocalizedModType
+    public class PiggyGoldItem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
 
@@ -16,10 +16,9 @@ namespace CalamityMod.Items.Critters
 
         public override void SetDefaults()
         {
-            Item.DefaultToCapturedCritter(ModContent.NPCType<Piggy>());
-            Item.value = Item.sellPrice(silver: 5);
-            Item.rare = ItemRarityID.Blue;
-            Item.Calamity().donorItem = true;
+            Item.DefaultToCapturedCritter(ModContent.NPCType<PiggyGold>());
+            Item.value = Item.sellPrice(gold: 10);
+            Item.rare = ItemRarityID.Orange;
         }
     }
 }

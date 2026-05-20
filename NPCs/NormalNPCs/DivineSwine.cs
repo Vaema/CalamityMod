@@ -28,6 +28,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -119,8 +120,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 0;
             NPC.width = 32;
             NPC.height = 34;
-            NPC.lifeMax = 999999;
-            NPC.defense = 999999;
+            NPC.lifeMax = 5;
+            NPC.defense = 99999999;
             NPC.rarity = 5;
             NPC.aiStyle = -1;
             NPC.knockBackResist = 0.1f;
@@ -312,9 +313,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.netUpdate = true;
                 }
 
-                if (ShouldTurnAway)
+                Point tileAhead = (NPC.Center + NPC.velocity * 16f).ToTileCoordinates();
+                bool leavingWorldTop = tileAhead.Y <= 40;
+                bool leavingWorldBottom = tileAhead.Y >= Main.maxTilesY - 40;
+                bool leavingWorldLeft = tileAhead.X <= 40;
+                bool leavingWorldRight = tileAhead.X >= Main.maxTilesX - 40;
+                if (ShouldTurnAway || leavingWorldTop || leavingWorldBottom || leavingWorldLeft || leavingWorldRight)
                 {
-                    AvoidTileCollision(MaxSpeed + 0.6f);
+                    AvoidTileCollision(MaxSpeed + 0.6f, ref leavingWorldTop, ref leavingWorldBottom, ref leavingWorldLeft, ref leavingWorldRight);
                     IdleMovementTimer = 0f;
                 }
                 else
@@ -485,11 +491,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void TransformIntoPiggy()
         {
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                // run packet here if necessary.
-            }
-
             AIState = (int)BehaviorState.PiggyTransformation;
             LocalAIState = 0f;
             Timer = 0f;
@@ -503,13 +504,22 @@ namespace CalamityMod.NPCs.NormalNPCs
             return true;
         }
 
-        public void AvoidTileCollision(float maxSpeed, float turnAwayStrength = 0.125f)
+        public void AvoidTileCollision(float maxSpeed, ref bool leavingWorldTop, ref bool leavingWorldBottom, ref bool leavingWorldLeft, ref bool leavingWorldRight, float turnAwayStrength = 0.125f)
         {
             float distanceToCollisionLeft = CalamityUtils.DistanceToTileCollisionHit(NPC.Center, NPC.velocity.RotatedBy(MathHelper.PiOver2), 32, ShouldAvoidTile) ?? 10000f;
             float distanceToCollisionRight = CalamityUtils.DistanceToTileCollisionHit(NPC.Center, NPC.velocity.RotatedBy(-MathHelper.PiOver2), 32, ShouldAvoidTile) ?? 10000f;
             int directionToMove = (distanceToCollisionLeft > distanceToCollisionRight).ToDirectionInt();
 
             Vector2 idealVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2 * directionToMove) * (maxSpeed - NPC.velocity.Length());
+            if (leavingWorldTop)
+                idealVelocity = Vector2.UnitY * 2f;
+            if (leavingWorldBottom)
+                idealVelocity = Vector2.UnitY * -2f;
+            if (leavingWorldLeft)
+                idealVelocity = Vector2.UnitX * 2f;
+            if (leavingWorldRight)
+                idealVelocity = Vector2.UnitX * -2f;
+
             NPC.velocity = Vector2.Lerp(NPC.velocity, idealVelocity, turnAwayStrength);
         }
 
@@ -665,7 +675,17 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 DivineSwineOfferingPacket.Send(npc.ModNPC<DivineSwine>(), offeringState);
                         }
                     }
+                    npc.position -= npc.netOffset;
                 }
+
+                // Change the mouse display to just show the name and not the text.
+                if (hoveringOverHitbox && !player.mouseInterface)
+                {
+                    self.MouseTextHackZoom(npc.GivenOrTypeName);
+                    Main.mouseText = true;
+                    npc.position -= npc.netOffset;
+                }
+                npc.position -= npc.netOffset;
             }
         }
 
@@ -880,7 +900,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
             float floatHeight = MathHelper.Lerp(-8f, 8f, MathF.Sin((float)Timer / 150f) * 0.5f + 0.5f);
             Vector2 drawPosition = NPC.Center + Vector2.UnitY * floatHeight;
-            Matrix pixelationMatrix = Main.Transform * Matrix.CreateScale(0.5f, 0.5f, 1f);
+            Matrix pixelationMatrix = Matrix.CreateScale(0.5f, 0.5f, 1f);
 
             RasterizerState previousRasterizerState = spriteBatch.GraphicsDevice.RasterizerState;
             Rectangle previousScissorRectangle = spriteBatch.GraphicsDevice.ScissorRectangle;

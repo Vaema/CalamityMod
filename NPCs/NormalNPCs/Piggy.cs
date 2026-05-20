@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Policy;
 using CalamityMod.Effects;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
@@ -97,11 +98,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetDefaults()
         {
-            NPC.chaseable = false;
             NPC.damage = 0;
-            NPC.width = 26;
-            NPC.height = 26;
-            NPC.lifeMax = 2000;
+            NPC.width = 42;
+            NPC.height = 28;
+            NPC.lifeMax = 200;
             NPC.aiStyle = -1;
             NPC.knockBackResist = 1.15f;
             NPC.HitSound = SoundID.NPCHit1;
@@ -109,6 +109,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.catchItem = (short)ModContent.ItemType<PiggyItem>();
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<PiggyBanner>();
+            NPC.chaseable = false;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
@@ -128,6 +129,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
+            // Force bestiary cause this doesn't count as Vanilla's definition of a critter for the Bestiary.
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
+                Main.BestiaryTracker.Kills.SetKillCountDirectly(NPC.GetBestiaryCreditId(), 100);
+
             if (NPC.direction == 0)
                 NPC.direction = Utils.SelectRandom(Main.rand, -1, 1);
 
@@ -393,8 +398,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
             }
 
-            float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.175f * (NPC.velocity.Y > 0).ToDirectionInt() : 0f;
-            NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.075f);
+            float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
+            NPC.rotation = idealRotation;
         }
 
         public void TransformIntoVariant(int type)
@@ -449,9 +454,14 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSulphur || spawnInfo.Player.Calamity().ZoneSunkenSea)
-                return 0f;
-            return SpawnCondition.TownCritter.Chance * 0.005f;
+            float goldMultiplier = NPC.type == ModContent.NPCType<PiggyGold>() ? 0.15f : 1f;
+            bool inAtTown = spawnInfo.Player.townNPCs > 2f && (Main.remixWorld ? spawnInfo.Player.ZoneNormalCaverns : spawnInfo.Player.ZoneForest);
+            if (inAtTown)
+                return SpawnCondition.TownCritter.Chance * 0.15f * goldMultiplier;
+            else if (spawnInfo.Player.ZonePurity)
+                return (Main.remixWorld ? SpawnCondition.Cavern.Chance * 0.005f : SpawnCondition.OverworldDayGrassCritter.Chance * 0.005f) * goldMultiplier;
+
+            return 0f;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemID.Bacon);

@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CalamityMod.Items.Critters;
+using CalamityMod.Items.Placeables.Banners;
+using Microsoft.Xna.Framework;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -19,8 +23,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetDefaults()
         {
-            NPC.rarity = 3;
             base.SetDefaults();
+            NPC.catchItem = (short)ModContent.ItemType<PiggyGoldItem>();
+            Banner = 0;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
