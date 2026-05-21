@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,14 +16,14 @@ namespace CalamityMod.Items.Tools
         {
             Item.width = 80;
             Item.height = 66;
-            Item.damage = 70;
+            Item.damage = 55;
             Item.crit = 10;
             Item.knockBack = 7f;
             Item.useTime = 8;
             Item.useAnimation = 12;
             Item.axe = 135 / 5;
             Item.tileBoost += 1;
-
+            Item.shoot = ProjectileID.Spark; // Dummy argument to ensure it doesn't get set to true melee
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -30,6 +32,8 @@ namespace CalamityMod.Items.Tools
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
         }
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => false;
 
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {
@@ -48,6 +52,76 @@ namespace CalamityMod.Items.Tools
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
+            if (player.whoAmI == Main.myPlayer)
+            {
+                if (player.itemAnimation == (int)(player.itemAnimationMax * 0.1) ||
+                    player.itemAnimation == (int)(player.itemAnimationMax * 0.3) ||
+                    player.itemAnimation == (int)(player.itemAnimationMax * 0.5) ||
+                    player.itemAnimation == (int)(player.itemAnimationMax * 0.7) ||
+                    player.itemAnimation == (int)(player.itemAnimationMax * 0.9))
+                {
+                    float sparkYVel = 0f;
+                    float sparkXVel = 0f;
+                    float sparkYSpawn = 0f;
+                    float sparkXSpawn = 0f;
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.9))
+                    {
+                        sparkYVel = -7f;
+                    }
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.7))
+                    {
+                        sparkYVel = -6f;
+                        sparkXVel = 2f;
+                    }
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.5))
+                    {
+                        sparkYVel = -4f;
+                        sparkXVel = 4f;
+                    }
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.3))
+                    {
+                        sparkYVel = -2f;
+                        sparkXVel = 6f;
+                    }
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.1))
+                    {
+                        sparkXVel = 7f;
+                    }
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.7))
+                    {
+                        sparkXSpawn = 26f;
+                    }
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.3))
+                    {
+                        sparkXSpawn -= 4f;
+                        sparkYSpawn -= 20f;
+                    }
+                    if (player.itemAnimation == (int)(player.itemAnimationMax * 0.1))
+                    {
+                        sparkYSpawn += 6f;
+                    }
+                    if (player.direction == -1)
+                    {
+                        if (player.itemAnimation == (int)(player.itemAnimationMax * 0.9))
+                        {
+                            sparkXSpawn -= 8f;
+                        }
+                        if (player.itemAnimation == (int)(player.itemAnimationMax * 0.7))
+                        {
+                            sparkXSpawn -= 6f;
+                        }
+                    }
+                    sparkYVel *= 1.5f;
+                    sparkXVel *= 1.5f;
+                    sparkXSpawn *= (float)player.direction;
+                    sparkYSpawn *= player.gravDir;
+                    var source = player.GetSource_ItemUse(Item);
+                    int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(Item.damage * 0.5f);
+                    int spark = Projectile.NewProjectile(source, (float)(hitbox.X + hitbox.Width / 2) + sparkXSpawn, (float)(hitbox.Y + hitbox.Height / 2) + sparkYSpawn, (float)player.direction * sparkXVel, sparkYVel * player.gravDir, ProjectileID.Spark, damage, 0f, player.whoAmI);
+                    if (spark.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[spark].DamageType = DamageClass.Melee;
+                }
+            }
             if (Main.rand.NextBool(4))
             {
                 int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
@@ -59,9 +133,10 @@ namespace CalamityMod.Items.Tools
             if (hit.Crit)
             {
                 var source = player.GetSource_ItemUse(Item);
-                int boom = Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), (int)(Item.damage * 0.33f), Item.knockBack, player.whoAmI, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
-                if (boom.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[boom].DamageType = DamageClass.Melee;
+                Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), 0, Item.knockBack, player.whoAmI, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
+                int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.5f);
+                Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
+                blast.DamageType = Item.DamageType;
             }
             target.AddBuff(BuffID.OnFire3, 300);
         }
