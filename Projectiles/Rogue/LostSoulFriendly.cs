@@ -24,7 +24,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 240;
-            Projectile.ArmorPenetration = 20;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.extraUpdates = 1;
             Projectile.alpha = 150;

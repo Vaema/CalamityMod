@@ -4814,7 +4814,8 @@ namespace CalamityMod.Projectiles
                         Main.projectile[soul].tileCollide = false;
                         if (soul.WithinBounds(Main.maxProjectiles))
                             Main.projectile[soul].DamageType = DamageClass.Generic;
-                    }
+                            Main.projectile[soul].ArmorPenetration = 20;
+                    }  
                     extorterBoost = false;
                 }
             }
