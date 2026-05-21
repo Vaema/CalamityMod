@@ -1196,6 +1196,7 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.GravityGlobe)
             {
+                player.noFallDmg = true;
                 player.GetJumpState<GravityJump>().Enable();
                 if (player.Calamity().justChangedGravity)
                 {

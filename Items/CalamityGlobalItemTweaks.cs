@@ -63,7 +63,7 @@ namespace CalamityMod.Items
                 { ItemID.BluePhaseblade, phaseblade },
                 { ItemID.BluePhasesaber, phasesaber },
                 { ItemID.BoneSword, Do(UseTurn, DamageExact(25)) }, // VANILLA: 19 DMG
-                { ItemID.BookofSkulls, Do(DamageExact(27), ManaExact(13), ShootSpeedExact(5.5f)) }, // VANILLA: 29 DMG, 18 MANA, 3.5 VEL
+                { ItemID.BookofSkulls, Do(ShootSpeedExact(5.5f)) }, // VANILLA: 3.5 VEL
                 { ItemID.Boomstick, Do(DamageExact(11)) }, // VANILLA: 14 DMG
                 { ItemID.BreakerBlade, Do(UseTurn, DamageExact(140)) }, // VANILLA: 70 DMG
                 { ItemID.CandyCornRifle, Do(DamageExact(66)) }, // VANILLA: 44 DMG
@@ -112,7 +112,7 @@ namespace CalamityMod.Items
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow. VANILLA: 50 DMG
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(13)) }, // VANILLA: 20 UT
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration. VANILLA: 25 DMG, 30 UT
-                { ItemID.Flamarang, Do(DamageExact(37)) }, // VANILLA: 49 DMG
+                { ItemID.Flamarang, Do(DamageExact(40)) }, // VANILLA: 49 DMG
                 { ItemID.Flamelash, Do(DamageExact(36)) }, // VANILLA: 32 DMG
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) }, // VANILLA: 35 DMG, 7 VEL
                 { ItemID.FlowerofFire, Do(DamageRatio(0.78f)) }, // VANILLA: 48 DMG. Uses ratios due to remix seed

@@ -1033,7 +1033,7 @@ Seraphim: {
 		'''
 		Throws an extraordinarily fast dagger which slows down exponentially and dissipates into light
 		Once dissipation has ended, 6 splitting blades that slice nearby targets are released, along with a large laserbeam
-		Stealth strikes release a volley of 7 lights which explode into smaller laser beams along with the dagger
+		Stealth strikes release a volley of 8 lights which explode into smaller laser beams along with the dagger
 		'''
 }
 
@@ -1258,8 +1258,8 @@ ThrowingBrick: {
 	DisplayName: Throwing Brick
 	Tooltip:
 		'''
-		Prove its resistance by throwing it upwards and catching it with your face
-		Throws a brick that shatters if stealth is full
+		Stealth strikes cause the brick to shatter
+		'Prove its resistance by throwing it upwards and catching it with your face'
 		'''
 }
 

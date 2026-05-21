@@ -1392,7 +1392,6 @@ namespace CalamityMod.CalPlayer
         public bool staticDischarge = false;
         public bool miracleBlight = false;
         public bool armorCrunch = false;
-        public bool crumble = false;
         public bool irradiated = false;
         public bool bane = false;
         public bool brimstoneFlames = false;
@@ -2696,7 +2695,6 @@ namespace CalamityMod.CalPlayer
             staticDischarge = false;
             miracleBlight = false;
             armorCrunch = false;
-            crumble = false;
             irradiated = false;
             bane = false;
             brimstoneFlames = false;
@@ -3185,7 +3183,6 @@ namespace CalamityMod.CalPlayer
             staticDischarge = false;
             miracleBlight = false;
             armorCrunch = false;
-            crumble = false;
             irradiated = false;
             bane = false;
             brimstoneFlames = false;

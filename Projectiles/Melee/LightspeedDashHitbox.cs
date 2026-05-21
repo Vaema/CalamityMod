@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
 
-            target.AddBuff(ModContent.BuffType<ElementalMix>(), 120);
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 300);
         }
     }
 }

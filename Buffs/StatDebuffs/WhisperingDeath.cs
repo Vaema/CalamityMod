@@ -7,6 +7,9 @@ namespace CalamityMod.Buffs.StatDebuffs
 {
     public class WhisperingDeath : ModBuff
     {
+        public static float PlayerDamageReduction = 0.2f;
+        public static float EnemyDamageReduction = 0.1f;
+
         // Whispering Death does not deal DoT, but is classified as a sickness debuff.
         public static DebuffData debuffData = new DebuffData()
         {

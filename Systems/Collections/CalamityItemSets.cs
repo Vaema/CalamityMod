@@ -92,7 +92,7 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] RogueBomb = Factory.CreateBoolSet(ItemType<BallisticPoisonBomb>(), ItemType<BlastBarrel>(), ItemType<ContaminatedBile>(), ItemType<ConsecratedWater>(), ItemType<CraniumSmasher>(),
-                ItemType<DesecratedWater>(), ItemType<DuststormInABottle>(), ItemType<Exorcism>(), ItemType<LeonidProgenitor>(), ItemType<MeteorFist>(), ItemType<Penumbra>(), ItemType<Plaguenade>(), 
+                ItemType<DesecratedWater>(), ItemType<DuststormInABottle>(), ItemType<Exorcism>(), ItemType<LemonNade>(), ItemType<LeonidProgenitor>(), ItemType<MeteorFist>(), ItemType<Penumbra>(), ItemType<Plaguenade>(), 
                 ItemType<PlasmaGrenade>(), ItemType<PulseGrenade>(), ItemType<Pumpkaboom>(), ItemType<SeafoamBomb>(), ItemType<SealedSingularity>(), ItemType<SkyfinBombers>(), ItemType<SpentFuelContainer>(), 
                 ItemType<StarofDestruction>(), ItemType<Supernova>(), ItemType<TotalityBreakers>(), ItemType<WavePounder>(), ItemType<Whitewater>());
 
