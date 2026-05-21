@@ -15,14 +15,14 @@ namespace CalamityMod.Items.Weapons.Rogue
         /// <summary>
         /// Falloff per target hit simultaneously by the aura. Resets every hit interval
         /// </summary>
-        public static float FalloffPerTargetHitByAura => 0.1f;
-        public static float FallofPerTargetHitByBomb => 0.1f;
+        public static float FalloffPerTargetHitByAura => 0.5f;
+        public static float FallofPerTargetHitByBomb => 0.2f;
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 32;
-            Item.damage = 425;
+            Item.damage = 260;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
             Item.noMelee = true;

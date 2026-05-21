@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
@@ -16,6 +17,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class SealedSingularityProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -101,7 +103,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Timer % 30 == 0) //reset hit immunity every 30 frames & reset the pierce falloff too
                 {
-                    Projectile.ResetImmunity();
+                    Projectile.ResetLocalNPCHitImmunity();
                     Projectile.numHits = 0;
                 }
                 Projectile.timeLeft++;
@@ -340,11 +342,11 @@ namespace CalamityMod.Projectiles.Rogue
             switch (AIState)
             {
                 case 1:
-                    modifiers.SourceDamage /= 20;
+                    modifiers.SourceDamage /= Stealth ? 15 : 25;
                     modifiers.SourceDamage *= MathF.Pow(1 - SealedSingularity.FalloffPerTargetHitByAura, Projectile.numHits);
                     return;
                 case 2:
-                    modifiers.SourceDamage *= 2;
+                    modifiers.SourceDamage *= Stealth ? 5 : 2;
                     modifiers.SourceDamage *= MathF.Pow(1 - SealedSingularity.FallofPerTargetHitByBomb, Projectile.numHits);
                     return;
             }
