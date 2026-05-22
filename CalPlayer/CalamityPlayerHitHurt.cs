@@ -502,7 +502,7 @@ namespace CalamityMod.CalPlayer
                 for (int index = 0; index < target.buffType.Length; index++)
                 {
                     int type = target.buffType[index];
-                    var debuffData = BuffDatasets.DebuffDataset[type];
+                    var debuffData = CalamityBuffSets.DebuffDataset[type];
                     if (debuffData != null)
                         numOfDebuffs++;
                 }

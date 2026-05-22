@@ -20,18 +20,18 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityNPCTypeSets
     {
-        public static SetFactory Factory = new SetFactory(NPCLoader.NPCCount, "CalamityMod/NPCType", Search);
-        public static IdDictionary Search = IdDictionary.Create<NPCID, int>();
+        private static SetFactory Factory = new SetFactory(NPCLoader.NPCCount, "CalamityMod/NPCType", Search);
+        private static IdDictionary Search = IdDictionary.Create<NPCID, int>();
 
         // Used for dropping Ancient Bone Dust, vanilla has a Skeleton NPCID set which has more unwanted enemies in it
-        public static bool[] Skeleton = Factory.CreateNamedSet("Skeleton")
+        internal static bool[] Skeleton = Factory.CreateNamedSet("Skeleton")
             .Description("Contains different IDs from vanilla's Skeleton set. Used for dropping Ancient Bone Dust.")
             .RegisterBoolSet(NPCID.Skeleton, NPCID.HeadacheSkeleton, NPCID.MisassembledSkeleton, NPCID.PantlessSkeleton, NPCID.BoneThrowingSkeleton, NPCID.BoneThrowingSkeleton2,
                 NPCID.BoneThrowingSkeleton3, NPCID.BoneThrowingSkeleton4, NPCID.SkeletonTopHat, NPCID.SkeletonAstonaut, NPCID.SkeletonAlien, NPCID.ArmoredSkeleton, NPCID.SkeletonArcher,
                 NPCID.GreekSkeleton, NPCID.SporeSkeleton);
 
         // Unused, though is more restrictive than the vanilla Zombie NPCID set
-        public static bool[] Zombie = Factory.CreateNamedSet("Zombie")
+        internal static bool[] Zombie = Factory.CreateNamedSet("Zombie")
             .Description("Contains different IDs from vanilla's Zombie set. Unused.")
             .RegisterBoolSet(NPCID.Zombie, NPCID.ArmedZombie, NPCID.BaldZombie, NPCID.PincushionZombie, NPCID.ArmedZombiePincussion, NPCID.SlimedZombie,
                 NPCID.ArmedZombieSlimed, NPCID.SwampZombie, NPCID.ArmedZombieSwamp, NPCID.TwiggyZombie, NPCID.ArmedZombieTwiggy, NPCID.FemaleZombie, NPCID.ArmedZombieCenx,

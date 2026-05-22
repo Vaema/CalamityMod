@@ -5104,7 +5104,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; ++l)
                 {
                     int buffID = Player.buffType[l];
-                    if ((BuffDatasets.DebuffDataset[buffID] != null && BuffDatasets.DebuffDataset[buffID].AlcoholLevel > 0) || buffID == BuffID.Tipsy)
+                    if ((CalamityBuffSets.DebuffDataset[buffID] != null && CalamityBuffSets.DebuffDataset[buffID].AlcoholLevel > 0) || buffID == BuffID.Tipsy)
                     {
                         Player.buffTime[l]++;
                     }

@@ -21,15 +21,15 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityBuffSets
     {
-        public static SetFactory Factory = new SetFactory(BuffLoader.BuffCount, "CalamityMod/BuffID", Search);
-        public static IdDictionary Search = IdDictionary.Create<BuffID, int>();
+        private static SetFactory Factory = new SetFactory(BuffLoader.BuffCount, "CalamityMod/BuffID", Search);
+        private static IdDictionary Search = IdDictionary.Create<BuffID, int>();
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff will have its duration extended with The Amalgam equipped.<br/>
         /// Also used to remove buffs when contacting the Whispering Maelstrom in the Get fixed boi seed.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] BuffedByAmalgam = Factory.CreateNamedSet("BuffedByAmalgam")
+        internal static bool[] BuffedByAmalgam = Factory.CreateNamedSet("BuffedByAmalgam")
             .Description("Allows this buff to have its duration extended with The Amalgam equipped. Also used to remove buffs when contacting the Whispering Maelstrom in Get fixed boi.")
             .RegisterBoolSet(BuffID.ObsidianSkin, BuffID.Regeneration, BuffID.Swiftness, BuffID.Gills, BuffID.Ironskin, BuffID.ManaRegeneration, BuffID.MagicPower, BuffID.Featherfall,
                 BuffID.Spelunker, BuffID.Invisibility, BuffID.Shine, BuffID.NightOwl, BuffID.Battle, BuffID.Thorns, BuffID.WaterWalking, BuffID.Archery, BuffID.Hunter, BuffID.Gravitation,
@@ -50,7 +50,7 @@ namespace CalamityMod.Systems.Collections
         /// Used by The Amalgam to prevent removing their persistence when the accessory is unequipped.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] IsPersistentBuff = Factory.CreateNamedSet("IsPersistentBuff")
+        internal static bool[] IsPersistentBuff = Factory.CreateNamedSet("IsPersistentBuff")
             .Description("Prevents persistent buffs from having their persistence removed by The Amalgam when it is unequipped.")
             .RegisterBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold, BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites,
                 BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(), BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(),
@@ -64,7 +64,7 @@ namespace CalamityMod.Systems.Collections
         /// This general-purpose set has several different uses, including Crown Jewel and its upgrades' debuff effects, and removing debuffs with Cleansing Jelly and its upgrades' auras.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] IsDebuff = Factory.CreateNamedSet("IsDebuff")
+        internal static bool[] IsDebuff = Factory.CreateNamedSet("IsDebuff")
             .Description("General-purpose set with several different uses, including Crown Jewel line regen, removal via Cleansing Jelly line aura, etc.")
             .RegisterBoolSet(BuffID.Poisoned, BuffID.Darkness, BuffID.Cursed, BuffID.OnFire, BuffID.Bleeding, BuffID.Confused, BuffID.Slow, BuffID.Weak, BuffID.Silenced, BuffID.BrokenArmor,
                 BuffID.CursedInferno, BuffID.Frostburn, BuffID.Chilled, BuffID.Frozen, BuffID.Burning, BuffID.Suffocation, BuffID.Ichor, BuffID.Venom, BuffID.Blackout, BuffID.Electrified,
@@ -83,7 +83,7 @@ namespace CalamityMod.Systems.Collections
         /// Used to prevent "whip stacking", the ability to grant the player multiple whip buff effects at once.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] IsSummonTagBuff = Factory.CreateNamedSet("IsSummonTagBuff")
+        internal static bool[] IsSummonTagBuff = Factory.CreateNamedSet("IsSummonTagBuff")
             .Description("Whip tag buffs for the player, used to prevent whip stacking.")
             .RegisterBoolSet(BuffID.CoolWhipPlayerBuff, BuffID.ScytheWhipPlayerBuff, BuffID.SwordWhipPlayerBuff, BuffID.ThornWhipPlayerBuff, BuffType<ProfanedCrystalWhipBuff>());
 
@@ -91,21 +91,101 @@ namespace CalamityMod.Systems.Collections
         /// Associates a buff type with its <see cref="SummonTag"/> structure. If a buff type is not a key in this dictionary, then it has no associated <see cref="SummonTag"/>.<br/>
         /// Used for several different effects, such as applying tag effects to NPCs, preventing "whip stacking" on NPCs, and drawing the tag effect icon below the NPC. 
         /// </summary>
-        public static Dictionary<int, SummonTag> SummonTagDebuff = new Dictionary<int, SummonTag>
+        internal static SummonTag[] SummonTagDebuff = Factory.CreateNamedSet("SummonTagDebuff")
+            .Description("Associates a buff type with its SummonTag structure. Used for several different effects, such as applying tag effects to NPCs, preventing whip stacking on NPCs, and drawing the tag effect icon below the NPC.")
+            .RegisterCustomSet<SummonTag>(null,
+            BuffID.BlandWhipEnemyDebuff, SummonTag.LeatherWhip,
+            BuffID.BoneWhipNPCDebuff, SummonTag.SpinalTap,
+            BuffID.CoolWhipNPCDebuff, SummonTag.CoolWhip,
+            BuffID.FlameWhipEnemyDebuff, SummonTag.Firecracker,
+            BuffID.MaceWhipNPCDebuff, SummonTag.MorningStar,
+            BuffID.RainbowWhipNPCDebuff, SummonTag.Kaleidoscope,
+            BuffID.ScytheWhipEnemyDebuff, SummonTag.DarkHarvest,
+            BuffID.SwordWhipNPCDebuff, SummonTag.Durendal ,
+            BuffID.ThornWhipNPCDebuff, SummonTag.Snapthorn,
+            BuffType<CnidarianSummonTagBuff>(), Cnidarian.summonTag,
+            BuffType<ForbiddenStealthSummonTagBuff>(), ForbiddenCirclet.summonTag,
+            BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag,
+            BuffType<VoidConcentrationSummonTagBuff>(), VoidConcentrationStaff.summonTag
+        );
+
+        private static DebuffData Alch(int level) => new DebuffData() { AlcoholLevel = level };
+        internal static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
+            .Description("Stores DebuffData for a particular debuff")
+            .RegisterCustomSet<DebuffData>(null,
+                BuffID.OnFire, DebuffData.OnFire,
+                BuffID.OnFire3, DebuffData.Hellfire,
+                BuffID.CursedInferno, DebuffData.CursedInferno,
+                BuffID.ShadowFlame, DebuffData.Shadowflame,
+                BuffID.Daybreak, DebuffData.Daybroken,
+                BuffID.Burning, DebuffData.Burning,
+                BuffID.Frostburn, DebuffData.Frostburn,
+                BuffID.Frostburn2, DebuffData.Frostbite,
+                BuffID.Poisoned, DebuffData.Poisoned,
+                BuffID.Venom, DebuffData.AcidVenom,
+                BuffID.Electrified, DebuffData.Electrified,
+                BuffID.Oiled, DebuffData.Oiled,
+
+                BuffID.Tipsy, Alch(1),
+                BuffType<BloodyMaryBuff>(), Alch(1),
+                BuffType<CaribbeanRumBuff>(), Alch(1),
+                BuffType<CinnamonRollBuff>(), Alch(1),
+                BuffType<EvergreenGinBuff>(), Alch(1),
+                BuffType<FireballBuff>(), Alch(1),
+                BuffType<GrapeBeerBuff>(), Alch(1),
+                BuffType<ManhattanBuff>(), Alch(1),
+                BuffType<MargaritaBuff>(), Alch(1),
+                BuffType<MoonshineBuff>(), Alch(1),
+                BuffType<MoscowMuleBuff>(), Alch(1),
+                BuffType<OldFashionedBuff>(), Alch(1),
+                BuffType<PurpleHazeBuff>(), Alch(1),
+                BuffType<RedWineBuff>(), Alch(1),
+                BuffType<RumBuff>(), Alch(1),
+                BuffType<ScrewdriverBuff>(), Alch(1),
+                BuffType<StarBeamRyeBuff>(), Alch(1),
+                BuffType<TequilaBuff>(), Alch(1),
+                BuffType<TequilaSunriseBuff>(), Alch(1),
+                BuffType<VodkaBuff>(), Alch(1),
+                BuffType<WhiskeyBuff>(), Alch(1),
+                BuffType<WhiteWineBuff>(), Alch(1),
+
+                BuffType<EverclearBuff>(), Alch(2),
+                BuffType<BaconOilBuff>(), Alch(3)
+            );
+        public static int GetBuffIDFromAlcoholType(AlcoholType type)
         {
-            { BuffID.BlandWhipEnemyDebuff, SummonTag.LeatherWhip },
-            { BuffID.BoneWhipNPCDebuff, SummonTag.SpinalTap },
-            { BuffID.CoolWhipNPCDebuff, SummonTag.CoolWhip },
-            { BuffID.FlameWhipEnemyDebuff, SummonTag.Firecracker },
-            { BuffID.MaceWhipNPCDebuff, SummonTag.MorningStar },
-            { BuffID.RainbowWhipNPCDebuff, SummonTag.Kaleidoscope },
-            { BuffID.ScytheWhipEnemyDebuff, SummonTag.DarkHarvest },
-            { BuffID.SwordWhipNPCDebuff, SummonTag.Durendal },
-            { BuffID.ThornWhipNPCDebuff, SummonTag.Snapthorn },
-            { BuffType<CnidarianSummonTagBuff>(), Cnidarian.summonTag },
-            { BuffType<ForbiddenStealthSummonTagBuff>(), ForbiddenCirclet.summonTag },
-            { BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag },
-            { BuffType<VoidConcentrationSummonTagBuff>(), VoidConcentrationStaff.summonTag }
-        };
+            return type switch
+            {
+                AlcoholType.BaconOil => BuffType<BaconOilBuff>(),
+                AlcoholType.BloodyMary => BuffType<BloodyMaryBuff>(),
+                AlcoholType.CaribbeanRum => BuffType<CaribbeanRumBuff>(),
+                AlcoholType.CinnamonRoll => BuffType<CinnamonRollBuff>(),
+                AlcoholType.Everclear => BuffType<EverclearBuff>(),
+                AlcoholType.EvergreenGin => BuffType<EvergreenGinBuff>(),
+                AlcoholType.Fireball => BuffType<FireballBuff>(),
+                AlcoholType.GrapeBeer => BuffType<GrapeBeerBuff>(),
+                AlcoholType.Manhattan => BuffType<ManhattanBuff>(),
+                AlcoholType.Margarita => BuffType<MargaritaBuff>(),
+                AlcoholType.Moonshine => BuffType<MoonshineBuff>(),
+                AlcoholType.MoscowMule => BuffType<MoscowMuleBuff>(),
+                AlcoholType.OldFashioned => BuffType<OldFashionedBuff>(),
+                AlcoholType.PurpleHaze => BuffType<PurpleHazeBuff>(),
+                AlcoholType.RedWine => BuffType<RedWineBuff>(),
+                AlcoholType.Rum => BuffType<RumBuff>(),
+                AlcoholType.Screwdriver => BuffType<ScrewdriverBuff>(),
+                AlcoholType.StarBeamRye => BuffType<StarBeamRyeBuff>(),
+                AlcoholType.Tequila => BuffType<TequilaBuff>(),
+                AlcoholType.TequilaSunrise => BuffType<TequilaSunriseBuff>(),
+                AlcoholType.Vodka => BuffType<VodkaBuff>(),
+                AlcoholType.Whiskey => BuffType<WhiskeyBuff>(),
+                AlcoholType.WhiteWine => BuffType<WhiteWineBuff>(),
+
+                // Vanilla treats both Ale and Sake as the "Tipsy" buff
+                AlcoholType.Ale => BuffID.Tipsy,
+                AlcoholType.Sake => BuffID.Tipsy,
+
+                _ => -1
+            };
+        }
     }
 }
