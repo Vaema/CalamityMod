@@ -55,7 +55,7 @@ namespace CalamityMod.Systems.Collections
         /// If <see langword="true"/> for an NPC type, makes this NPC be susceptible to <see cref="BuffID.Confused"/>.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] CalamityNPCNotImmuneToConfused = Factory.CreateNamedSet("CalamityNPCNotImmuneToConfused")
+        public static bool[] CalamityNPCNotImmuneToConfused = Factory.CreateNamedSet("CalamityNPCNotImmuneToConfused")
             .Description("Makes this NPC be susceptible to Confused.")
             .RegisterBoolSet(NPCType<AeroSlime>(), NPCType<AstralachneaGround>(), NPCType<AstralachneaWall>(), NPCType<BloomSlime>(), NPCType<Bohldohr>(), NPCType<CalamityEye>(),
                 NPCType<CrimulanBlightSlime>(), NPCType<Cryon>(), NPCType<CryoSlime>(), NPCType<DespairStone>(), NPCType<EbonianBlightSlime>(), NPCType<FearlessGoldfishWarrior>(),
@@ -66,7 +66,7 @@ namespace CalamityMod.Systems.Collections
         /// If <see langword="true"/> for an NPC type, forces this NPC to draw Calamity's debuff display, even if it is not a boss.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] ForceDrawDebuffDisplay = Factory.CreateNamedSet("ForceDrawDebuffDisplay")
+        public static bool[] ForceDrawDebuffDisplay = Factory.CreateNamedSet("ForceDrawDebuffDisplay")
             .Description("Allows drawing Calamity's debuff display, even if not a boss.")
             .RegisterBoolSet(NPCID.TargetDummy, NPCID.WallofFleshEye, NPCType<SuperDummyNPC>());
 
@@ -75,7 +75,7 @@ namespace CalamityMod.Systems.Collections
         /// Used to make them immune to enemy damage.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] BoundTownNPC = Factory.CreateNamedSet("BoundTownNPC")
+        public static bool[] BoundTownNPC = Factory.CreateNamedSet("BoundTownNPC")
             .Description("Labels this NPC as a bound town NPC, to prevent them from taking hostile damage.")
             .RegisterBoolSet(NPCID.BoundGoblin, NPCID.BoundWizard, NPCID.BoundMechanic, NPCID.SleepingAngler, NPCID.BartenderUnconscious, NPCID.WebbedStylist, NPCID.GolferRescue);
 
@@ -84,7 +84,7 @@ namespace CalamityMod.Systems.Collections
         /// Primarily used by worm boss body and tail segments to prevent Rage being extraordinarily easy to get.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] BossSegmentThatDoesNotGenerateRageFaster = Factory.CreateNamedSet("BossSegmentThatDoesNotGenerateRageFaster")
+        public static bool[] BossSegmentThatDoesNotGenerateRageFaster = Factory.CreateNamedSet("BossSegmentThatDoesNotGenerateRageFaster")
             .Description("Prevent this boss NPC from generating Rage faster.")
             .RegisterBoolSet(NPCType<DesertScourgeBody>(), NPCType<DesertScourgeTail>(), NPCType<AquaticScourgeBody>(), NPCType<AquaticScourgeBodyAlt>(), NPCType<AquaticScourgeTail>(),
                 NPCType<AstrumDeusBody>(), NPCType<AstrumDeusTail>(), NPCType<StormWeaverBody>(), NPCType<StormWeaverTail>(), NPCType<DevourerofGodsBody>(), NPCType<DevourerofGodsTail>(),
@@ -95,7 +95,7 @@ namespace CalamityMod.Systems.Collections
         /// Also allows the NPC to receive health scaling from having multiple players in Expert+.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] ScalesHealthLikeBoss = Factory.CreateNamedSet("ScalesHealthLikeBoss")
+        public static bool[] ScalesHealthLikeBoss = Factory.CreateNamedSet("ScalesHealthLikeBoss")
             .Description("Allows scaling health from vanilla Expert+ multiplayer scaling and Boss Health Boost Percentage config, even if not a boss.")
             .RegisterBoolSet(NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.SkeletronHand, NPCID.WallofFleshEye, NPCID.TheDestroyerBody, NPCID.TheDestroyerTail,
                 NPCID.PrimeCannon, NPCID.PrimeLaser, NPCID.PrimeVice, NPCID.PrimeSaw, NPCID.GolemHead, NPCID.GolemHeadFree, NPCID.GolemFistRight, NPCID.GolemFistLeft, NPCID.Sharkron,
@@ -118,7 +118,7 @@ namespace CalamityMod.Systems.Collections
         /// If <see langword="true"/> for an NPC type, then that NPC will have its contact damage set to 0.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] DealsZeroContactDamage = Factory.CreateNamedSet("DealsZeroContactDamage")
+        public static bool[] DealsZeroContactDamage = Factory.CreateNamedSet("DealsZeroContactDamage")
             .Description("Makes this NPC deal 0 contact damage.")
             .RegisterBoolSet(NPCID.AngryNimbus, NPCID.DarkCaster, NPCID.FireImp, NPCID.Tim, NPCID.DesertDjinn, NPCID.DiabolistRed, NPCID.DiabolistWhite,
                 NPCID.Necromancer, NPCID.NecromancerArmored, NPCID.RaggedCaster, NPCID.RaggedCasterOpenCoat, NPCID.RuneWizard, NPCID.GoblinSorcerer, NPCID.GoblinSummoner, NPCID.NebulaBrain,
@@ -129,7 +129,7 @@ namespace CalamityMod.Systems.Collections
         /// If <see langword="true"/> for an NPC type, then that NPC will have its damage reduced by 25% if the world is in Hardmode.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] NerfDamageInHardmode = Factory.CreateNamedSet("NerfDamageInHardmode")
+        public static bool[] NerfDamageInHardmode = Factory.CreateNamedSet("NerfDamageInHardmode")
             .Description("Makes this NPC have its contact damage reduced by 25% if the world is in Hardmode.")
             .RegisterBoolSet(NPCID.AnglerFish, NPCID.AngryTrapper, NPCID.Arapaima, NPCID.BlackRecluse, NPCID.BlackRecluseWall, NPCID.BloodJelly, NPCID.FungoFish, NPCID.GreenJellyfish,
                 NPCID.Clinger, NPCID.ArmoredSkeleton, NPCID.ArmoredViking, NPCID.Mummy, NPCID.DarkMummy, NPCID.LightMummy, NPCID.BloodFeeder, NPCID.DesertBeast, NPCID.ChaosElemental,
@@ -153,7 +153,7 @@ namespace CalamityMod.Systems.Collections
         /// Second, it multiplies their max health by 2.5x and increases their damage by a flat 30 if Moon Lord has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] IsBuffedDungeonEnemy = Factory.CreateNamedSet("IsBuffedDungeonEnemy")
+        public static bool[] IsBuffedDungeonEnemy = Factory.CreateNamedSet("IsBuffedDungeonEnemy")
             .Description("Makes this NPC directly drop Ectoplasm on death, and buffs its health and damage after defeating Moon Lord.")
             .RegisterBoolSet(NPCID.SkeletonSniper, NPCID.TacticalSkeleton, NPCID.SkeletonCommando, NPCID.Paladin, NPCID.GiantCursedSkull, NPCID.BoneLee, NPCID.DiabolistWhite,
                 NPCID.DiabolistRed, NPCID.NecromancerArmored, NPCID.Necromancer, NPCID.RaggedCasterOpenCoat, NPCID.RaggedCaster, NPCID.HellArmoredBonesSword, NPCID.HellArmoredBonesMace,
@@ -165,7 +165,7 @@ namespace CalamityMod.Systems.Collections
         /// This will multiply their max health by 3.5x and increase their damage by a flat 30 if Devourer of Gods has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] IsBuffedPumpkinMoonEnemy = Factory.CreateNamedSet("IsBuffedPumpkinMoonEnemy")
+        public static bool[] IsBuffedPumpkinMoonEnemy = Factory.CreateNamedSet("IsBuffedPumpkinMoonEnemy")
             .Description("Makes this Pumpkin Moon enemy have buffed health and damage after defeating Devourer of Gods.")
             .RegisterBoolSet(NPCID.Scarecrow1, NPCID.Scarecrow2, NPCID.Scarecrow3, NPCID.Scarecrow4, NPCID.Scarecrow5, NPCID.Scarecrow6, NPCID.Scarecrow7, NPCID.Scarecrow8, NPCID.Scarecrow9,
                 NPCID.Scarecrow10, NPCID.HeadlessHorseman, NPCID.MourningWood, NPCID.Splinterling, NPCID.Pumpking, NPCID.PumpkingBlade, NPCID.Hellhound, NPCID.Poltergeist);
@@ -175,7 +175,7 @@ namespace CalamityMod.Systems.Collections
         /// This will multiply their max health by 2.5x and increase their damage by a flat 30 if Devourer of Gods has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] IsBuffedFrostMoonEnemy = Factory.CreateNamedSet("IsBuffedFrostMoonEnemy")
+        public static bool[] IsBuffedFrostMoonEnemy = Factory.CreateNamedSet("IsBuffedFrostMoonEnemy")
             .Description("Makes this Frost Moon enemy have buffed health and damage after defeating Devourer of Gods.")
             .RegisterBoolSet(NPCID.ZombieElf, NPCID.ZombieElfBeard, NPCID.ZombieElfGirl, NPCID.PresentMimic, NPCID.GingerbreadMan, NPCID.Yeti, NPCID.Everscream, NPCID.IceQueen,
                 NPCID.SantaNK1, NPCID.ElfCopter, NPCID.Nutcracker, NPCID.NutcrackerSpinning, NPCID.ElfArcher, NPCID.Krampus, NPCID.Flocko);
@@ -185,7 +185,7 @@ namespace CalamityMod.Systems.Collections
         /// This will multiply their max health by 5x and increase their damage by a flat 30 if Devourer of Gods has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] IsBuffedSolarEclipseEnemy = Factory.CreateNamedSet("IsBuffedSolarEclipseEnemy")
+        public static bool[] IsBuffedSolarEclipseEnemy = Factory.CreateNamedSet("IsBuffedSolarEclipseEnemy")
             .Description("Makes this Solar Eclipse enemy have buffed health and damage after defeating Devourer of Gods.")
             .RegisterBoolSet(NPCID.Eyezor, NPCID.Reaper, NPCID.Frankenstein, NPCID.SwampThing, NPCID.Vampire, NPCID.VampireBat, NPCID.Butcher, NPCID.CreatureFromTheDeep, NPCID.Fritz,
                 NPCID.Nailhead, NPCID.Psycho, NPCID.DeadlySphere, NPCID.DrManFly, NPCID.ThePossessed, NPCID.Mothron, NPCID.MothronEgg, NPCID.MothronSpawn);
@@ -195,7 +195,7 @@ namespace CalamityMod.Systems.Collections
         /// Also used to prevent weapon pulling effects and Anarchy Blade's ability to instantly kill enemies that are below 50% health.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] ImmuneToSlowsAndOtherSpecialEffects = Factory.CreateNamedSet("ImmuneToSlowsAndOtherSpecialEffects")
+        public static bool[] ImmuneToSlowsAndOtherSpecialEffects = Factory.CreateNamedSet("ImmuneToSlowsAndOtherSpecialEffects")
             .Description("Makes this NPC immune to slowing debuffs and specific weapon effects.")
             .RegisterBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(), NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail,
                 NPCID.BrainofCthulhu, NPCID.Creeper, NPCID.QueenBee, NPCID.Deerclops, NPCID.SkeletronHead, NPCID.SkeletronHand, NPCID.WallofFlesh, NPCID.WallofFleshEye,
@@ -221,7 +221,7 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// If <see langword="true"/> for an NPC type, <see cref="ModNPC.CheckDead"/> or <see cref="GlobalNPC.CheckDead(NPC)"/> will be called on this NPC even if <see cref="NPC.realLife"/> is set.
         /// </summary>
-        internal static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateNamedSet("DoCheckDeadRegardlessRealLife")
+        public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateNamedSet("DoCheckDeadRegardlessRealLife")
             .Description("Makes this NPC always call CheckDead, even if it sets realLife.")
             .RegisterBoolSet(NPCType<DevourerofGodsBody>(), NPCType<DevourerofGodsTail>());
 
@@ -229,7 +229,7 @@ namespace CalamityMod.Systems.Collections
         /// If <see langword="true"/> for an NPC type, <see cref="CalamityUtils.IsAnEnemy(NPC, bool, bool, bool)"/> will not count this NPC as an enemy.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] DontCountAsEnemy = Factory.CreateNamedSet("DontCountAsEnemy")
+        public static bool[] DontCountAsEnemy = Factory.CreateNamedSet("DontCountAsEnemy")
             .Description("Prevents Calamity's IsAnEnemy method from considering this NPC an enemy.")
             .RegisterBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
 

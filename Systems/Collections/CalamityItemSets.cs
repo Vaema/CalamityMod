@@ -1,22 +1,10 @@
-﻿using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Vanity;
-using CalamityMod.Items.Fishing.FishingRods;
-using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Abyss;
-using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.Monoliths;
-using CalamityMod.Items.Placeables.Furniture.Paintings;
-using CalamityMod.Items.Placeables.Furniture.Trophies;
-using CalamityMod.Items.Potions;
+﻿using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Tools;
-using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
 using ReLogic.Reflection;
 using Terraria;
 using Terraria.ID;
@@ -35,7 +23,7 @@ namespace CalamityMod.Systems.Collections
         /// If <see langword="true"/> for an item type, prevents an item from removing Calamity's summon damage penalty mechanic despite having tool power.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] WeaponWithToolPowerAffectedBySummonPenalty = Factory.CreateNamedSet("WeaponWithToolPowerAffectedBySummonPenalty")
+        public static bool[] WeaponWithToolPowerAffectedBySummonPenalty = Factory.CreateNamedSet("WeaponWithToolPowerAffectedBySummonPenalty")
             .Description("Makes items with tool power still trigger the summon damage penalty.")
             .RegisterBoolSet(ItemID.ButchersChainsaw, ItemID.LucyTheAxe, ItemID.Rockfish, ItemType<AxeofPurity>(), ItemType<HydraulicVoltCrasher>(), ItemType<InfernaCutter>(),
                 ItemType<PhotonRipper>(), ItemType<Respiteblock>());
@@ -45,7 +33,7 @@ namespace CalamityMod.Systems.Collections
         /// Unused by Calamity itself, and is only used for external mods to add to through mod calls.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] ItemWhichDisablesSummonerNerf = Factory.CreateNamedSet("ItemWhichDisablesSummonerNerf")
+        public static bool[] ItemWhichDisablesSummonerNerf = Factory.CreateNamedSet("ItemWhichDisablesSummonerNerf")
             .Description("Makes holding this item manually disable the summon damage penalty.")
             .RegisterBoolSet();
 
@@ -54,7 +42,7 @@ namespace CalamityMod.Systems.Collections
         /// Should only be set on fishing poles.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] FishingPoleThatNeverBreaks = Factory.CreateNamedSet("FishingPoleThatNeverBreaks")
+        public static bool[] FishingPoleThatNeverBreaks = Factory.CreateNamedSet("FishingPoleThatNeverBreaks")
             .Description("Makes holding this item set Player.accFishingLine, preventing fishing lines from breaking.")
             .RegisterBoolSet(ItemID.GoldenFishingRod, ItemType<EarlyBloomRod>(), ItemType<TheDevourerofCods>());
 
@@ -63,7 +51,7 @@ namespace CalamityMod.Systems.Collections
         /// Primarily used for weapons which shoot short-distance projectiles.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] DisablesVeneratedLocketEffect = Factory.CreateNamedSet("DisablesVeneratedLocketEffect")
+        public static bool[] DisablesVeneratedLocketEffect = Factory.CreateNamedSet("DisablesVeneratedLocketEffect")
             .Description("Prevents this item from triggering Venerated Locket's clone projectiles.")
             .RegisterBoolSet(ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
 
@@ -72,7 +60,7 @@ namespace CalamityMod.Systems.Collections
         /// Used for applying Calamity's reworked Meteor armor set bonus.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] MagicGun = Factory.CreateNamedSet("MagicGun")
+        public static bool[] MagicGun = Factory.CreateNamedSet("MagicGun")
             .Description("Labels this item as a magic gun, for Meteor armor's set bonus.")
             .RegisterBoolSet(ItemID.BeeGun, ItemID.BubbleGun, ItemID.ChargedBlasterCannon, ItemID.HeatRay, ItemID.LaserMachinegun, ItemID.LaserRifle, ItemID.LeafBlower, ItemID.RainbowGun,
                 ItemID.SpaceGun, ItemID.WaspGun, ItemID.ZapinatorGray, ItemID.ZapinatorOrange, ItemType<AbyssShocker>(), ItemType<AcidGun>(), ItemType<AethersWhisper>(), ItemType<AetherfluxCannon>(),
@@ -85,7 +73,7 @@ namespace CalamityMod.Systems.Collections
         /// Used to replace the item's critical strike chance tooltip line with one about critical damage.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] ShowScalingCritDamageTooltip = Factory.CreateNamedSet("ShowScalingCritDamageTooltip")
+        public static bool[] ShowScalingCritDamageTooltip = Factory.CreateNamedSet("ShowScalingCritDamageTooltip")
             .Description("Replaces the item's critical strike chance tooltip line with a line about critical damage.")
             .RegisterBoolSet(ItemType<GildedProboscis>(), ItemType<HeliumFlash>(), ItemType<ThreadOfEradication>(), ItemType<VenusianTrident>());
 
@@ -94,7 +82,7 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] RogueBomb = Factory.CreateNamedSet("RogueBomb")
+        public static bool[] RogueBomb = Factory.CreateNamedSet("RogueBomb")
             .Description("Labels this item as a rogue bomb, only exists for objective classification.")
             .RegisterBoolSet(ItemType<BallisticPoisonBomb>(), ItemType<BlastBarrel>(), ItemType<ContaminatedBile>(), ItemType<ConsecratedWater>(), ItemType<CraniumSmasher>(),
                 ItemType<DesecratedWater>(), ItemType<DuststormInABottle>(), ItemType<Exorcism>(), ItemType<LemonNade>(), ItemType<LeonidProgenitor>(), ItemType<MeteorFist>(), ItemType<Penumbra>(), ItemType<Plaguenade>(), 
@@ -106,7 +94,7 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] RogueBoomerang = Factory.CreateNamedSet("RogueBoomerang")
+        public static bool[] RogueBoomerang = Factory.CreateNamedSet("RogueBoomerang")
             .Description("Labels this item as a rogue boomerang, only exists for objective classification.")
             .RegisterBoolSet(ItemType<AerialTracker>(), ItemType<Brimblade>(), ItemType<Celestus>(), ItemType<DefectiveSphere>(), ItemType<DimensionTearingDisk>(), ItemType<DynamicPursuer>(),
                 ItemType<EnchantedAxe>(), ItemType<EpidemicShredder>(), ItemType<Equanimity>(), ItemType<FishboneBoomerang>(), ItemType<FrostcrushValari>(), ItemType<GhoulishGouger>(),
@@ -118,7 +106,7 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] RogueDagger = Factory.CreateNamedSet("RogueDagger")
+        public static bool[] RogueDagger = Factory.CreateNamedSet("RogueDagger")
             .Description("Labels this item as a rogue dagger, only exists for objective classification.")
             .RegisterBoolSet(ItemType<AshenStalactite>(), ItemType<Cinquedea>(), ItemType<Crystalline>(), ItemType<FeatherKnife>(), ItemType<GelDart>(), ItemType<GildedDagger>(),
                 ItemType<GleamingDagger>(), ItemType<InfernalKris>(), ItemType<Mycoroot>(), ItemType<ShinobiBlade>(), ItemType<SporeKnife>(), ItemType<WulfrumKnife>(), ItemType<CobaltKunai>(),
@@ -132,7 +120,7 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] RogueJavelin = Factory.CreateNamedSet("RogueJavelin")
+        public static bool[] RogueJavelin = Factory.CreateNamedSet("RogueJavelin")
             .Description("Labels this item as a rogue javelin, only exists for objective classification.")
             .RegisterBoolSet(ItemType<AntlionSkewer>(), ItemType<CrystalPiercer>(), ItemType<EclipsesFall>(), ItemType<IchorSpear>(), ItemType<Vega>(), ItemType<PalladiumJavelin>(),
                 ItemType<PhantasmalRuin>(), ItemType<ProfanedPartisan>(), ItemType<RealityRupture>(), ItemType<ScarletDevil>(), ItemType<ScourgeoftheDesert>(), ItemType<ScourgeoftheSeas>(),
@@ -143,7 +131,7 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] RogueSpikyBall = Factory.CreateNamedSet("RogueSpikyBall")
+        public static bool[] RogueSpikyBall = Factory.CreateNamedSet("RogueSpikyBall")
             .Description("Labels this item as a rogue spiky ball, only exists for objective classification.")
             .RegisterBoolSet(ItemType<BurningStrife>(), ItemType<GodsParanoia>(), ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<SystemBane>(), ItemType<WebBall>());
     }

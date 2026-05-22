@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Buffs;
+﻿using CalamityMod.Buffs;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
@@ -29,7 +28,7 @@ namespace CalamityMod.Systems.Collections
         /// Also used to remove buffs when contacting the Whispering Maelstrom in the Get fixed boi seed.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] BuffedByAmalgam = Factory.CreateNamedSet("BuffedByAmalgam")
+        public static bool[] BuffedByAmalgam = Factory.CreateNamedSet("BuffedByAmalgam")
             .Description("Allows this buff to have its duration extended with The Amalgam equipped. Also used to remove buffs when contacting the Whispering Maelstrom in Get fixed boi.")
             .RegisterBoolSet(BuffID.ObsidianSkin, BuffID.Regeneration, BuffID.Swiftness, BuffID.Gills, BuffID.Ironskin, BuffID.ManaRegeneration, BuffID.MagicPower, BuffID.Featherfall,
                 BuffID.Spelunker, BuffID.Invisibility, BuffID.Shine, BuffID.NightOwl, BuffID.Battle, BuffID.Thorns, BuffID.WaterWalking, BuffID.Archery, BuffID.Hunter, BuffID.Gravitation,
@@ -50,7 +49,7 @@ namespace CalamityMod.Systems.Collections
         /// Used by The Amalgam to prevent removing their persistence when the accessory is unequipped.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] IsPersistentBuff = Factory.CreateNamedSet("IsPersistentBuff")
+        public static bool[] IsPersistentBuff = Factory.CreateNamedSet("IsPersistentBuff")
             .Description("Prevents persistent buffs from having their persistence removed by The Amalgam when it is unequipped.")
             .RegisterBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold, BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites,
                 BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(), BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(),
@@ -64,7 +63,7 @@ namespace CalamityMod.Systems.Collections
         /// This general-purpose set has several different uses, including Crown Jewel and its upgrades' debuff effects, and removing debuffs with Cleansing Jelly and its upgrades' auras.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] IsDebuff = Factory.CreateNamedSet("IsDebuff")
+        public static bool[] IsDebuff = Factory.CreateNamedSet("IsDebuff")
             .Description("General-purpose set with several different uses, including Crown Jewel line regen, removal via Cleansing Jelly line aura, etc.")
             .RegisterBoolSet(BuffID.Poisoned, BuffID.Darkness, BuffID.Cursed, BuffID.OnFire, BuffID.Bleeding, BuffID.Confused, BuffID.Slow, BuffID.Weak, BuffID.Silenced, BuffID.BrokenArmor,
                 BuffID.CursedInferno, BuffID.Frostburn, BuffID.Chilled, BuffID.Frozen, BuffID.Burning, BuffID.Suffocation, BuffID.Ichor, BuffID.Venom, BuffID.Blackout, BuffID.Electrified,
@@ -83,7 +82,7 @@ namespace CalamityMod.Systems.Collections
         /// Used to prevent "whip stacking", the ability to grant the player multiple whip buff effects at once.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        internal static bool[] IsSummonTagBuff = Factory.CreateNamedSet("IsSummonTagBuff")
+        public static bool[] IsSummonTagBuff = Factory.CreateNamedSet("IsSummonTagBuff")
             .Description("Whip tag buffs for the player, used to prevent whip stacking.")
             .RegisterBoolSet(BuffID.CoolWhipPlayerBuff, BuffID.ScytheWhipPlayerBuff, BuffID.SwordWhipPlayerBuff, BuffID.ThornWhipPlayerBuff, BuffType<ProfanedCrystalWhipBuff>());
 
@@ -91,7 +90,7 @@ namespace CalamityMod.Systems.Collections
         /// Associates a buff type with its <see cref="SummonTag"/> structure. If a buff type is not a key in this dictionary, then it has no associated <see cref="SummonTag"/>.<br/>
         /// Used for several different effects, such as applying tag effects to NPCs, preventing "whip stacking" on NPCs, and drawing the tag effect icon below the NPC. 
         /// </summary>
-        internal static SummonTag[] SummonTagDebuff = Factory.CreateNamedSet("SummonTagDebuff")
+        public static SummonTag[] SummonTagDebuff = Factory.CreateNamedSet("SummonTagDebuff")
             .Description("Associates a buff type with its SummonTag structure. Used for several different effects, such as applying tag effects to NPCs, preventing whip stacking on NPCs, and drawing the tag effect icon below the NPC.")
             .RegisterCustomSet<SummonTag>(null,
             BuffID.BlandWhipEnemyDebuff, SummonTag.LeatherWhip,
@@ -110,7 +109,7 @@ namespace CalamityMod.Systems.Collections
         );
 
         private static DebuffData Alch(int level) => new DebuffData() { AlcoholLevel = level };
-        internal static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
+        public static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
             .Description("Stores DebuffData for a particular debuff")
             .RegisterCustomSet<DebuffData>(null,
                 BuffID.OnFire, DebuffData.OnFire,
