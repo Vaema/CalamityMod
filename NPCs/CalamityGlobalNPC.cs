@@ -903,7 +903,7 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 0.5f;
             }
-            if (npc.buffType.Any(i => BuffDatasets.DebuffDataset[i] is not null && BuffDatasets.DebuffDataset[i].WaterDebuffScaling > 0) || npc.wet || npc.honeyWet || npc.dripping)
+            if (npc.buffType.Any(i => CalamityBuffSets.DebuffDataset[i] is not null && CalamityBuffSets.DebuffDataset[i].WaterDebuffScaling > 0) || npc.wet || npc.honeyWet || npc.dripping)
             {
                 windChilledMult = 1.5f;
             }
@@ -955,7 +955,7 @@ namespace CalamityMod.NPCs
             for (var index = 0; index < npc.buffType.Length; index++)
             {
                 var type = npc.buffType[index];
-                var debuffData = BuffDatasets.DebuffDataset[type];
+                var debuffData = CalamityBuffSets.DebuffDataset[type];
                 if (debuffData == null || debuffData == DebuffData.Oiled) //Oiled is done after
                     continue;
                 debuffData.NPCLifeRegenMethod(npc, type, ref index, ref damage);
@@ -3935,7 +3935,8 @@ namespace CalamityMod.NPCs
                 if (npc.buffTime[i] >= 1)
                 {
                     int type = npc.buffType[i];
-                    if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
+                    var tag = CalamityBuffSets.SummonTagDebuff[type];
+                    if (tag is not null)
                         tag.TagModifyHitEffects(proj, npc, ref modifiers, ref TagDamageMult, ref critChance);
                 }
             }
@@ -3987,7 +3988,8 @@ namespace CalamityMod.NPCs
                 if (npc.buffTime[i] >= 1)
                 {
                     int type = npc.buffType[i];
-                    if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
+                    var tag = CalamityBuffSets.SummonTagDebuff[type];
+                    if (tag is not null)
                         tag.TagOnHit(npc, projectile, hit, damagedone);
                 }
             }
@@ -5151,13 +5153,13 @@ namespace CalamityMod.NPCs
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
 
-                    // Draw summon tag display. TODO: make it use custom textures provided by SummonTag.
                     int yOffset = 0;
                     for (int i = NPC.maxBuffs - 1; i >= 0; i--)
                     {
                         if (npc.buffTime[i] > 0)
                         {
-                            if (CalamityBuffSets.SummonTagDebuff.TryGetValue(npc.buffType[i], out SummonTag tag))
+                            var tag = CalamityBuffSets.SummonTagDebuff[npc.buffType[i]];
+                            if (tag is not null)
                             {
                                 // Fetch the item and its frames
                                 var tex = TextureAssets.Item[tag.TagItem].Value;

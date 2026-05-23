@@ -16,7 +16,6 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
         }
 
         public override void SetDefaults()
