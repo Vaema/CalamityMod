@@ -29,8 +29,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void AI()
         {
-            int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, GetDust(MinionCount), 0f, 0f, 0, default, 0.5f);
-            Dust dust = Main.dust[fire];
+            Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, GetDust(MinionCount), 0f, 0f, 0, default, 0.5f);
             dust.velocity *= 0.1f;
             dust.scale = 1.3f;
             dust.noGravity = true;
@@ -52,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
             if (type >= 4f && Main.rand.NextBool(5))
                 return DustID.IchorTorch;
             if (type >= 3f && Main.rand.NextBool(4))
-                return DustID.Shadowflame;
+                return DustID.VenomStaff;
             if (type >= 2f && Main.rand.NextBool(3))
                 return DustID.CursedTorch;
             return DustID.Torch;
@@ -64,10 +63,7 @@ namespace CalamityMod.Projectiles.Summon
             if (MinionCount >= 2f)
                 target.AddBuff(BuffID.CursedInferno, 30);
             if (MinionCount >= 3f)
-            {
-                target.AddBuff(BuffID.ShadowFlame, 30);
                 target.AddBuff(BuffID.Venom, 30);
-            }
             if (MinionCount >= 4f)
             {
                 target.AddBuff(BuffID.Ichor, 30);

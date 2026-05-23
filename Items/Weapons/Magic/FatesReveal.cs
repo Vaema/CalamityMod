@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             realPlayerPos += new Vector2(mouseXDist, mouseYDist);
 
-            int numProjectiles = 5;
+            int numProjectiles = 6;
             for (int i = 0; i < numProjectiles; i++)
             {
                 realPlayerPos.X += (float)Main.rand.Next(-100, 101);

@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.HiveFive, RebalanceYoyo(24f, 320f, 20f, 0, 15) },
 
                 // original: 8s lifetime | 215px range | 13px/f top speed | 0 extra updates
-                { ProjectileID.JungleYoyo, RebalanceYoyo(20f, 288f, 17f, 0, 20) }, // Amazon
+                { ProjectileID.JungleYoyo, RebalanceYoyo(24f, 320f, 20f, 0, 20) }, // Amazon
 
                 // original: INF lifetime | 340px range | 16px/f top speed | 0 extra updates
                 { ProjectileID.Kraken, RebalanceYoyo(-1f, 480f, 54f, 2) },
@@ -200,12 +200,11 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Shroomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.SolarFlareDrill, standardDrillTweaks },
                 { ProjectileID.StardustDrill, standardDrillTweaks },
-                { ProjectileID.Starfury, Do(TimeLeftExact(75), DefaultIDStaticIFrames) },
                 { ProjectileID.StarWrath, Do(NoPiercing) },
                 { ProjectileID.Sunfury, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.SwordBeam, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) }, // Beam Sword projectile
                 { ProjectileID.Terragrim, Do(TrueMeleeNoSpeed, ScaleExact(1.25f), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.ThunderStaffShot, Do(PiercingExact(3), DefaultIDStaticIFrames) }, //Thunder Zapper projectile
+                { ProjectileID.ThunderStaffShot, Do(PiercingExact(2), DefaultIDStaticIFrames) }, //Thunder Zapper projectile
                 { ProjectileID.TitaniumChainsaw, standardChainsawTweaks },
                 { ProjectileID.TitaniumDrill, standardDrillTweaks },
                 { ProjectileID.Trimarang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
@@ -555,6 +554,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Stake, defaultIFrames },
                 { ProjectileID.StarAnise, defaultIFrames },
                 { ProjectileID.StarCannonStar, defaultIFrames },
+                { ProjectileID.Starfury, defaultIFrames },
                 { ProjectileID.StardustCellMinion, defaultIFrames },
                 { ProjectileID.StardustGuardianExplosion, defaultIFrames },
                 { ProjectileID.StickyBomb, defaultIFrames },

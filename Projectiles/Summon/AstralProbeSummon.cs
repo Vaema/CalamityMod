@@ -134,9 +134,9 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (target != null && Main.myPlayer == Projectile.owner)
             {
-                if (TimerForShooting == 80f)
+                if (TimerForShooting == 60f)
                 {
-                    Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, target, 35f);
+                    Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, target, 25f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AstralProbeRound>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
 
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.netUpdate = true;
                 }
 
-                if (TimerForShooting < 80f)
+                if (TimerForShooting < 60f)
                     TimerForShooting++;
             }
         }

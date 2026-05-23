@@ -3969,10 +3969,6 @@ namespace CalamityMod.Projectiles
             }
             #endregion
 
-            // Starfury stars never collide with tiles
-            if (projectile.type == ProjectileID.Starfury)
-                projectile.tileCollide = false;
-
             // True Night's Edge projectiles instantly start with max velocity
             if (projectile.type == ProjectileID.TrueNightsEdge)
             {

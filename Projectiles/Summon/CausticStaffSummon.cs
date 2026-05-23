@@ -226,7 +226,8 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             //Occasionally spawn fiery dust
-            if (Main.rand.NextBool(6))
+            int minionCount = player.ownedProjectileCounts[Type];
+            if (Main.rand.NextBool(15))
             {
                 int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, new Color(), 2f);
                 Main.dust[fire].velocity *= 0.3f;
@@ -241,7 +242,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.spriteDirection = Projectile.direction = 1;
 
             //Increment firing cooldown
-            int minionCount = player.ownedProjectileCounts[Type];
             if (Projectile.ai[1] > 0f)
             {
                 Projectile.ai[1] += Main.rand.Next(1, 4);

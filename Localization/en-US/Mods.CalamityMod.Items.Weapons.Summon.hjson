@@ -149,7 +149,7 @@ CausticStaff: {
 		'''
 		Always inflicts [cbuff:OnFire3]
 		Inflicts [cbuff:CursedInferno] with 2 dragons summoned
-		Inflicts [cbuff:CalamityMod/Shadowflame] and [cbuff:Venom] with 3 dragons summoned
+		Inflicts [cbuff:Venom] with 3 dragons summoned
 		Inflicts [cbuff:Ichor] and [cbuff:CalamityMod/MarkedforDeath] with 4 dragons summoned
 		'''
 }
