@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;
@@ -47,12 +48,29 @@ namespace CalamityMod.Tiles
             player.cursorItemIconID = availableOres[(int)((Main.GlobalTimeWrappedHourly * 2) % availableOres.Count)];
         }
 
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            if (TileEntity.TryGet<GreedPotTE>(new(i, j), out var greedPotTE) && greedPotTE.Activated && Main.LocalPlayer.miscCounter % 5 == 0)
+            {
+                Tile tile = Main.tile[i, j];
+
+                int left = i - tile.TileFrameX % (3 * 18) / 18;
+                if (left != i)
+                    return;
+                int top = j - tile.TileFrameY % (3 * 18) / 18;
+                if (top != j)
+                    return;
+
+                Point position = new(left, top);
+                HeavySmokeParticle p = new(position.ToWorldCoordinates(24 + Main.rand.Next(-10, 11), 2), Vector2.UnitY * -2, Color.Crimson, 90, Main.rand.NextFloat(0.2f, 0.3f), 0.75f, Main.rand.NextFloat(-0.05f, 0.05f), true);
+                GeneralParticleHandler.SpawnParticle(p);
+            }
+        }
+
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
             if (TileEntity.TryGet<GreedPotTE>(new(i, j), out var greedPotTE))
-            {
                 frameXOffset = 18 * 3 * greedPotTE.MyFrame;
-            }
         }
     }
 
@@ -102,14 +120,14 @@ namespace CalamityMod.Tiles
 
         public override void OnNetPlace() => NetMessage.SendData(MessageID.TileEntitySharing, -1, -1, null, ID, Position.X, Position.Y);
 
-        public override void Update()
+        public void UpdateOnAllClients()
         {
-            if(Activated)
+            if (Activated)
             {
-                if(CurrentFrame != 3)
+                if (CurrentFrame != 3)
                 {
                     FrameTime++;
-                    if(FrameTime % FrameRate == 0)
+                    if (FrameTime % FrameRate == 0)
                     {
                         FrameTime = 0;
                         CurrentFrame = (byte)((CurrentFrame + 1) % FrameTotal);
@@ -122,12 +140,6 @@ namespace CalamityMod.Tiles
                     TimeSinceActivation = 0;
                     return;
                 }
-
-                if(TimeSinceActivation % 5 == 0)
-                {
-                    HeavySmokeParticle p = new(Position.ToWorldCoordinates(24 + Main.rand.Next(-10, 11), 2), Vector2.UnitY * -2, Color.Crimson, 90, Main.rand.NextFloat(0.2f, 0.3f), 0.75f, Main.rand.NextFloat(-0.05f, 0.05f), true);
-                    GeneralParticleHandler.SpawnParticle(p);
-                }    
 
                 TimeSinceActivation++;
             }
@@ -161,6 +173,21 @@ namespace CalamityMod.Tiles
         }
     }
 
+    //Mod Tile Entity's Update functions don't get called on multiplayer clients
+    public class GreedPotTEUpdateSystem : ModSystem
+    {
+        public override void PostUpdateProjectiles()
+        {
+            foreach (TileEntity te in TileEntity.ByID.Values)
+            {
+                if (te is not GreedPotTE greedTE)
+                    continue;
+
+                greedTE.UpdateOnAllClients();
+            }
+        }
+    }
+    
     public class GreedTransmutation : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
@@ -256,22 +283,24 @@ namespace CalamityMod.Tiles
             float lerp = 1 - MathHelper.Clamp(((Projectile.timeLeft - 60) / 60f), 0f, 1f);
 
             Projectile.Center = path.Evaluate(CalamityUtils.CircOutEasing(lerp, 1));
+        }
 
-            if (Projectile.timeLeft == 1)
+        public override void OnKill(int timeLeft)
+        {
+            if (Main.myPlayer == Projectile.owner)
             {
                 int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, Success ? SuccessOutputItemType : ItemID.StoneBlock);
-                Main.item[i].GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot = true;
+                if (i >= 0)
+                {
+                    Main.item[i].GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot = true;
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, i);
+                }
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            //Anim Plan
-            //Moving to Pos: 0 -> 60
-            //Darken: 70 -> 80
-            //Transform: 90 -> 100
-            //Undarken: 110 -> 120
-
             int animTime = 120 - Projectile.timeLeft;
             bool beforeDarken = animTime < 50;
             bool darken = animTime < 90;
@@ -356,9 +385,6 @@ namespace CalamityMod.Tiles
 
         public override bool? UseItem(Item item, Player player)
         {
-            if (Main.LocalPlayer.whoAmI != player.whoAmI)
-                return null;
-
             if (!GreedTransmutation.GreedChain.TryGetValue(item.type, out var transmutation))
                 return null;
 
@@ -374,9 +400,13 @@ namespace CalamityMod.Tiles
             if (!player.IsInTileInteractionRange(mouseTile.X, mouseTile.Y, TileReachCheckSettings.Simple))
                 return null;
 
-            Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), Main.LocalPlayer.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, Main.LocalPlayer.whoAmI, item.type, transmutation.Result, Main.rand.Next(120));
+            if (Main.myPlayer == player.whoAmI)
+                Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), player.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, player.whoAmI, item.type, transmutation.Result, Main.rand.Next(120));
+
             greedPotTE.Activated = true;
             greedPotTE.TimeSinceActivation = 0;
+            //if(Main.dedServ)
+            //    NetMessage.SendData(MessageID.TileEntitySharing, number: greedPotTE.ID);
             player.ApplyItemTime(item, 0.5f, false);
 
             return false;
@@ -384,7 +414,17 @@ namespace CalamityMod.Tiles
 
         public override bool CanStackInWorld(Item destination, Item source)
         {
-            return !destination.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot || !source.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot;
+            return !destination.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot && !source.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot;
+        }
+
+        public override void NetSend(Item item, BinaryWriter writer)
+        {
+            writer.Write(FromGreedPot);
+        }
+
+        public override void NetReceive(Item item, BinaryReader reader)
+        {
+            FromGreedPot = reader.ReadBoolean();
         }
     }
 }
