@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Center = VoidragonHoldout.ModProjectile<VoidragonHoldout>().GunTipPosition - ((Projectile.velocity * 12f).RotatedBy(-0.02f * Projectile.direction));
 
             int beamTimer = VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer;
-            float beamWidthInterpolant = Utils.GetLerpValue(500, 475, beamTimer, true) * Utils.GetLerpValue(0, 25, beamTimer, true);
+            float beamWidthInterpolant = Utils.GetLerpValue(0, 25, beamTimer, true);
 
             // Set the control points for the primitive drawing.
             ControlPoints ??= new Vector2[MaxLaserControlPoints];
@@ -154,7 +154,7 @@ namespace CalamityMod.Projectiles.Ranged
         private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width;
-            float maxBodyWidth = Projectile.scale * MaxLaserWidth;
+            float maxBodyWidth = Projectile.scale * MaxLaserWidth * (1 + MathF.Pow(Utils.GetLerpValue(450, 500, VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer, true), 3.5f) * 4);
             float shrinkRatio = 0.018f;
 
             //if (completionRatio < shrinkRatio)

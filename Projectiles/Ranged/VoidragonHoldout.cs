@@ -1,14 +1,17 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using System.Runtime.InteropServices;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Dusts;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -28,6 +31,12 @@ namespace CalamityMod.Projectiles.Ranged
         public int framesBetweenShots = 0;
         public bool swapType = false;
         public bool firingBeam = false;
+        public float chargeVisTimer = 0;
+        public float maxChargeSpeed = 2;
+        public float chargePulseTimer = 0;
+        public bool playChargeSound = true;
+
+        public SlotId soundSlot;
 
         public override void KillHoldoutLogic()
         {
@@ -35,9 +44,16 @@ namespace CalamityMod.Projectiles.Ranged
             if (Owner.CantUseHoldout() || HeldItem.type != AssociatedItemID)
                 Projectile.Kill();
         }
-
+        public override void OnKill(int timeLeft)
+        {
+            if (SoundEngine.TryGetActiveSound(soundSlot, out var ChargeSound))
+                ChargeSound?.Stop();
+        }
         public override void HoldoutAI()
         {
+            if (SoundEngine.TryGetActiveSound(soundSlot, out var ChargeSound) && ChargeSound.IsPlaying)
+                ChargeSound.Position = Projectile.Center;
+
             //Spawn dust on the holdout's eyes based on the amount of damage scaling. Currently only works from one side
             for (int i = 0; i < 2; i++)
             {
@@ -144,21 +160,50 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         framesBetweenShots = 150;
                         shotCounter++;
-                        SoundStyle charge = new("CalamityMod/Sounds/Custom/MoonLordLaserCharge");
-                        SoundEngine.PlaySound(charge with { Volume = 1.5f }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
                     }
                 }
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
             }
-            if (shotCounter == 51 && !firingBeam)
+            if (shotCounter == 51 && !firingBeam) //Charging
             {
-                Particle streak = new ManaDrainStreak(Owner, Main.rand.NextFloat(2f, 3f), Main.rand.NextVector2CircularEdge(20f, 20f) * Main.rand.NextFloat(2f, 4f), 0f, Color.Indigo, Color.BlueViolet, 7, GunTipPosition);
-                GeneralParticleHandler.SpawnParticle(streak);
+                SoundStyle charge = new("CalamityMod/Sounds/Item/VoidragonCharge");
+                if (playChargeSound)
+                    soundSlot = SoundEngine.PlaySound(charge with { Volume = 0.7f, IsLooped = true, pitch = -0.5f }, Projectile.Center);
+                playChargeSound = false;
+                float chargeCompletion = Utils.GetLerpValue(150, 0, framesBetweenShots, true);
+                chargeVisTimer = MathHelper.Lerp(0, maxChargeSpeed, chargeCompletion);
+                chargePulseTimer += 0.6f + MathHelper.Lerp(0, maxChargeSpeed, MathF.Pow(chargeCompletion, 2.5f));
+
+                if (SoundEngine.TryGetActiveSound(soundSlot, out var sSound) && sSound.IsPlaying)
+                    sSound.Pitch = -0.85f + 1.5f * chargeCompletion;
+            }
+            else
+            {
+                chargePulseTimer = 0;
+                chargeVisTimer = MathHelper.Lerp(chargeVisTimer, 0, 0.12f);
             }
             if (shotCounter == 51 && framesBetweenShots == 0)
             {
                 //Main.NewText(beamTimer);
+                float beamCompletion = Utils.GetLerpValue(500, 0, beamTimer, true);
+                if (!firingBeam)
+                {
+                    Owner.Calamity().GeneralScreenShakePower = 10f;
+                    if (SoundEngine.TryGetActiveSound(soundSlot, out var cSound))
+                        cSound?.Stop();
+                    SoundStyle start = new("CalamityMod/Sounds/Item/VoidragonStrongStart");
+                    SoundStyle start2 = new("CalamityMod/Sounds/Item/MagnaCannonShot");
+                    for (int i = 0; i < 3; i++)
+                        SoundEngine.PlaySound((i > 0 ? start2 : start) with { Volume = 1f, pitch = 0f - 0.5f * i, MaxInstances = 3 }, Projectile.Center);
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/VoidragonLaser");
+                    soundSlot = SoundEngine.PlaySound(fire with { Volume = 1f, IsLooped = true, pitch = 0f }, Projectile.Center);
+                }
+                if (SoundEngine.TryGetActiveSound(soundSlot, out var sSound) && sSound.IsPlaying)
+                {
+                    sSound.Pitch = 1f - 1.5f * MathF.Pow(beamCompletion, 4f) + 0.9f * beamCompletion;
+                    sSound.Volume = 1f - 1 * MathF.Pow(beamCompletion, 10f);
+                }
                 firingBeam = true;
                 if (firingBeam && beamTimer > 0)
                 {
@@ -208,12 +253,31 @@ namespace CalamityMod.Projectiles.Ranged
                 return false;
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D texture3 = ModContent.Request<Texture2D>("CalamityMod/Particles/RoarPulse").Value;
+            Texture2D texture4 = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle").Value;
             Texture2D sparkle = ModContent.Request<Texture2D>("CalamityMod/Particles/HalfStar").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Vector2 shake = Main.rand.NextVector2Circular(6, 6);
+
+            float chargeVisual = MathF.Pow(Utils.GetLerpValue(0, maxChargeSpeed / 1.5f, chargeVisTimer, true), 1.5f);
+            float finalChargeVisual = MathF.Pow(Utils.GetLerpValue(maxChargeSpeed / 1.5f, maxChargeSpeed, chargeVisTimer, true), 3f);
+
+            int max = 30;
+            float ringScaling = MathF.Pow(1 - Utils.GetLerpValue(0, max, chargePulseTimer % max, true), 1.15f);
+            float ringOpacity = 1 - MathF.Abs(Utils.GetLerpValue(0.5f, 1, ringScaling, false));
+
+            //Black aura
+            for (int i = 0; i < 15; i++)
+                Main.EntitySpriteDraw(texture4, GunTipPosition - Main.screenPosition, null, Color.Lerp(Color.Black, Color.Indigo with { A = 0 }, finalChargeVisual) * (0.35f + ringOpacity * 0.65f), drawRotation + Main.rand.NextFloat(-4f, 4f), texture4.Size() / 2, new Vector2(0.85f + i * 0.065f, 0.85f - i * 0.065f) * (Projectile.scale + finalChargeVisual * 1.8f) * Owner.gravDir * chargeVisual * (4.25f - ringScaling * 2.5f), flipSprite);
+            
+            for (int i = 0; i < 3; i ++) //Glow aura
+                Main.EntitySpriteDraw(texture2, GunTipPosition - Main.screenPosition, null, Color.Lerp(Color.BlueViolet, Color.White, (i == 0 ? 0.8f : 0)) with { A = 0 }, drawRotation + Main.rand.NextFloat(-4f, 4f), texture2.Size() / 2, (Projectile.scale + finalChargeVisual * 1.8f) * Owner.gravDir * chargeVisual * 0.5f * (i == 0 ? 0.75f : 1), flipSprite);
+
+            //Pulse Rings
+            Main.EntitySpriteDraw(texture3, GunTipPosition - Main.screenPosition, null, Color.BlueViolet with { A = 0 } * ringOpacity * 0.5f, drawRotation + Main.rand.NextFloat(-4f, 4f), texture3.Size() / 2, Projectile.scale * Owner.gravDir * chargeVisual * ringScaling * 0.5f, flipSprite);
 
             for (int i = 0; i < 22; i++)
             {
