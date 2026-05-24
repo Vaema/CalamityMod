@@ -150,13 +150,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Main.myPlayer != Owner.whoAmI)
                 return;
-            // Get lifted up
+
             if (PogoCooldown <= 0)
             {
                 SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); // Sizzle
                 Shred += 62; // Augment the shred speed
-                if (Owner.velocity.Y > 0)
-                    Owner.velocity.Y = -2f; // Get "stuck" into the enemy partly
 
                 // 17APR2024: Ozzatron: Broken Biome Blade's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
                 // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.

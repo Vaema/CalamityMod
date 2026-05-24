@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.fleshTotem = true;
             modPlayer.fleshTotemMinion = true;
             modPlayer.fleshTotemVisual = !hideVisual;
-            player.statManaMax2 += 30;
+            player.statManaMax2 += 20;
             player.GetCritChance<MagicDamageClass>() += 5;
             if (player.whoAmI == Main.myPlayer)
             {

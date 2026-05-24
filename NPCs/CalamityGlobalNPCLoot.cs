@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -266,11 +267,11 @@ namespace CalamityMod.NPCs
 
                 // Sand Elemental
                 // Elemental in a Bottle @ 20% Normal, 33.33% Expert+
-                // Rare Elemental in a Bottle @ 10% Normal, 16.67% Expert+
+                // Oasis Elemental in a Bottle @ 10% Normal, 16.67% Expert+
                 // Desert Key @ 10%
                 case NPCID.SandElemental:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<ElementalinaBottle>(), 5, 3));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<RareElementalinaBottle>(), 10, 6));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<OasisElementalinaBottle>(), 10, 6));
                     npcLoot.Add(ItemID.DungeonDesertKey, 10);
                     break;
 
@@ -1867,6 +1868,13 @@ DukeEditFailed:
         #region Pre Kill
         public override bool PreKill(NPC npc)
         {
+            if (npc.Calamity().preventDrops)
+            {
+                // This NEEDS to have an exception to function, so I put a very unlikely item to ever drop from an enemy
+                DropHelper.BlockEverything(ModContent.ItemType<AbyssalWarhammer>());
+                npc.value = 0;
+            }
+
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
             if (CalamityWorld.revenge && (CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);
@@ -1884,6 +1892,9 @@ DukeEditFailed:
         #region On Kill Main Hook
         public override void OnKill(NPC npc)
         {
+            if (npc.Calamity().coinDropMult != 1)
+                npc.value = (int)(npc.value * npc.Calamity().coinDropMult);
+
             // Boss Rush on-kill effects
             if (BossRushEvent.BossRushActive)
             {

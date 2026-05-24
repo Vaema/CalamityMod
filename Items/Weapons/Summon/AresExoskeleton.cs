@@ -66,6 +66,11 @@ namespace CalamityMod.Items.Weapons.Summon
                 EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Body}", EquipType.Body, this);
         }
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 3;
+        }
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 36;

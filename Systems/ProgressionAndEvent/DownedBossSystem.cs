@@ -563,9 +563,9 @@ namespace CalamityMod
             downedBossRush = false;
         }
 
-        public override void OnWorldLoad() => ResetAllFlags();
+        //public override void OnWorldLoad() => ResetAllFlags();
 
-        public override void OnWorldUnload() => ResetAllFlags();
+        //public override void OnWorldUnload() => ResetAllFlags();
 
         public override void SaveWorldData(TagCompound tag)
         {

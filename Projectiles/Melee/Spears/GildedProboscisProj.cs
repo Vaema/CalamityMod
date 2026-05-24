@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
     public class GildedProboscisProj : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override bool useMeleeSpeed => false;
+        public override bool useAttackSpeed => false;
         public override bool useMeleeSize => false;
         public override int swingWidth => 360;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<GildedProboscis>()).Item;

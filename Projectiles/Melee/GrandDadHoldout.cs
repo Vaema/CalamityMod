@@ -256,7 +256,7 @@ namespace CalamityMod.Projectiles.Melee
 
             float distanceToTiles = -100;
             bool canBeLaunched = false;
-            bool lowEnoughToExecute = target.life <= Projectile.damage * 15;
+            bool lowEnoughToExecute = target.life <= Projectile.damage * 5;
             bool jared = target.type == ModContent.NPCType<PrimordialWyrmHead>();
             Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
             Vector2 launchVel = lowEnoughToExecute ? toMouse : Utils.DirectionTo(Owner.Center, target.Center);
@@ -274,7 +274,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
             }
-            int heal = (int)(MathHelper.Clamp(18 - Projectile.numHits * 13, 1, 20));
+            int heal = Projectile.numHits == 0 ? 14 : 0;
             if (Projectile.numHits < 10)
             {
                 Owner.Calamity().grandDadHealPool += heal;
@@ -316,12 +316,9 @@ namespace CalamityMod.Projectiles.Melee
                 for (int i = 0; i < 2; i++)
                 {
                     Particle spark = new CustomSpark(target.Center, launchVel * 65, "CalamityMod/Particles/GlowSpark2", false, (int)(16 - Projectile.numHits * 3), 0.145f - Projectile.numHits * 0.015f, Color.Black, new Vector2(2f, 1f), false, shrinkSpeed: 1f, colorFadeSpeed: 10);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                    spark.Pixelate = true;
+                    GeneralParticleHandler.SpawnParticle(spark, true);
                     Particle spark2 = new CustomSpark(target.Center, launchVel * 65, "CalamityMod/Particles/GlowSpark", false, (int)(16 - Projectile.numHits * 3), 0.105f - Projectile.numHits * 0.015f, Color.Lerp(Color.Blue, Color.DodgerBlue, 0.65f), new Vector2(2f, 1f), true, false, shrinkSpeed: 1f, colorFadeSpeed: 10);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    spark2.Pixelate = true;
-                    spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
+                    GeneralParticleHandler.SpawnParticle(spark2, true, GeneralDrawLayer.AfterEverything);
                 }
 
                 for (int i = 0; i < 25 - Projectile.numHits * 3; i++)
@@ -369,7 +366,7 @@ namespace CalamityMod.Projectiles.Melee
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearLarge").Value;
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
             Vector2 vel = Projectile.rotation.ToRotationVector2();
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + ((Owner.direction == -1) ? MathHelper.Pi - MathHelper.PiOver4 : MathHelper.PiOver4);

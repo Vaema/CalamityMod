@@ -22,6 +22,7 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Tiles.Furniture;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,6 +32,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs
@@ -70,6 +72,18 @@ namespace CalamityMod.NPCs
         public int shopAlertAnimTimer = 0;
         /// <summary> <inheritdoc cref="shopAlertAnimTimer"/> </summary>
         public int shopAlertAnimFrame = 0;
+        /// <summary>
+        /// Controls how this Town NPC is being affected by The Gift.<br/>
+        /// If true, happiness is overriden with an extremely high value. If false, happiness is overriden with an extremely low value. If null, uses vanilla happiness.
+        /// </summary>
+        public bool? TheGiftStatus = null;
+        /// <summary>
+        /// Timer to track when to reset the effects of The Gift, which occurs after 24 hours.<br/>
+        /// When The Gift is applied, this is set to 0 then starts counting up.
+        /// </summary>
+        public double TheGiftReset = -1.0;
+
+        public bool AffectedByTheMonument = false;
 
         public override bool InstancePerEntity => true;
 
@@ -85,6 +99,9 @@ namespace CalamityMod.NPCs
             myClone.setNewName = setNewName;
             myClone.shopAlertAnimTimer = shopAlertAnimTimer;
             myClone.shopAlertAnimFrame = shopAlertAnimFrame;
+            myClone.TheGiftStatus = TheGiftStatus;
+            myClone.TheGiftReset = TheGiftReset;
+            myClone.AffectedByTheMonument = AffectedByTheMonument;
 
             return myClone;
         }
@@ -805,7 +822,51 @@ namespace CalamityMod.NPCs
         public override bool PreAI(NPC npc)
         {
             SetPatreonTownNPCName(npc, Mod);
+
+            // Reset The Gift after 24 hours
+            if (TheGiftReset >= 0.0)
+            {
+                TheGiftReset += Main.dayRate;
+                if (TheGiftReset >= Main.dayLength + Main.nightLength)
+                {
+                    TheGiftReset = -1.0;
+                    TheGiftStatus = null;
+                }
+            }
+
+            // Search for The Monument, for the purposes of assigning higher taxes
+            AffectedByTheMonument = false;
+            SearchForTheMonument(npc);
+
             return true;
+        }
+
+        public bool SearchForTheMonument(NPC npc)
+        {
+            Point tileCenter = npc.Center.ToTileCoordinates();
+            Rectangle searchArea = new((int)(tileCenter.X - Main.buffScanAreaWidth / 2), (int)(tileCenter.Y - Main.buffScanAreaHeight / 2), Main.buffScanAreaWidth, Main.buffScanAreaHeight);
+            searchArea = WorldUtils.ClampToWorld(searchArea);
+            for (int i = searchArea.Left; i < searchArea.Right; i++)
+            {
+                for (int j = searchArea.Top; j < searchArea.Bottom; j++)
+                {
+                    if (!searchArea.Contains(i, j))
+                        continue;
+
+                    Tile tile = Main.tile[i, j];
+                    if (tile == null)
+                        continue;
+                    if (!tile.HasTile)
+                        continue;
+
+                    if (tile.TileType == TileType<TheMonumentTile>())
+                    {
+                        AffectedByTheMonument = true;
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         #endregion
 
@@ -960,7 +1021,7 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Cyborg:
                     if (Main.rand.NextBool(5) && NPC.downedMoonlord)
-                        chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MoonLordDefeated" + Main.rand.Next(1, 2 + 1));
+                        chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(10) && !DownedBossSystem.downedPlaguebringer && NPC.downedGolemBoss)
                         chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MentionPlague");
                     else if (Main.rand.NextBool(10) && Main.raining)
@@ -977,10 +1038,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Dryad:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.DarksunEclipse");
-                    else if (Main.rand.NextBool(5) && Main.LocalPlayer.ZoneGlowshroom)
-                    {
-                        chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.Mushroom");
-                    }
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneSulphur)
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.SulphurSea");
                     else if (Main.rand.NextBool(5) && Main.hardMode)
@@ -1030,6 +1087,14 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.MerchantChat.AcidRain");
                     else if (Main.rand.NextBool(7) && thief != -1)
                         chat = CalamityUtils.GetTextValue("Vanilla.MerchantChat.Bandit");
+                    break;
+
+                case NPCID.Nurse:
+                    if (Main.rand.NextBool(4) && NPC.downedPlantBoss && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.PlanteraDefeatedAndBanditPresent");
+                    else if (Main.rand.NextBool(4) && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.Bandit");
+
                     break;
 
                 case NPCID.Painter:
@@ -1169,7 +1234,7 @@ namespace CalamityMod.NPCs
         public void BoundNPCSafety(Mod mod, NPC npc)
         {
             // Make Bound Town NPCs take no damage
-            if (CalamityNPCTypeSets.BoundTownNPC[npc.type])
+            if (CalamityNPCSets.BoundTownNPC[npc.type])
                 npc.dontTakeDamageFromHostiles = true;
         }
 

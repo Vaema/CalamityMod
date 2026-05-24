@@ -13,6 +13,18 @@ AerialHamaxe: {
 	Tooltip: ""
 }
 
+AggressiveVoucher: {
+	DisplayName: Aggressive Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		This effect only applies when reforging accessories
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+}
+
 AntiCystOintment: {
 	DisplayName: Anti-Cyst Ointment
 	Tooltip:
@@ -39,7 +51,7 @@ AridArtifact: {
 		'''
 		Summons a sandstorm
 		The sandstorm will happen shortly after the item is used
-		If used during a sandstorm, the sandstorm will stop some time afterward.
+		If used during a sandstorm, the sandstorm will stop some time afterward
 		'''
 }
 
@@ -141,6 +153,15 @@ BrokenWaterFilter: {
 		'''
 }
 
+CombatVoucher: {
+	DisplayName: Combat Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		This effect only applies when reforging weapons
+		'''
+}
+
 Cosmolight: {
 	DisplayName: Cosmolight
 	Tooltip:
@@ -205,13 +226,25 @@ GreatbayPickaxe: {
 	Tooltip: Can mine Demonite, Crimtane, Meteorite, Sea Prisms and Sea Prism Crystals
 }
 
-InfernaCutter: {
-	DisplayName: Inferna Cutter
+HurriedVoucher: {
+	DisplayName: Hurried Voucher
 	Tooltip:
 		'''
-		Critical hits with the blade cause small explosions
-		Generates a number of small sparks when swung
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		This effect only applies when reforging accessories
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
+}
+
+InfernaCutter: {
+	DisplayName: Inferna Cutter
+	Tooltip: 
+    '''
+    Critical hits with the blade cause small explosions
+    Generates a number of small sparks when swung
+    '''
 }
 
 MarniteDeconstructor: {
@@ -268,6 +301,18 @@ NormalityRelocator: {
 		'''
 }
 
+OddVoucher: {
+	DisplayName: Odd Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		This effect only applies when reforging accessories
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+}
+
 ReefclawHamaxe: {
 	DisplayName: Reefclaw Hamaxe
 	Tooltip: ""
@@ -292,10 +337,12 @@ RelicOfResilience: {
 	Tooltip:
 		'''
 		Holding this item creates orbiting rock shards around you and nearby allies
-		While they orbit you, your minimum defense is set to 150 and minimum damage reduction to 10%
-		Taking a hit or pressing <right> will pull in the shards, then blast them outward, crippling hit enemies
-		This effect has a 10 second cooldown after taking a hit
-		Holding out the shield heavily reduces the damage of all summons while rocks are active, only for you
+		After 5 seconds, the relic will retain orbiting rocks even when not holding the item
+		Continuing to hold the item will steadily increase the number of rocks and defenses until reaching max power
+		While they orbit you, your minimum defense is set to 200 and minimum damage reduction to 10%
+		Taking a hit or pressing <right> while holding this item will pull in the shards, then blast them outward, crippling hit enemies
+		This effect has a 10 second cooldown after taking a hit, but recharges faster if holding the item
+		Holding out the shield heavily reduces the damage of all summons
 		[c/FF8C00:I saw a massacre and did nothing to stop it. My vow broken, I was shunned.]
 		[c/FF8C00:My will to forge ahead vanished. My final wish was simply to not die alone.]
 		[c/FF8C00:But when She put faith in my shield, I would never again let it falter.]
@@ -358,6 +405,17 @@ TectonicTruncator: {
 	Tooltip: ""
 }
 
+TheGift: {
+	DisplayName: The Gift
+	Tooltip:
+		'''
+		Drop this fine gift on one of your Town NPCs as a token of appreciation
+		May make them either love you or hate you, you'll never know until they open it!
+		Effect will last for 24 hours
+		[c/F54278:'There's no return policy, better be responsible']
+		'''
+}
+
 TorrentialTear: {
 	DisplayName: Torrential Tear
 	Tooltip:
@@ -365,6 +423,18 @@ TorrentialTear: {
 		Summons the rain
 		Rain will start some time after this item is used
 		If used while it's raining, the rain will stop some time afterward
+		'''
+}
+
+UnbreakableVoucher: {
+	DisplayName: Unbreakable Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		This effect only applies when reforging accessories
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
 }
 

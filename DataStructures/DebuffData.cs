@@ -1,5 +1,7 @@
 ﻿using System;
+using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -7,26 +9,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.DataStructures
 {
-    [ReinitializeDuringResizeArrays]
-    public static class BuffDatasets
-    {
-        public static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
-            .Description("Stores DebuffData for a particular debuff")
-            .RegisterCustomSet<DebuffData>(null,
-                BuffID.OnFire, DebuffData.OnFire,
-                BuffID.OnFire3, DebuffData.Hellfire,
-                BuffID.CursedInferno, DebuffData.CursedInferno,
-                BuffID.ShadowFlame, DebuffData.Shadowflame,
-                BuffID.Daybreak, DebuffData.Daybroken,
-                BuffID.Burning, DebuffData.Burning,
-                BuffID.Frostburn, DebuffData.Frostburn,
-                BuffID.Frostburn2, DebuffData.Frostbite,
-                BuffID.Poisoned, DebuffData.Poisoned,
-                BuffID.Venom, DebuffData.AcidVenom,
-                BuffID.Electrified, DebuffData.Electrified,
-                BuffID.Oiled, DebuffData.Oiled
-            );
-    }
     public class DebuffData
     {
         /// <summary>
@@ -113,11 +95,10 @@ namespace CalamityMod.DataStructures
         public bool GearCanModifyDebuff = true;
 
         /// <summary>
-        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
         /// How much alcohol this counts as.
         /// Default is 0, most alcohol is 1, and Everclear is 2
         /// </summary>
-        public float AlcoholLevel = 0f;
+        public int AlcoholLevel = 0;
 
         /// <summary>
         /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
