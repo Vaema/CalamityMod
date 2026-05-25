@@ -49,6 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(spark2);
                 SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 3.5f, Projectile.velocity * 0.01f, false, 5, 1.2f * Projectile.scale, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet);
                 GeneralParticleHandler.SpawnParticle(spark);
+                spark.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
             }
             time++;
         }

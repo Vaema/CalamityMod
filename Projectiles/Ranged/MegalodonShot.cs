@@ -1,11 +1,8 @@
-﻿using System.Composition.Hosting.Core;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -47,9 +44,9 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(spark);
                 if (Main.rand.NextBool(3))
                 {
-                    Color smokeColor = Color.MediumBlue;
-                    Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(-0.2f, -0.6f), smokeColor, 30, Main.rand.NextFloat(0.5f, 0.7f), 0.3f, Main.rand.NextFloat(-0.2f, 0.2f), false, required: true);
-                    GeneralParticleHandler.SpawnParticle(smoke);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 45 : 56, -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.01f, 0.3f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(1.5f, 0.9f);
                 }
             }
         }
@@ -57,29 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(Projectile.Center, Projectile.velocity, Projectile.width, Projectile.height);
-            for (int i = 0; i < 4; ++i)
-            {
-                int bloodLifetime = Main.rand.Next(22, 25);
-                float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
-                Color bloodColor = Color.Lerp(Color.RoyalBlue * 0.7f, Color.DarkBlue, Main.rand.NextFloat());
-                bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
-
-                if (Main.rand.NextBool(20))
-                    bloodScale *= 2f;
-
-                float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
-                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 2 * randomSpeedMultiplier;
-                bloodVelocity.Y -= 5f;
-                BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
-                GeneralParticleHandler.SpawnParticle(blood);
-            }
-            for (int i = 0; i <= 2; i++)
-            {
-                LineParticle spark = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.18f, 0.44f)) * Main.rand.NextFloat(0.4f, 2.5f), false, 8, 0.9f, Main.rand.NextBool() ? Color.RoyalBlue * 0.7f : Color.MediumBlue);
-                GeneralParticleHandler.SpawnParticle(spark);
-                LineParticle spark2 = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.18f, -0.44f)) * Main.rand.NextFloat(0.4f, 2.5f), false, 8, 0.9f, Main.rand.NextBool() ? Color.RoyalBlue * 0.7f : Color.MediumBlue);
-                GeneralParticleHandler.SpawnParticle(spark2);
-            }
+            OnHitEffects();
             return true;
         }
 
@@ -103,6 +78,23 @@ namespace CalamityMod.Projectiles.Ranged
                 Player Owner = Main.player[Projectile.owner];
                 Owner.Calamity().sharkGunDamageScaling++;
             }
+            OnHitEffects();
+        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            {
+                if (Projectile.numHits == 0)
+                {
+                    Player Owner = Main.player[Projectile.owner];
+                    Owner.Calamity().sharkGunDamageScaling++;
+                }
+                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60);
+                OnHitEffects();
+            }
+        }
+
+        private void OnHitEffects()
+        {
             for (int i = 0; i < 4; ++i)
             {
                 int bloodLifetime = Main.rand.Next(22, 25);
@@ -125,40 +117,6 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(spark);
                 LineParticle spark2 = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.18f, -0.44f)) * Main.rand.NextFloat(0.4f, 1.5f), false, 8, 0.9f, Main.rand.NextBool() ? Color.RoyalBlue * 0.7f : Color.MediumBlue);
                 GeneralParticleHandler.SpawnParticle(spark2);
-            }
-        }
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            {
-                if (Projectile.numHits == 0)
-                {
-                    Player Owner = Main.player[Projectile.owner];
-                    Owner.Calamity().sharkGunDamageScaling++;
-                }
-                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60);
-                for (int i = 0; i < 4; ++i)
-                {
-                    int bloodLifetime = Main.rand.Next(22, 25);
-                    float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
-                    Color bloodColor = Color.Lerp(Color.RoyalBlue * 0.7f, Color.DarkBlue, Main.rand.NextFloat());
-                    bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
-
-                    if (Main.rand.NextBool(20))
-                        bloodScale *= 2f;
-
-                    float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
-                    Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 2 * randomSpeedMultiplier;
-                    bloodVelocity.Y -= 5f;
-                    BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
-                    GeneralParticleHandler.SpawnParticle(blood);
-                }
-                for (int i = 0; i <= 2; i++)
-                {
-                    LineParticle spark = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.18f, 0.44f)) * Main.rand.NextFloat(0.4f, 1.5f), false, 8, 0.9f, Main.rand.NextBool() ? Color.RoyalBlue * 0.7f : Color.MediumBlue);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                    LineParticle spark2 = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.18f, -0.44f)) * Main.rand.NextFloat(0.4f, 1.5f), false, 8, 0.9f, Main.rand.NextBool() ? Color.RoyalBlue * 0.7f : Color.MediumBlue);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                }
             }
         }
     }

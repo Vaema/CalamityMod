@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(SoundID.Item149, Projectile.Center);
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    string goreType = "MegalodonMag";
+                    string goreType = "VoidragonMag";
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 18), Projectile.velocity.RotatedBy(2f * -Owner.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
                 }
                 //Set the scaling to 0 whenever it reloads
@@ -123,12 +123,6 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(center);
                     center.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
                     sparker3.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
-                    if (swapType)
-                    {
-                        float rotation = Projectile.velocity.ToRotation();
-                        Particle pulse = new CustomPulse(GunTipPosition, shootVelocity, Color.Indigo, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1f), rotation, 0f, 0.07f, 10, true, 1.4f);
-                        GeneralParticleHandler.SpawnParticle(pulse);
-                    }
                     #endregion
 
                     //How many frames between firing projectiles, and how far the gun moves backward to give the effect of recoil. Change this number to edit fire rate
@@ -145,7 +139,7 @@ namespace CalamityMod.Projectiles.Ranged
                         //Only eject casings from the gun if bullets are fired, preventing too many at once
                         if (Main.netMode != NetmodeID.Server)
                         {
-                            string goreType = "MegalodonCasing";
+                            string goreType = "VoidragonCasing";
                             Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 18), -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
                         }
                     }
@@ -207,10 +201,6 @@ namespace CalamityMod.Projectiles.Ranged
                 firingBeam = true;
                 if (firingBeam && beamTimer > 0)
                 {
-                    #region Visuals and Sounds
-                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
-                    #endregion
-
                     //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the laser doing 0 damage
                     if (Owner.Calamity().sharkGunDamageScaling == 0)
                     {
@@ -219,7 +209,7 @@ namespace CalamityMod.Projectiles.Ranged
                     //Spawn the laser only once at the start of the timer. Change beamTimer to edit its lifetime
                     //I fucking hate this laser by the way
                     if (Main.myPlayer == Projectile.owner && beamTimer == 500)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<AbyssalFire>(), (int)(Projectile.damage * 0.03f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, Projectile.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<AbyssalFire>(), (int)(Projectile.damage * 0.05f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, Projectile.whoAmI);
                     beamTimer--;
                 }
                 else
@@ -269,6 +259,15 @@ namespace CalamityMod.Projectiles.Ranged
             float ringScaling = MathF.Pow(1 - Utils.GetLerpValue(0, max, chargePulseTimer % max, true), 1.15f);
             float ringOpacity = 1 - MathF.Abs(Utils.GetLerpValue(0.5f, 1, ringScaling, false));
 
+            for (int i = 0; i < 22; i++)
+            {
+                Color auraColor = Color.Lerp(Color.Indigo, Color.BlueViolet, i * 0.01f) with { A = 0 } * 0.6f;
+                Vector2 drawOffset = ((MathHelper.TwoPi * i / 22f).ToRotationVector2() * 5) + Main.rand.NextVector2Circular(7, 7);
+                Main.EntitySpriteDraw(texture, drawPosition + drawOffset, null, auraColor, drawRotation, rotationPoint, Projectile.scale * Main.rand.NextFloat(0.02f, 0.025f) * Owner.Calamity().sharkGunDamageScaling, flipSprite);
+            }
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+
             //Black aura
             for (int i = 0; i < 15; i++)
                 Main.EntitySpriteDraw(texture4, GunTipPosition - Main.screenPosition, null, Color.Lerp(Color.Black, Color.Indigo with { A = 0 }, finalChargeVisual) * (0.35f + ringOpacity * 0.65f), drawRotation + Main.rand.NextFloat(-4f, 4f), texture4.Size() / 2, new Vector2(0.85f + i * 0.065f, 0.85f - i * 0.065f) * (Projectile.scale + finalChargeVisual * 1.8f) * Owner.gravDir * chargeVisual * (4.25f - ringScaling * 2.5f), flipSprite);
@@ -279,18 +278,6 @@ namespace CalamityMod.Projectiles.Ranged
             //Pulse Rings
             Main.EntitySpriteDraw(texture3, GunTipPosition - Main.screenPosition, null, Color.BlueViolet with { A = 0 } * ringOpacity * 0.5f, drawRotation + Main.rand.NextFloat(-4f, 4f), texture3.Size() / 2, Projectile.scale * Owner.gravDir * chargeVisual * ringScaling * 0.5f, flipSprite);
 
-            for (int i = 0; i < 22; i++)
-            {
-                Color auraColor = Color.Lerp(Color.Indigo, Color.BlueViolet, i * 0.01f) with { A = 0 } * 0.6f;
-                Vector2 drawOffset = ((MathHelper.TwoPi * i / 22f).ToRotationVector2() * 5) + Main.rand.NextVector2Circular(7, 7);
-                Main.EntitySpriteDraw(texture, drawPosition + drawOffset, null, auraColor, drawRotation, rotationPoint, Projectile.scale * Main.rand.NextFloat(0.02f, 0.025f) * Owner.Calamity().sharkGunDamageScaling, flipSprite);
-            }
-
-            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
-
-            if (firingBeam)
-            {
-            }
             return false;
         }
     }

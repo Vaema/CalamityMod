@@ -1492,7 +1492,7 @@ Voidragon: {
 		Once your mag runs empty, the gun unleashes a jet of abyssal fire that annihilates anything in its path
 		The abyssal fire and lingering flames grow increasingly powerful with the amount of shots hit
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
-		[c/620BB0: 'Fade to black']
+		[c/620BB0:'Fade to black']
 		'''
 }
 

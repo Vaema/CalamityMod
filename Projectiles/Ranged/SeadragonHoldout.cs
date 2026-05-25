@@ -23,6 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
         public int shotCounter = 0;
         public int framesBetweenShots = 0;
         public bool swapType = false;
+        public bool transEffects = false;
 
         public override Vector2 GunTipPosition => Projectile.Center - Vector2.UnitY + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.5f;
 
@@ -48,6 +49,8 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 //Set the scaling to 0 whenever it reloads
                 Owner.Calamity().sharkGunDamageScaling = 0;
+                //Has a 1 in 100 chance to set transEffects to true, changing the shot colors to be replaced by the transgender pride flag colors
+                transEffects = Main.rand.NextBool(100);
             }
             if (Time >= 90)
             {
@@ -93,7 +96,8 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     if (swapType)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<BlahajBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        //Has a 1 in 100 chance for the shot colors to be replaced by the transgender pride flag colors
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<BlahajBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner, transEffects ? 0f : 1f);
                     }
                     swapType = !swapType;
                     shotCounter++;
@@ -123,18 +127,10 @@ namespace CalamityMod.Projectiles.Ranged
                         projectile.ai[1] = 5;
                         projectile.velocity = Utils.DirectionTo(projectile.Center, Owner.Calamity().mouseWorld) * 12;
                     }
-                    //If on GFB, also turns ANY projectile on screen into a fish
-                    if (Main.zenithWorld && projectile.type != ModContent.ProjectileType<SeaDragonRocket>())
+                    if (Main.zenithWorld)
                     {
                         SoundStyle joke = new("CalamityMod/Sounds/Custom/GFB/FISH");
                         SoundEngine.PlaySound(joke with { Volume = 0.35f, MaxInstances = -1 }, projectile.Center);
-                        for (int i = 0; i < 2; i++)
-                        {
-                            Projectile fishy = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projectile.Center, (Vector2.One * 10).RotatedByRandom(100), ModContent.ProjectileType<SeaDragonRocket>(), (int)(Projectile.damage + projectile.damage) * 3, Projectile.knockBack, Projectile.owner);
-                            fishy.ai[2] = Main.rand.NextFloat(0.1f, 0.4f);
-                            fishy.ai[1] = 5;
-                        }
-                        projectile.timeLeft = 1;
                     }
                 }
             }
@@ -152,11 +148,6 @@ namespace CalamityMod.Projectiles.Ranged
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
-            //This bit ensures that the eye glint at the moment the fish are unleashed is snapped to the gun
-            //Due to the holdout only existing for 1 frame then getting killed, it has to be tied to the newly spawned holdout
-            //This runs a check to see if any fish are present, then triggers the eye glint and sound
-            //This prevents the eye gint from showing up when there are no fish present, such as when the player first spawns the holdout
-            //A little hacky, but it works 
             if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeaDragonRocket>()] > 0)
             {
                 if (Time == 3)
