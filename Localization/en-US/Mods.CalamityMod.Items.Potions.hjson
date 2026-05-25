@@ -584,7 +584,7 @@ QualitySlop: {
 	DisplayName: Quality Slop
 	Tooltip:
         '''
-        "{$CommonItemTooltip.MajorStats}"
+        {$CommonItemTooltip.MajorStats}
         'You only like it because it's good'
         '''
 }
