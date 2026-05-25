@@ -820,7 +820,7 @@ FleshTotem: {
 	Tooltip:
 		'''
 		5% increased magic critical strike chance
-		+20 max mana
+		Increases maximum mana by 20
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
 		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
@@ -1130,7 +1130,7 @@ ManaPolarizer: {
 	DisplayName: Mana Polarizer
 	Tooltip:
 		'''
-		Increases max mana by 40
+		Increases maximum mana by 40
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
 		These scale from -2 to +2 HP/s, and 15% to 5% damage
@@ -1162,7 +1162,7 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		+40 max mana
+		Increases maximum mana by 40
 		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
 		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
 		With 5 sigils, increases mana regeneration by +5 MP/s
