@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (TimerForShooting == 60f)
                 {
-                    Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, target, 25f);
+                    Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, target, 25f, 4);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AstralProbeRound>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
 
