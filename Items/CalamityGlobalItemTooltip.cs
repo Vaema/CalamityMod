@@ -1074,7 +1074,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HiveFive)
                 AddYoyoStats(24f, 320f, 20f);
             if (item.type == ItemID.JungleYoyo)
-                AddYoyoStats(20f, 288f, 17f);
+                AddYoyoStats(24f, 320f, 20f);
             if (item.type == ItemID.Kraken)
                 AddYoyoStats(-1f, 480f, 54f);
             if (item.type == ItemID.Rally)

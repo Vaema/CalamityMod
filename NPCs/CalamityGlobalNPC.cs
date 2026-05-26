@@ -2796,7 +2796,7 @@ namespace CalamityMod.NPCs
 
             // Apply armor penetration based on Calamity debuffs. The hit system manages the sequencing.
             // Ozzatron 05JAN2023: fixed doubled armor pen, this time for real
-            int defenseReduction = (markedForDeath && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
+            int defenseReduction = (wither ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
             modifiers.ArmorPenetration += defenseReduction;
 
             // DR applies after vanilla defense.
@@ -2872,8 +2872,6 @@ namespace CalamityMod.NPCs
         private float ApplyDRReduction(NPC npc, float DR)
         {
             float calcDR = DR;
-            if (markedForDeath)
-                calcDR *= 0.5f;
             if (absorberAffliction)
                 calcDR *= 0.8f;
             if (npc.Calamity().armorCrunch)
@@ -3667,6 +3665,9 @@ namespace CalamityMod.NPCs
         public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
             CalamityPlayer modPlayer = player.Calamity();
+            if (markedForDeath)
+                modifiers.SourceDamage *= 1.1f;
+
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.5f;
 
@@ -3853,6 +3854,9 @@ namespace CalamityMod.NPCs
                 if (hasResist)
                     modifiers.SourceDamage *= 0.33f;
             }
+
+            if (markedForDeath)
+                modifiers.SourceDamage *= 1.1f;
 
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.5f;
