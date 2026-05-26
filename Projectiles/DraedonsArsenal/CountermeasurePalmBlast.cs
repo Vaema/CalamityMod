@@ -51,6 +51,18 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             time++;
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            Player player = Main.player[Projectile.owner];
+            int manaGained = 250;
+            player.statMana += manaGained;
+            if (Main.myPlayer == player.whoAmI)
+                player.ManaEffect(manaGained);
+
+            if (player.statMana > player.statManaMax2)
+                player.statMana = player.statManaMax2;
+        }
+
         public override bool? CanHitNPC(NPC target) => (target == targeted) ? null : false;
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
