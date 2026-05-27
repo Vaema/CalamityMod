@@ -17,6 +17,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
+        }
         
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
