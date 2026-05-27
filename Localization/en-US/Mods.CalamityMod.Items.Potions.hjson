@@ -583,10 +583,10 @@ Mangosteen: {
 QualitySlop: {
 	DisplayName: Quality Slop
 	Tooltip:
-        '''
-        {$CommonItemTooltip.MajorStats}
-        'You only like it because it's good'
-        '''
+		'''
+		{$CommonItemTooltip.MajorStats}
+		'You only like it because it's good'
+		'''
 }
 
 Salak: {
