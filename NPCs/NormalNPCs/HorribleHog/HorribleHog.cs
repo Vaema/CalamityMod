@@ -6,6 +6,7 @@ using System.Linq;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using CalamityMod.Effects;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Tools;
 using CalamityMod.Particles;
@@ -789,10 +790,12 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, velocity.X, velocity.Y, Scale: scale);
             }
         }
-
+        //Always drops Disgusting Meat, 50% chance to drop Money Trough, 25%/33% chance to drop Laudanum
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<DisgustingMeat>());
+            npcLoot.Add(ModContent.ItemType<Laudanum>(), Main.expertMode ? 3 : 4);
+            npcLoot.Add(ItemID.MoneyTrough, 2);
             LeadingConditionRule postEoC = npcLoot.DefineConditionalDropSet(DropHelper.PostEoC());
             postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
         }
