@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.CustomRecipes;
+using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -19,6 +20,15 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CrimsonEffigy>());
             Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
+        }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient && !RecipeUnlockHandler.HasFoundCrimsonEffigy)
+            {
+                RecipeUnlockHandler.HasFoundCrimsonEffigy = true;
+                CalamityNetcode.SyncWorld();
+            }
         }
 
         public override void AddRecipes()

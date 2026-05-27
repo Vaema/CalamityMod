@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
@@ -284,7 +285,15 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy)
                 .Add<HurriedVoucher>(Condition.DownedGoblinArmy)
                 .Add<OmniGun>(Condition.DownedGolem)
-                
+                .Add<LuxorsGift>(new Condition("Mods.CalamityMod.Conditions.HasFoundLuxorsGift", () => RecipeUnlockHandler.HasFoundLuxorsGift))
+                .Add<FungalSymbiote>(new Condition("Mods.CalamityMod.Conditions.HasFoundFungalSymbiote", () => RecipeUnlockHandler.HasFoundFungalSymbiote))
+                .Add<TrinketofChi>(new Condition("Mods.CalamityMod.Conditions.HasFoundTrinketOfChi", () => RecipeUnlockHandler.HasFoundTrinketOfChi))
+                .Add<FrozenCube>(new Condition("Mods.CalamityMod.Conditions.HasFoundFrozenCube", () => RecipeUnlockHandler.HasFoundFrozenCube))
+                .Add<GladiatorsLocket>(new Condition("Mods.CalamityMod.Conditions.HasFoundGladiatorsLocket", () => RecipeUnlockHandler.HasFoundGladiatorsLocket))
+                .Add<UnstableGraniteCore>(new Condition("Mods.CalamityMod.Conditions.HasFoundUnstableGraniteCore", () => RecipeUnlockHandler.HasFoundUnstableGraniteCore))
+                .Add<CrimsonEffigy>(new Condition("Mods.CalamityMod.Conditions.HasFoundCrimsonEffigy", () => RecipeUnlockHandler.HasFoundCrimsonEffigy))
+                .Add<CorruptionEffigy>(new Condition("Mods.CalamityMod.Conditions.HasFoundCorruptionEffigy", () => RecipeUnlockHandler.HasFoundCorruptionEffigy))
+
                 .Register();
         }
 

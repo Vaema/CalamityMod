@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -35,6 +36,16 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient && !RecipeUnlockHandler.HasFoundFrozenCube)
+            {
+                RecipeUnlockHandler.HasFoundFrozenCube = true;
+                CalamityNetcode.SyncWorld();
+            }
+        }
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
@@ -48,6 +59,7 @@ namespace CalamityMod.Items.Accessories
                 Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
+
         public override void ModifyTooltips(List<TooltipLine> list)
         {
             if (Main.LocalPlayer != null)
