@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Packets;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -42,69 +43,69 @@ namespace CalamityMod.Items.Potions
 
         public override bool? UseItem(Player player)
         {
-            if (player.whoAmI == Main.myPlayer)
+            if (Main.rand.NextBool(4))
             {
-                if (Main.rand.NextBool(4))
-                {
-                    int roll = Main.rand.Next(3);
-                    Vector2? location = roll switch
-                    {
-                        1 => CalamityPlayer.GetAbyssVoidTeleportPosition(player),
-                        2 => CalamityPlayer.GetTempleTeleportPosition(player),
-                        _ => CalamityPlayer.GetDungeonArchivesTeleportPosition(player)
-                    };
+                int locationIndex = Main.rand.Next(3);
+                if (Main.dedServ)
+                    TheElixirTeleportSyncPacket.Send(player, locationIndex);
 
-                    if (!location.HasValue)
-                        return false;
-
-                    player.AddBuff(BuffID.ChaosState, 300, false);
-                    player.AddBuff(BuffID.Cursed, 300, false);
-                    CalamityPlayer.ModTeleport(player, location.Value, false, TeleportationStyleID.RecallPotion);
-                }
-                //If it doesn't fail, just act like a Potion of Return
-                else
-                    player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
-
-                //Dust and Teleport sounds happen regardless of if it fails or not
-                Rectangle rect = player.getRect();
-                int dustAmt = rect.Width * rect.Height / 5;
-                for (int k = 0; k < dustAmt; k++)
+                Vector2? location = locationIndex switch
                 {
-                    Dust dust = Dust.NewDustDirect(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.TeleportationPotion);
-                    dust.scale = Main.rand.NextFloat(0.2f, 0.7f);
-                    if (k < 10)
-                        dust.scale += 0.25f;
-                    if (k < 5)
-                        dust.scale += 0.25f;
-                }
-                for (int k = 0; k < 70; k++)
-                {
-                    Dust dust = Dust.NewDustDirect(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.DungeonSpirit);
-                    dust.noGravity = true;
-                    for (int i = 0; i < 5; i++)
-                    {
-                        if (Main.rand.NextBool(3))
-                            dust.velocity *= 0.75f;
-                    }
-                    if (Main.rand.NextBool(3))
-                    {
-                        dust.velocity *= 2f;
-                        dust.scale *= 1.2f;
-                    }
-                    if (Main.rand.NextBool(3))
-                    {
-                        dust.velocity *= 2f;
-                        dust.scale *= 1.2f;
-                    }
-                    if (Main.rand.NextBool())
-                    {
-                        dust.fadeIn = Main.rand.NextFloat(0.75f, 1f);
-                        dust.scale = Main.rand.NextFloat(0.25f, 0.75f);
-                    }
-                    dust.scale *= 0.8f;
-                }
-                SoundEngine.PlaySound(SoundID.Item6, player.Center);
+                    1 => CalamityPlayer.GetAbyssVoidTeleportPosition(player),
+                    2 => CalamityPlayer.GetTempleTeleportPosition(player),
+                    _ => CalamityPlayer.GetDungeonArchivesTeleportPosition(player)
+                };
+
+                if (!location.HasValue)
+                    return false;
+
+                player.AddBuff(BuffID.ChaosState, 300, false);
+                player.AddBuff(BuffID.Cursed, 300, false);
+                CalamityPlayer.ModTeleport(player, location.Value, false, TeleportationStyleID.RecallPotion);
             }
+            //If it doesn't fail, just act like a Potion of Return
+            else
+                player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
+
+            //Dust and Teleport sounds happen regardless of if it fails or not
+            Rectangle rect = player.getRect();
+            int dustAmt = rect.Width * rect.Height / 5;
+            for (int k = 0; k < dustAmt; k++)
+            {
+                Dust dust = Dust.NewDustDirect(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.TeleportationPotion);
+                dust.scale = Main.rand.NextFloat(0.2f, 0.7f);
+                if (k < 10)
+                    dust.scale += 0.25f;
+                if (k < 5)
+                    dust.scale += 0.25f;
+            }
+            for (int k = 0; k < 70; k++)
+            {
+                Dust dust = Dust.NewDustDirect(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, DustID.DungeonSpirit);
+                dust.noGravity = true;
+                for (int i = 0; i < 5; i++)
+                {
+                    if (Main.rand.NextBool(3))
+                        dust.velocity *= 0.75f;
+                }
+                if (Main.rand.NextBool(3))
+                {
+                    dust.velocity *= 2f;
+                    dust.scale *= 1.2f;
+                }
+                if (Main.rand.NextBool(3))
+                {
+                    dust.velocity *= 2f;
+                    dust.scale *= 1.2f;
+                }
+                if (Main.rand.NextBool())
+                {
+                    dust.fadeIn = Main.rand.NextFloat(0.75f, 1f);
+                    dust.scale = Main.rand.NextFloat(0.25f, 0.75f);
+                }
+                dust.scale *= 0.8f;
+            }
+            SoundEngine.PlaySound(SoundID.Item6, player.Center);
             return true;
         }
     }

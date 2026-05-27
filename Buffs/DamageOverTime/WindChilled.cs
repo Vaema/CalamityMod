@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -31,12 +26,12 @@ namespace CalamityMod.Buffs.DamageOverTime
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
-            BuffDatasets.DebuffDataset[Type] = debuffData;
+            CalamityBuffSets.DebuffDataset[Type] = debuffData;
         }
         public static void WindChilledNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
-            
+
             int baseDoTValue = (int)(cnpc.windChilledMult * npc.Calamity().ActiveColdDebuffMultiplier.ApplyTo(debuffData.EnemyLostRegen));
             cnpc.ApplyDPSDebuff(baseDoTValue, Math.Max((int)(baseDoTValue * debuffData.MultiplierDamageTickSize), debuffData.MinimumDamageTickSize) / 2, ref npc.lifeRegen, ref damage);
         }
@@ -94,7 +89,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                 bool start = !Main.rand.NextBool(4);
                 Vector2 particleVel = Vector2.UnitY * Main.rand.NextFloat(-1.25f, 1.25f) * Math.Max(hightMult, widthMult) * (Main.rand.NextBool(5) ? 1.5f : 1) + npc.velocity * 0.85f;
                 Vector2 particlePos = npc.Center + Main.rand.NextVector2Circular(3 * widthMult + 8, 3 * widthMult + 8) * Math.Max(hightMult, widthMult);
-                Particle mist = new CustomPulsingSpark(particlePos, particleVel, "CalamityMod/Particles/ThinSparkle", "CalamityMod/Particles/BloomCircle", false, 65, Main.rand.NextFloat(0.95f, 1.35f) * MathF.Pow(widthMult, 0.45f), start ? color : color2, start ? color2 : color, 
+                Particle mist = new CustomPulsingSpark(particlePos, particleVel, "CalamityMod/Particles/ThinSparkle", "CalamityMod/Particles/BloomCircle", false, 65, Main.rand.NextFloat(0.95f, 1.35f) * MathF.Pow(widthMult, 0.45f), start ? color : color2, start ? color2 : color,
                     new Vector2(0.6f, 1.2f), true, true, Main.rand.Next(4, 7 + 1), colorFadeSpeed: 0.85f, noShrink: true, extraRotation: -particleVel.ToRotation(), shrinkSpeed: 0.1f, sineRate: Main.rand.NextFloat(0.25f, 0.55f), sineIntensity: (int)(Main.rand.Next(12, 19 + 1) * Math.Max(hightMult, widthMult)));
                 GeneralParticleHandler.SpawnParticle(mist, true, Main.rand.NextBool() ? Enums.GeneralDrawLayer.AfterNPCs : Enums.GeneralDrawLayer.BeforeNPCs);
             }

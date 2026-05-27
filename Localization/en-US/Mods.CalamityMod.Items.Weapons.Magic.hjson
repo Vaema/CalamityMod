@@ -702,8 +702,8 @@ RecitationoftheBeast: {
 	DisplayName: Recitation of the Beast
 	Tooltip:
 		'''
-		Summons beast scythes around the player in a small circle,
-		before firing toward the cursor and home in to nearby enemies
+		Summons beast scythes around the player in a small circle
+		Beast scythes fire toward the cursor and home in to nearby enemies
 		'''
 }
 

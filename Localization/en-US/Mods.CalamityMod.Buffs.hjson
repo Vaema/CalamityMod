@@ -1184,8 +1184,8 @@ Irradiated: {
 
 MarkedforDeath: {
 	DisplayName: Marked for Death
-	Description: Damage reduction reduced
-	ItemTooltipEnemy: Damage reduction is 50% less effective
+	Description: Increased damage taken
+	ItemTooltipEnemy: Enemies take 1.1x damage
 }
 
 PearlAura: {
@@ -1225,7 +1225,7 @@ WhisperingDeath: {
 	DisplayName: Whispering Death
 	Description: Death approaches; attack power and life regen reduced
 	ItemTooltipPlayer: Negates life regen, reduces damage
-	ItemTooltipEnemy: Reduced contact damage
+	ItemTooltipEnemy: Reduced damage
 }
 
 WitherDebuff: {

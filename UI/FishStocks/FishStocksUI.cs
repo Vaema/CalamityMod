@@ -90,7 +90,7 @@ namespace CalamityMod.UI
             float fishStocksUIScale = baseScale * Main.UIScale;
 
             Vector2 screenPos = new Vector2(Main.screenWidth / 1920, Main.screenHeight / 1080) * fishStocksUIScale;
-            Vector2 baseUIPosition = (screenPos + new Vector2(overlayBorderTex.Width() * 0.342f - (1000 * fishStocksSlideValue), overlayBorderTex.Height() * 0.566f + 54 * MathF.Ceiling(player.CountBuffs() / 11f)));
+            Vector2 baseUIPosition = (screenPos + new Vector2(overlayBorderTex.Width() * 0.342f * Main.UIScale - (1000 * fishStocksSlideValue), overlayBorderTex.Height() * 0.566f * MathHelper.Lerp(Main.UIScale, 1, 0.5f) + 54 * MathF.Ceiling(player.CountBuffs() / 11f)));
             Vector2 fishyDrawPos = baseUIPosition + new Vector2(112, 40) * fishStocksUIScale;  
             Vector2 leftEdgePos = baseUIPosition - Vector2.UnitX * overlayTex.Width();
             Vector2 rightEdgePos = baseUIPosition - Vector2.UnitX * overlayTex.Width() / 2.7f;
@@ -123,7 +123,7 @@ namespace CalamityMod.UI
             spriteBatch.End();
             using (PixelationLease.Scope(clearColor: Color.Transparent))
             {
-                Matrix pixelationMatrix = Main.UIScaleMatrix * Matrix.CreateScale(0.5f, 0.5f, 1f);
+                Matrix pixelationMatrix = Matrix.CreateScale(0.5f, 0.5f, 1f);
                 spriteBatch.Begin(SpriteSortMode.Deferred, default, SamplerState.PointClamp, default, default, default, pixelationMatrix);
 
                 int lines = 5;
@@ -150,10 +150,10 @@ namespace CalamityMod.UI
             spriteBatch.Draw(PixelationLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
 
             string fishStocksPower = (player.Calamity().fishStockPower > -0 ? "+" : "") + Math.Round(player.Calamity().fishStockPower, 2).ToString() + "x";
-            Vector2 textPos = baseUIPosition + new Vector2(-148 - (3.5f * fishStocksPower.Length), -118.5f) * baseScale;
+            Vector2 textPos = baseUIPosition + new Vector2(-148 - (3.5f * fishStocksPower.Length), -118.5f) * fishStocksUIScale;
 
             // Text
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, fishStocksPower, textPos, Color.Lerp(shiftColor, Color.White, 0.35f), Color.Black, 1.4f * baseScale);
+            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, fishStocksPower, textPos, Color.Lerp(shiftColor, Color.White, 0.35f), Color.Black, 1.4f * fishStocksUIScale);
 
             // Screen overlay
             if (!CalamityClientConfig.Instance.Photosensitivity)

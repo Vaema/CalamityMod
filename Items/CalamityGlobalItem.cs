@@ -1196,6 +1196,7 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.GravityGlobe)
             {
+                player.noFallDmg = true;
                 player.GetJumpState<GravityJump>().Enable();
                 if (player.Calamity().justChangedGravity)
                 {
@@ -1434,8 +1435,7 @@ namespace CalamityMod.Items
         #region PostUpdate
         public override void PostUpdate(Item item)
         {
-            if (CalamityItemSets.ItemForcedInsideWorld[item.type])
-                CalamityUtils.ForceItemIntoWorld(item);
+            CalamityUtils.ForceItemIntoWorld(item);
         }
         #endregion
 

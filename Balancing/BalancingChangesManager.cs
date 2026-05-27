@@ -204,6 +204,9 @@ namespace CalamityMod.Balancing
             // 50% resist to Charged Blaster Cannon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.ChargedBlasterLaser))));
 
+            //45% resist to Duststorm in a Bottle
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<DuststormCloud>(), ProjectileType<DuststormCloudExplosion>(), ProjectileType<DuststormInABottleProj>()))));
+
             // 40% resist to Stardust Dragon Staff.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.6f, ProjectileID.StardustDragon1, ProjectileID.StardustDragon2, ProjectileID.StardustDragon3, ProjectileID.StardustDragon4))));
 

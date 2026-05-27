@@ -502,7 +502,7 @@ namespace CalamityMod.CalPlayer
                 for (int index = 0; index < target.buffType.Length; index++)
                 {
                     int type = target.buffType[index];
-                    var debuffData = BuffDatasets.DebuffDataset[type];
+                    var debuffData = CalamityBuffSets.DebuffDataset[type];
                     if (debuffData != null)
                         numOfDebuffs++;
                 }
@@ -727,70 +727,10 @@ namespace CalamityMod.CalPlayer
             if (npc.Calamity().antlionCloudDebuffTimer > 0)
                 modifiers.SourceDamage *= AntlionSkewer.CloudDamageDebuffMult;
 
-            // Enemies deal less contact damage while sick, due to being weakened.
-            if (npc.poisoned)
-            {
-                float damageReductionFromPoison = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromPoison *= 2f;
-                    else
-                        damageReductionFromPoison /= 2f;
-                }
-                damageReductionFromPoison = 1f - damageReductionFromPoison;
-
-                modifiers.SourceDamage *= damageReductionFromPoison;
-            }
-
-            if (npc.venom)
-            {
-                float damageReductionFromVenom = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromVenom *= 2f;
-                    else
-                        damageReductionFromVenom /= 2f;
-                }
-                damageReductionFromVenom = 1f - damageReductionFromVenom;
-
-                modifiers.SourceDamage *= damageReductionFromVenom;
-            }
-
-            if (npc.Calamity().astralInfection)
-            {
-                float damageReductionFromAstralInfection = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromAstralInfection *= 2f;
-                    else
-                        damageReductionFromAstralInfection /= 2f;
-                }
-                damageReductionFromAstralInfection = 1f - damageReductionFromAstralInfection;
-
-                modifiers.SourceDamage *= damageReductionFromAstralInfection;
-            }
-
-            if (npc.Calamity().plague)
-            {
-                float damageReductionFromPlague = (float)((npc.Calamity().irradiated? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromPlague *= 2f;
-                    else
-                        damageReductionFromPlague /= 2f;
-                }
-                damageReductionFromPlague = 1f - damageReductionFromPlague;
-
-                modifiers.SourceDamage *= damageReductionFromPlague;
-            }
-
+            // Whispering Death makes enemies deal less damage
             if (npc.Calamity().whisperingDeath)
             {
-                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.1f);
+                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * WhisperingDeath.EnemyDamageReduction);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
