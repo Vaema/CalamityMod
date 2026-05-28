@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60);
             //Only spawn rocket on the first hit
-            if (Projectile.numHits == 0)
+            if (Projectile.numHits == 0 && Main.myPlayer == Projectile.owner)
             {
                 Player Owner = Main.player[Projectile.owner];
                 Projectile fishy = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + Main.rand.NextVector2Circular(150, 150), Vector2.Zero, ModContent.ProjectileType<SeaDragonRocket>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60);
                 //Only spawn rocket on the first hit
-                if (Projectile.numHits == 0)
+                if (Projectile.numHits == 0 && Main.myPlayer == Projectile.owner)
                 {
                     Player Owner = Main.player[Projectile.owner];
                     Projectile fishy = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + Main.rand.NextVector2Circular(150, 150), Vector2.Zero, ModContent.ProjectileType<SeaDragonRocket>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);

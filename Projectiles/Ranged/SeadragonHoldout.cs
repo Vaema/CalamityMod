@@ -1,13 +1,15 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using static Terraria.ModLoader.ModContent;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -82,24 +84,28 @@ namespace CalamityMod.Projectiles.Ranged
                     //Here we detect which ammo the bullets will use
                     Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                     //Alternate between shooting bullets and water streams. Despite not having damage scaling, the fish gain movement speed based on the scaling, so we still need a Global Projectile
-                    if (!swapType)
+                    if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        CalamityGlobalProjectile cgp = scalingShot.Calamity();
-                        cgp.sharkBullets = true;
-                        //Only eject casings from the gun if bullets are fired, preventing too many at once
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!swapType)
                         {
-                            string goreType = "SeadragonCasing";
-                            Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 6), -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                            Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            CalamityGlobalProjectile cgp = scalingShot.Calamity();
+                            cgp.sharkBullets = true;
+                            //Only eject casings from the gun if bullets are fired, preventing too many at once
+                            if (Main.netMode != NetmodeID.Server)
+                            {
+                                string goreType = "SeadragonCasing";
+                                Vector2 spawnOffset = new Vector2(0, -11f);
+                                Vector2 spawnPosition = Projectile.Center + (-Projectile.velocity * 5) + spawnOffset;
+                                Gore.NewGore(Projectile.GetSource_FromAI(), spawnPosition, -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                            }
                         }
+                        if (swapType)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<BlahajBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner, transEffects ? 0f : 1f);
+                        }
+                        swapType = !swapType;
                     }
-                    if (swapType)
-                    {
-                        //Has a 1 in 100 chance for the shot colors to be replaced by the transgender pride flag colors
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<BlahajBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner, transEffects ? 0f : 1f);
-                    }
-                    swapType = !swapType;
                     shotCounter++;
                     //Allow a pause before unleashing the fish. This allows the final bullet a chance to hit before the fish are unleashed. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
                     if (shotCounter == 50)
@@ -134,6 +140,37 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 }
             }
+            //If any fish projectiles are present, create an eye shine effect as they rush the enemy
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeaDragonRocket>()] > 0)
+            {
+                if (Time == 3)
+                {
+                    SoundStyle hitSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
+                    SoundEngine.PlaySound(hitSound with { Volume = 0.5f, Pitch = 0.8f }, Projectile.Center);
+                    for (int b = 0; b < 12; b++)
+                    {
+                        int star = 4;
+                        for (int i = 0; i < star; i++)
+                        {
+                            float power = Main.rand.NextFloat(0.2f, 1f);
+                            Vector2 vel = (MathHelper.TwoPi * i / star).ToRotationVector2().RotatedBy(Projectile.rotation) * 6f;
+                            float size = (0.6f) * Main.rand.NextFloat(0.9f, 1.1f) * (1.1f - power);
+                            int dustStyle = DustType<SquashDust>();
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 29f), dustStyle);
+                            dust.scale = size;
+                            dust.velocity = vel * power * (0.7f);
+                            dust.noGravity = true;
+                            dust.color = Color.Lerp(Color.Goldenrod, Color.OrangeRed, 0.5f) with { A = 1 };
+
+                            if (b == 0)
+                            {
+                                Particle aura = new CustomSpark(GunTipPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 29f), Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 13, 0.2f, Color.Lerp(Color.Goldenrod, Color.OrangeRed, 0.5f) with { A = 1 }, new Vector2(0.65f, 1f), glowCenter: true, glowOpacity: 0.8f, glowCenterScale: 0.85f, extraRotation: Projectile.rotation + (i % 2 == 0 ? MathHelper.PiOver2 : 0), shrinkSpeed: 0.1f);
+                                GeneralParticleHandler.SpawnParticle(aura);
+                            }
+                        }
+                    }
+                }
+            }
             Time++;
         }
         public override bool PreDraw(ref Color lightColor)
@@ -141,26 +178,12 @@ namespace CalamityMod.Projectiles.Ranged
             if (Time < 2)
                 return false;
             Texture2D texture = TextureAssets.Projectile[Type].Value;
-            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/ThinSparkle").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
-            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeaDragonRocket>()] > 0)
-            {
-                if (Time == 3)
-                {
-                    SoundStyle hitSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
-                    SoundEngine.PlaySound(hitSound with { Volume = 0.5f, Pitch = 0.8f }, Projectile.Center);
-                }
-                if (Time > 2 && Time < 16)
-                {
-                    for (int i = 0; i <= 2; i++)
-                        Main.EntitySpriteDraw(texture2, GunTipPosition - Main.screenPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 30f), null, Color.Lerp(Color.Goldenrod, Color.OrangeRed, 0.5f) with { A = 1 }, Time * 0.25f, texture2.Size() * 0.5f, 1.1f, flipSprite);
-                }
-            }
             return false;
         }
     }

@@ -131,23 +131,28 @@ namespace CalamityMod.Projectiles.Ranged
                     //Here we detect which ammo the bullets will use
                     Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                     //Alternate between shooting bullets and void blasts. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
-                    if (!swapType)
+                    if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        CalamityGlobalProjectile cgp = scalingShot.Calamity();
-                        cgp.sharkBullets = true;
-                        //Only eject casings from the gun if bullets are fired, preventing too many at once
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!swapType)
                         {
-                            string goreType = "VoidragonCasing";
-                            Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 18), -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                            Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            CalamityGlobalProjectile cgp = scalingShot.Calamity();
+                            cgp.sharkBullets = true;
+                            //Only eject casings from the gun if bullets are fired, preventing too many at once
+                            if (Main.netMode != NetmodeID.Server)
+                            {
+                                string goreType = "VoidragonCasing";
+                                Vector2 spawnOffset = new Vector2(0, -13f);
+                                Vector2 spawnPosition = Projectile.Center + (-Projectile.velocity * 18) + spawnOffset;
+                                Gore.NewGore(Projectile.GetSource_FromAI(), spawnPosition, -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                            }
                         }
+                        if (swapType)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<VoidBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        }
+                        swapType = !swapType;
                     }
-                    if (swapType)
-                    {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<VoidBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    }
-                    swapType = !swapType;
                     shotCounter++;
                     //Allow a pause before firing the laser. The long delay lets the laser's charge sound play in full
                     if (shotCounter == 50)

@@ -75,23 +75,26 @@ namespace CalamityMod.Projectiles.Ranged
                     //Here we detect which ammo the bullets will use
                     Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                     //Alternate between shooting bullets and water streams. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
-                    if (!swapType)
+                    if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        CalamityGlobalProjectile cgp = scalingShot.Calamity();
-                        cgp.sharkBullets = true;
-                        //Only eject casings from the gun if bullets are fired, preventing too many at once
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!swapType)
                         {
-                            string goreType = "MegalodonCasing";
-                            Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 18), -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                            Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            CalamityGlobalProjectile cgp = scalingShot.Calamity();
+                            cgp.sharkBullets = true;
+                            //Only eject casings from the gun if bullets are fired, preventing too many at once
+                            if (Main.netMode != NetmodeID.Server)
+                            {
+                                string goreType = "MegalodonCasing";
+                                Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 18), -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                            }
                         }
+                        if (swapType)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<MegalodonShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        }
+                        swapType = !swapType;
                     }
-                    if (swapType)
-                    {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<MegalodonShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    }
-                    swapType = !swapType;
                     shotCounter++;
                     //Allow a pause before firing the rocket. This allows the final bullet a chance to hit before the rocket is fired. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
                     if (shotCounter == 30)
@@ -143,7 +146,8 @@ namespace CalamityMod.Projectiles.Ranged
                     Owner.Calamity().sharkGunDamageScaling++;
                 }
                 //Fire the rocket. Damage is 50% of base, multiplied by how many shots the player hits
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<MegalodonRocket>(), (int)(Projectile.damage * 0.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<MegalodonRocket>(), (int)(Projectile.damage * 0.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
 
                 //After firing the rocket, reset all variables to allow left click to be held down
                 Time = 2;
