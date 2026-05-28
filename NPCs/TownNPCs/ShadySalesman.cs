@@ -285,14 +285,14 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy)
                 .Add<HurriedVoucher>(Condition.DownedGoblinArmy)
                 .Add<OmniGun>(Condition.DownedGolem)
-                .Add<LuxorsGift>(new Condition("Mods.CalamityMod.Conditions.HasFoundLuxorsGift", () => RecipeUnlockHandler.HasFoundLuxorsGift))
-                .Add<FungalSymbiote>(new Condition("Mods.CalamityMod.Conditions.HasFoundFungalSymbiote", () => RecipeUnlockHandler.HasFoundFungalSymbiote))
-                .Add<TrinketofChi>(new Condition("Mods.CalamityMod.Conditions.HasFoundTrinketOfChi", () => RecipeUnlockHandler.HasFoundTrinketOfChi))
-                .Add<FrozenCube>(new Condition("Mods.CalamityMod.Conditions.HasFoundFrozenCube", () => RecipeUnlockHandler.HasFoundFrozenCube))
-                .Add<GladiatorsLocket>(new Condition("Mods.CalamityMod.Conditions.HasFoundGladiatorsLocket", () => RecipeUnlockHandler.HasFoundGladiatorsLocket))
-                .Add<UnstableGraniteCore>(new Condition("Mods.CalamityMod.Conditions.HasFoundUnstableGraniteCore", () => RecipeUnlockHandler.HasFoundUnstableGraniteCore))
-                .Add<CrimsonEffigy>(new Condition("Mods.CalamityMod.Conditions.HasFoundCrimsonEffigy", () => RecipeUnlockHandler.HasFoundCrimsonEffigy))
-                .Add<CorruptionEffigy>(new Condition("Mods.CalamityMod.Conditions.HasFoundCorruptionEffigy", () => RecipeUnlockHandler.HasFoundCorruptionEffigy))
+                .Add<LuxorsGift>(new Condition(CalamityUtils.GetText("Condition.HasFoundLuxorsGift"), () => RecipeUnlockHandler.HasFoundLuxorsGift))
+                .Add<FungalSymbiote>(new Condition(CalamityUtils.GetText("Condition.HasFoundFungalSymbiote"), () => RecipeUnlockHandler.HasFoundFungalSymbiote))
+                .Add<TrinketofChi>(new Condition(CalamityUtils.GetText("Condition.HasFoundTrinketOfChi"), () => RecipeUnlockHandler.HasFoundTrinketOfChi))
+                .Add<FrozenCube>(new Condition(CalamityUtils.GetText("Condition.HasFoundFrozenCube"), () => RecipeUnlockHandler.HasFoundFrozenCube))
+                .Add<GladiatorsLocket>(new Condition(CalamityUtils.GetText("Condition.HasFoundGladiatorsLocket"), () => RecipeUnlockHandler.HasFoundGladiatorsLocket))
+                .Add<UnstableGraniteCore>(new Condition(CalamityUtils.GetText("Condition.HasFoundUnstableGraniteCore"), () => RecipeUnlockHandler.HasFoundUnstableGraniteCore))
+                .Add<CrimsonEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCrimsonEffigy"), () => RecipeUnlockHandler.HasFoundCrimsonEffigy))
+                .Add<CorruptionEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCorruptionEffigy"), () => RecipeUnlockHandler.HasFoundCorruptionEffigy))
 
                 .Register();
         }
