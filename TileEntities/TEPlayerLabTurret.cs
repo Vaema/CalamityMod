@@ -90,7 +90,7 @@ namespace CalamityMod.TileEntities
 
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (npc.friendly || npc.CountsAsACritter)
+                if (npc.friendly || npc.CountsAsACritter || NPCID.Sets.CountsAsCritter[npc.type])
                     continue;
 
                 float distSQ = npc.DistanceSQ(targetingCenter);
