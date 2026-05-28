@@ -1184,8 +1184,8 @@ Irradiated: {
 
 MarkedforDeath: {
 	DisplayName: Marked for Death
-	Description: Damage reduction reduced
-	ItemTooltipEnemy: Damage reduction is 50% less effective
+	Description: Increased damage taken
+	ItemTooltipEnemy: Enemies take 1.1x damage
 }
 
 PearlAura: {

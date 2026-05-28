@@ -87,10 +87,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0f;
-            if (Main.masterMode) modifiers.SourceDamage.Flat += 240f;
-            else if (Main.expertMode) modifiers.SourceDamage.Flat += 180f;
-            else modifiers.SourceDamage.Flat += 120f;
+            Player Owner = Main.player[Projectile.owner];
+            if (target == Owner)
+            {
+                modifiers.SourceDamage *= 0f;
+                if (Main.masterMode) modifiers.SourceDamage.Flat += 240f;
+                else if (Main.expertMode) modifiers.SourceDamage.Flat += 180f;
+                else modifiers.SourceDamage.Flat += 120f;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)

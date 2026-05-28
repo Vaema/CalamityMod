@@ -82,7 +82,8 @@ namespace CalamityMod.Projectiles.Ranged
                         OffsetLengthFromArm -= 20f;
                         CurrentRecoilResolveSpeed = 0.14f;
 
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<OmniSniperShot>(), (int)(Projectile.damage * 6f), Projectile.knockBack, Projectile.owner);
+                        if (Main.myPlayer == Projectile.owner)
+                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<OmniSniperShot>(), (int)(Projectile.damage * 6f), Projectile.knockBack, Projectile.owner);
                         shotCounter++;
                         framesBetweenShots = 40;
                     }
@@ -115,7 +116,8 @@ namespace CalamityMod.Projectiles.Ranged
                         framesBetweenShots = 8;
                         OffsetLengthFromArm -= 3f;
                         CurrentRecoilResolveSpeed = 0.3f;
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        if (Main.myPlayer == Projectile.owner)
+                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         shotCounter++;
                         if (shotCounter > 10)
                             framesBetweenShots = 30;
@@ -155,9 +157,11 @@ namespace CalamityMod.Projectiles.Ranged
 
                         // Propel the owner backward
                         Owner.velocity += -Projectile.velocity * 7f;
-
-                        for (int i = 0; i < 8; i++)
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 1.5f), ModContent.ProjectileType<OmniShotgunShot>(), (int)(Projectile.damage * 3f), Projectile.knockBack, Projectile.owner);
+                        if (Main.myPlayer == Projectile.owner)
+                        {
+                            for (int i = 0; i < 8; i++)
+                                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 1.5f), ModContent.ProjectileType<OmniShotgunShot>(), (int)(Projectile.damage * 3f), Projectile.knockBack, Projectile.owner);
+                        }
                         shotCounter++;
                         if (shotCounter > 11)
                             framesBetweenShots = 30;
@@ -190,8 +194,8 @@ namespace CalamityMod.Projectiles.Ranged
                         #endregion
                         OffsetLengthFromArm -= 24f;
                         CurrentRecoilResolveSpeed = 0.15f;
-
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<OmniGrenade>(), (int)(Projectile.damage * 9f), Projectile.knockBack, Projectile.owner);
+                        if (Main.myPlayer == Projectile.owner)
+                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<OmniGrenade>(), (int)(Projectile.damage * 9f), Projectile.knockBack, Projectile.owner);
                         Time = 0;
                         shotCounter = 0;
                     }
