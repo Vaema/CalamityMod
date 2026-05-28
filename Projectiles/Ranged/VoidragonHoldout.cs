@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 if (SoundEngine.TryGetActiveSound(soundSlot, out var sSound) && sSound.IsPlaying)
                 {
-                    sSound.Pitch = 1f - 1.5f * MathF.Pow(beamCompletion, 4f) + 0.9f * beamCompletion;
+                    sSound.Pitch = 1f - 1.5f * MathF.Pow(beamCompletion, 10f) + 0.6f * beamCompletion;
                     sSound.Volume = 1f - 1 * MathF.Pow(beamCompletion, 10f);
                 }
                 firingBeam = true;
