@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -84,6 +85,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            modifiers.ApplyScalingForcedCrit(Projectile);
             modifiers.HitDirectionOverride = (Owner.Center.X < target.Center.X).ToDirectionInt();
             modifiers.SourceDamage *= Utils.Remap(Projectile.numHits, 0, 10, 1f, 0.1f, true);
         }
