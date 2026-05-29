@@ -206,7 +206,7 @@ namespace CalamityMod.DataStructures
                  ))))
                  :
                  // Bane doesn't scale with debuff multipliers. This should be implemented as a default feature you can apply to debuffs at some point.
-                 buffType == ModContent.BuffType<Bane>() ? cnpc.ActiveTypelessDebuffMultiplier : StatModifier.Default;
+                 buffType == ModContent.BuffType<Bane>() ? StatModifier.Default : cnpc.ActiveTypelessDebuffMultiplier;
 
             //Ensure at least 25% effectiveness
             if (totalScaling.Multiplicative <= 0.25f)
