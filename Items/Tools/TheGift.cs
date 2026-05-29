@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Tools
         {
             // Controls actually applying the effect to an NPC
             // None of this should work in Remix because Remix disables happiness
-            if (Item.noGrabDelay <= 0 && !Main.remixWorld && !Main.dedServ && Item.playerIndexTheItemIsReservedFor == Main.myPlayer)
+            if (Item.noGrabDelay <= 0 && !Main.remixWorld && Item.playerIndexTheItemIsReservedFor == Main.myPlayer)
             {
                 foreach (NPC n in Main.ActiveNPCs)
                 {
@@ -79,7 +79,8 @@ namespace CalamityMod.Items.Tools
                             Item.active = false;
                             Item.type = ItemID.None;
                         }
-                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, Item.whoAmI);
+                        if (Main.netMode != NetmodeID.SinglePlayer)
+                            NetMessage.SendData(MessageID.SyncItem, -1, -1, null, Item.whoAmI);
                         // Make sure it can't apply to multiple NPCs at once
                         break;
                     }
