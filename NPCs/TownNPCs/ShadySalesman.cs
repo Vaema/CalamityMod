@@ -28,6 +28,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
+using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
@@ -285,14 +286,14 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy)
                 .Add<HurriedVoucher>(Condition.DownedGoblinArmy)
                 .Add<OmniGun>(Condition.DownedGolem)
-                .Add<LuxorsGift>(new Condition(CalamityUtils.GetText("Condition.HasFoundLuxorsGift"), () => RecipeUnlockHandler.HasFoundLuxorsGift))
-                .Add<FungalSymbiote>(new Condition(CalamityUtils.GetText("Condition.HasFoundFungalSymbiote"), () => RecipeUnlockHandler.HasFoundFungalSymbiote))
-                .Add<TrinketofChi>(new Condition(CalamityUtils.GetText("Condition.HasFoundTrinketOfChi"), () => RecipeUnlockHandler.HasFoundTrinketOfChi))
-                .Add<FrozenCube>(new Condition(CalamityUtils.GetText("Condition.HasFoundFrozenCube"), () => RecipeUnlockHandler.HasFoundFrozenCube))
-                .Add<GladiatorsLocket>(new Condition(CalamityUtils.GetText("Condition.HasFoundGladiatorsLocket"), () => RecipeUnlockHandler.HasFoundGladiatorsLocket))
-                .Add<UnstableGraniteCore>(new Condition(CalamityUtils.GetText("Condition.HasFoundUnstableGraniteCore"), () => RecipeUnlockHandler.HasFoundUnstableGraniteCore))
-                .Add<CrimsonEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCrimsonEffigy"), () => RecipeUnlockHandler.HasFoundCrimsonEffigy))
-                .Add<CorruptionEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCorruptionEffigy"), () => RecipeUnlockHandler.HasFoundCorruptionEffigy))
+                .Add<LuxorsGift>(new Condition(CalamityUtils.GetText("Condition.HasFoundLuxorsGift"), () => RecipeUnlockHandler.HasFoundLuxorsGift && Main.moonPhase == 0))
+                .Add<FungalSymbiote>(new Condition(CalamityUtils.GetText("Condition.HasFoundFungalSymbiote"), () => RecipeUnlockHandler.HasFoundFungalSymbiote && Main.moonPhase == 1))
+                .Add<TrinketofChi>(new Condition(CalamityUtils.GetText("Condition.HasFoundTrinketOfChi"), () => RecipeUnlockHandler.HasFoundTrinketOfChi && Main.moonPhase == 2))
+                .Add<FrozenCube>(new Condition(CalamityUtils.GetText("Condition.HasFoundFrozenCube"), () => RecipeUnlockHandler.HasFoundFrozenCube && Main.moonPhase == 3))
+                .Add<GladiatorsLocket>(new Condition(CalamityUtils.GetText("Condition.HasFoundGladiatorsLocket"), () => RecipeUnlockHandler.HasFoundGladiatorsLocket && Main.moonPhase == 4))
+                .Add<UnstableGraniteCore>(new Condition(CalamityUtils.GetText("Condition.HasFoundUnstableGraniteCore"), () => RecipeUnlockHandler.HasFoundUnstableGraniteCore && Main.moonPhase == 5))
+                .Add<CrimsonEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCrimsonEffigy"), () => RecipeUnlockHandler.HasFoundCrimsonEffigy && Main.moonPhase == 6))
+                .Add<CorruptionEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCorruptionEffigy"), () => RecipeUnlockHandler.HasFoundCorruptionEffigy && Main.moonPhase == 7))
 
                 .Register();
         }
