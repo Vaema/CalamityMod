@@ -1415,7 +1415,7 @@ TriactisTruePaladinianMageHammerofMight: {
 		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
 		Enemy hits release prismatic light flares which orbit around the struck foe
 		Instead of returning, the fourth hit transforms flares into hardlight hammers
-		These hammers converge and form a universe-collapsing explosion
+		These hammers converge and form a universe-collapsing explosion that always critically strikes
 		'''
 }
 
