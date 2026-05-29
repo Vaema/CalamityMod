@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Turret;
 using CalamityMod.Tiles.PlayerTurrets;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.TileEntities
