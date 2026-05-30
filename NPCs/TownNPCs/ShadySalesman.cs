@@ -1,40 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Collections.ObjectModel;
+using CalamityMod.ChatTags;
 using CalamityMod.CustomRecipes;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.SummonItems.TownPets;
 using CalamityMod.Items.Tools;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
-using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 using Terraria.Utilities;
 
 namespace CalamityMod.NPCs.TownNPCs
@@ -130,7 +125,7 @@ namespace CalamityMod.NPCs.TownNPCs
                         NPC.netSkip = -1;
                     }
                     return false;
-                }  
+                }
             }
 
             return true;
@@ -172,7 +167,7 @@ namespace CalamityMod.NPCs.TownNPCs
                     }
                     hasFiredShotThisAttack = true;
                     NPC.netUpdate = true;
-                }   
+                }
             }
             else
             {
@@ -531,8 +526,18 @@ namespace CalamityMod.NPCs.TownNPCs
             hardmode.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, ModContent.ItemType<ElephantKiller>()));
 
         }
-    }
 
+        public override void ModifyActiveShop(string shopName, Item[] items)
+        {
+            ShadySalesmanShopTooltips.addSalesPitch = true;
+        }
+
+        public override void ResetEffects()
+        {
+            if (Main.npcShop < 1) //ModifyActiveShop only runs once when shop opens, so we only reset this if no shop is open
+                ShadySalesmanShopTooltips.addSalesPitch = false;
+        }
+    }
 
     public class ShadySalesmanSpawnSystem : ModSystem
     {
@@ -548,7 +553,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             if (!CanSpawnTonight || Main.eclipse || (Main.invasionType > 0 && Main.invasionDelay == 0 && Main.invasionSize > 0))
                 return;
-            
+
             for (int i = 0; i < 200; i++)
                 if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<ShadySalesman>())
                     return;
@@ -590,6 +595,114 @@ namespace CalamityMod.NPCs.TownNPCs
                 }
             }
             CanSpawnTonight = false;
+        }
+    }
+
+    public class ShadySalesmanShopTooltips : GlobalItem
+    {
+        /// <summary>
+        /// Scale for the "fine print" of the shop.
+        /// </summary>
+        public static float SmallTextSize => 0.66f;
+        /// <summary>
+        /// Tooltip Line names that should be left alone instead of becoming fine print
+        /// All exempted tooltip lines are moved above the fine print section
+        /// </summary>
+        static List<string> ExemptFromSmall => [
+            "ItemName",
+            "SalesPitch",
+            "Price",
+            "SpecialPrice",
+            "JourneyResearch",
+            ];
+        public override void Load()
+        {
+            On_ChatManager.DrawColorCodedStringShadow_SpriteBatch_DynamicSpriteFont_TextSnippetArray_Vector2_Color_float_Vector2_Vector2_float_float += HideDefaultShadowForSmallText;
+        }
+
+        // Doze May 30 2026
+        // Terraria forces drawing the shadow effects for all tooltip texts.
+        // This system forces the shadows to be transparent for SmallTextSnippets as it draws the shadows manually
+        private void HideDefaultShadowForSmallText(On_ChatManager.orig_DrawColorCodedStringShadow_SpriteBatch_DynamicSpriteFont_TextSnippetArray_Vector2_Color_float_Vector2_Vector2_float_float orig, SpriteBatch spriteBatch, ReLogic.Graphics.DynamicSpriteFont font, TextSnippet[] snippets, Vector2 position, Color baseColor, float rotation, Vector2 origin, Vector2 baseScale, float maxWidth, float spread)
+        {
+            List<Color> colorsToRestore = [];
+            foreach (var item in snippets)
+            {
+                if (item is SmallTextSnippet s)
+                {
+                    colorsToRestore.Add(s.Color);
+                    s.Color = Color.Transparent;
+                }
+            }
+            orig(spriteBatch, font, snippets, position, baseColor, rotation, origin, baseScale, maxWidth, spread);
+            if (colorsToRestore.Count > 0)
+                foreach (var item in snippets)
+                {
+                    if (item is SmallTextSnippet s)
+                    {
+                        s.Color = colorsToRestore[0];
+                        colorsToRestore.RemoveAt(0);
+                    }
+                }
+        }
+
+        public static bool addSalesPitch = false; //Used to track if the shop should show the pitches
+
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            if (!addSalesPitch || !CalamityItemSets.HasSalesmanText[item.type])
+                return;
+            tooltips.Insert(1, new TooltipLine(Mod, "SalesPitch", item.ModItem?.GetLocalizedValue("SalesPitch") ?? "Error: Sales Pitches not supported for vanilla items") // While vanilla item support COULD be added, salesman won't need sales pitches for vanilla items ever and so this is fine.
+            {
+            });
+
+            int placetoMove = -1;
+
+            for (var i = 0; i < tooltips.Count; i++)
+            {
+                var line = tooltips[i];
+                if (!ExemptFromSmall.Contains(line.Name))
+                {
+                    if (placetoMove < 0)
+                        placetoMove = i;
+                    TextSnippet[] snippets = ChatManager.ParseMessage(line.Text, Color.White).ToArray();
+                    ChatManager.ConvertNormalSnippets(snippets);
+
+                    string lineText = "";
+                    for (int i2 = 0; i2 < snippets.Length; i2++)
+                    {
+                        lineText += snippets[i2].Text;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(lineText))
+                        //Sometimes the game tries to draw entirely empty lines with no size.
+                        //This would cause no issue except for it still applies the Y offset those lines
+                        //So, we just force hide those lines entirely here
+                        line.Hide(); 
+                    else
+                        line.Text = $"[scale/{SmallTextSize}:{lineText}]";
+
+                }
+                else if (placetoMove > 0)
+                {
+                    tooltips.RemoveAt(i);
+                    tooltips.Insert(placetoMove, line);
+                    placetoMove++;
+                }
+
+            }
+        }
+
+        public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
+        {
+            //Applies the Y offset to lines that are small to ensure they line up properly visually.
+            //Without this, they'd stay spaced the same as normal text...
+            //although the tooltip background would still size as if they're stacked closer like this does. Thanks vanilla code jank.
+            if (line.Text.StartsWith($"[scale/{SmallTextSize}:"))
+            {
+                yOffset = -(int)(FontAssets.MouseText.Value.MeasureString(" ") * (1 - SmallTextSize)).Y - 1;
+            }
+            return base.PreDrawTooltipLine(item, line, ref yOffset);
         }
     }
 }
