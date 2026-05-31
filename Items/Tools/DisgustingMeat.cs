@@ -263,25 +263,26 @@ namespace CalamityMod.Items.Tools
                 {
                     TryDropBoosterItem(ref Player.usedAegisCrystal, ItemID.AegisCrystal);
                     TryDropBoosterItem(ref Player.usedAegisFruit, ItemID.AegisFruit);
+                    TryDropBoosterItem(ref Player.usedArcaneCrystal, ItemID.ArcaneCrystal);
                     TryDropBoosterItem(ref Player.usedAmbrosia, ItemID.Ambrosia);
                     TryDropBoosterItem(ref Player.usedGalaxyPearl, ItemID.GalaxyPearl);
                     TryDropBoosterItem(ref Player.usedGummyWorm, ItemID.GummyWorm);
 
                     // Sync the world data immediately for these three specifically since they aren't fully player side.
-                    if (NPC.peddlersSatchelWasUsed || NPC.combatBookWasUsed || NPC.combatBookVolumeTwoWasUsed)
-                    {
-                        TryDropBoosterItem(ref NPC.peddlersSatchelWasUsed, ItemID.PeddlersSatchel);
-                        if (Main.netMode != NetmodeID.SinglePlayer)
-                            DisableNPCUpgradesSyncPacket.Send(0);
+                    bool hadSatchel = NPC.peddlersSatchelWasUsed;
+                    TryDropBoosterItem(ref NPC.peddlersSatchelWasUsed, ItemID.PeddlersSatchel);
+                    if (hadSatchel && Main.netMode != NetmodeID.SinglePlayer)
+                        DisableNPCUpgradesSyncPacket.Send(0);
 
-                        TryDropBoosterItem(ref NPC.combatBookWasUsed, ItemID.CombatBook);
-                        if (Main.netMode != NetmodeID.SinglePlayer)
-                            DisableNPCUpgradesSyncPacket.Send(1);
+                    bool hadCombatBook = NPC.combatBookWasUsed;
+                    TryDropBoosterItem(ref NPC.combatBookWasUsed, ItemID.CombatBook);
+                    if (hadCombatBook && Main.netMode != NetmodeID.SinglePlayer)
+                        DisableNPCUpgradesSyncPacket.Send(1);
 
-                        TryDropBoosterItem(ref NPC.combatBookVolumeTwoWasUsed, ItemID.CombatBookVolumeTwo);
-                        if (Main.netMode != NetmodeID.SinglePlayer)
-                            DisableNPCUpgradesSyncPacket.Send(2);
-                    }
+                    bool hadCombatBookTwo = NPC.combatBookVolumeTwoWasUsed;
+                    TryDropBoosterItem(ref NPC.combatBookVolumeTwoWasUsed, ItemID.CombatBookVolumeTwo);
+                    if (hadCombatBookTwo && Main.netMode != NetmodeID.SinglePlayer)
+                        DisableNPCUpgradesSyncPacket.Send(2);
                 }
 
                 // Artisan Loaf.
