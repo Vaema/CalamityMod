@@ -69,8 +69,8 @@ namespace CalamityMod.Balancing
             // 25% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(ResistTrueMelee(0.75f))));
 
-            // 25% resist to Lemon 'nade
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<LemonNadeProjectile>()))));
+            // 40% resist to Lemon 'nade
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(new ProjectileResistBalancingRule(0.60f, ProjectileType<LemonNadeProjectile>()))));
             #endregion
 
             #region Brain of Cthulhu: Creepers
