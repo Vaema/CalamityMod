@@ -23,13 +23,17 @@ namespace CalamityMod.Packets.Worlds
             var upgradeType = packet.ReadInt32();
 
             if (upgradeType == 0)
-                NPC.combatBookWasUsed = false;
+                NPC.peddlersSatchelWasUsed = false;
             else if (upgradeType == 1)
                 NPC.combatBookWasUsed = false;
             else if (upgradeType == 2)
-                NPC.combatBookWasUsed = false;
+                NPC.combatBookVolumeTwoWasUsed = false;
 
-            NetMessage.SendData(MessageID.WorldData);
+            // Apply change to everyone
+            if (Main.netMode == NetmodeID.Server)
+            {
+                NetMessage.SendData(MessageID.WorldData);
+            }
         }
     }
 }
