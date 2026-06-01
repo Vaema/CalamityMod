@@ -277,15 +277,6 @@ HydrothermalCrate: {
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
 }
 
-Spadefish: {
-	DisplayName: Spadefish
-	Tooltip:
-		'''
-		'How can a fish be used to dig through the ground?
-		Some questions are best left unanswered...'
-		'''
-}
-
 StuffedFish: {
 	DisplayName: Stuffed Fish
 	Tooltip: Press <right> to extract [HERBS] herbs and [SEEDS] seeds

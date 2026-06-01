@@ -327,16 +327,6 @@ namespace CalamityMod.CalPlayer
                     itemDrop = ModContent.ItemType<Shadowfish>();
             }
 
-            // Lower chance of Spadefish in Hardmode
-            if (underground) // Underground
-            {
-                int chance = Main.hardMode ? 10 : 2;
-                if (attempt.veryrare && Main.rand.NextBool(chance))
-                {
-                    itemDrop = ModContent.ItemType<Spadefish>();
-                }
-            }
-
             if (ZoneAstral)
             {
                 if (attempt.legendary)
