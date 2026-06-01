@@ -11,18 +11,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    [LegacyName("Megafleet")]
+    // Long live Megafleet. You will be missed. Maybe one day we can revive you.
+    [LegacyName("Megafleet")] 
     public class Voidragon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public int sharkGunDamageScaling = 0;
         public static int AmmoSavedPercent = 66;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
-
-        public override void SetStaticDefaults()
-        {
-            // Long live Megafleet. You will be missed. Maybe one day we can revive you.
-        }
 
         public override void SetDefaults()
         {

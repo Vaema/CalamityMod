@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (SoundEngine.TryGetActiveSound(soundSlot, out var ChargeSound) && ChargeSound.IsPlaying)
                 ChargeSound.Position = Projectile.Center;
 
-            //Spawn dust on the holdout's eyes based on the amount of damage scaling. Currently only works from one side
+            //Spawn dust on the holdout's eyes based on the amount of damage scaling.
             for (int i = 0; i < 2; i++)
             {
                 int dustType = ModContent.DustType<VoidDustInverted>();
