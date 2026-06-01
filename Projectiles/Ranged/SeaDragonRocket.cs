@@ -43,8 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.5f);
             Player Owner = Main.player[Projectile.owner];
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeadragonHoldout>()] <= 0 && !attacking) // If no holdout exists and not attacking then die
-                Projectile.Kill();
+            
             if (attacking) // Fly at the enemy
             {
                 NPC chosenTarget = Projectile.Center.ClosestNPCAt(600);
@@ -60,6 +59,8 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.velocity = Projectile.velocity * 0.97f + moveToEnemy * moveSpeed;
                 else
                     Projectile.velocity *= 0.9f;
+                if (time % 2 == 0)
+                    Projectile.netUpdate = true;
             }
             if (Main.rand.NextBool(10))
             {
@@ -87,6 +88,9 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.scale += 0.05f;
 
             time++;
+
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeadragonHoldout>()] <= 0 && !attacking) // If no holdout exists and not attacking then die
+                Projectile.Kill();
         }
 
         public override void OnSpawn(IEntitySource source)
