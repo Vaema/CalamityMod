@@ -1074,9 +1074,9 @@ Seadragon: {
 	DisplayName: Seadragon
 	Tooltip:
 		'''
-		Loads a 50 round deluge of alternating bullets and pressurized water jets
+		Loads a 50 round magazine of alternating bullets and pressurized water jets
 		Water jets summon small fish that swim around you
-		Once your mag runs empty, all fish rush towards the cursor before reloading
+		When all bullets are fired, summoned fish swarm the cursor while you reload
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
@@ -1488,9 +1488,9 @@ Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
 		'''
-		Loads a 50 round onslaught of alternating bullets and concentrated void blasts
-		Once your mag runs empty, the gun unleashes a jet of abyssal fire that annihilates anything in its path
-		The abyssal fire and lingering flames grow increasingly powerful with the amount of shots hit
+		Loads a 50 round magazine of alternating bullets and concentrated void blasts
+		When all bullets are fired, the gun unleashes an enormous jet of abyssal fire
+		The power of the abyssal fire scales with the amount of shots hit
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		[c/620BB0:'Fade to black']
 		'''
