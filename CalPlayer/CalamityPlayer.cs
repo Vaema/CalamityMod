@@ -433,6 +433,7 @@ namespace CalamityMod.CalPlayer
         public int murasamaHitCooldown = 0;
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
+        public int sharkGunDamageScaling = 0;
         public int MiniSwarmerCooldown = 0;
         public float SulphWaterPoisoningLevel;
         public float holyInfernoFadeIntensity;
