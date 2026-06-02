@@ -44,7 +44,6 @@ namespace CalamityMod.Items.Fishing
             Item.useTime = 40;
             Item.useAnimation = 40;
             Item.shootSpeed = 12;
-
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -52,7 +51,6 @@ namespace CalamityMod.Items.Fishing
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.useStyle = ItemUseStyleID.Thrust;
             Item.shoot = ModContent.ProjectileType<SpadefishThrown>();
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -180,7 +178,7 @@ namespace CalamityMod.Items.Fishing
             var x = tile.X();
             var y = tile.Y();
 
-            if (!tile.HasTile)
+            if (!tile.HasTile || Main.tileAxe[tile.TileType] || Main.tileHammer[tile.TileType])
                 return;
 
             int hitIndex = Main.LocalPlayer.hitTile.HitObject(x, y, 1);
@@ -188,13 +186,14 @@ namespace CalamityMod.Items.Fishing
             if (tile.TileType == TileID.MysticSnakeRope)
                 return;
 
-            int pickDmg = Main.LocalPlayer.GetPickaxeDamage(x, y, 30, hitIndex, tile);
+            int pickDmg = Main.LocalPlayer.GetPickaxeDamage(x, y, pickPower, hitIndex, tile);
 
 
             if (!WorldGen.CanKillTile(x, y))
                 pickDmg = 0;
 
-            //Normally, Vanilla multiplies pick dmg by 2 for FTW here. I don't want that on spadefish so I am not including it.
+            if (Main.getGoodWorld)
+                pickDmg *= 2;
 
             if (Main.LocalPlayer.DoesPickTargetTransformOnKill(Main.LocalPlayer.hitTile, pickDmg, x, y, pickPower, hitIndex, tile))
                 pickDmg = 0;
@@ -260,7 +259,7 @@ namespace CalamityMod.Items.Fishing
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(SoundID.Item178, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item178 with { Pitch = -0.5f + 0.25f * Projectile.numHits + (Projectile.Calamity().stealthStrike ? 1f : 0f) }, Projectile.Center);
 
             Projectile.velocity.X = -Projectile.velocity.X.DirectionalSign();
             Projectile.velocity.Y = -2f;
@@ -380,8 +379,12 @@ namespace CalamityMod.Items.Fishing
 
             if (spin > MathHelper.TwoPi * (1 + Spadefish.SpinsToThrow))
             {
-                var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), player.Center, player.Calamity().mouseRotationFromPlayer.ToRotationVector2() * throwSpeed * Spadefish.SpinThrowVelocityMult, ModContent.ProjectileType<SpadefishThrown>(), Projectile.damage, Projectile.knockBack, player.whoAmI);
-                p.Calamity().stealthStrike = true;
+                player.direction = (int)startingDir;
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), player.Center, player.Calamity().mouseRotationFromPlayer.ToRotationVector2() * throwSpeed * Spadefish.SpinThrowVelocityMult, ModContent.ProjectileType<SpadefishThrown>(), Projectile.damage, Projectile.knockBack, player.whoAmI);
+                    p.Calamity().stealthStrike = true;
+                }
                 Projectile.Kill();
             }
         }
@@ -393,7 +396,7 @@ namespace CalamityMod.Items.Fishing
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(SoundID.Item178 with { pitch = (spin-MathHelper.TwoPi) / (MathHelper.TwoPi * Spadefish.SpinsToThrow) }, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item178 with { pitch = (spin-MathHelper.TwoPi) / (MathHelper.TwoPi * Spadefish.SpinsToThrow) - 0.5f }, Projectile.Center);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
