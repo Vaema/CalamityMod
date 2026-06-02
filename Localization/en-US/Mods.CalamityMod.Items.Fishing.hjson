@@ -379,6 +379,11 @@ TrustyOldRod: {
 		This ol' thing has never failed to pull in a big haul
 		Who knows what it will reel in next!
 		'''
+	SalesPitch:
+		'''
+		‘Me and Hoggart have worked together with the best fishermen in the world to bring you the most effective rod on the market!’
+		‘With state of the art technology, you can fish anything! Don’t let a single creature elude your hook anymore!’
+		'''
 }
 
 VerstaltiteFishingRod: {
@@ -406,6 +411,11 @@ RageBait: {
 		'''
 		The absolute best bait on the market! And for so cheap too...
 		Even comes with free Sonar Potion effect!
+		'''
+	SalesPitch:
+		'''
+		‘Do you want to know a secret? Fishing takes so long because the fish are dumb! They’ll always swim right by your hook!’
+		‘But with this bait right here? No longer! It’ll make your hook the only thing they can think of. You’ll be swimming in fishes in the blink of an eye!’ 
 		'''
 }
 

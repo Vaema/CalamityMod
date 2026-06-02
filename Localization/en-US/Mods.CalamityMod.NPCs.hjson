@@ -319,7 +319,6 @@ Shoreskipper.DisplayName: Shoreskipper
 BrainIllusion.DisplayName: Brain Illusion
 FalseBrain.DisplayName: False Brain
 BloodBomb.DisplayName: Blood Bomb
-
 // Town NPCs, Pets, etc
 AndroombaFriendly.DisplayName: Androomba Pal
 
@@ -591,6 +590,10 @@ ShadySalesman: {
 		Normal4: Is your life rapidly shrinking? Want to know this world’s marvels before your time comes? Are the local merchants only showing you worthless hogwash?! Worry not, Hoggart and I have just the solution! Hogwash sold separately.
 		Normal5: There’s a saying that goes “the grass is greener on the other side.” It’s absolute balderdash!! For 5 platinum coins, you can buy our Greener Paint and make your life the greenest!
 		Normal6: They say keeping an Angel Statue nearby is more dangerous than a loaded gun. That’s why I own multiple guns - in case some hooligan tries to sell me an Angel Statue!
+		TownPigPresent1: You’re searching for the lil’ Piggy? Don’t worry, chum! Hoggart and I gave it a Camo-Projector 2000 so it could disappear into the night. This way, not a single rotbrain will lay their nasty half-fingers on it, huehe!
+		TownPigPresent2: Rumors are runnin’ around that I’m inexplicably two Pigg’ins stacked on top of each other. What shameless slander! Don’t they know that, if that were true, I’d charge twice the price? Hahaha!
+		TownPigPresent3: You better take real good care of that piglet. Your sight gotta be good for something other than eyeballing my discounts! Otherwise, who knows what will happen to the swine stock market...
+		TownPigPresent4: Where the Piggy went? Could’ve sworn I saw it chasing down a four-legged carrot. Now’s your chance to chase Fortune and Glory, pal, by buying these MARVELOUS wares!
 		Rain: People always say “rain, rain, go away! Come back another day!”, but everyone knows it would be better if it came back never! To solve this, I intend to invest in Hoggart’s Dome Program, we just need 500 platinum coins to get it off the ground!
 		WindyDay: Aren’t you tired of your house being blown away by any shoddy gust of wind? Well, I have the solution to your problem! With my state-of-the-art industrial super glue (for only 5 gold coins a pack), you too may survive the attack of invaders with outstanding lung capacity!
 		Desert: Exhausted from this oven-like heat? Yearning for something to help you cool down? Check out our revolutionary new product: water! It comes in all flavors of flavorless! Any bottle shape is available, from round to triangular! Feel the chill of molten ice as it enters your guts! It even has healing properties! Sip our free sample for the low price of 50 gold!

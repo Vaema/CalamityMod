@@ -161,6 +161,11 @@ TheConcoction: {
 	DisplayName: The Concoction
 	EasterEggText: Removes 500 life
 	Tooltip: ""
+	SalesPitch:
+		'''
+		‘Aren’t you tired of how unreliable your healing potions are? What if you’re in the middle of a zombie horde and sick to the core of those things?!’
+		‘With my concoction, you won’t have to worry about that! Just a sip of this bad boy and you’ll be good as new, ready to take on the world!’
+		'''
 }
 
 ZenPotion: {
@@ -186,6 +191,11 @@ BaconOil: {
 		Provides "good" mobility that scales with your damage stat boosts
 		Counts as 3 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
 		When combined with drinking Bacon Oil straight, mobility becomes zanier
+		'''
+	SalesPitch:
+		'''
+		‘Monks go on and on about forgoing attachment. I don’t think this is what they meant. It’s better!’
+		‘Don’t mind the accident disclaimer: get yourself some of this slippery fat oil, and not a bit of this world will be able to hold you down!’
 		'''
 }
 
@@ -494,6 +504,11 @@ TheElixir: {
 		Functions as a Potion of Return
 		Occasionally sends you... [c/AA23C4:somewhere else]
 		'''
+	SalesPitch:
+		'''
+		‘Return potions are nifty and all, but they taste like bogus! But with my special formula, it'll magically taste like your favorite food!’
+		‘Besides, you ain’t finding them for much cheaper around these parts. Trust me, you’re practically stealing me!’
+		'''
 }
 
 Vodka: {
@@ -613,5 +628,10 @@ TheSandwich: {
 		Allows you to drink 2 more alcohols than normal
 		Alcohol effects will not expire while under the effects of The Sandwich
 		'Might actually taste good if it was the only thing you'd ever eaten...'
+		'''
+	SalesPitch:
+		'''
+		‘...You want to buy my lunch?’
+		‘Well, no matter! But it won’t be cheap! This sandwich is made with the best the market can offer, so get your wallet out!’
 		'''
 }

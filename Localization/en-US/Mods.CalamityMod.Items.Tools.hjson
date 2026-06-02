@@ -23,6 +23,11 @@ AggressiveVoucher: {
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
+	SalesPitch:
+		'''
+		‘That goblin over there, he’s just scamming you for your money, you know? But don’t worry, me and Hoggart have a solution for that!’
+		‘Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It’ll be like a new item!”
+		'''
 }
 
 AntiCystOintment: {
@@ -160,6 +165,11 @@ CombatVoucher: {
 		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
 		This effect only applies when reforging weapons
 		'''
+	SalesPitch:
+		'''
+		‘That goblin over there, he’s just scamming you for your money, you know? But don’t worry, me and Hoggart have a solution for that!’
+		‘Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It’ll be like a new item!”
+		'''
 }
 
 Cosmolight: {
@@ -236,6 +246,11 @@ HurriedVoucher: {
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
+	SalesPitch:
+		'''
+		‘That goblin over there, he’s just scamming you for your money, you know? But don’t worry, me and Hoggart have a solution for that!’
+		‘Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It’ll be like a new item!”
+		'''
 }
 
 InfernaCutter: {
@@ -310,6 +325,11 @@ OddVoucher: {
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+	SalesPitch:
+		'''
+		‘That goblin over there, he’s just scamming you for your money, you know? But don’t worry, me and Hoggart have a solution for that!’
+		‘Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It’ll be like a new item!”
 		'''
 }
 
@@ -414,6 +434,11 @@ TheGift: {
 		Effect will last for 24 hours
 		[c/F54278:'There's no return policy, better be responsible']
 		'''
+	SalesPitch:
+		'''
+		‘Buying gifts to people is hard, and you gotta make sure your people are happy, so how about we kill two birds with one stone?’
+		‘Hand this nifty box to someone and it’ll suddenly contain the perfect gift for the person you handed it to!' 
+		'''
 }
 
 TorrentialTear: {
@@ -435,6 +460,11 @@ UnbreakableVoucher: {
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+	SalesPitch:
+		'''
+		‘That goblin over there, he’s just scamming you for your money, you know? But don’t worry, me and Hoggart have a solution for that!’
+		‘Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It’ll be like a new item!”
 		'''
 }
 

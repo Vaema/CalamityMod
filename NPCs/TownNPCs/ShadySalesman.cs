@@ -1,36 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using CalamityMod.ChatTags;
-using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Fishing;
-using CalamityMod.Items.Fishing.FishingRods;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Items.Potions.Food;
-using CalamityMod.Items.SummonItems.TownPets;
-using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
-using Terraria.Chat;
 using Terraria.GameContent;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityMod.ChatTags;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Fishing;
+using CalamityMod.Items.Fishing.FishingRods;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Potions.Food;
+using CalamityMod.Items.SummonItems.TownPets;
+using CalamityMod.Items.Tools;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
+using Terraria.Audio;
+using Terraria.Chat;
+using Terraria.GameContent.Bestiary;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
@@ -193,6 +193,8 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override string GetChat()
         {
+            int piggyIndex = NPC.FindFirstNPC(ModContent.NPCType<TownPiggy>());
+
             WeightedRandom<string> dialogue = new WeightedRandom<string>();
 
             dialogue.Add(this.GetLocalizedValue("Chat.Normal1"));
@@ -201,6 +203,14 @@ namespace CalamityMod.NPCs.TownNPCs
             dialogue.Add(this.GetLocalizedValue("Chat.Normal4"));
             dialogue.Add(this.GetLocalizedValue("Chat.Normal5"));
             dialogue.Add(this.GetLocalizedValue("Chat.Normal6"));
+
+            if (piggyIndex != -1)
+            {
+                dialogue.Add(this.GetLocalizedValue("Chat.TownPigPresent1"));
+                dialogue.Add(this.GetLocalizedValue("Chat.TownPigPresent2"));
+                dialogue.Add(this.GetLocalizedValue("Chat.TownPigPresent3")); 
+                dialogue.Add(this.GetLocalizedValue("Chat.TownPigPresent4"));
+            }
 
             if (Main.raining)
             {
