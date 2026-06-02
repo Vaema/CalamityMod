@@ -706,7 +706,8 @@ namespace CalamityMod.Events
             // Killing any split Deus head ends the fight instantly. You don't need to kill both.
             else if (npc.type == ModContent.NPCType<AstrumDeusHead>() && npc.Calamity().newAI[0] != 0f)
             {
-                BossRushStage++;
+                if (BossRushStage <= Bosses.FindIndex(boss => boss.EntityID == ModContent.NPCType<AstrumDeusHead>()))
+                    BossRushStage++;
                 CalamityUtils.KillAllHostileProjectiles();
                 HostileProjectileKillCounter = 3;
             }
