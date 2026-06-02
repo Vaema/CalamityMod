@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Fishing
         {
             Item.width = 46;
             Item.height = 44;
-            Item.damage = 15;
+            Item.damage = 30;
             Item.knockBack = 2f;
             Item.useTime = 40;
             Item.useAnimation = 40;
