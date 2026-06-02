@@ -22,7 +22,7 @@ Baguette: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MinorStats}
-		Goes well with [cbuff:CalamityMod/RedWineBuff]
+		Goes well with [cbuffplr:CalamityMod/RedWineBuff]
 		[c/FCE391:'je suis Monte']
 		'''
 }

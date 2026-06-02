@@ -81,7 +81,7 @@ OldFashionedBuff: {
 RedWineBuff: {
 	DisplayName: Red Wine
 	Description: Increased vertical speed, reduced flight time
-	ItemTooltip: Causes Baguette to heal 200 HP, but reduce regeneration by 2 HP/s for 15 seconds
+	ItemTooltipPlayer: Causes Baguette to heal 200 HP, but reduce regeneration by 2 HP/s for 15 seconds
 }
 
 RumBuff: {
