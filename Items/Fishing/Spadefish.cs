@@ -146,7 +146,7 @@ namespace CalamityMod.Items.Fishing
                 Projectile.velocity /= Projectile.MaxUpdates;
                 frameOne = false;
             }
-            if (Projectile.ai[0] <= 1 && Projectile.timeLeft < 330)
+            if (Projectile.ai[0] <= 1 && Projectile.timeLeft < 450)
                 Projectile.velocity.Y += 0.08f;
             if (Projectile.ai[0] == 0)
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
@@ -393,7 +393,7 @@ namespace CalamityMod.Items.Fishing
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(SoundID.Item178, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item178 with { pitch = (spin-MathHelper.TwoPi) / (MathHelper.TwoPi * Spadefish.SpinsToThrow) }, Projectile.Center);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
