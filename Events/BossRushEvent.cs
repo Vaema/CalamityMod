@@ -186,7 +186,13 @@ namespace CalamityMod.Events
 
                 new Boss(NPCID.QueenBee, permittedNPCs: new int[] { NPCID.Bee, NPCID.BeeSmall, NPCID.LittleHornetHoney, NPCID.HornetHoney, NPCID.BigHornetHoney }),
 
-                new Boss(NPCID.Deerclops),
+                new Boss(NPCID.Deerclops, spawnContext: type =>
+                {
+                    Player plr = Main.player[ClosestPlayerToWorldCenter];
+                    int deer = NPC.NewNPC(Source, (int)plr.Center.X, (int)(plr.Center.Y - 400f), type, 1);
+                    Main.npc[deer].timeLeft *= 20;
+                    CalamityUtils.BossAwakenMessage(deer);
+                } ),
 
                 new Boss(NPCID.SkeletronHead, TimeChangeContext.Night, type =>
                 {

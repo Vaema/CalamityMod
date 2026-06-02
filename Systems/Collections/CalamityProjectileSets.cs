@@ -88,7 +88,8 @@ namespace CalamityMod.Systems.Collections
         public static bool[] DoesNotGetHomingWithGrapeBeer = Factory.CreateNamedSet("DoesNotGetHomingWithGrapeBeer")
             .Description("Prevents this projectile from receiving homing from Grape Beer.")
             .RegisterBoolSet(ProjectileType<NukeOfBliss>(), ProjectileType<PrismaticEnergyBlast>(), ProjectileType<PrismEnergyBullet>(), ProjectileType<PrismMine>(),
-                ProjectileType<ScorchedEarthRocket>(), ProjectileType<UltimaRay>(), ProjectileType<SproutingArrowMain>());
+                ProjectileType<ScorchedEarthRocket>(), ProjectileType<UltimaRay>(), ProjectileType<SproutingArrowMain>(), ProjectileType<MegalodonShot>(), ProjectileType<BlahajBlast>(), 
+                ProjectileType<VoidBlast>(), ProjectileType<AbyssalFire>());
 
         /// <summary>
         /// If <see langword="true"/> for a projectile type, then that projectile will be unable to trigger Daawnlight Spirit Origin's bullseyes.<br/>

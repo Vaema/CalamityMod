@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.Melee
         public override bool useAttackSpeed => false;
         public override SoundStyle? UseSound => SoundID.DD2_MonkStaffSwing with {Volume = 1f};
 
+        public ref float CurrentChargeMult => ref Projectile.ai[0];
+
         bool hasSmashedTile = false;
         bool playedChargeSound = false;
         bool firstEnemyHit = true;
@@ -52,14 +54,13 @@ namespace CalamityMod.Projectiles.Melee
             modplayer.swingNum = 0;
             Projectile.timeLeft = 600;
             Projectile.scale *= 1.25f;
-            Projectile.originalDamage = Projectile.damage;
         }
 
         public override void AdditionalAI()
         {
             if (inStartup)
             {
-                Projectile.damage = (int)(Projectile.originalDamage * (timer / (float)(StartupTime-1)));
+                CurrentChargeMult = timer / (float)(StartupTime-1);
                 Owner.velocity.X *= 0.97f;
             }
             if (inStartup && !Owner.channel && timer > 30)
@@ -98,27 +99,27 @@ namespace CalamityMod.Projectiles.Melee
                 {
 
                     Owner.velocity *= 0.15f;
-                    Owner.velocity -= adjustedAngle.RotatedBy(MathHelper.PiOver2) * angle.X * MathHelper.Lerp(7.5f,16f,Projectile.damage / (float)Projectile.originalDamage);
+                    Owner.velocity -= adjustedAngle.RotatedBy(MathHelper.PiOver2) * angle.X * MathHelper.Lerp(7.5f,16f, CurrentChargeMult);
                     float ringRot = SwingCompletion < 0.5f ? 0 : MathHelper.PiOver2;
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(HammerFrontPos, Vector2.Zero, Color.Red, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloatDirection(), 0.03f, 0.04f * (2 + Projectile.damage / (float)Projectile.originalDamage), 15));
-                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(HammerFrontPos, Vector2.Zero, Color.Purple, new Vector2(0.2f, 1f), ringRot, 0.2f, 0.75f * (2 + Projectile.damage / (float)Projectile.originalDamage), 30));
-                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(HammerFrontPos, Vector2.Zero, Color.Purple, new Vector2(0.2f, 1f), ringRot, 0.1f, 0.5f * (2 + Projectile.damage / (float)Projectile.originalDamage), 30));
-                    int radius = (int)(4 * Projectile.damage / (float)Projectile.originalDamage);
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(HammerFrontPos, Vector2.Zero, Color.Red, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloatDirection(), 0.03f, 0.04f * (2 + CurrentChargeMult), 15));
+                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(HammerFrontPos, Vector2.Zero, Color.Purple, new Vector2(0.2f, 1f), ringRot, 0.2f, 0.75f * (2 + CurrentChargeMult), 30));
+                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(HammerFrontPos, Vector2.Zero, Color.Purple, new Vector2(0.2f, 1f), ringRot, 0.1f, 0.5f * (2 + CurrentChargeMult), 30));
+                    int radius = (int)(4 * CurrentChargeMult);
                     Point scanAreaStart = HammerFrontPos.ToTileCoordinates() + new Point(-radius, -radius);
                     Point scanAreaEnd = HammerFrontPos.ToTileCoordinates() + new Point(radius, radius);
-                    Projectile.CreateImpactExplosion((int)(10 * Projectile.damage / (float)Projectile.originalDamage), Projectile.Center, ref scanAreaStart, ref scanAreaEnd, Projectile.width, out bool causedShockwaves);
+                    Projectile.CreateImpactExplosion((int)(10 * CurrentChargeMult), Projectile.Center, ref scanAreaStart, ref scanAreaEnd, Projectile.width, out bool causedShockwaves);
 
                     hasSmashedTile = true;
                     timer = StartupTime + swingTime;
                     angle = adjustedAngle;
                     var pos = Projectile.Center;
-                    Projectile.Size *= 2 + Projectile.damage / (float)Projectile.originalDamage;
+                    Projectile.Size *= 2 + CurrentChargeMult;
                     Projectile.Center = HammerFrontPos;
                     Projectile.Damage();
-                    Projectile.Size /= 2 + Projectile.damage / (float)Projectile.originalDamage;
+                    Projectile.Size /= 2 + CurrentChargeMult;
                     Projectile.Center = pos;
 
-                    if ((Projectile.damage / (float)Projectile.originalDamage) >= 1)
+                    if (CurrentChargeMult >= 1)
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact with {VariantsWeights = new ReadOnlySpan<float>(new float[] { 1, 0, 0 })});
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact);
                 }
@@ -137,9 +138,13 @@ namespace CalamityMod.Projectiles.Melee
             return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth * .66f, (swingWidth * 0.33f), SwingCompletion));
         }
 
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SourceDamage *= CurrentChargeMult;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (firstEnemyHit && Main.rand.NextFloat() < (Projectile.damage / (float)Projectile.originalDamage))
+            if (firstEnemyHit && Main.rand.NextFloat() < CurrentChargeMult)
             {
                 string text = "";
                 if (target.life > 0)
@@ -157,7 +162,7 @@ namespace CalamityMod.Projectiles.Melee
                 CombatText.NewText(Projectile.Hitbox, Color.Lerp(Color.DarkGray,Color.Gold, intense ? 0.25f: 0.1f), text, intense);
                 firstEnemyHit = false;
             }
-            if (!hasSmashedTile && (Projectile.damage / (float)Projectile.originalDamage) >= 1)
+            if (!hasSmashedTile && CurrentChargeMult >= 1)
             {
                 for (int i = 0; i < 16; i++)
                 {
@@ -180,8 +185,9 @@ namespace CalamityMod.Projectiles.Melee
 
                 SoundEngine.PlaySound(SoundID.Item69 with { Volume = 1f, LimitsArePerVariant = false, MaxInstances = 1 });
             }
-                target.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, Projectile.damage / (float)Projectile.originalDamage));
-            Owner.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, Projectile.damage / (float)Projectile.originalDamage));
+
+            target.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, CurrentChargeMult));
+            Owner.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, CurrentChargeMult));
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -189,7 +195,7 @@ namespace CalamityMod.Projectiles.Melee
             if (!inCooldown)
             {
                 var tex = ModContent.Request<Texture2D>(Texture + "Glow").Value;
-                float outlineWidth = (int)(4 * (Projectile.damage / (float)Projectile.originalDamage)) * 0.5f;
+                float outlineWidth = (int)(4 * CurrentChargeMult) * 0.5f;
                 if (inSwing)
                 {
                     outlineWidth *= 1 - SwingCompletion;

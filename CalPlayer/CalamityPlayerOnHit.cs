@@ -456,6 +456,15 @@ namespace CalamityMod.CalPlayer
                         GungeonMusicSystem.GUN();
                 }
 
+                // Used by Megalodon, Seadragon & Voidragon, allows bullets to track their damage scaling
+                if (cgp.sharkBullets)
+                {
+                    if (proj.numHits == 0)
+                    {
+                        sharkGunDamageScaling++;
+                    }
+                }
+
                 if (cgp.fireBullet)
                 {
                     target.AddBuff(BuffID.OnFire3, 60);
