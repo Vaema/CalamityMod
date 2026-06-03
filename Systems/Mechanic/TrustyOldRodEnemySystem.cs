@@ -36,6 +36,7 @@ using Terraria.Audio;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.UI;
 
 namespace CalamityMod.Systems
 {
@@ -662,6 +663,16 @@ namespace CalamityMod.Systems
                 }
                 
             }
+            #endregion
+        }
+
+        public static void DoTrustyOldRodVFX(Player owner, int bobberWhoAmI, int rarity = 1, bool Lava = false, bool Honey = false)
+        {
+            Projectile bobber = Main.projectile[bobberWhoAmI];
+            bool common = rarity == 1;
+            bool rare = rarity == 2;
+            bool ultraRare = rarity == 3;
+
             float scale = (common ? 1 : rare ? 2.5f : 6);
             for (int i = 0; i < (int)(12 * scale); i++)
             {
@@ -686,7 +697,6 @@ namespace CalamityMod.Systems
             SoundStyle epicFail = new("CalamityMod/Sounds/Item/WaterSplash", 2);
             SoundEngine.PlaySound(epicFail with { Volume = 0.4f + 0.1f * scale, Pitch = 0.2f - 0.1f * scale }, bobber.Center);
             bobber.velocity += -Vector2.UnitY * (common ? 10 : rare ? 20 : 45);
-            #endregion
         }
     }
 }
