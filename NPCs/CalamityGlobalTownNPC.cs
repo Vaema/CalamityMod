@@ -116,6 +116,7 @@ namespace CalamityMod.NPCs
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
             "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
             "Perrin", // <@!253764551139393537> (easyperrin)
+            "Spud McGee", // <@!727111000658018326> (starchman)
         ];
         private static readonly string[] CyborgNames =
         [
