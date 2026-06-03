@@ -304,6 +304,7 @@ namespace CalamityMod.NPCs
             "Cosmoec", // <@!793660591449309204> (cosmoecark)
             "Junorism", // <@!740625002596008036> (hewhoshallnotbebaned)
             "Koral", // <@!1354908256681590845> (koral12244_)
+            "Phantom", // <@!1360706992506667241> (phantomz980)
         ];
         private static readonly string[] TruffleNames =
         [
