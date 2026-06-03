@@ -613,7 +613,7 @@ namespace CalamityMod.NPCs.TownNPCs
         /// <summary>
         /// Scale for the "fine print" of the shop.
         /// </summary>
-        public static float SmallTextSize => 0.66f;
+        public static float SmallTextSize => 0.8f;
         /// <summary>
         /// Tooltip Line names that should be left alone instead of becoming fine print
         /// All exempted tooltip lines are moved above the fine print section

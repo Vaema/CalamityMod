@@ -374,11 +374,7 @@ TheDevourerofCods: {
 
 TrustyOldRod: {
 	DisplayName: Trusty Old Rod
-	Tooltip:
-		'''
-		This ol' thing has never failed to pull in a big haul
-		Who knows what it will reel in next!
-		'''
+	Tooltip: Allows for especially..."exotic" hauls
 	SalesPitch:
 		'''
 		‘Me and Hoggart have worked together with the best fishermen in the world to bring you the most effective rod on the market!’
@@ -409,8 +405,8 @@ RageBait: {
 	DisplayName: Rage Bait
 	Tooltip:
 		'''
-		The absolute best bait on the market! And for so cheap too...
-		Even comes with free Sonar Potion effect!
+		Detects hooked fish
+		Profoundly unreliable
 		'''
 	SalesPitch:
 		'''
