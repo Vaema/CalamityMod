@@ -690,7 +690,28 @@ namespace CalamityMod.NPCs.TownNPCs
                         //So, we just force hide those lines entirely here
                         line.Hide(); 
                     else
-                        line.Text = $"[scale/{SmallTextSize}:{lineText}]";
+                    {
+                        string[] lines = lineText.Split('\n');
+                        tooltips.RemoveAt(i);
+
+                        for (int k = 0; k < lines.Length; k++)
+                        {
+                            if (string.IsNullOrWhiteSpace(lines[k]))
+                                continue;
+
+                            // Create a distinct TooltipLine for each line of text
+                            TooltipLine newLine = new TooltipLine(Mod, $"{line.Name}_{k}", $"[scale/{SmallTextSize}:{lines[k]}]")
+                            {
+                                OverrideColor = line.OverrideColor
+                            };
+
+                            // Insert it back into the list at the current position
+                            tooltips.Insert(i, newLine);
+                            i++;
+                        }
+
+                        i--;
+                    }
 
                 }
                 else if (placetoMove > 0)
