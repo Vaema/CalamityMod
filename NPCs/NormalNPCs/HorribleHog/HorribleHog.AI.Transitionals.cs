@@ -110,6 +110,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.netUpdate = true;
                 }
             }
+
+            Animate(IdleFrame, IdleFrame, 0, false, dynamicChanges: true);
         }
 
         public void MainBehavior_EngageAnimation(Player target)
@@ -117,12 +119,23 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             if (Timer >= 45f)
             {
                 if (Timer == 45f)
+                {
+                    FrameY = 0;
+                    NPC.frameCounter = 0;
                     SoundEngine.PlaySound(SoundID.ForceRoarPitched, NPC.Center);
+                }
 
                 if (Timer % 10f == 0f)
                 {
                     PulseRing hogRoar = new(NPC.Center, Vector2.Zero, Color.Red, 0f, 1.2f, 20);
                     GeneralParticleHandler.SpawnParticle(hogRoar, true);
+                }
+
+                NPC.frameCounter++;
+                if (NPC.frameCounter >= 5 && FrameY < MaxFrame_RoarFinish)
+                {
+                    FrameY++;
+                    NPC.frameCounter = 0;
                 }
             }
 
@@ -133,7 +146,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             NPC.spriteDirection = (target.Center.X > NPC.Center.X).ToDirectionInt();
         }
 
-        public void MainBehavior_LaughADeadPlayer()
+        public void MainBehavior_LaughAtDeadPlayer()
         {
             if (NPC.velocity.Y == 0f)
             {
@@ -158,6 +171,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             float targetAngle = NPC.direction < 0 ? MathHelper.ToRadians(50f) : MathHelper.ToRadians(-50f);
             NPC.rotation = (NPC.velocity.Y != 0f) ? NPC.rotation.AngleLerp(targetAngle, 0.075f) : 0f;
+
+            Animate(MinFrame_Laughing, MaxFrame_Laughing);
 
             if (Timer >= 130f)
             {
@@ -236,6 +251,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
             NPC.rotation = idealRotation;
+
+            int frameSpeed = (int)Utils.Remap(MathF.Abs(NPC.velocity.X), 0f, VomitBarrage_MaxSpeed, 120, 8, true);
+            Animate(MinFrame_Walking, MaxFrame_Walking, frameSpeed, true, dynamicChanges: true);
         }
 
         public void MainBehavior_DeathAnimation()
@@ -279,6 +297,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                 CalamityUtils.AddScreenshakeAt(NPC.Center, 4f);
             }
+
+            FrameY = BalledUpFrame;
 
             NPC.damage = 0;
             NPC.dontTakeDamage = true;
@@ -329,6 +349,10 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.velocity.Y -= 6f;
             }
 
+            // Animation.
+            Animate(MinFrame_Walking, MaxFrame_Walking, 5, true, dynamicChanges: true);
+            NPC.rotation = 0f;
+
             // Idle sounds.
             if (NPC.soundDelay == 0f && Main.rand.NextBool(250))
             {
@@ -355,6 +379,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             NPC.chaseable = false;
             SearchForTargetEveryFrame = true;
+            HorizontalShakeStrength = 0f;
         }
 
         public void MainBehavior_DigTowardsTarget(Player target)
@@ -401,12 +426,15 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                             GeneralParticleHandler.SpawnParticle(dustCloud, true);
                         }
 
+                        NPC.rotation = 0f;
                         SoundEngine.PlaySound(SoundID.Item70, NPC.Center);
                         LocalAIState = 1f;
                         Timer = 0f;
                         SetSquashVectors();
                         NPC.netUpdate = true;
                     }
+
+                    NPC.rotation = MathHelper.Lerp(NPC.rotation, -MathHelper.PiOver2, 0.175f);
                 }
             }
 
@@ -511,6 +539,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.rotation = idealRotation;
                 NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
             }
+
+            int frameSpeed = (int)Utils.Remap(MathF.Abs(NPC.velocity.X), 0f, VomitBarrage_MaxSpeed, 120, 8, true);
+            Animate(MinFrame_Walking, MaxFrame_Walking, frameSpeed, true, dynamicChanges: true);
 
             DigTimer = 0f;
             SearchForTargetEveryFrame = true;

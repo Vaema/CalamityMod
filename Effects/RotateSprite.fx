@@ -1,5 +1,7 @@
 sampler baseTexture : register(s0);
-float rotation; // The rotation of the sprite.
+float rotation;                         // The rotation of the sprite.
+float2 spriteDimensions;                // Dimensions of the sprite.
+float4 spriteRectangle;                 // For use with animated sprites.
 
 float realCos(float value)
 {

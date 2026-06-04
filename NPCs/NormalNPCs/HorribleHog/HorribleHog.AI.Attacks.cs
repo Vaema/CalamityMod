@@ -93,6 +93,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
             NPC.rotation = idealRotation;
+
+            int frameSpeed = (int)Utils.Remap(MathF.Abs(NPC.velocity.X), 0f, ChasePlayer_MaxSpeed, 9, 3, true);
+            Animate(MinFrame_Walking, MaxFrame_Walking, frameSpeed, true, dynamicChanges: true);
         }
 
         public void MainBehavior_HogCharge(Player target)
@@ -110,6 +113,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                             NPC.velocity.X -= backupSpeed * NPC.direction;
                     }
 
+                    Animate(MinFrame_Walking, MaxFrame_Walking, 7, true, dynamicChanges: true);
                     NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
                 }
 
@@ -145,6 +149,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 0f, 0.15f);
                     if (Timer == -10 && !finishedWithCharges)
                         DoEyeGlintEffect(0.4f);
+
+                    FrameY = 20;
                 }
                 else
                 {
@@ -203,6 +209,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                         }
                     }
 
+                    int frameSpeed = (int)Utils.Remap(MathF.Abs(NPC.velocity.X), 0f, maxSpeed, 6, 2, true);
+                    Animate(MinFrame_Walking, MaxFrame_Walking, frameSpeed, true, dynamicChanges: true);
+
                     NPC.damage = 0;
                     NPC.rotation = 0f;
                 }
@@ -234,6 +243,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.velocity.Y = -JumpAndDash_MaxJumpHeight * 1.2f;
                 NPC.velocity.X += JumpAndDash_MaxDashSpeed * 0.4f * NPC.direction;
                 DoJumpEffects();
+                UseBalledSprite = true;
             }
 
             if (Timer <= HogCharge_PreDashTime)
@@ -259,6 +269,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.noGravity = true;
                 NPC.velocity = NPC.SafeDirectionTo(LastPlayerPosition) * JumpAndDash_MaxDashSpeed;
 
+                UseBalledSprite = false;
+                FrameY = JumpFrame;
                 SetSquashVectors(new Vector2(1.12f, 0.96f));
                 SpriteRotation = 0f;
                 NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
@@ -280,6 +292,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     Collision.HitTiles(NPC.position, NPC.velocity, NPC.width, NPC.height);
                     SoundEngine.PlaySound(GroundImpactSound, NPC.Center);
 
+                    UseBalledSprite = true;
                     NPC.velocity.X = NPC.DirectionFrom(target.Center).SafeNormalize(Vector2.UnitX).X * 3f;
                     NPC.velocity.Y = -10f;
                     LocalAIState = 3f;
@@ -289,12 +302,15 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                 NPC.noGravity = true;
                 NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
+                FrameY = JumpFrame;
             }
 
             if (Timer >= HogCharge_PreDashTime + HogCharge_DashTime)
             {
                 if (NPC.velocity.Y == 0f)
                 {
+                    UseBalledSprite = false;
+                    FrameY = IdleFrame;
                     SetSquashVectors();
                     LocalAIState = 3f;
                     Timer = 0f;
@@ -304,6 +320,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.GravityMultiplier *= 3f;
                 NPC.velocity.X *= 0.95f;
                 SpriteRotation = 0f;
+                UseBalledSprite = true;
             }
 
             SetSquashVectors(VelocityBasedSquashNStretch);
@@ -334,7 +351,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                         float interpolant = Utils.GetLerpValue(preJumpVisualsTime, VomitBarrage_PreJumpTime, Timer, true);
                         HorizontalShakeStrength = MathHelper.Lerp(0f, 6f, interpolant);
                         SetSquashVectors(new Vector2(1.24f, 0.84f));
+                        FrameY = BalledUpFrame;
                     }
+
+                    int frameSpeed = (int)Utils.Remap(MathF.Abs(NPC.velocity.X), 0f, ChasePlayer_MaxSpeed, 8, 2, true);
+                    Animate(MinFrame_Walking, MaxFrame_Walking, frameSpeed, true, dynamicChanges: true);
                 }
 
                 if (Timer == JumpAndDash_PreJumpTime)
@@ -343,6 +364,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.velocity.X += JumpAndDash_MaxDashSpeed * 0.2f * NPC.direction;
 
                     DoJumpEffects();
+                    UseBalledSprite = true;
                     SetSquashVectors(new Vector2(0.84f, 1.14f));
                     HorizontalShakeStrength = 0f;
                 }
@@ -364,6 +386,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     NPC.noGravity = true;
                     NPC.velocity = NPC.SafeDirectionTo(LastPlayerPosition) * JumpAndDash_MaxDashSpeed;
 
+                    UseBalledSprite = false;
                     SpriteRotation = 0f;
                     NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
                     SoundEngine.PlaySound(SoundID.Zombie38, NPC.Center);
@@ -389,6 +412,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                         Timer = 0f;
                         AltAttackVariant = Main.rand.Next(2);
 
+                        UseBalledSprite = true;
                         CalamityUtils.AddScreenshakeAt(NPC.Center, 6f);
                         Collision.HitTiles(NPC.position, NPC.velocity, NPC.width, NPC.height);
                         SoundEngine.PlaySound(GroundImpactSound, NPC.Center);
@@ -398,12 +422,15 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                     NPC.noGravity = true;
                     NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
+                    FrameY = JumpFrame;
                 }
 
                 if (Timer >= JumpAndDash_JumpPreDashTime + JumpAndDash_PreJumpTime + JumpAndDash_DashTime)
                 {
                     if (NPC.velocity.Y == 0f)
                     {
+                        UseBalledSprite = false;
+                        FrameY = IdleFrame;
                         LocalAIState = 2f;
                         Timer = 0f;
                         NPC.netUpdate = true;
@@ -459,6 +486,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.velocity.X *= 0.94f;
                 if (NPC.velocity.Y == 0f)
                 {
+                    UseBalledSprite = false;
                     NPC.rotation = 0f;
                     SpriteRotation = 0f;
                 }
@@ -467,6 +495,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 NPC.rotation = NPC.rotation.AngleLerp(0f, 0.075f);
                 SpriteRotation = SpriteRotation.AngleLerp(0f, 0.075f);
                 SetSquashVectors();
+                FrameY = IdleFrame;
 
                 if (Timer >= JumpAndDash_CooldownTime && NPC.velocity.Y == 0f)
                 {
@@ -506,6 +535,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     Vector2 knockbackVelocity = NPC.DirectionFrom(target.Center).SafeNormalize(-Vector2.UnitY);
                     NPC.velocity = knockbackVelocity * new Vector2(3f, 5f);
 
+                    FrameY = VomitFrame;
                     SoundEngine.PlaySound(SoundID.DD2_OgreSpit, NPC.Center);
                     MiscAttackCounter++;
                     NPC.netUpdate = true;
@@ -513,10 +543,13 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                 if (MiscAttackCounter >= JumpAndDash_MaxVomitChunks && NPC.velocity.Y == 0f)
                 {
+                    FrameY = JumpFrame;
                     LocalAIState = 2f;
                     Timer = 0f;
                     NPC.netUpdate = true;
                 }
+
+                FrameY = JumpFrame;
             }
 
             SetSquashVectors();
@@ -626,6 +659,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
             SpriteRotation -= (MathHelper.TwoPi / 20f) * NPC.direction;
             SetSquashVectors(VelocityBasedSquashNStretch);
+            UseBalledSprite = true;
         }
 
         public void MainBehavior_HorribleHoller(Player target)
@@ -659,7 +693,13 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                         }
                     }
                 }
+
+                if (Timer >= HorribleHoller_RoarTime - 30)
+                    Animate(MinFrame_Roar, MaxFrame_Roar, HorribleHoller_RoarTime / (MaxFrame_Roar + 1), true, MaxFrame_Roar - 1);
             }
+
+            if (Timer >= HorribleHoller_RoarTime)
+                Animate(MinFrame_RoarFinish, MaxFrame_RoarFinish, 4, false);
 
             float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.125f * (NPC.velocity.Y < 0).ToDirectionInt() : 0f;
             if (Timer >= HorribleHoller_RoarTime - 30 && Timer <= HorribleHoller_RoarTime)
@@ -705,6 +745,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                         HorizontalShakeStrength = MathHelper.Lerp(0f, 6f, interpolant);
                         SetSquashVectors(new Vector2(1.24f, 0.84f));
                     }
+
+                    int frameSpeed = (int)Utils.Remap(MathF.Abs(NPC.velocity.X), 0f, VomitBarrage_MaxSpeed, 9, 3, true);
+                    Animate(MinFrame_Walking, MaxFrame_Walking, frameSpeed, true, dynamicChanges: true);
                 }
 
                 // Jump and shoot a bunch of vomit projectiles shortly afterwards.
@@ -774,6 +817,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                         Dust.NewDust(NPC.Center, 1, 1, dustType, velocity.X, velocity.Y, Scale: Main.rand.NextFloat(1.8f, 2.4f));                    
                     }
 
+                    FrameY = VomitFrame;
                     SoundEngine.PlaySound(VomitSound with { Volume = 1.3f }, NPC.Center);
                     NPC.velocity.X = 6f * -NPC.direction;
                     NPC.velocity.Y += 2f;
@@ -781,6 +825,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                 if (Timer > JumpAndDash_JumpPreDashTime + JumpAndDash_PreJumpTime && NPC.velocity.Y == 0f)
                 {
+                    FrameY = IdleFrame;
                     LocalAIState = 1f;
                     Timer = 0f;
                     NPC.netUpdate = true;
@@ -822,6 +867,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     targetAngle = (NPC.velocity.Y != 0f) ? (NPC.direction < 0 ? MathHelper.ToRadians(30f) : MathHelper.ToRadians(-30f)) : 0f;
                 NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.125f);
                 NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
+
+                int frameSpeed = (int)Utils.Remap(MathF.Abs(NPC.velocity.X), 0f, VomitBarrage_MaxSpeed, 9, 3, true);
+                Animate(MinFrame_Walking, MaxFrame_Walking, frameSpeed, true, dynamicChanges: true);
             }
         }
 
