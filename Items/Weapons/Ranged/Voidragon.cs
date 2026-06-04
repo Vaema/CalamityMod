@@ -21,11 +21,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public int sharkGunDamageScaling = 0;
         public static int AmmoSavedPercent = 66;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Voidfrost>()];
-        }
-
         public override void SetDefaults()
         {
             Item.width = 96;

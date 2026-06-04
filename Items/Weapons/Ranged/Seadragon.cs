@@ -18,10 +18,8 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Seadragon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        // Odd shots are bullets (including the first). Even shots are water jets.
-        // The 9th shot adds a rocket. The 17th shot adds an ultra powerful muzzle blast, then resets the counter to 2.
-        // This is intentional so you don't get the muzzle blast instantly when you start firing and have to play around it.
-        private int shotCounter = 1;
+        public static int AmmoSavedPercent = 66;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
         public override void SetStaticDefaults()
         {
             CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<CrushDepth>(), BuffID.OnFire3];

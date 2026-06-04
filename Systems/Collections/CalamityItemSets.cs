@@ -146,10 +146,5 @@ namespace CalamityMod.Systems.Collections
         /// Force display expandable tooltip debuff info for infliction on a player
         /// </summary>
         public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateCustomSet<List<int>>(new());
-
-        public static bool[] ShowScalingCritDamageTooltip = Factory
-            .CreateNamedSet("ShowScalingCritDamageTooltip")
-            .Description("Replaces Crit Chance tooltip line with Crit Damage, getting 2% crit dmg per 1% crit chance")
-            .RegisterBoolSet();
     }
 }

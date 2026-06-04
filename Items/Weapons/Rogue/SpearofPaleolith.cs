@@ -1,7 +1,9 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using CalamityMod.Systems.Collections;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,6 +15,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public static int NormalShardCount => 3;
         public static int ImpaledShardCount => 5;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ArmorCrunch>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 54;

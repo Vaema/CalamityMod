@@ -10,6 +10,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class TotalityBreakers : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire2];
+        }
         public override void SetDefaults()
         {
             Item.width = 32;
