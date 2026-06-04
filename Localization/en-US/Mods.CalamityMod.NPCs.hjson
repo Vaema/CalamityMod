@@ -29,7 +29,7 @@ Shoreskipper.DisplayName: Shoreskipper
 SlabCrab.DisplayName: Slab Crab
 ToxicMinnow.DisplayName: Toxic Minnow
 Viperfish.DisplayName: Viperfish
-WildBumblebirb.DisplayName: Wild Bumblebirb
+WildBumblebirb.DisplayName: Draconic Swarmer
 AcidEel.DisplayName: Acid Eel
 BabyFlakCrab.DisplayName: Baby Flak Crab
 BloodwormNormal.DisplayName: Bloodworm
@@ -196,7 +196,6 @@ Shroomble.DisplayName: Shroomble
 Stormlion.DisplayName: Stormlion
 Sunskater.DisplayName: Sunskater
 SuperDummyNPC.DisplayName: Super Dummy
-WildBumblebirb.DisplayName: Draconic Swarmer
 WulfrumAmplifier.DisplayName: Wulfrum Amplifier
 WulfrumDrone.DisplayName: Wulfrum Drone
 WulfrumGyrator.DisplayName: Wulfrum Gyrator
@@ -285,9 +284,9 @@ SupremeCataclysm.DisplayName: Cataclysm
 SupremeCatastrophe.DisplayName: Catastrophe
 Yharon.DisplayName: Yharon, Dragon of Rebirth
 YharonPhase2: Yharon, Resplendent Phoenix
-// Town NPCs, Pets, etc
 AndroombaFriendly.DisplayName: Androomba Pal
 
+// Town NPCs, Pets, etc
 Archmage: {
 	DisplayName: Archmage
 	Census.SpawnCondition: Defeat Cryogen
@@ -577,10 +576,3 @@ TownPiggy: {
 		2: Snort!
 	}
 }
-
-DraconicSwarmer.DisplayName: Draconic Swarmer
-Dragonfolly.DisplayName: Dragonfolly
-Shoreskipper.DisplayName: Shoreskipper
-BrainIllusion.DisplayName: Brain Illusion
-FalseBrain.DisplayName: False Brain
-BloodBomb.DisplayName: Blood Bomb
