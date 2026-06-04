@@ -45,7 +45,6 @@ namespace CalamityMod.Items.Fishing
             Item.useAnimation = 40;
             Item.shootSpeed = 12;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
@@ -55,6 +54,7 @@ namespace CalamityMod.Items.Fishing
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.pick = PickPower;
+
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -165,6 +165,8 @@ namespace CalamityMod.Items.Fishing
             Projectile.velocity = Vector2.Zero;
             Projectile.Center += oldVelocity;
             Projectile.ai[0] = 2;
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
+            Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
             if (Main.myPlayer == Projectile.owner && Main.LocalPlayer.HeldItem.ModItem is Spadefish s && s.CanMine)
                 for (var j = -1; j < 2; j++)
                     for (var k = -1; k < 2; k++)
