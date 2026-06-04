@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<Genesis>().
                 AddIngredient<Wingman>().
                 AddIngredient<CosmiliteBar>(10).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentNebula, 5).
                 AddTile<CosmicAnvil>().
                 Register();
         }

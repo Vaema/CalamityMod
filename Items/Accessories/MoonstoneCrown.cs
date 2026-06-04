@@ -56,7 +56,8 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<FeatherCrown>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentNebula, 5).
+                AddIngredient<CoreofCalamity>(2).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

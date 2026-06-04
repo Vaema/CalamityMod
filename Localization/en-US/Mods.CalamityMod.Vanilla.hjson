@@ -14,6 +14,7 @@ AddedTooltip: {
 	// Also used by Sniper Scope
 	EyeoftheGolem: 15% increased critical strike damage
 	RifleScope: The scope effect can be toggled with visibility
+	ReconScope2: 5% increased ranged critical strike chance
 	ArcaneFlower: 5% increased magic damage
 	HellfireTreads:
 		'''
@@ -173,6 +174,7 @@ EditedTooltip: {
 	MoltenQuiver: Lights wooden arrows ablaze and all arrows inflict Hellfire
 	RifleScope1: Increase view range for guns (<right> to zoom out)
 	RifleScope2: The scope effect can be toggled with visibility
+	ReconScope1: 15% increased ranged damage
 	SniperScope: 12% increased ranged critical strike chance
 	Magiluminescence:
 		'''
@@ -294,7 +296,7 @@ ClothierChat: {
 }
 
 CyborgChat: {
-	MoonLordDefeated1: Always shoot for the moon! It has clearly worked before.
+	MoonLordDefeated: Always shoot for the moon! It has clearly worked before.
 	MentionPlague: Those big green roaches in the Jungle don't threaten me, but all of the animals it has consumed... Please, do me a favor and protect them.
 	Rain: All these moments will be lost in time. Like tears... in the rain.
 }

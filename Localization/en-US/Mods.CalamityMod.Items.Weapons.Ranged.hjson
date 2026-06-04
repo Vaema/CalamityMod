@@ -715,8 +715,10 @@ Megalodon: {
 	DisplayName: Megalodon
 	Tooltip:
 		'''
-		Rapidly fires alternating bullets and pressurized water jets
-		Water jets consume no ammo
+		Loads a 30 round magazine of bullets and pressurized water jets that are rapidly unleashed
+		After firing, the gun unleashes a powerful homing rocket before reloading
+		Rocket damage is based on how many shots hit
+		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
 
@@ -1077,9 +1079,10 @@ Seadragon: {
 	DisplayName: Seadragon
 	Tooltip:
 		'''
-		Unleashes a deluge of alternating bullets and pressurized water jets
-		Additionally fires rockets and emits devastating muzzle blasts
-		Water jets consume no ammo
+		Loads a 50 round magazine of alternating bullets and pressurized water jets
+		Water jets summon small fish that swim around you
+		When all bullets are fired, summoned fish swarm the cursor while you reload
+		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
 
@@ -1488,9 +1491,11 @@ Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
 		'''
-		Fires void blasts that explode every other shot
-		Shoots demon flame tentacles alongside every shot
-		Void blasts consume no ammo and bullets have a {0}% chance to save ammo
+		Loads a 50 round magazine of alternating bullets and concentrated void blasts
+		When all bullets are fired, the gun unleashes an enormous jet of abyssal fire
+		The power of the abyssal fire scales with the amount of shots hit
+		{$CommonItemTooltip.PercentChanceToSaveAmmo}
+		[c/620BB0:'Fade to black']
 		'''
 }
 

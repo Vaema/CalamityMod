@@ -850,5 +850,39 @@ namespace CalamityMod.ILEditing
             });
         }
         #endregion
+
+        #region Remove Vanilla Whip Tag Crits
+        // Code written by Habble
+        /// <summary>
+        /// IL edits both vanilla whip crit tags' crit bool set calls to ensure they're never assigned a new value
+        /// </summary>
+        /// <param name="context"></param>
+        private static void PreventVanillaWhipTagCrits(ILContext context)
+        {
+            ILCursor cursor = new(context);
+            #region Morning Star
+            // Go to the unique instructions nearest to the Morning Star tag's crit roll and then stand before the crit bool set call
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdloc(59)) || !cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(30)))
+            {
+                LogFailure("Removing vanilla whip tag crits", "Could not locate the crit bool set call under Morning Star tag");
+                return;
+            }
+            // Put the previous value of the crit bool on the stack to then return that instead of the supplied value by "consuming" them as parameters, so as to not overwrite it
+            // This is more ideal than modifying label conditions because it is likelier for the latter to change over time
+            cursor.Emit(OpCodes.Ldloc, 30);
+            cursor.EmitDelegate((int input, bool originalValue) => originalValue.ToInt());
+            #endregion Morning Star
+            #region Kaleidoscope
+            // Similar deal for Kaleidoscope as well
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc(30)) || !cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(30)))
+            {
+                LogFailure("Removing vanilla whip tag crits", "Could not locate the crit bool set call under Kaleidoscope tag");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldloc, 30);
+            cursor.EmitDelegate((int input, bool originalValue) => originalValue.ToInt());
+            #endregion Kaleidoscope
+        }
+        #endregion
     }
 }

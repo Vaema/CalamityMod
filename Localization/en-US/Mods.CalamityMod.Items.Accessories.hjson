@@ -350,7 +350,7 @@ BloomStone: {
 	Tooltip:
 		'''
 		Healing Potions are 50% more effective, but provide their healing over time
-		Grappling hooks retract and pull the player 50% faster, and grow a flower at hookpoints
+		Grappling hooks retract and pull the player 30 mph faster, and grow a flower at hookpoints
 		Touching a flower makes it burst into pollen which gives a temporary boost to potion healing over time
 		Potion healing slows drastically when at full health
 		'One of the ancient relics'
@@ -820,7 +820,7 @@ FleshTotem: {
 	Tooltip:
 		'''
 		5% increased magic critical strike chance
-		+20 max mana
+		Increases maximum mana by 20
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
 		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
@@ -1130,12 +1130,12 @@ ManaPolarizer: {
 	DisplayName: Mana Polarizer
 	Tooltip:
 		'''
-		Increases max mana by 40
+		Increases maximum mana by 40
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
 		These scale from -2 to +2 HP/s, and 15% to 5% damage
 		The provided regeneration is halved when under Mana Sickness
-		Magic projectiles steal enemy life while holding a magic weapon
+		Magic projectiles steal enemy life
 		'''
 }
 
@@ -1162,7 +1162,7 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		+40 max mana
+		Increases maximum mana by 40
 		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
 		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
 		With 5 sigils, increases mana regeneration by +5 MP/s
@@ -1467,12 +1467,12 @@ RampartofDeities: {
 	ToggleEffect: ", increases movement speed,"
 }
 
-RareElementalinaBottle: {
-	DisplayName: Rare Elemental in a Bottle
+OasisElementalinaBottle: {
+	DisplayName: Oasis Elemental in a Bottle
 	Tooltip:
 		'''
-		Summons a sand elemental to heal you
-		;D
+		Summons an oasis elemental to assist you
+		The elemental fires healing orbs that restore 10 health while you are damaged
 		'''
 }
 
@@ -1910,7 +1910,7 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		All attacks inflict a variety of debuffs, 300% increased elemental debuff damage
+		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds

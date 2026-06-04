@@ -158,6 +158,34 @@ namespace CalamityMod.Projectiles.Typeless
                 else
                     Projectile.velocity.Y *= 0.92f;
 
+                // Interrupt movement if burrowing into a solid tile unable to be broken by the player by any means
+                int LeftRange = Utils.Clamp((int)(Projectile.position.X + Projectile.velocity.X) / 16, 2, Main.maxTilesX - 2);
+                int RightRange = Utils.Clamp((int)(Projectile.position.X + Projectile.velocity.X) / 16 + 1, 2, Main.maxTilesX - 2);
+                int TopRange = Utils.Clamp((int)(Projectile.position.Y + Projectile.velocity.Y) / 16, 2, Main.maxTilesY - 2);
+                int BottomRange = Utils.Clamp((int)(Projectile.position.Y + Projectile.velocity.Y) / 16 + 2, 2, Main.maxTilesY - 2);
+                bool stop = false;
+                for (int i = LeftRange; i <= RightRange; i++)
+                {
+                    if (stop)
+                        break;
+
+                    for (int j = TopRange; j <= BottomRange; j++)
+                    {
+                        Tile tile = Main.tile[i, j];
+                        if (!tile.HasTile || !Main.tileSolid[tile.TileType])
+                            continue;
+
+                        bool breakable = WorldGen.CanKillTile(i, j) && tile.ShouldBeMined();
+                        if (breakable && Owner.GetBestPickPower() >= tile.GetRequiredPickPower(i, j))
+                            continue;
+                        
+                        stop = true;
+                        break;
+                    }
+                }
+                if (stop)
+                    Projectile.velocity *= 0.1f;
+
                 // Rotation is less sudden so that the visuals are smoother -- velocity is not affected so that it also plays natural
                 float idealRotation = (Projectile.velocity.Length() == 0f ? MathHelper.PiOver2 : Projectile.velocity.ToRotation());
                 if (MathF.Abs(idealRotation - Projectile.rotation) < MathHelper.ToRadians(1f) || MathF.Abs(idealRotation - Projectile.rotation) > MathHelper.ToRadians(90f))

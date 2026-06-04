@@ -21,10 +21,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 74;
             Item.height = 74;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 650;
+            Item.damage = 525;
             Item.knockBack = 28f;
-            Item.useTime = 45;
-            Item.useAnimation = 45;
+            Item.useTime = Item.useAnimation = 48;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -44,7 +43,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<FallenPaladinsHammer>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<GalacticaSingularity>(5).
+                AddIngredient(ItemID.FragmentSolar, 5).
+                AddIngredient<CoreofCalamity>(2).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

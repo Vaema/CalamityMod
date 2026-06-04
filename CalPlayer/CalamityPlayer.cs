@@ -36,6 +36,7 @@ using CalamityMod.Items.Armor.TitanHeart;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
@@ -433,6 +434,7 @@ namespace CalamityMod.CalPlayer
         public int murasamaHitCooldown = 0;
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
+        public int sharkGunDamageScaling = 0;
         public int MiniSwarmerCooldown = 0;
         public float SulphWaterPoisoningLevel;
         public float holyInfernoFadeIntensity;
@@ -599,6 +601,7 @@ namespace CalamityMod.CalPlayer
         public bool lordePet = false;
         public bool frostyBat = false;
         public bool toastyBat = false;
+        public bool beldum = false;
         public bool starSwallowerPetFroge = false;
         #endregion
 
@@ -778,8 +781,6 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Permanent Buff
-        /// <summary> If true, the player has spawned in Punch Card through its one-time chat easter egg. </summary>
-        public bool spawnedPunchCard = false;
         /// <summary> If true, the player has consumed Celestial Onion. </summary>
         public bool extraAccessoryML = false;
         /// <summary> If true, the player has consumed Comet Shard. </summary>
@@ -1101,8 +1102,8 @@ namespace CalamityMod.CalPlayer
         public float summonProjCooldown;
         public bool sandElemental = false;
         public bool sandElementalVanity = false;
-        public bool rareSandElemental = false;
-        public bool rareSandElementalVanity = false;
+        public bool oasisElemental = false;
+        public bool oasisElementalVanity = false;
         public bool cloudElemental = false;
         public bool cloudElementalVanity = false;
         public bool brimElemental = false;
@@ -1394,7 +1395,6 @@ namespace CalamityMod.CalPlayer
         public bool staticDischarge = false;
         public bool miracleBlight = false;
         public bool armorCrunch = false;
-        public bool crumble = false;
         public bool irradiated = false;
         public bool bane = false;
         public bool brimstoneFlames = false;
@@ -1594,7 +1594,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Elemental in a Bottle. </summary>
         public bool sandEleBuff = false;
         /// <summary> Rare Elemental in a Bottle. </summary>
-        public bool rareSandEleBuff = false;
+        public bool oasisEleBuff = false;
         /// <summary> Eye of the Storm. </summary>
         public bool cloudEleBuff = false;
         /// <summary> Rose Stone. </summary>
@@ -1869,7 +1869,6 @@ namespace CalamityMod.CalPlayer
         #region Saving And Loading
         public override void Initialize()
         {
-            spawnedPunchCard = false;
             extraAccessoryML = false;
             eCore = false;
             mFruit = false;
@@ -1921,7 +1920,6 @@ namespace CalamityMod.CalPlayer
         public override void SaveData(TagCompound tag)
         {
             var boost = new List<string>();
-            boost.AddWithCondition("spawnedPunchCard", spawnedPunchCard);
             boost.AddWithCondition("extraAccessoryML", extraAccessoryML);
             boost.AddWithCondition("etherealCore", eCore);
             boost.AddWithCondition("miracleFruit", mFruit);
@@ -2011,7 +2009,6 @@ namespace CalamityMod.CalPlayer
         public override void LoadData(TagCompound tag)
         {
             var boost = tag.GetList<string>("boost");
-            spawnedPunchCard = boost.Contains("spawnedPunchCard");
             extraAccessoryML = boost.Contains("extraAccessoryML");
             eCore = boost.Contains("etherealCore");
             mFruit = boost.Contains("miracleFruit");
@@ -2319,6 +2316,7 @@ namespace CalamityMod.CalPlayer
             lordePet = false;
             frostyBat = false;
             toastyBat = false;
+            beldum = false;
             starSwallowerPetFroge = false;
 
             onyxExcavator = false;
@@ -2701,7 +2699,6 @@ namespace CalamityMod.CalPlayer
             staticDischarge = false;
             miracleBlight = false;
             armorCrunch = false;
-            crumble = false;
             irradiated = false;
             bane = false;
             brimstoneFlames = false;
@@ -2864,7 +2861,7 @@ namespace CalamityMod.CalPlayer
             cEnergy = false;
             pSoulGuardians = false;
             sandEleBuff = false;
-            rareSandEleBuff = false;
+            oasisEleBuff = false;
             cloudEleBuff = false;
             brimEleBuff = false;
             waterEleBuff = false;
@@ -2881,8 +2878,8 @@ namespace CalamityMod.CalPlayer
             MutatedTruffleBool = false;
             sandElemental = false;
             sandElementalVanity = false;
-            rareSandElemental = false;
-            rareSandElementalVanity = false;
+            oasisElemental = false;
+            oasisElementalVanity = false;
             cloudElemental = false;
             cloudElementalVanity = false;
             brimElemental = false;
@@ -3190,7 +3187,6 @@ namespace CalamityMod.CalPlayer
             staticDischarge = false;
             miracleBlight = false;
             armorCrunch = false;
-            crumble = false;
             irradiated = false;
             bane = false;
             brimstoneFlames = false;
@@ -5112,7 +5108,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; ++l)
                 {
                     int buffID = Player.buffType[l];
-                    if ((BuffDatasets.DebuffDataset[buffID] != null && BuffDatasets.DebuffDataset[buffID].AlcoholLevel > 0) || buffID == BuffID.Tipsy)
+                    if ((CalamityBuffSets.DebuffDataset[buffID] != null && CalamityBuffSets.DebuffDataset[buffID].AlcoholLevel > 0) || buffID == BuffID.Tipsy)
                     {
                         Player.buffTime[l]++;
                     }
@@ -6406,6 +6402,9 @@ namespace CalamityMod.CalPlayer
 
             // Elephant Killer consumes stealth in a special wa- hey maybe this is a sign this class needs some work huh
             if (it.type == ItemType<ElephantKiller>())
+                playerUsingWeapon = false;
+
+            if (it.type == ItemType<Spadefish>())
                 playerUsingWeapon = false;
 
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.

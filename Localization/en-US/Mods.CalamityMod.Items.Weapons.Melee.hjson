@@ -88,7 +88,7 @@ ArkoftheCosmos: {
 		'''
 		<right> to snip out the scissor blades in front of you
 		Hitting an enemy with it will parry them, granting you brief invulnerability
-		You can also parry projectiles to make them deal 160 less damage for a short period
+		You can also parry projectiles to make them deal 120 less damage for a short period
 		Parrying will empower the next 16 swings of the sword
 		'''
 	BlastInfo: Double <right> with charges available to cause a Big Rip in spacetime and consume all charges
@@ -111,7 +111,7 @@ ArkoftheElements: {
 		'''
 		<right> to snip out the scissor blades in front of you
 		Hitting an enemy with it will parry them, granting you brief invulnerability
-		You can parry projectiles to make them deal 100 less damage for a short period
+		You can parry projectiles to make them deal 60 less damage for a short period
 		Parrying will empower the next 10 swings of the sword, letting you use both blades at once
 		'''
 }
@@ -994,8 +994,10 @@ Pandemic: {
 	DisplayName: Pandemic
 	Tooltip:
 		'''
-		{$Common.YoyoStatsInfinite}
-		Fires [cbuff:CalamityMod/Plague] seekers when enemies are near
+		{$Common.YoyoStats}
+		Each unique enemy struck that is infected with [cbuff:CalamityMod/Plague] increases the yoyo's size, power, and airtime
+		Refreshes [cbuff:CalamityMod/Plague] duration if a target is already infected
+		Counterweights inflict [cbuff:CalamityMod/Plague] and move twice as fast
 		'''
 }
 
@@ -1385,7 +1387,11 @@ TheObliterator: {
 		{$Common.YoyoStatsInfinite}
 		[GFB]
 		'''
-	TooltipNormal: Occasionally performs a miniature [ceffect/dog:Dimensional Drive] at nearby foes
+	TooltipNormal:
+		'''
+		Occasionally performs a miniature [ceffect/dog:Dimensional Drive] at nearby foes
+		Counterweight hits instantly begin another [ceffect/dog:Dimensional Drive]
+		'''
 	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
 
@@ -1416,7 +1422,7 @@ TriactisTruePaladinianMageHammerofMight: {
 		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
 		Enemy hits release prismatic light flares which orbit around the struck foe
 		Instead of returning, the fourth hit transforms flares into hardlight hammers
-		These hammers converge and form a universe-collapsing explosion
+		These hammers converge and form a universe-collapsing explosion that always critically strikes
 		'''
 }
 
@@ -1431,7 +1437,7 @@ TrueArkoftheAncients: {
 		'''
 		<right> to extend the Ark out in front of you
 		Hitting an enemy with it will parry them, granting you brief invulnerability
-		You can also parry projectiles to make them deal 80 less damage for a short period
+		You can also parry projectiles to make them deal 30 less damage for a short period
 		Parrying will empower the next 10 swings of the sword, letting it throw stronger projectiles
 		'''
 }

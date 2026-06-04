@@ -114,7 +114,7 @@ namespace CalamityMod.Items
             int standardTooltipCount = 0;
             for (int i = 0; i < tooltips.Count; i++)
             {
-                if (tooltips[i].Name.StartsWith("Tooltip"))
+                if (tooltips[i]?.Name?.StartsWith("Tooltip") == true)
                 {
                     if (firstTooltipIndex == -1)
                         firstTooltipIndex = i;
@@ -542,12 +542,8 @@ namespace CalamityMod.Items
             string MultTagTooltip(float mult) => (CalamityUtils.GetText($"Common.SummonTagDamageMult").Format((mult + 1).ToString("0.##")));
             string CritTagTooltip(float crit) => (CalamityUtils.GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
 
-            Dictionary<int, SummonTag> TagByItem = new();
-            foreach (SummonTag tag1 in CalamityBuffSets.SummonTagDebuff.Values)
-            {
-                if (tag1.TagItem > -1) TagByItem.Add(tag1.TagItem, tag1);
-            }
-            if (TagByItem.TryGetValue(item.type, out SummonTag tag))
+            var tag = CalamityBuffSets.SummonTagDebuff.FirstOrDefault(x => x is not null && x.TagItem == item.type && x.AutoDrawTooltip, null);
+            if (tag is not null)
             {
                 if (!tag.AutoDrawTooltip) return;
                 var modPlayer = Main.LocalPlayer.Calamity();
@@ -751,7 +747,7 @@ namespace CalamityMod.Items
             }
             #endregion
 
-            // Whip tag is dynamically generated for all whips based on the SummonTagDebuffDict, so we'll remove the vanilla tag tootlips.
+            // Whip tag is dynamically generated for all whips based on the SummonTagDebuff dictionary, so we'll remove the vanilla tag tootlips.
             #region Whip Tag removal
             // Additive tag changes
             if (item.type == ItemID.BlandWhip)
@@ -836,7 +832,11 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("RifleScope2"));
             }
             if (item.type == ItemID.ReconScope)
+            {
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ReconScope1"));
+                EditTooltipByNum(1, (line) => line.Text += AddedTooltip("ReconScope2"));
+            }
             if (item.type == ItemID.SniperScope)
             {
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SniperScope"));
@@ -1090,7 +1090,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HiveFive)
                 AddYoyoStats(24f, 320f, 20f);
             if (item.type == ItemID.JungleYoyo)
-                AddYoyoStats(20f, 288f, 17f);
+                AddYoyoStats(24f, 320f, 20f);
             if (item.type == ItemID.Kraken)
                 AddYoyoStats(-1f, 480f, 54f);
             if (item.type == ItemID.Rally)

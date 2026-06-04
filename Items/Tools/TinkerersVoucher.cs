@@ -345,8 +345,8 @@ namespace CalamityMod.Items.Tools
         {
             PrefixID.Brisk,
             PrefixID.Fleeting,
-            PrefixID.Hasty,
-            PrefixID.Quick
+            PrefixID.Hasty2,
+            PrefixID.Quick2
         };
 
         public override void SetDefaults()
