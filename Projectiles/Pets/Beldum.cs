@@ -4,6 +4,7 @@ using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -35,9 +36,9 @@ namespace CalamityMod.Projectiles.Pets
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            Vector2 perfcenter = Projectile.Center;
-            Vector2 vectorperf = player.Center - perfcenter;
-            float playerdistance = vectorperf.Length();
+            Vector2 beldumcenter = Projectile.Center;
+            Vector2 vectorbeldum = player.Center - beldumcenter;
+            float playerdistance = vectorbeldum.Length();
             if (!player.active)
             {
                 Projectile.active = false;
@@ -60,17 +61,91 @@ namespace CalamityMod.Projectiles.Pets
                 Projectile.timeLeft = 2;
             }
 
-            Projectile.FloatingPetAI(false, 0);
+            if (player.InInteractionRange((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, TileReachCheckSettings.Simple))
+            {
+                if (Projectile.Hitbox.Contains(player.ClampedMouseWorld().ToPoint()))
+                {
+                    if (player.controlUseItem && player.velocity == Vector2.Zero)
+                    {
+                        Projectile.ai[1] = Projectile.ai[1] == 1 ? 0 : 1;
+                    }
+                    else if (player.controlUseTile)
+                    {
+                        Projectile.ai[1] = Projectile.ai[1] == 2 ? 0 : 2;
+                    }
+                }
+            }
 
-            Projectile.ai[0]++;
-            Projectile.rotation = MathF.Sin(Projectile.ai[0] * 0.05f) * MathHelper.ToRadians(20);
-            Projectile.spriteDirection = -Projectile.velocity.X.DirectionalSign();
+            // Normal behaviour
+            if (Projectile.ai[1] == 0)
+            {
+                Projectile.FloatingPetAI(false, 0);
+            }
+            // Being pet
+            else if (Projectile.ai[1] == 1)
+            {
+                if (player.velocity != Vector2.Zero || player.HasIFrames())
+                {
+                    Projectile.ai[1] = 0;
+                }
+                else
+                {
+                    Projectile.Center = player.Center + new Vector2(40 * player.direction, 0);
+                    Projectile.velocity = Vector2.Zero;
+                    PlayerPetting();
+                }
+            }
+            // Shoulder
+            else
+            {
+                Projectile.Center = player.Center + new Vector2(0, -20 * player.gravDir) + Vector2.UnitY * player.gfxOffY;
+            }
+
+            if (Projectile.ai[1] != 2)
+            {
+                Projectile.ai[0]++;
+                if (Projectile.ai[1] == 0)
+                {
+                    Projectile.spriteDirection = -Projectile.velocity.X.DirectionalSign();
+                    Projectile.rotation = MathF.Sin(Projectile.ai[0] * 0.05f) * MathHelper.ToRadians(20);
+                }
+                else
+                {
+                    Projectile.spriteDirection = -Projectile.DirectionTo(player.Center).X.DirectionalSign();
+                    Projectile.rotation = MathF.Sin(Projectile.ai[0] * 0.05f) * MathHelper.ToRadians(5);
+                }
+            }
+            else
+            {
+                Projectile.ai[0] = 0;
+                Projectile.rotation = 0;
+                Projectile.spriteDirection = -player.direction;
+            }
+        }
+
+        public void PlayerPetting()
+        {
+            Player player = Main.player[Projectile.owner];
+            int targetDirection = (Projectile.Center.X > player.Center.X) ? 1 : (-1);
+            player.StopVanityActions();
+            player.ChangeDir(targetDirection);
+            player.gravDir = 1f;
+            int completion = player.miscCounter % 14 / 7;
+            Player.CompositeArmStretchAmount stretch = Player.CompositeArmStretchAmount.ThreeQuarters;
+            if (completion == 1)
+            {
+                stretch = Player.CompositeArmStretchAmount.Full;
+            }
+            player.SetCompositeArmBack(enabled: true, stretch, player.DirectionTo(Projectile.Center).ToRotation() - MathHelper.PiOver2);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + Vector2.UnitY * MathF.Cos(Projectile.ai[0] * 0.05f) * 10, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2, Projectile.scale, Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+            SpriteEffects fx = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            if (Main.player[Projectile.owner].gravDir == -1)
+                fx |= SpriteEffects.FlipVertically;
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + Vector2.UnitY * MathF.Cos(Projectile.ai[0] * 0.05f) * (Projectile.ai[1] == 0 ? 10 : 2), null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2, Projectile.scale, fx);
             return false;
         }
     }
