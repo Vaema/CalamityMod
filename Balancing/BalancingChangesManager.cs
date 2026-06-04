@@ -4,6 +4,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
+using CalamityMod.NPCs.NormalNPCs.HorribleHog;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
@@ -54,6 +55,13 @@ namespace CalamityMod.Balancing
 
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
+            // ENEMIES
+            #region Horrible Hog
+            // Take 300% damage from Finch Staff.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<HorribleHog>(), Do(new ProjectileResistBalancingRule(3f, ProjectileID.BabyBird))));
+            #endregion
+
+            // BOSSES
             #region Crabulon
             // 20% resist to true melee.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.8f)));
