@@ -108,12 +108,12 @@ HermitsBoxofOneHundredMedicines: {
 
 IronBall: {
 	DisplayName: Iron Ball
-	Tooltip: 
-        '''
-        Summons a living iron ball
-        <left> the pet to pet it
-        <right> the pet to have it sit on your shoulder
-        '''
+	Tooltip:
+		'''
+		Summons a living iron ball
+		<left> the pet to pet it
+		<right> the pet to have it sit on your shoulder
+		'''
 }
 
 JoyfulHeart: {

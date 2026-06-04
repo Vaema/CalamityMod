@@ -636,7 +636,7 @@ namespace CalamityMod.World
         #endregion
 
         #region Cavern Lab
-        public static void FillCavernLaboratoryChest(Chest chest, int useless)
+        public static void FillCavernLaboratoryChest(Chest chest)
         {
             int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
             List<ChestItem> contents = new List<ChestItem>()
@@ -701,8 +701,8 @@ namespace CalamityMod.World
                     tries++;
                 else
                 {
-                    bool placedBeldum = false;
-                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref placedBeldum, new Action<Chest, int>(FillCavernLaboratoryChest));
+                    bool _ = false;
+                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _, new Action<Chest>(FillCavernLaboratoryChest));
                     CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 20);
                     CalamityWorld.CavernLabCenter = placementPoint.ToWorldCoordinates() + new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1)) * 8f;
                     break;

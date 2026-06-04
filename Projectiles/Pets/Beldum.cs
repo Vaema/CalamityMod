@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Pets
         public override void SetStaticDefaults()
         {
             Main.projPet[Type] = true;
-
+            Main.projFrames[Type] = 4;
             ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, 0, 1)
             .WithOffset(-8f, -20f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
@@ -121,6 +121,27 @@ namespace CalamityMod.Projectiles.Pets
                 Projectile.rotation = 0;
                 Projectile.spriteDirection = -player.direction;
             }
+
+            if (Main.rand.NextBool(600) && Projectile.ai[2] == 0)
+            {
+                Projectile.ai[2] = 1;
+            }
+
+            if (Projectile.ai[2] == 1)
+            {
+                Projectile.frameCounter++;
+                if (Projectile.frameCounter > 3)
+                {
+                    Projectile.frameCounter = 0;
+                    Projectile.frame++;
+                }
+
+                if (Projectile.frame > 3)
+                {
+                    Projectile.frame = 0;
+                    Projectile.ai[2] = 0;
+                }
+            }
         }
 
         public void PlayerPetting()
@@ -145,7 +166,7 @@ namespace CalamityMod.Projectiles.Pets
             SpriteEffects fx = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             if (Main.player[Projectile.owner].gravDir == -1)
                 fx |= SpriteEffects.FlipVertically;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + Vector2.UnitY * MathF.Cos(Projectile.ai[0] * 0.05f) * (Projectile.ai[1] == 0 ? 10 : 2), null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2, Projectile.scale, fx);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + Vector2.UnitY * MathF.Cos(Projectile.ai[0] * 0.05f) * (Projectile.ai[1] == 0 ? 10 : 2), tex.Frame(1, 4, 0, Projectile.frame), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(tex.Width / 2, tex.Height / Main.projFrames[Type] / 2), Projectile.scale, fx);
             return false;
         }
     }
