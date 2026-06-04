@@ -8,6 +8,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Effects;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Tools;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
@@ -220,6 +221,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             NPCID.Sets.TrailCacheLength[Type] = 5;
             NPCID.Sets.TrailingMode[Type] = 0;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
+
+            NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new();
+            drawModifiers.Position.X += 12f;
+            drawModifiers.PortraitPositionXOverride = 14f;
+            NPCID.Sets.NPCBestiaryDrawOffset[Type] = drawModifiers;
         }
 
         public override void SetDefaults()
@@ -238,6 +244,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.dontTakeDamage = false;
+
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<HorribleHogBanner>();
 
             SquashVector = Vector2.One;
             SquashVectorTarget = Vector2.One;
@@ -348,7 +357,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             NPC.spriteDirection = NPC.direction;
 
             // Despawn immediately if it's morning.
-            if (Main.dayTime && AIState != (int)BehaviorState.DespawnAnimation)
+            if (Main.dayTime && AIState != (int)BehaviorState.DespawnAnimation && AIState != (int)BehaviorState.DeathAnimation)
                 SwitchBehavior(specificAttack: BehaviorState.DespawnAnimation);
 
             // If the current target dies, laugh at them.
@@ -826,6 +835,21 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         public override void FindFrame(int frameHeight)
         {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                if (FrameY < IdleFrame)
+                    FrameY = IdleFrame;
+
+                NPC.frameCounter++;
+                if (NPC.frameCounter >= 5)
+                {
+                    FrameY++;
+                    if (FrameY > MaxFrame_Walking)
+                        FrameY = MinFrame_Walking;
+                    NPC.frameCounter = 0;
+                }
+            }
+
             NPC.frame.Y = FrameY * frameHeight;
         }
 

@@ -38,7 +38,10 @@ namespace CalamityMod.NPCs.NormalNPCs
         private static Asset<Texture2D> BloomFlare;
         private static Asset<Texture2D> ShineFlare;
 
-        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/Piggy/PiggyIdle", 3);
+        private static SoundStyle IdleSound_Grunt = new("CalamityMod/Sounds/Custom/Piggy/PiggyIdle_Grunt", 3);
+        private static SoundStyle IdleSound_SnortYip = new("CalamityMod/Sounds/Custom/Piggy/PiggyIdle_SnortYip", 3);
+        private static SoundStyle IdleSound_Yip = new("CalamityMod/Sounds/Custom/Piggy/PiggyIdle_Yip", 2);
+        private static SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PiggyDeath", 2);
 
         private static SoundStyle DivineSwine_CoinFailSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineCoinFail", 3);
         private static SoundStyle DivineSwine_SwineSpeakLoopingSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineNearbyLoop")
@@ -105,7 +108,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = -1;
             NPC.knockBackResist = 1.15f;
             NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.DeathSound = DeathSound;
             NPC.catchItem = (short)ModContent.ItemType<PiggyItem>();
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<PiggyBanner>();
@@ -235,9 +238,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void MainBehavior_HorribleHogTransformation()
         {
-            // 16MAY2026: fryzahh
-            // Needs to be changed once Horrible Hog's spritesheet is finished. If it is not before this PR is merged please notify me immediately.
-
             NPC.velocity.X *= 0.9f;
             NPC.rotation = 0f;
             if (!SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
@@ -332,12 +332,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.netUpdate = true;
                 }
 
-                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                var chosenSoundStyle = Utils.SelectRandom(Main.rand, IdleSound_Grunt, IdleSound_SnortYip, IdleSound_Yip);
+                SoundEngine.PlaySound(chosenSoundStyle, NPC.Center);
                 NPC.soundDelay = Main.rand.Next(60, 120);
             }
 
             NPC.spriteDirection = NPC.direction;
-            float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.175f * (NPC.velocity.Y < 0).ToDirectionInt() : 0f;
+            float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.085f * (NPC.velocity.Y < 0).ToDirectionInt() : 0f;
             NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.075f);
         }
 
@@ -366,6 +367,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.collideX)
                 {
                     SoundEngine.PlaySound(SoundID.Dig with { Volume = 0.7f }, NPC.Center);
+                    SoundEngine.PlaySound(IdleSound_Grunt with { Volume = 1.2f }, NPC.Center);
                     SquashVector = new Vector2(0.6f, 1f);
 
                     NPC.velocity.X = NPC.oldVelocity.X * -0.86f;
@@ -382,12 +384,28 @@ namespace CalamityMod.NPCs.NormalNPCs
                     Timer = 0f;
                     NPC.netUpdate = true;
                 }
+
+                float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
+                NPC.rotation = idealRotation;
             }
 
             if (LocalAIState == 1f)
             {
                 if (NPC.velocity.Y == 0f)
+                {
                     NPC.velocity.X *= 0.9f;
+                    if (MathF.Abs(NPC.velocity.X) >= 0.08f && MathF.Abs(NPC.velocity.X) < 0.09f)
+                    {
+                        NPC.velocity.Y = -4f;
+                        var soundStyle = Utils.SelectRandom(Main.rand, IdleSound_SnortYip, IdleSound_Yip);
+                        SoundEngine.PlaySound(soundStyle.WithPitchOffset(0.35f), NPC.Center);
+                    }
+                }
+
+                if (MathF.Abs(NPC.velocity.X) > 0.09f)
+                    NPC.rotation += NPC.velocity.X * 0.075f;
+                else
+                    NPC.rotation = NPC.rotation.AngleLerp(0f, 0.125f);
 
                 if (Timer >= 120f)
                 {
@@ -397,9 +415,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.netUpdate = true;
                 }
             }
-
-            float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
-            NPC.rotation = idealRotation;
         }
 
         public void TransformIntoVariant(int type)
@@ -487,6 +502,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Piggy2").Type, 1f);
                 }
             }
+
+            NPC.direction = hit.HitDirection;
         }
 
         public override void FindFrame(int frameHeight)

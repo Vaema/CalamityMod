@@ -290,7 +290,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
                     MiscAttackCounter++;
                     NPC.velocity.X = NPC.oldVelocity.X * 0.6f;
-                    NPC.velocity.Y = -8f;
+                    NPC.velocity.Y = -10f;
 
                     NPC.netUpdate = true;
                 }
@@ -298,9 +298,9 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 CalamityUtils.AddScreenshakeAt(NPC.Center, 4f);
             }
 
-            FrameY = BalledUpFrame;
-
+            UseBalledSprite = true;
             NPC.damage = 0;
+            NPC.GravityMultiplier *= 1.28f;
             NPC.dontTakeDamage = true;
         }
 
