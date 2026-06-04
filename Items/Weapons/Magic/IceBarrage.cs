@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.height = 60;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 180;
+            Item.mana = 300;
             Item.noMelee = true;
             Item.UseSound = CastSound;
 

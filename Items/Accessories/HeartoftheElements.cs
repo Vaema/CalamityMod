@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Accessories
         public override bool CanEquipAccessory(Player player, int slot, bool modded)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.brimElemental || modPlayer.sandElemental || modPlayer.rareSandElemental || modPlayer.cloudElemental || modPlayer.waterElemental)
+            if (modPlayer.brimElemental || modPlayer.sandElemental || modPlayer.oasisElemental || modPlayer.cloudElemental || modPlayer.waterElemental)
             {
                 return false;
             }
@@ -177,7 +177,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<ElementalinaBottle>().
-                AddIngredient<RareElementalinaBottle>().
+                AddIngredient<OasisElementalinaBottle>().
                 AddIngredient<PearlofEnthrallment>().
                 AddIngredient<EyeoftheStorm>().
                 AddIngredient<RoseStone>().

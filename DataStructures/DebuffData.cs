@@ -1,32 +1,14 @@
 ﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.DataStructures
 {
-    [ReinitializeDuringResizeArrays]
-    public static class BuffDatasets
-    {
-        public static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
-            .Description("Stores DebuffData for a particular debuff")
-            .RegisterCustomSet<DebuffData>(null,
-                BuffID.OnFire, DebuffData.OnFire,
-                BuffID.OnFire3, DebuffData.Hellfire,
-                BuffID.CursedInferno, DebuffData.CursedInferno,
-                BuffID.ShadowFlame, DebuffData.Shadowflame,
-                BuffID.Daybreak, DebuffData.Daybroken,
-                BuffID.Burning, DebuffData.Burning,
-                BuffID.Frostburn, DebuffData.Frostburn,
-                BuffID.Frostburn2, DebuffData.Frostbite,
-                BuffID.Poisoned, DebuffData.Poisoned,
-                BuffID.Venom, DebuffData.AcidVenom,
-                BuffID.Electrified, DebuffData.Electrified,
-                BuffID.Oiled, DebuffData.Oiled
-            );
-    }
     public class DebuffData
     {
         /// <summary>
@@ -113,11 +95,10 @@ namespace CalamityMod.DataStructures
         public bool GearCanModifyDebuff = true;
 
         /// <summary>
-        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
         /// How much alcohol this counts as.
         /// Default is 0, most alcohol is 1, and Everclear is 2
         /// </summary>
-        public float AlcoholLevel = 0f;
+        public int AlcoholLevel = 0;
 
         /// <summary>
         /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
@@ -224,7 +205,8 @@ namespace CalamityMod.DataStructures
                     .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
                  ))))
                  :
-                 cnpc.ActiveTypelessDebuffMultiplier;
+                 // Bane doesn't scale with debuff multipliers. This should be implemented as a default feature you can apply to debuffs at some point.
+                 buffType == ModContent.BuffType<Bane>() ? cnpc.ActiveTypelessDebuffMultiplier : StatModifier.Default;
 
             //Ensure at least 25% effectiveness
             if (totalScaling.Multiplicative <= 0.25f)
@@ -257,7 +239,8 @@ namespace CalamityMod.DataStructures
                     .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
                  ))))
                  :
-                 cnpc.ActiveTypelessDebuffMultiplier;
+                 // Bane doesn't scale with debuff multipliers. This should be implemented as a default feature you can apply to debuffs at some point.
+                 buffType == ModContent.BuffType<Bane>() ? cnpc.ActiveTypelessDebuffMultiplier : StatModifier.Default;
 
             //Ensure at least 25% effectiveness
             if (totalScaling.Multiplicative <= 0.25f)
@@ -419,7 +402,7 @@ namespace CalamityMod.DataStructures
         };
         public static DebuffData Electrified = new DebuffData(DebuffBehavior.Electric)
         {
-            EnemyLostRegen = 21,
+            EnemyLostRegen = 30, // 15 dps stationary, 60 dps moving
             EnemyVanillaRegenToCancelOut = 8,
             ElectricDebuffScaling = 1
         };

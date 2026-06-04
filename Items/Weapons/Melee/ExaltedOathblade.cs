@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 88;
             Item.height = 88;
             Item.damage = 90;
+            Item.crit = 31;
             Item.useAnimation = Item.useTime = 45;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -39,7 +40,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Yellow;
         }
         public override bool MeleePrefix() => true;
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 31;
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && !player.Calamity().mouseRight;
         public override void HoldItem(Player player)
         {

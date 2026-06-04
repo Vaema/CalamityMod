@@ -17,8 +17,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 76;
             Item.height = 76;
-            Item.damage = 144;
+            Item.damage = 100;
             Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.crit = 11;
             Item.useAnimation = Item.useTime = 90; // Yes it's actually supposed to be this slow
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -38,6 +39,5 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OldLordClaymoreGlow").Value);
         }
         public override bool MeleePrefix() => true;
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 11;
     }
 }
