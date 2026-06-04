@@ -600,6 +600,7 @@ namespace CalamityMod.CalPlayer
         public bool lordePet = false;
         public bool frostyBat = false;
         public bool toastyBat = false;
+        public bool beldum = false;
         public bool starSwallowerPetFroge = false;
         #endregion
 
@@ -2314,6 +2315,7 @@ namespace CalamityMod.CalPlayer
             lordePet = false;
             frostyBat = false;
             toastyBat = false;
+            beldum = false;
             starSwallowerPetFroge = false;
 
             onyxExcavator = false;
