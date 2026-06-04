@@ -4,7 +4,6 @@ using System.Linq;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.LabFinders;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.SunkenSea;
