@@ -153,7 +153,6 @@ namespace CalamityMod.ILEditing
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
-            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
