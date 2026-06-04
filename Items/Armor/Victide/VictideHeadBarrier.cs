@@ -16,15 +16,15 @@ namespace CalamityMod.Items.Armor.Victide
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static int RegenBoost = 2;
-        public static float RunAccelerationMult = 1.75f;
+        public static int RegenBoost = 1;
+        public static float RunAccelerationMult = 1.25f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), RunAccelerationMult.Round());
 
         // Set Bonus
         public static int BarrierCooldown = CalamityUtils.SecondsToFrames(8);
-        public static int BarrierDefenseBoost = 6;
+        public static int BarrierDefenseBoost = 4;
         public static float BarrierDamageAbsorptionPercent = 0.1f;
-        public static int BarrierFramesPerHeal = 15;
+        public static int BarrierFramesPerHeal = 30;
         public static int BarrierDamage = 50;
         public static float BarrierExplosionKB = 8f;
 

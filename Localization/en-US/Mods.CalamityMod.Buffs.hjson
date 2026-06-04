@@ -81,7 +81,7 @@ OldFashionedBuff: {
 RedWineBuff: {
 	DisplayName: Red Wine
 	Description: Increased vertical speed, reduced flight time
-	ItemTooltip: Causes Baguette to heal 200 HP, but reduce regeneration by 2 HP/s for 15 seconds
+	ItemTooltipPlayer: Causes Baguette to heal 200 HP, but reduce regeneration by 2 HP/s for 15 seconds
 }
 
 RumBuff: {
@@ -505,6 +505,11 @@ BabyGhostBellBuff: {
 BearBuff: {
 	DisplayName: Bear
 	Description: A guardian angel is following you
+}
+
+BeldumBuff: {
+	DisplayName: Iron Ball
+	Description: Extra shiny!
 }
 
 BloodBound: {
@@ -1184,8 +1189,8 @@ Irradiated: {
 
 MarkedforDeath: {
 	DisplayName: Marked for Death
-	Description: Damage reduction reduced
-	ItemTooltipEnemy: Damage reduction is 50% less effective
+	Description: Increased damage taken
+	ItemTooltipEnemy: Enemies take 1.1x damage
 }
 
 PearlAura: {

@@ -903,7 +903,7 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 0.5f;
             }
-            if (npc.buffType.Any(i => BuffDatasets.DebuffDataset[i] is not null && BuffDatasets.DebuffDataset[i].WaterDebuffScaling > 0) || npc.wet || npc.honeyWet || npc.dripping)
+            if (npc.buffType.Any(i => CalamityBuffSets.DebuffDataset[i] is not null && CalamityBuffSets.DebuffDataset[i].WaterDebuffScaling > 0) || npc.wet || npc.honeyWet || npc.dripping)
             {
                 windChilledMult = 1.5f;
             }
@@ -955,7 +955,7 @@ namespace CalamityMod.NPCs
             for (var index = 0; index < npc.buffType.Length; index++)
             {
                 var type = npc.buffType[index];
-                var debuffData = BuffDatasets.DebuffDataset[type];
+                var debuffData = CalamityBuffSets.DebuffDataset[type];
                 if (debuffData == null || debuffData == DebuffData.Oiled) //Oiled is done after
                     continue;
                 debuffData.NPCLifeRegenMethod(npc, type, ref index, ref damage);
@@ -2796,7 +2796,7 @@ namespace CalamityMod.NPCs
 
             // Apply armor penetration based on Calamity debuffs. The hit system manages the sequencing.
             // Ozzatron 05JAN2023: fixed doubled armor pen, this time for real
-            int defenseReduction = (markedForDeath && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
+            int defenseReduction = (wither ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
             modifiers.ArmorPenetration += defenseReduction;
 
             // DR applies after vanilla defense.
@@ -2872,8 +2872,6 @@ namespace CalamityMod.NPCs
         private float ApplyDRReduction(NPC npc, float DR)
         {
             float calcDR = DR;
-            if (markedForDeath)
-                calcDR *= 0.5f;
             if (absorberAffliction)
                 calcDR *= 0.8f;
             if (npc.Calamity().armorCrunch)
@@ -3667,6 +3665,9 @@ namespace CalamityMod.NPCs
         public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
             CalamityPlayer modPlayer = player.Calamity();
+            if (markedForDeath)
+                modifiers.SourceDamage *= 1.1f;
+
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.5f;
 
@@ -3854,6 +3855,9 @@ namespace CalamityMod.NPCs
                     modifiers.SourceDamage *= 0.33f;
             }
 
+            if (markedForDeath)
+                modifiers.SourceDamage *= 1.1f;
+
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.5f;
 
@@ -3931,7 +3935,8 @@ namespace CalamityMod.NPCs
                 if (npc.buffTime[i] >= 1)
                 {
                     int type = npc.buffType[i];
-                    if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
+                    var tag = CalamityBuffSets.SummonTagDebuff[type];
+                    if (tag is not null)
                         tag.TagModifyHitEffects(proj, npc, ref modifiers, ref TagDamageMult, ref critChance);
                 }
             }
@@ -3983,7 +3988,8 @@ namespace CalamityMod.NPCs
                 if (npc.buffTime[i] >= 1)
                 {
                     int type = npc.buffType[i];
-                    if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
+                    var tag = CalamityBuffSets.SummonTagDebuff[type];
+                    if (tag is not null)
                         tag.TagOnHit(npc, projectile, hit, damagedone);
                 }
             }
@@ -5147,13 +5153,13 @@ namespace CalamityMod.NPCs
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
 
-                    // Draw summon tag display. TODO: make it use custom textures provided by SummonTag.
                     int yOffset = 0;
                     for (int i = NPC.maxBuffs - 1; i >= 0; i--)
                     {
                         if (npc.buffTime[i] > 0)
                         {
-                            if (CalamityBuffSets.SummonTagDebuff.TryGetValue(npc.buffType[i], out SummonTag tag))
+                            var tag = CalamityBuffSets.SummonTagDebuff[npc.buffType[i]];
+                            if (tag is not null)
                             {
                                 // Fetch the item and its frames
                                 var tex = TextureAssets.Item[tag.TagItem].Value;

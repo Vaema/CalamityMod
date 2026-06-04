@@ -36,7 +36,11 @@ namespace CalamityMod.Items.Accessories
 
         public const int maxMinionRequirement = 10;
         public const int maxPscAnimTime = 120;
-        public static SummonTag SummonTag = new() { MultiplicativeTagDamage = 0.2f, TagModifyHitEffects = ApplyTagModifyHit, AutoDrawTooltip = false };
+        public static SummonTag SummonTag = new() {
+            MultiplicativeTagDamage = 0.2f,
+            TagModifyHitEffects = ApplyTagModifyHit,
+            AutoDrawTooltip = false
+        };
 
         public static void ApplyTagModifyHit(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers, ref float tagDamageMult, ref float critChance)
         {
@@ -221,7 +225,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetDefaults()
         {
-            SummonTag.TagItem = Item.type;
+            SummonTag.TagItem = Type;
             SummonTag.TagTexture = TextureAssets.Item[Type];
             Item.width = 50;
             Item.height = 50;

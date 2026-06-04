@@ -24,12 +24,6 @@ namespace CalamityMod.Items.Weapons.Magic
         public static int AftershotCooldownFrames = 17;
         public static int FullChargeFrames = 88;
 
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 112;

@@ -330,7 +330,7 @@ namespace CalamityMod.CalPlayer
             // Lower chance of Spadefish in Hardmode
             if (underground) // Underground
             {
-                int chance = Main.hardMode ? 10 : 2;
+                int chance = Main.hardMode ? 10 : 4;
                 if (attempt.veryrare && Main.rand.NextBool(chance))
                 {
                     itemDrop = ModContent.ItemType<Spadefish>();

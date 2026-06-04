@@ -4,6 +4,7 @@ using CalamityMod.Items.Accessories;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
@@ -47,7 +48,7 @@ namespace CalamityMod.Buffs.StatBuffs
             Main.debuff[Type] = false;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
-            BuffDatasets.DebuffDataset[Type] = debuffData;
+            CalamityBuffSets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)

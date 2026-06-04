@@ -150,6 +150,11 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public bool fireBullet = false;
         /// <summary>
+        /// If true, allows projectiles to track damage scaling.<br/>
+        /// Used by Megalodon and Voidragon.
+        /// </summary>
+        public bool sharkBullets = false;
+        /// <summary>
         /// If true, adds an ice trail to the projectile, and makes it inflict Frostbite.<br/>
         /// Used by Thermocline Blaster.
         /// </summary>
@@ -3969,10 +3974,6 @@ namespace CalamityMod.Projectiles
             }
             #endregion
 
-            // Starfury stars never collide with tiles
-            if (projectile.type == ProjectileID.Starfury)
-                projectile.tileCollide = false;
-
             // True Night's Edge projectiles instantly start with max velocity
             if (projectile.type == ProjectileID.TrueNightsEdge)
             {
@@ -4814,7 +4815,8 @@ namespace CalamityMod.Projectiles
                         Main.projectile[soul].tileCollide = false;
                         if (soul.WithinBounds(Main.maxProjectiles))
                             Main.projectile[soul].DamageType = DamageClass.Generic;
-                    }
+                            Main.projectile[soul].ArmorPenetration = 20;
+                    }  
                     extorterBoost = false;
                 }
             }
