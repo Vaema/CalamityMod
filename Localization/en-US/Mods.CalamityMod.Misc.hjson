@@ -48,7 +48,6 @@ AutocannonHot: OUCH! HOT!
 NoComputer: No decryption computer installed
 ArkParry: Parry!
 BurningSeaBurn: It burns...
-LightsWarning: I've gotta give you a flashing lights warning on this one
 NotSafe: Y O U  A R E  N O T  S A F E
 HecBoop: boop!
 ClockworkTick: Tick
@@ -58,12 +57,13 @@ SevensBust: Bust!
 SevensDoubles: Doubles!
 SevensTriples: Triples!
 StylishHammerHit: Stylish!
+PiggyLicense: The license teleports away to the piggy delivery service...
 GenericConsumedText: "[c/8A8A8A:You have already consumed this item]"
 CelestialOnionText: You have already consumed a Celestial Onion. Consuming another would distort you.
 SanguineTangerineText: You have already consumed a Sanguine Tangerine. Eating any more would make your blood too thick to flow.
 MiracleFruitText: You have already consumed a Miracle Fruit. It would take a miracle to put you back together if you ate another.
 TaintedCloudberryText: You have already consumed a Tainted Cloudberry. Your body would become dust if you ate more than one.
-SacredStrawberryText: You have already consumed a Sacred Strawberry. Any more draconic power and you'd be rejected.
+SacredStrawberryText: You have already consumed a Sacred Strawberry. One more drop of draconic power would obliterate you.
 CometShardText: You have already used a Comet Shard. Your neurons would die if you used another.
 EtherealCoreText: You have already used an Ethereal Core. Your brain would escape your head if you dared to use it a second time.
 PhantomHeartText: You have already used a Phantom Heart. The voices are telling you it's a bad idea to use it again.
@@ -118,7 +118,7 @@ SwineSecret35: Watch out for Polymorphine, that stuff sucks. Trust me I know.
 SwineSecret36: Many say to keep the greatest swine secret on the down low. I disagree, We cannot shh it.
 SwineSecret37: Let me know when it's 7 PM, I've got to tweak something before some poor soul falls off of it!
 SwineSecret38: Thank Xeroc I don't have any of that 'Pathfinding' garbage, whatever the hell that is.
-SwineSecret39: If you think the Sulphur Sea smells bad, just wait til' you're near a nohitter!
+SwineSecret39: If you think the Sulphur Sea smells bad, you're not close enough to me!
 SwineSecret40: Did you know there's 40 of these damn things?
 // Charge
 Charge: Current Charge: {0}%

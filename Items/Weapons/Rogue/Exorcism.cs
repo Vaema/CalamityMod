@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 109;
             Item.height = 128;
-            Item.damage = 192;
+            Item.damage = 222;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             // Due to the amazing sound engine, having multiple crosses embedded in enemies cuts off the sound

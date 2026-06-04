@@ -54,7 +54,6 @@ CosmicPlushie: {
 	Tooltip:
 		'''
 		Summons the devourer of the cosmos...?
-		Suppresses friendly red devils
 		'Sharp objects possibly included'
 		'''
 }
@@ -169,6 +168,11 @@ RomajedaOrchid: {
 RottingEyeball: {
 	DisplayName: Rotting Eyeball
 	Tooltip: Summons a corrupted conglomeration
+}
+
+StarSwallowerUnit: {
+	DisplayName: Star Swallower Unit
+	Tooltip: Summons a biomechanical frog
 }
 
 StrangeOrb: {

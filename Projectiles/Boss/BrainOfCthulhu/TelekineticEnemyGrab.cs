@@ -22,10 +22,11 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Boss";
     public override string Texture => "CalamityMod/Particles/BloomRing";
 
-    BezierCurve curve;
+    BezierCurve curve = null;
     int throwSign = 0;
     Vector2 throwPos = Vector2.Zero;
     Vector2 holdPos;
+    int MyTarget = -1;
 
     ref float Time => ref Projectile.ai[0];
     ref float StunTime => ref Projectile.ai[1];
@@ -43,6 +44,9 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
         Projectile.timeLeft = 1200;
         Projectile.damage = 10;
         Projectile.hostile = true;
+        if(NPC.crimsonBoss != -1)
+            MyTarget = Main.npc[NPC.crimsonBoss].target;
+        Projectile.Calamity().DealsDefenseDamage = true;
     }
 
     public override void OnSpawn(IEntitySource source)
@@ -56,6 +60,8 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
         enemyID = Main.rand.Next(0, 3);
         int[] enemyIDs = [NPCID.FaceMonster, NPCID.Crimera, NPCID.BloodCrawler];
         enemyID = enemyIDs[enemyID];
+
+        MyTarget = Main.npc[NPC.crimsonBoss].target;
 
         Projectile.netUpdate = true;
     }
@@ -78,7 +84,7 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
         if (throwing)
         {
             if (throwSign == 0)
-                throwSign = Math.Sign(Projectile.Center.X - Main.npc[NPC.crimsonBoss].Center.X) * -Math.Sign(Main.player[Main.npc[NPC.crimsonBoss].target].Center.Y - Main.npc[NPC.crimsonBoss].Center.Y);
+                throwSign = Math.Sign(Projectile.Center.X - Main.npc[NPC.crimsonBoss].Center.X) * -Math.Sign(Main.player[MyTarget].Center.Y - Main.npc[NPC.crimsonBoss].Center.Y);
         }
         bool thrown = throwTime > 90;
 
@@ -113,7 +119,7 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
                 {
                     if (throwTime <= 30)
                         throwPos = (Projectile.Center + Projectile.velocity) - (Main.npc[NPC.crimsonBoss].Center + Main.npc[NPC.crimsonBoss].velocity);
-                    Vector2 target = Main.player[Main.npc[NPC.crimsonBoss].target].Center;
+                    Vector2 target = Main.player[MyTarget].Center;
                     Vector2 throwDir = (target - (throwPos + (Main.npc[NPC.crimsonBoss].Center + Main.npc[NPC.crimsonBoss].velocity))).SafeNormalize(Vector2.UnitY);
 
                     if (throwTime >= 30 && throwTime <= 90)
@@ -250,6 +256,7 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
             int[] enemyIDs = [NPCID.FaceMonster, NPCID.Crimera, NPCID.BloodCrawler];
             foreach (int id in enemyIDs)
             {
+                Main.instance.LoadNPC(id);
                 var baseTex = TextureAssets.Npc[id];
                 var glow = new Texture2D(Main.graphics.GraphicsDevice, baseTex.Value.Width, baseTex.Value.Height);
 
@@ -325,54 +332,57 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
             if (Time < 15)
                 glowOpacity = Time / 15f;
 
-            Main.spriteBatch.End(out var snapshot);
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-            Texture2D ring = TextureAssets.Projectile[Type].Value;
-
-            List<Vector2> points = curve.GetPoints(pCount);
-            for (int i = 1; i < pCount; i++)
+            if (curve != null)
             {
-                float scale1 = MathHelper.Lerp(0.1f, 1f, i / (float)(pCount - 1));
-                float scale2 = MathHelper.Lerp(0.1f, 1f, (i + 1) / (float)(pCount - 1));
-                float scale = MathHelper.Lerp(scale1, scale2, wrappedTime);
+                Main.spriteBatch.End(out var snapshot);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-                float rot1 = (points[i] - points[i - 1]).ToRotation();
+                Texture2D ring = TextureAssets.Projectile[Type].Value;
 
-                float rot2;
-                if (i == pCount - 1)
-                    rot2 = points[i].ToRotation();
-                else
-                    rot2 = (points[i + 1] - points[i]).ToRotation();
+                List<Vector2> points = curve.GetPoints(pCount);
+                for (int i = 1; i < pCount; i++)
+                {
+                    float scale1 = MathHelper.Lerp(0.1f, 1f, i / (float)(pCount - 1));
+                    float scale2 = MathHelper.Lerp(0.1f, 1f, (i + 1) / (float)(pCount - 1));
+                    float scale = MathHelper.Lerp(scale1, scale2, wrappedTime);
 
-                float rot;
-                if (i == pCount - 1)
-                    rot = rot1;
-                else
-                    rot = rot1.AngleLerp(rot2, wrappedTime);
+                    float rot1 = (points[i] - points[i - 1]).ToRotation();
 
-                Vector2 pos;
-                if (i == pCount - 1)
-                    pos = Vector2.Lerp(points[i], points[i] + rot.ToRotationVector2() * Vector2.Distance(points[^1], points[^2]), wrappedTime);
-                else
-                    pos = Vector2.Lerp(points[i], points[i + 1], wrappedTime);
+                    float rot2;
+                    if (i == pCount - 1)
+                        rot2 = points[i].ToRotation();
+                    else
+                        rot2 = (points[i + 1] - points[i]).ToRotation();
 
-                Color color;
-                if (evenRed)
-                    color = (i % 2 == 0 ? Color.Red : Color.Magenta) * 0.666f;
-                else
-                    color = (i % 2 == 0 ? Color.Magenta : Color.Red) * 0.666f;
+                    float rot;
+                    if (i == pCount - 1)
+                        rot = rot1;
+                    else
+                        rot = rot1.AngleLerp(rot2, wrappedTime);
 
-                if (i == pCount - 1)
-                    color *= 1 - wrappedTime;
-                else if (i == 1)
-                    color *= wrappedTime;
+                    Vector2 pos;
+                    if (i == pCount - 1)
+                        pos = Vector2.Lerp(points[i], points[i] + rot.ToRotationVector2() * Vector2.Distance(points[^1], points[^2]), wrappedTime);
+                    else
+                        pos = Vector2.Lerp(points[i], points[i + 1], wrappedTime);
 
-                Main.spriteBatch.Draw(ring, pos + Projectile.velocity - Main.screenPosition, null, color * glowOpacity, rot, ring.Size() * 0.5f, new Vector2(0.5f, 1f) * scale, 0, 0);
+                    Color color;
+                    if (evenRed)
+                        color = (i % 2 == 0 ? Color.Red : Color.Magenta) * 0.666f;
+                    else
+                        color = (i % 2 == 0 ? Color.Magenta : Color.Red) * 0.666f;
+
+                    if (i == pCount - 1)
+                        color *= 1 - wrappedTime;
+                    else if (i == 1)
+                        color *= wrappedTime;
+
+                    Main.spriteBatch.Draw(ring, pos + Projectile.velocity - Main.screenPosition, null, color * glowOpacity, rot, ring.Size() * 0.5f, new Vector2(0.5f, 1f) * scale, 0, 0);
+                }
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(snapshot);
             }
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(snapshot);
 
             Vector2[] offsets = [Vector2.UnitX * 2, Vector2.UnitX * -2, Vector2.UnitY * 2, Vector2.UnitY * -2];
             for (int i = 0; i < 4; i++)

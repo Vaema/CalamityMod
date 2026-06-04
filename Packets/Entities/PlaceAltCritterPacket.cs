@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static PlaceAltCritterPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.PlaceAltCritter;
-
         /// <summary>
         /// Same Method, but uses critterItem.makeNPC and critterItem.type for shorthanded call
         /// </summary>
@@ -35,7 +33,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var placerplayer = packet.ReadPlayer();
             int posX = packet.ReadInt32();

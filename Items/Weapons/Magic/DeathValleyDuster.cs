@@ -1,9 +1,10 @@
 ﻿using CalamityMod.Projectiles.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Audio;
-using Microsoft.Xna.Framework;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
@@ -12,6 +13,9 @@ namespace CalamityMod.Items.Weapons.Magic
     public class DeathValleyDuster : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public static int BuffDefenseBoost = PrimordialEarth.BuffDefenseBoost;
+        public static float BuffDamageBoost = PrimordialEarth.BuffDamageBoost;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDefenseBoost, BuffDamageBoost.ToPercent());
         public override void SetDefaults()
         {
             Item.width = 36;

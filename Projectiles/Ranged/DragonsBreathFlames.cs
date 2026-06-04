@@ -226,7 +226,10 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 postHit = true;
             }
-            target.AddBuff(ModContent.BuffType<Dragonfire>(), 240);
+
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 1200);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

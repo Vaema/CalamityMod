@@ -40,12 +40,24 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public int spearFakeCooldown = 0;
 
 
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.DamageType = DamageClass.Magic;
+        }
+
         public override void KillHoldoutLogic()
         {
 
         }
         public override void HoldoutAI()
         {
+            if (Owner.dead)
+            {
+                Projectile.Kill();
+                return;
+            }
+
             if (flashVis1 > 0) flashVis1 -= 0.2f; if (flashVis1 < 0) flashVis1 = 0;
             if (flashVis2 > 0) flashVis2 -= 0.2f; if (flashVis2 < 0) flashVis2 = 0;
 

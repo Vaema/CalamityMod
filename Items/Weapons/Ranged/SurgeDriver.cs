@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -28,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.knockBack = 8f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PrismEnergyBullet>();
             Item.shootSpeed = 11f;

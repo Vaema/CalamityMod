@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
             
-            if (!hasReboundOffPlat && Projectile.numHits == 0 && !hasSetPlatSpawn && (Collision.SolidCollision(Projectile.Center, 20, 20) || time > 70))
+            if (!hasReboundOffPlat && Projectile.numHits == 0 && !hasSetPlatSpawn && time > 70)
             {
                 hasSetPlatSpawn = true;
                 spawnPlat = true;

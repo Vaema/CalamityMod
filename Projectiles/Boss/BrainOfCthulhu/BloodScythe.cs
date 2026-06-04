@@ -44,6 +44,7 @@ public class BloodScythe : ModProjectile, ILocalizedModType
         Projectile.damage = 10;
         Projectile.scale = 0.1f;
         Projectile.hostile = true;
+        Projectile.Calamity().DealsDefenseDamage = true;
     }
 
     public override void OnSpawn(IEntitySource source)
@@ -90,31 +91,21 @@ public class BloodScythe : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Main.spriteBatch.SetBlendState(BlendState.Additive);
         Texture2D tex = TextureAssets.Projectile[Type].Value;
         Vector2 drawPos = Projectile.Center - Main.screenPosition;
-        Color drawColor = Color.Red;
-        if (!ChildSafety.Disabled)
-            drawColor = Main.DiscoColor;
+        Color drawColor = (ChildSafety.Disabled ? Color.Red : Main.DiscoColor) with { A = 0 };
 
-        if (CalamityClientConfig.Instance.Afterimages)
+        for (int i = 0; i < (CalamityClientConfig.Instance.Afterimages ? Projectile.oldPos.Length : 1); ++i)
         {
-            for (int i = 0; i < Projectile.oldPos.Length; ++i)
-            {
-                float afterimageRot = Projectile.oldRot[i];
-                drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-                if (i != 0)
-                    drawColor *= 0.9f;
+            float afterimageRot = Projectile.oldRot[i];
+            drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            if (i != 0)
+                drawColor *= 0.9f;
 
-                // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                float interpolant = ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-                Main.spriteBatch.Draw(tex, drawPos, null, drawColor, afterimageRot, tex.Size() * 0.5f, Projectile.scale * interpolant, SpriteEffects.None, 0f);
-            }
+            // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
+            float interpolant = ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
+            Main.EntitySpriteDraw(tex, drawPos, null, drawColor, afterimageRot, tex.Size() * 0.5f, Projectile.scale * interpolant, SpriteEffects.None);
         }
-        //else
-        //    Main.EntitySpriteDraw(tex, drawPos, tex.Frame(), drawColor, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
-
-        Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
         return false;
     }

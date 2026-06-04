@@ -62,18 +62,18 @@
         internal const int SolarFlareIFrames = 12;
         internal const float SolarFlareBaseDamage = 400f;
 
-        // Dodge cooldowns (in frames)
-        // TODO -- Some of these could be moved to the respective item files
-        internal static readonly int BeltDodgeCooldownMin = 1200;
-        internal static readonly int BeltDodgeCooldownMax = 5400;
-        internal static readonly int BrainDodgeCooldownMin = 1200;
-        internal static readonly int BrainDodgeCooldownMax = 5400;
-        internal static readonly int AmalgamDodgeCooldownMin = 1200;
-        internal static readonly int AmalgamDodgeCooldownMax = 5400;
-        internal static readonly int MirrorDodgeCooldownMin = 1200;
-        internal static readonly int MirrorDodgeCooldownMax = 5400;
-        internal static readonly int EvolutionReflectCooldownMin = 1200;
-        internal static readonly int EvolutionReflectCooldownMax = 5400;
+        /// <summary>
+        /// How long the dodge cooldown is at maximum damage
+        /// </summary>
+        internal static readonly int DodgeCooldownMax = 5400; // 90 seconds
+        /// <summary>
+        /// How much the dodge cooldown is reduced when at minimum damage
+        /// </summary>
+        internal static float DodgeCooldownDamageMult => 0.33f; // 30 seconds
+        /// <summary>
+        /// How much the dodge cooldown is reduced per stacked dodge. Each stack applies multiplicatively.
+        /// </summary>
+        internal static float DodgeCooldownMultPerStack => 0.85f; // -15% per stack, multiplicatively
         #endregion
 
         #region Damage
@@ -126,11 +126,11 @@
         internal static readonly float LifeStealRecoveryRate_Classic = 0.6f;
         internal static readonly float LifeStealRecoveryRate_Expert = 0.5f;
 
-        // Nerfs the life steal recovery rate in Classic from 0.6 to 0.2 (36 HP/s to 12 HP/s)
-        internal static readonly float LifeStealRecoveryRateReduction_Classic = 0.4f;
+        // Nerfs the life steal recovery rate in Classic from 0.6 to 0.15 (36 HP/s to 9 HP/s)
+        internal static readonly float LifeStealRecoveryRateReduction_Classic = 0.45f;
 
-        // Nerfs the life steal recovery rate in Expert from 0.5 to 0.15 (30 HP/s to 9 HP/s)
-        internal static readonly float LifeStealRecoveryRateReduction_Expert = 0.35f;
+        // Nerfs the life steal recovery rate in Expert from 0.5 to 0.1 (30 HP/s to 6 HP/s)
+        internal static readonly float LifeStealRecoveryRateReduction_Expert = 0.4f;
         #endregion
 
         #region Rogue Base Stats

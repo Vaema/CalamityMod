@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item88, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
             {
-                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SulphuricAcidCannonExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SulphuricAcidCannonExplosion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
                 Main.projectile[p].DamageType = DamageClass.Default;
             }
             // Circular spread of clouds and bubbles for impact

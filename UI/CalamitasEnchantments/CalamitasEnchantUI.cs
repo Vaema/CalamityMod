@@ -24,7 +24,7 @@ namespace CalamityMod.UI.CalamitasEnchants
 
         public static bool CurrentlyViewing = false;
 
-        public static readonly Vector2 ReforgeUITopLeft = new Vector2(68f, 320f);
+        public static Vector2 ReforgeUITopLeft => new Vector2(68f, 320f) * Main.UIScale;
         public static readonly float ResolutionRatio = Main.screenHeight / 1440f;
 
         public static readonly SoundStyle EnchSound = new("CalamityMod/Sounds/Custom/WeaponEnchant");
@@ -198,6 +198,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             float y = costDrawPositionTopLeft.Y + 54f * Main.UIScale;
             for (int i = 0; i < 4; i++)
             {
+                Main.instance.LoadItem(ItemID.PlatinumCoin - i);
                 Vector2 drawPosition = new Vector2(costDrawPositionTopLeft.X + (ChatManager.GetStringSize(FontAssets.MouseText.Value, costText, Vector2.One, -1f).X + ((24 * i) - 24f)) * Main.UIScale, y);
                 spriteBatch.Draw(TextureAssets.Item[ItemID.PlatinumCoin - i].Value, drawPosition, null, Color.White, 0f, TextureAssets.Item[ItemID.PlatinumCoin - i].Size() * 0.5f, Main.UIScale, SpriteEffects.None, 0f);
                 Utils.DrawBorderStringFourWay(spriteBatch, FontAssets.ItemStack.Value, coinsArray[3 - i].ToString(), drawPosition.X - 11f, drawPosition.Y, Color.White, Color.Black, new Vector2(0.3f), 0.75f * Main.UIScale);

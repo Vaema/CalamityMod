@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
@@ -28,15 +29,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<DevilsDevastation>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/DevilsDevastation";
-        public float hitboxMult = 1.3f;
         public Color clr = Color.Lerp(Color.DeepPink, Color.Orange, 0.5f);
         public SlotId SoundSlot;
-        public override float HitboxOutset => 335;
-
-        public override Vector2 HitboxSize => new Vector2(395, 395) * hitboxMult;
+        public int size = 118 + 285;
+        public override float HitboxOutset => size * 0.85f;
+        public override Vector2 HitboxSize => new Vector2(size, size);
+        public override Vector2 SpriteOrigin => new(0, size - 285);
         public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
-
-        public override Vector2 SpriteOrigin => new(-3, 118);
+        public override float AdditionalScale => 0.15f;
         public Vector2 mousePos;
         public Vector2 aimVel;
         public bool doSwing = true;
@@ -51,8 +51,10 @@ namespace CalamityMod.Projectiles.Melee
         public bool willDie = false;
         public bool hasLaunchedBlades = false;
         public bool swooshFade = false;
+        private int lastSwingId;
 
         public NPC lastHitTarget = null;
+        private int lastHitTargetIndex = -1;
         public int postSwingCooldownMax => (int)(useAnim * 0.65f);
         public override void SetDefaults()
         {
@@ -75,13 +77,27 @@ namespace CalamityMod.Projectiles.Melee
             DrawUnconditionally = true;
             CanHit = false;
             Projectile.knockBack = 0;
-            Projectile.scale = 1.15f;
             Projectile.ai[1] = -1;
+            bool isOwner = Main.myPlayer == Projectile.owner;
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            mousePos = Owner.Calamity().mouseWorld;
-            aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+            if (isOwner)
+            {
+                mousePos = Owner.Calamity().mouseWorld;
+                aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                Projectile.netUpdate = true;
+            }
+            else
+            {
+                Vector2 syncedDelta = Owner.Calamity().mouseWorldDeltaFromPlayer;
+                if (syncedDelta.LengthSquared() > 0.001f)
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65f;
+                else
+                    aimVel = Vector2.UnitX * Owner.direction * 65f;
+                mousePos = Owner.Center - aimVel;
+            }
             useAnim = (int)(Owner.HeldItem.useAnimation / Owner.GetTotalAttackSpeed<MeleeDamageClass>());
             postSwingCooldown = postSwingCooldownMax / 2;
+            lastSwingId = (int)Projectile.ai[0];
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
@@ -101,7 +117,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 2;
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
-                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.666f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
                 strike.DamageType = DamageClass.Melee;
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
@@ -117,32 +133,66 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void UseStyle()
         {
+            bool isOwner = Main.myPlayer == Projectile.owner;
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
-            if (SoundEngine.TryGetActiveSound(SoundSlot, out var Sound) && Sound.IsPlaying && lastHitTarget != null)
-                Sound.Position = lastHitTarget.Center;
+            if (!isOwner)
+            {
+                Vector2 syncedDelta = Owner.Calamity().mouseWorldDeltaFromPlayer;
+                if (syncedDelta.LengthSquared() > 0.001f)
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65f;
+            }
 
-            if ((Main.mouseLeft || (hasKillMode && killModeCD.timeLeft == KillMode.cooldownMax + 1)) && holding && postSwingCooldown == 0)
+            if (lastHitTargetIndex >= 0)
+            {
+                NPC syncedTarget = Main.npc[lastHitTargetIndex];
+                if (syncedTarget != null && syncedTarget.active && syncedTarget.life > 0)
+                    lastHitTarget = syncedTarget;
+            }
+
+            if (isOwner)
+            {
+                bool shouldStartSwing = (Main.mouseLeft || (hasKillMode && killModeCD.timeLeft == KillMode.cooldownMax + 1)) && holding && postSwingCooldown == 0;
+                if (shouldStartSwing)
+                {
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                    Projectile.ai[0] += 1f;
+                    Projectile.netUpdate = true;
+                }
+            }
+
+            int swingId = (int)Projectile.ai[0];
+            if (swingId != lastSwingId && holding && postSwingCooldown == 0)
             {
                 Animation = (int)(useAnim * 0.7f);
                 holding = false;
-                killModeCD.timeLeft = KillMode.cooldownMax;
-                Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                if (isOwner)
+                {
+                    killModeCD.timeLeft = KillMode.cooldownMax;
+                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                }
                 swingCount++;
+                lastSwingId = swingId;
             }
+
+            if (SoundEngine.TryGetActiveSound(SoundSlot, out var Sound) && Sound.IsPlaying && lastHitTarget != null)
+                Sound.Position = lastHitTarget.Center;
             if (postSwingCooldown > 0)
                 postSwingCooldown--;
             else if (willDie)
             {
-                if (hasKillMode)
-                    killModeCD.timeLeft = KillMode.cooldownMax;
-                Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
+                if (isOwner)
+                {
+                    if (hasKillMode)
+                        killModeCD.timeLeft = KillMode.cooldownMax;
+                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
+                    Owner.Calamity().demonSwordKillMode = false;
+                }
                 DrawUnconditionally = false;
                 Projectile.Kill();
-                Owner.Calamity().demonSwordKillMode = false;
                 return;
             }
-            if (killModeCD.timeLeft < KillMode.cooldownMax)
+            if (isOwner && killModeCD.timeLeft < KillMode.cooldownMax)
             {
                 killModeCD.timeLeft = KillMode.cooldownMax;
                 Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
@@ -155,11 +205,14 @@ namespace CalamityMod.Projectiles.Melee
 
             AnimationProgress = Animation % useAnim;
 
+            if (isOwner && !holding && Main.netMode != NetmodeID.SinglePlayer && (int)Animation % 3 == 0)
+                Projectile.netUpdate = true;
+
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
             else
             {
-                mousePos = Owner.Calamity().mouseWorld;
+                mousePos = isOwner ? Owner.Calamity().mouseWorld : (Owner.Center - aimVel);
             }
 
             if (CanHit && !swooshFade)
@@ -177,8 +230,15 @@ namespace CalamityMod.Projectiles.Melee
 
                 Projectile.numHits = 0;
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                mousePos = Owner.Calamity().mouseWorld;
-                aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                if (isOwner)
+                {
+                    mousePos = Owner.Calamity().mouseWorld;
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                }
+                else
+                {
+                    mousePos = Owner.Center - aimVel;
+                }
                 CanHit = false;
                 if (mousePos.X < Owner.Center.X) Owner.direction = -1;
                 else Owner.direction = 1;
@@ -187,8 +247,10 @@ namespace CalamityMod.Projectiles.Melee
                 finalFlip = false;
                 playSwingSound = true;
                 hasLaunchedBlades = false;
-                if (!Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
+                if (isOwner && !Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
                 {
+                    if (!willDie)
+                        Projectile.netUpdate = true;
                     willDie = true;
                     if (lastHitTarget != null)
                     {
@@ -220,8 +282,8 @@ namespace CalamityMod.Projectiles.Melee
                     float deathFade = willDie ? Utils.GetLerpValue(0, postSwingCooldownMax, postSwingCooldown, true) : 1;
                     float randRot = Main.rand.NextFloat(-30, 30);
                     Vector2 dustVel = -Vector2.One.RotatedBy(Projectile.rotation + RotationOffset + MathHelper.ToRadians(90)).RotatedByRandom(0.3f) * Main.rand.NextFloat(7, 17) - Owner.velocity * 0.8f;
-                    Vector2 placement = Owner.Center + (new Vector2(Main.rand.NextFloat(70, 500) * deathFade, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
-                    GeneralParticleHandler.SpawnParticle(new CustomSpark(placement, dustVel, "CalamityMod/Particles/BloomCircle", false, 13, Main.rand.NextFloat(0.04f, 0.06f) * 10, (Main.rand.NextBool() ? Color.MediumOrchid : clr) * deathFade, new Vector2(0.9f, 1), shrinkSpeed: 0.95f));
+                    Vector2 placement = Owner.Center + (new Vector2(Main.rand.NextFloat(70, 500) * deathFade, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))) * Projectile.scale;
+                    GeneralParticleHandler.SpawnParticle(new CustomSpark(placement, dustVel, "CalamityMod/Particles/BloomCircle", false, 13, Main.rand.NextFloat(0.04f, 0.06f) * 10 * Projectile.scale, (Main.rand.NextBool() ? Color.MediumOrchid : clr) * deathFade, new Vector2(0.9f, 1), shrinkSpeed: 0.95f));
                 }
                 if (lastHitTarget != null && lastHitTarget.life > 0 && lastHitTarget.active)
                 {
@@ -234,7 +296,8 @@ namespace CalamityMod.Projectiles.Melee
                 if (holding)
                 {
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                    if (isOwner)
+                        aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                     CanHit = false;
                     postSwing = false;
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction * (1 + (Utils.GetLerpValue(useAnim * 0.7f, useAnim, Animation, true)) * 0.35f)), 0.2f);
@@ -256,7 +319,8 @@ namespace CalamityMod.Projectiles.Melee
                         SoundStyle swing2 = new("CalamityMod/Sounds/Item/HeavySwing");
                         SoundEngine.PlaySound(swing2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(0.2f, 0.3f) }, Projectile.Center);
                         playSwingSound = false;
-                        Owner.Calamity().demonSwordKillMode = false;
+                        if (isOwner)
+                            Owner.Calamity().demonSwordKillMode = false;
                     }
                     if (time > (int)(timeMax * 0.2f) && time < (int)(timeMax * 0.9f))
                         CanHit = true;
@@ -282,16 +346,17 @@ namespace CalamityMod.Projectiles.Melee
                         for (int i = 0; i < 8; i++)
                         {
                             float randRot = Main.rand.NextFloat(-20, -100);
-                            Dust dust = Dust.NewDustPerfect(Owner.Center + (new Vector2(560, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(MathHelper.ToRadians(randRot))), ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(MathHelper.Pi) * 0.9f, 0, default, Main.rand.NextFloat(1.45f, 2.4f));
+                            Dust dust = Dust.NewDustPerfect(Owner.Center + (new Vector2(520 * Projectile.scale, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(MathHelper.ToRadians(randRot))), ModContent.DustType<SquashDust>(), Vector2.One.RotatedByRandom(MathHelper.Pi) * 0.9f, 0, default, Main.rand.NextFloat(1.45f, 2.4f) * Projectile.scale);
                             dust.noGravity = true;
                             dust.color = Main.rand.NextBool() ? clr : Color.BlueViolet;
+                            dust.fadeIn = Projectile.scale - 1;
                         }
                         for (int i = 0; i < 4; i++)
                         {
                             float randRot = Main.rand.NextFloat(-20, -100);
                             Vector2 dustVel = (new Vector2(0, 11 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
-                            Vector2 placement = Owner.Center + (new Vector2(560, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f));
-                            GeneralParticleHandler.SpawnParticle(new CustomSpark(placement, dustVel, "CalamityMod/Particles/DemonSigilParticle", false, 33, Main.rand.NextFloat(0.43f, 0.56f), Main.rand.NextBool() ? Color.MediumOrchid : clr, new Vector2(1, 1), shrinkSpeed: 0.1f));
+                            Vector2 placement = Owner.Center + (new Vector2(520, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)) * Projectile.scale;
+                            GeneralParticleHandler.SpawnParticle(new CustomSpark(placement, dustVel, "CalamityMod/Particles/DemonSigilParticle", false, 33, Main.rand.NextFloat(0.43f, 0.56f) * Projectile.scale, Main.rand.NextBool() ? Color.MediumOrchid : clr, new Vector2(1, 1), shrinkSpeed: 0.1f));
                         }
                     }   
                 }
@@ -306,7 +371,12 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.numHits -= 1;
 
             if (target != null && target.life > 0 && target.active)
+            {
                 lastHitTarget = target;
+                lastHitTargetIndex = target.whoAmI;
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.netUpdate = true;
+            }
 
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
@@ -321,7 +391,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            CalamityUtils.MoveNPC(target, launchVel, 40, true);
+            CalamityUtils.MoveNPC(target, launchVel, 40, true, Owner);
 
             if (target.Calamity().demonSwordImpales != 0 || Projectile.numHits == 0)
             {
@@ -409,27 +479,29 @@ namespace CalamityMod.Projectiles.Melee
             if (true)
             {
                 Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineAngled");
-                int draws = 30;
+                int draws = 60;
                 for (int i = 0; i < draws; i++)
                 {
+                    float sine = MathF.Sin(Main.GlobalTimeWrappedHourly * 25 + i * 6);
+                    float newSine = 0.3f + (0.7f - sine * 0.25f) * Utils.Remap(i, 0, draws, 0.8f, 0.6f);
                     Vector2 offsetDir = Vector2.One.RotatedBy(Projectile.rotation + RotationOffset + MathHelper.ToRadians(90));
 
-                    Color auraColor = Color.Lerp(Color.MediumOrchid, clr, Utils.GetLerpValue(0, draws - 1, i)) with { A = 0 } * 0.38f * (willDie ? deathFade : 1);
-                    Vector2 drawOffset = -offsetDir * 10 * deathFade * i;
-                    Main.EntitySpriteDraw(tex2.Value, Projectile.Center - offsetDir * 70 - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(18, 18), tex2.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, tex2.Size() * 0.5f, Vector2.One * (1f - i * 0.02f) * 0.06f, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
+                    float jitter = Utils.Remap(i, 0, draws / 2, 10, 0f) * deathFade;
+                    Color auraColor = Color.Lerp(Color.MediumOrchid, clr, Utils.GetLerpValue(0, draws - 1, i)) with { A = 0 } * 0.38f * (Utils.Remap(jitter, 0, 10, 1, 3.5f)) * (willDie ? deathFade : 1);
+                    Vector2 drawOffset = -offsetDir * 5 * deathFade * i * Projectile.scale;
+                    Main.EntitySpriteDraw(tex2.Value, Projectile.Center - offsetDir * 30 * Projectile.scale - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(jitter, jitter), tex2.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation.ToRotationVector2().RotatedByRandom(jitter * 0.085f).ToRotation() + RotationOffset + r, new Vector2(FlipAsSword ? tex2.Width() : 0, tex2.Height()), Vector2.One * (1f - i * 0.01f) * 0.06f * Projectile.scale * newSine * Utils.Remap(jitter, 0, 10, 1, 0.3f), spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 }
             }
             for (int i = 0; i < 20; i++)
             {
                 Color auraColor = Color.MediumOrchid with { A = 0 } * 0.18f * (willDie ? deathFade : 1);
-                Vector2 drawOffset = (MathHelper.TwoPi * i / 20f).ToRotationVector2() * 7 * (willDie ? (1 - deathFade) * 3 : 2);
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(7, 7), tex.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 20f).ToRotationVector2() * 2 * (willDie ? (1 - deathFade) * 3 : 2);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY) + Main.rand.NextVector2Circular(4, 4), tex.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
             }
             if ((useAnim > 0 || DrawUnconditionally))
             {
-                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.BlueViolet with { A = 0 } * fadeIn * 0.75f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 == 0 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 0.9f * hitboxMult, SpriteEffects.None);
-                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, clr with { A = 0 } * fadeIn * 0.85f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 == 0 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 1.2f * hitboxMult, SpriteEffects.None);
-
+                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, Color.BlueViolet with { A = 0 } * fadeIn * 0.75f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 == 0 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 1.3f, SpriteEffects.None);
+                Main.EntitySpriteDraw(swoosh.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, clr with { A = 0 } * fadeIn * 0.85f, (FinalRotation + MathHelper.ToRadians(45)) + MathHelper.ToRadians(swingCount % 2 == 0 ? -65 : 65) * -Owner.direction, swoosh.Size() * 0.5f, Projectile.scale * 1.75f, SpriteEffects.None);
 
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), Color.Lerp(Color.MediumOrchid with { A = 0 }, lightColor, deathFade) * deathFade, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
             }
@@ -437,6 +509,27 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void ResetStyle()
         {
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(willDie);
+            writer.Write7BitEncodedInt(useAnim);
+            writer.Write7BitEncodedInt(lastHitTargetIndex);
+            writer.Write7BitEncodedInt(postSwingCooldown);
+            writer.WriteVector2(aimVel);
+            writer.Write(Animation);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            willDie = reader.ReadBoolean();
+            useAnim = reader.Read7BitEncodedInt();
+            lastHitTargetIndex = reader.Read7BitEncodedInt();
+            postSwingCooldown = reader.Read7BitEncodedInt();
+            aimVel = reader.ReadVector2();
+            Animation = reader.ReadSingle();
+            mousePos = Owner.Center - aimVel;
         }
     }
 }

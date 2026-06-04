@@ -22,6 +22,7 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Tiles.Furniture;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,6 +32,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs
@@ -70,6 +72,18 @@ namespace CalamityMod.NPCs
         public int shopAlertAnimTimer = 0;
         /// <summary> <inheritdoc cref="shopAlertAnimTimer"/> </summary>
         public int shopAlertAnimFrame = 0;
+        /// <summary>
+        /// Controls how this Town NPC is being affected by The Gift.<br/>
+        /// If true, happiness is overriden with an extremely high value. If false, happiness is overriden with an extremely low value. If null, uses vanilla happiness.
+        /// </summary>
+        public bool? TheGiftStatus = null;
+        /// <summary>
+        /// Timer to track when to reset the effects of The Gift, which occurs after 24 hours.<br/>
+        /// When The Gift is applied, this is set to 0 then starts counting up.
+        /// </summary>
+        public double TheGiftReset = -1.0;
+
+        public bool AffectedByTheMonument = false;
 
         public override bool InstancePerEntity => true;
 
@@ -85,6 +99,9 @@ namespace CalamityMod.NPCs
             myClone.setNewName = setNewName;
             myClone.shopAlertAnimTimer = shopAlertAnimTimer;
             myClone.shopAlertAnimFrame = shopAlertAnimFrame;
+            myClone.TheGiftStatus = TheGiftStatus;
+            myClone.TheGiftReset = TheGiftReset;
+            myClone.AffectedByTheMonument = AffectedByTheMonument;
 
             return myClone;
         }
@@ -115,6 +132,7 @@ namespace CalamityMod.NPCs
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
             "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
             "Perrin", // <@!253764551139393537> (easyperrin)
+            "Dorkyy", // <@!427765391662514185> (dorkblaze01)
         ];
         private static readonly string[] CyborgNames =
         [
@@ -136,6 +154,7 @@ namespace CalamityMod.NPCs
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
             "Kanna", // <@!730203712898859018> (cosmoredeathwish)
+            "Elliada", // <@!865554691345874954> (cti971)
         ];
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
@@ -185,6 +204,7 @@ namespace CalamityMod.NPCs
             "Curly", // <@!673092101780668416> (curly4830)
             "Cobalt", // <@!132962828922388481> (cobalt_44)
             "Dizzetriya", // <@!719818245665980517> (dizzykbity)
+            "Vodka", // <@!1172497470438248565> (ehhhhh0981)
         ];
         private static readonly string[] MerchantNames =
         [
@@ -219,6 +239,7 @@ namespace CalamityMod.NPCs
             "Yarrim", // <@!290061123137306624> (borb9834)
             "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
             "Blunderbeard", // <@!1039460813490102293> (parmiigianoreggiano)
+            "Vergil Cyrus", // <@!732350101619605584> (cyver1)
         ];
         private static readonly string[] PrincessNames =
         [
@@ -230,6 +251,7 @@ namespace CalamityMod.NPCs
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
             "Vela", // <@!208719047146209281> (nyxxynightstar)
+            "Misako Drevis", // <@!1103067115386323065> (threadsofmemory)
         ];
         private static readonly string[] SantaClausNames =
         [
@@ -262,6 +284,7 @@ namespace CalamityMod.NPCs
             "Lain", // <@!655201622863118337> (literallyadeerfr)
             "Hamis", // <@!608455754093035521> (haefer)
             "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
+            "Vanessa", // <@!638901548591611945> (mediocreking)
         ];
         private static readonly string[] TavernkeepNames =
         [
@@ -273,6 +296,8 @@ namespace CalamityMod.NPCs
         private static readonly string[] TaxCollectorNames =
         [
             "Emmett",
+            "Bagman", // <@!701831892990820383> (supportcrispy)
+            "Old Man Scrooge", // <@!1392141158255427655> (vortexgaming18)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
@@ -281,6 +306,7 @@ namespace CalamityMod.NPCs
             "Borgus", // <@!539127427482255376> (therealmeepman)
             "Postman Hiss", // <@!454638106122125312> (karinthefairy)
             "Cosmoec", // <@!793660591449309204> (cosmoecark)
+            "Junorism", // <@!740625002596008036> (hewhoshallnotbebaned)
         ];
         private static readonly string[] TruffleNames =
         [
@@ -296,6 +322,7 @@ namespace CalamityMod.NPCs
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
             "Tequila", // <@!889175547744239677> (thecrispistofnuggets)
+            "Bee Movie Script", // <@!407949998173454341> (literally_jesuschrist)
         ];
         private static readonly string[] WizardNames =
         [
@@ -319,6 +346,7 @@ namespace CalamityMod.NPCs
             "Fera", // <@!195850711567826945> (juneark_)
             "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
+            "Zora", // <@!752687500656640030> (oxytoxy365)
         ];
         // Town Slimes
         private static readonly string[] ClumsySlimeNames = null;
@@ -353,6 +381,8 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogLabradorNames =
         [
             "Riley", // <@!260875558592708619> (potionpal)
+            "Silvie", // <@!979862425211912242> (goldsockz2)
+            "Madison", // <@!338315261352476682> (tyeski)
         ];
         private static readonly string[] TownDogPitBullNames =
         [
@@ -361,12 +391,16 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogBeagleNames =
         [
             "Kendra", // <@!237247188005158912> (lordmetarex)
+            "Libby", // <@!338315261352476682> (tyeski)
+            "Myles", // <@!658760860722004017> (apotofkoolaid)
+            "Luna", // <@!534132902095749120> (mizzultraviolet)
         ];
         private static readonly string[] TownDogCorgiNames = null;
         private static readonly string[] TownDogDalmatianNames = null;
         private static readonly string[] TownDogHuskyNames =
         [
             "Yoshi", // <@!541127291426832384> (gregthespinarak)
+            "Franklin", // <@!338315261352476682> (tyeski)
         ];
 
         private const int TownCatSiameseVanillaNames = 12;
@@ -387,12 +421,19 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSiameseNames =
         [
             "Conductor", // <@!555512087711973390> (grayaeternum)
+            "Vivian", // <@!338315261352476682> (TYESKI)
+            "Pudum", // <@!731141759484297226> (trianglepixel)
+            "Snickers", // <@!658760860722004017> (apotofkoolaid)
+            "Mr. Kitten", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatBlackNames =
         [
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
+            "Hognar", // <@!766511001356468237> (xzier_tengal)
+            "Saffie", // <@!319753595161411584> (CDMusic)
+            "Willow", // <@!319753595161411584> (CDMusic)
+            "Maine", // <@!731141759484297226> (trianglepixel)
         ];
         private static readonly string[] TownCatOrangeTabbyNames =
         [
@@ -400,12 +441,13 @@ namespace CalamityMod.NPCs
             "Tardo", // <@!739343546867384391> (midnight295)
             "Dali", // <@!460238880436781061> (darthlego)
             "Kiba", // <@!852348657072340992> (jollydragonslayer)
+            "Monkey", // <@!338315261352476682> (TYESKI)
+            "Percy", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =
         [
             "Archie", // <@!303022375191183360> (jackshiz)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         ];
         private static readonly string[] TownCatWhiteNames = null;
 
@@ -780,7 +822,51 @@ namespace CalamityMod.NPCs
         public override bool PreAI(NPC npc)
         {
             SetPatreonTownNPCName(npc, Mod);
+
+            // Reset The Gift after 24 hours
+            if (TheGiftReset >= 0.0)
+            {
+                TheGiftReset += Main.dayRate;
+                if (TheGiftReset >= Main.dayLength + Main.nightLength)
+                {
+                    TheGiftReset = -1.0;
+                    TheGiftStatus = null;
+                }
+            }
+
+            // Search for The Monument, for the purposes of assigning higher taxes
+            AffectedByTheMonument = false;
+            SearchForTheMonument(npc);
+
             return true;
+        }
+
+        public bool SearchForTheMonument(NPC npc)
+        {
+            Point tileCenter = npc.Center.ToTileCoordinates();
+            Rectangle searchArea = new((int)(tileCenter.X - Main.buffScanAreaWidth / 2), (int)(tileCenter.Y - Main.buffScanAreaHeight / 2), Main.buffScanAreaWidth, Main.buffScanAreaHeight);
+            searchArea = WorldUtils.ClampToWorld(searchArea);
+            for (int i = searchArea.Left; i < searchArea.Right; i++)
+            {
+                for (int j = searchArea.Top; j < searchArea.Bottom; j++)
+                {
+                    if (!searchArea.Contains(i, j))
+                        continue;
+
+                    Tile tile = Main.tile[i, j];
+                    if (tile == null)
+                        continue;
+                    if (!tile.HasTile)
+                        continue;
+
+                    if (tile.TileType == TileType<TheMonumentTile>())
+                    {
+                        AffectedByTheMonument = true;
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         #endregion
 
@@ -935,7 +1021,7 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Cyborg:
                     if (Main.rand.NextBool(5) && NPC.downedMoonlord)
-                        chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MoonLordDefeated" + Main.rand.Next(1, 2 + 1));
+                        chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(10) && !DownedBossSystem.downedPlaguebringer && NPC.downedGolemBoss)
                         chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MentionPlague");
                     else if (Main.rand.NextBool(10) && Main.raining)
@@ -952,10 +1038,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Dryad:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.DarksunEclipse");
-                    else if (Main.rand.NextBool(5) && Main.LocalPlayer.ZoneGlowshroom)
-                    {
-                        chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.Mushroom");
-                    }
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneSulphur)
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.SulphurSea");
                     else if (Main.rand.NextBool(5) && Main.hardMode)
@@ -1005,6 +1087,14 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.MerchantChat.AcidRain");
                     else if (Main.rand.NextBool(7) && thief != -1)
                         chat = CalamityUtils.GetTextValue("Vanilla.MerchantChat.Bandit");
+                    break;
+
+                case NPCID.Nurse:
+                    if (Main.rand.NextBool(4) && NPC.downedPlantBoss && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.PlanteraDefeatedAndBanditPresent");
+                    else if (Main.rand.NextBool(4) && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.Bandit");
+
                     break;
 
                 case NPCID.Painter:
@@ -1144,7 +1234,7 @@ namespace CalamityMod.NPCs
         public void BoundNPCSafety(Mod mod, NPC npc)
         {
             // Make Bound Town NPCs take no damage
-            if (CalamityNPCTypeSets.BoundTownNPC[npc.type])
+            if (CalamityNPCSets.BoundTownNPC[npc.type])
                 npc.dontTakeDamageFromHostiles = true;
         }
 
@@ -1206,6 +1296,8 @@ namespace CalamityMod.NPCs
             Condition spelunkerGlowCondition = new(Language.GetText("Conditions.NightDayFullMoon"), () => !Main.dayTime || Main.GetMoonPhase() == MoonPhase.Full); // Identical to the one in NPCShopDatabase
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
             Condition bestiaryProgressLacewing = new(CalamityUtils.GetText("Condition.LacewingBestiary"), () => Main.GetBestiaryProgressReport().CompletionPercent >= 0.4f);
+            Condition crescentMoons = new(CalamityUtils.GetText("Condition.CrescentMoons"), () => Main.GetMoonPhase() == MoonPhase.QuarterAtLeft || Main.GetMoonPhase() == MoonPhase.QuarterAtRight); // for Craw Carapace
+            Condition gibbousMoons = new(CalamityUtils.GetText("Condition.GibbousMoons"), () => Main.GetMoonPhase() == MoonPhase.ThreeQuartersAtLeft || Main.GetMoonPhase() == MoonPhase.ThreeQuartersAtRight); // for Giant Shell
 
             if (type == NPCID.Merchant)
             {
@@ -1230,7 +1322,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.ArmsDealer)
             {
-                shop.AddWithCustomValue(ItemType<M1Garand>(), Item.buyPrice(gold: 20), Condition.DownedSkeletron)
+                shop.Add<M1Garand>(Condition.DownedSkeletron)
                 .Add<P90>(Condition.Hardmode)
                 .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
                 .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera);
@@ -1291,6 +1383,8 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Painter)
             {
                 shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<CalamityCanvas2023>())
+                .Add(ItemType<CalamityCanvas2024>())
                 .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 
@@ -1348,12 +1442,12 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.SkeletonMerchant)
             {
-                shop.InsertAfter(ItemID.HealingPotion, ItemType<CalciumPotion>())
-                .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton)
+                shop.InsertAfter(ItemID.HealingPotion, ItemType<CalciumPotion>(), Condition.MoonPhasesHalf0)
+                .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton, Condition.MoonPhasesHalf1)
                 .InsertAfter(ItemID.SpelunkerFlare, ItemID.SpelunkerFlare, spelunkerGlowCondition, hasFlareGunUpgrade)
-                .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
-                .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 15))
-                .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 15));
+                .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode, Condition.MoonPhases26) // 26 = half moons
+                .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 15), gibbousMoons)
+                .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 15), crescentMoons);
             }
 
             if (type == NPCID.BestiaryGirl)

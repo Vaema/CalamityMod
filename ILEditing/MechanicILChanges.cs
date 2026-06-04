@@ -24,6 +24,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles;
 using CalamityMod.Utilities.Daybreak;
@@ -561,6 +562,8 @@ namespace CalamityMod.ILEditing
         private static void ApplyOldFashionedDamageToMiscHits(On_Player.orig_ApplyDamageToNPC orig, Player self, NPC npc, int damage, float knockback, int direction, bool crit = false, DamageClass? damageType = null, bool damageVariation = false)
         {
             if (self.Calamity().oldFashioned)
+                damage = (int)(damage * OldFashioned.DamageBoostMultiplier);
+            if (self.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.OldFashioned))
                 damage = (int)(damage * OldFashioned.DamageBoostMultiplier);
             orig(self, npc, damage, knockback, direction, crit, damageType, damageVariation);
         }
@@ -1111,7 +1114,7 @@ namespace CalamityMod.ILEditing
             if (Style == 2)
             {
                 // Check if it's an Abyss wall
-                if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
+                if (CalamityTileSets.IsAbyssWall[t.WallType])
                 {
                     // If an Abyss wall is detected, try to find another teleportation location
                     bool canSpawn = false;
@@ -1140,7 +1143,7 @@ namespace CalamityMod.ILEditing
                 // Potion of Return triggers Jared if used in the Abyss
                 if (Style == 8)
                 {
-                    if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
+                    if (CalamityTileSets.IsAbyssWall[t.WallType])
                         self.AddBuff(BuffID.ChaosState, 2);
                 }
             }

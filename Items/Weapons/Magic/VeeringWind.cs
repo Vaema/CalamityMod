@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 32;
-            Item.damage = 19;
+            Item.damage = 16;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 14;
             Item.useAnimation = Item.useTime = 36;
@@ -76,7 +76,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.IceBlock, 30).
+                AddRecipeGroup("AnyIceBlock", 30).
                 AddIngredient(ItemID.Feather, 3).
                 AddIngredient(ItemID.FallenStar, 5).
                 AddIngredient(ItemID.Cloud, 10).

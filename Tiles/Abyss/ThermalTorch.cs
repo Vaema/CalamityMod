@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq;
+using CalamityMod.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -54,6 +56,22 @@ namespace CalamityMod.Tiles.Abyss
                 {
                     offsetY = 4;
                 }
+            }
+        }
+
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            //This makes the placed torch cut through the abyss darkness.
+            var pos = new Point(i, j).ToWorldCoordinates();
+            if (!closer && Main.LocalPlayer.Calamity().ZoneAbyss && !Main.gamePaused)
+            {
+                if (EnhancedDarknessSystem.lights.Any(x => x.center == pos))
+                {
+                    var e = EnhancedDarknessSystem.lights.First(x => x.center == pos);
+                    e.lifetime = 5;
+                }
+                else
+                    EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(pos, scale: 2f) { lifetime = 5 });
             }
         }
 

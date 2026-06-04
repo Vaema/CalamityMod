@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent.UI;
 using Terraria.GameInput;
 using Terraria.ID;
@@ -389,7 +386,7 @@ namespace CalamityMod.Items.Accessories
             }
 
             hookCache = -1;
-            if (!obeyGravity) 
+            if (!obeyGravity)
             {
                 Player.gravity = -1f; //Disable player gravity with Anti-Grav hook
             }
@@ -463,7 +460,7 @@ namespace CalamityMod.Items.Accessories
                         Player.velocity.X = Player.velocity.X == 0 ? 1.5f : 1.5f * Math.Sign(Player.velocity.X);
                     }
                 }
-                
+
                 else
                 {
                     if (Player.grappling[0] > -1)
@@ -471,7 +468,7 @@ namespace CalamityMod.Items.Accessories
                         var Hook = Main.projectile[Player.grappling[0]];
                         if (Hook != null)
                         {
-                            
+
                             if (Player.controlRight)
                                 Player.velocity.X += 0.3f;
                             else if (Player.controlLeft)
@@ -488,7 +485,7 @@ namespace CalamityMod.Items.Accessories
                             var dis = Hook.Center.Distance(estimatedPos);
                             if (dis > SwingLength && dis < 1000f)
                             {
-                                var dis2 = Math.Min(Player.Center.Distance(goalPos), SwingLength*3f);
+                                var dis2 = Math.Min(Player.Center.Distance(goalPos), SwingLength * 3f);
                                 if (dis2 > 0)
                                 {
                                     Player.velocity = Player.Center.DirectionTo(goalPos) * dis2;
@@ -769,7 +766,7 @@ namespace CalamityMod.Items.Accessories
                     WulfrumAcrobaticsLengthSync.Send(
                         new WulfrumAcrobaticsLengthSync.Data((byte)Player.whoAmI, SwingLength, setControlUpFalse)
                     );
-                }  
+                }
             }
         }
 
@@ -790,8 +787,6 @@ namespace CalamityMod.Items.Accessories
     internal sealed class WulfrumAcrobaticsSync : CalamityPacket
     {
         public static WulfrumAcrobaticsSync Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.WulfrumAcrobaticsSync;
 
         public static void Send(Player player, WulfrumPackPlayer mPlayer, Projectile proj, int toClient = -1, int ignoreClient = -1)
         {
@@ -823,7 +818,7 @@ namespace CalamityMod.Items.Accessories
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var playerWhoAmI = packet.ReadByte();
             var swingLength = packet.ReadSingle();
@@ -866,8 +861,6 @@ namespace CalamityMod.Items.Accessories
 
         public static WulfrumAcrobaticsJumpSync Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.WulfrumAcrobaticsJumpSync;
-
         public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();
@@ -880,7 +873,7 @@ namespace CalamityMod.Items.Accessories
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var playerWhoAmI = packet.ReadByte();
             var swingLength = packet.ReadSingle();
@@ -930,8 +923,6 @@ namespace CalamityMod.Items.Accessories
 
         public static WulfrumAcrobaticsLengthSync Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.WulfrumAcrobaticsLengthSync;
-
         public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();
@@ -941,7 +932,7 @@ namespace CalamityMod.Items.Accessories
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var playerWhoAmI = packet.ReadByte();
             var swingLength = packet.ReadSingle();

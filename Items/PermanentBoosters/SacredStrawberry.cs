@@ -35,7 +35,7 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.useAnimation = Item.useTime = 30;
             Item.UseSound = UseSound;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.value = Item.sellPrice(gold: 48);
+            Item.value = Item.sellPrice(gold: 36);
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 

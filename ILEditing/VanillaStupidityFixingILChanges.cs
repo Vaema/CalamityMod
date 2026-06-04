@@ -125,33 +125,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion Reforge Requirement Relaxation
 
-        #region Remove Forced Inaccuracy from Chain Gun and Gatligator
-        private static void RemoveForcedInaccuracyFromChainGunAndGatligator(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Go to the load of the Chain Gun's item ID (1929).
-            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(1929)))
-            {
-                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Chain Gun.");
-                return;
-            }
-
-            // Change this item ID check to check for -1048576. This will never occur.
-            cursor.Next.Operand = -1048576;
-
-            // Go to the load of the Gatligator's item ID (2270).
-            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(2270)))
-            {
-                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Gatligator.");
-                return;
-            }
-
-            // Change this item ID check to check for -1048576. This will never occur.
-            cursor.Next.Operand = -1048576;
-        }
-        #endregion
-
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
@@ -342,15 +315,6 @@ namespace CalamityMod.ILEditing
                 pickPower = 65;
 
             return orig(self, x, y, pickPower, hitBufferIndex, tileTarget);
-        }
-        #endregion
-
-        #region Remove Flail Throw Velocity Being Affected By Player Velocity
-        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
-        {
-            orig(self);
-            if (self.ai[0] == 1f && self.ai[1] == 0f)
-                self.velocity -= Main.player[self.owner].velocity;
         }
         #endregion
 

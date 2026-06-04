@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -17,11 +18,6 @@ namespace CalamityMod.Projectiles.Melee
         public ref float Time => ref Projectile.localAI[1];
         public const int Lifetime = 30;
         public override string Texture => "CalamityMod/Projectiles/StarProj";
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.MinionShot[Type] = true;
-        }
 
         public override void SetDefaults()
         {
@@ -84,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
                     risingMagic.scale = Main.rand.NextFloat(0.6f, 1.2f);
                     risingMagic.noLight = true;
 
-                    risingMagic = Dust.CloneDust(risingMagic);
+                    risingMagic = Dust.BetterCloneDust(risingMagic);
                     risingMagic.scale *= 0.65f;
                     risingMagic.fadeIn *= 0.65f;
                     risingMagic.color = new Color(255, 255, 255, 255);
@@ -183,7 +179,7 @@ namespace CalamityMod.Projectiles.Melee
                 explosionDust.scale = 1.1f;
                 explosionDust.fadeIn = Main.rand.NextFloat(1.4f, 2.4f);
 
-                explosionDust = Dust.CloneDust(explosionDust);
+                explosionDust = Dust.BetterCloneDust(explosionDust);
                 explosionDust.scale /= 2f;
                 explosionDust.fadeIn /= 2f;
                 explosionDust.color = new Color(255, 255, 255, 255);
@@ -198,7 +194,7 @@ namespace CalamityMod.Projectiles.Melee
                 explosionDust.scale = Main.rand.NextFloat();
                 explosionDust.fadeIn = Main.rand.NextFloat(1.4f, 2.4f);
 
-                explosionDust = Dust.CloneDust(explosionDust);
+                explosionDust = Dust.BetterCloneDust(explosionDust);
                 explosionDust.scale /= 2f;
                 explosionDust.fadeIn /= 2f;
                 explosionDust.color = new Color(255, 255, 255, 255);

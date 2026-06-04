@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int LightningSpawnPercent = 6;
-        public static float LightningDamageMult = 4f;
+        public static int LightningSpawnPercent = 5;
+        public static float LightningDamageMult = 3f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LightningSpawnPercent, LightningDamageMult);
 
         public override void SetDefaults()

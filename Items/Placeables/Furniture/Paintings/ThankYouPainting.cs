@@ -10,6 +10,8 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
     {
         public new string LocalizationCategory => "Items.Placeables";
         public const int DropInt = 100;
+        public static bool holdShift = true;
+        public static bool showingFormerDevs = true;
 
         public override void SetDefaults()
         {
@@ -22,96 +24,103 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (!Main.keyState.PressingShift())
-                return;
-
-            string tooltip = "";
-
-            int namesPerLine = 5;
-            for (int i = 0; i < devList.Count; i++)
+            if (Main.keyState.PressingShift())
             {
-                tooltip += devList[i];
+                if (!holdShift)
+                {
+                    holdShift = true;
+                    showingFormerDevs = !showingFormerDevs;
+                }
 
-                if (i == devList.Count - 1)
-                    break;
+                string tooltip = "--------\n";
+                int namesPerLine = 7;
+                IList<string> listToPullFrom = showingFormerDevs ? formerDevList : currentDevList;
 
-                if (i % namesPerLine == 0)
-                    tooltip += "\n";
+                for (int i = 1; i <= listToPullFrom.Count; i++)
+                {
+                    tooltip += listToPullFrom[i - 1];
 
-                else
-                    tooltip += ", ";
+                    if (i == listToPullFrom.Count)
+                        break;
+
+                    if (i % namesPerLine == 0)
+                        tooltip += "\n";
+                    else
+                        tooltip += ", ";
+                }
+
+                TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip2");
+                if (line != null)
+                    line.Text = tooltip;
             }
-
-            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip2");
-            if (line != null)
-                line.Text = tooltip;
+            else
+                holdShift = false;
         }
 
-        public static IList<string> devList = new List<string>()
+        public static IList<string> currentDevList = new List<string>()
         {
-			"Altixal",
+            "Altixal",
             "apotofkoolaid",
-            "AquaSG",
+            "ArchonSystem",
             "Atalya",
             "Ben-TK",
             "Big E",
+            "carnymassacre",
             "CDMusic",
-            "Cei",
             "CongratsIsTrash",
             "Cooper",
             "CosmaticMango",
             "CrabBar",
+            "Critaquil",
             "Dandy",
-            "Dia",
             "Done",
             "dozezoze",
-            "Eddie Spaghetti",
-            "ENNWAY",
             "Flowaria",
             "Fluffy",
             "fryzahh",
-            "HaguriHat",
+            "Gpscorpion",
             "jasper",
             "LordMetarex",
-            "Mercutio 'Merkalto' Takle",
-            "Mishiro Usui",
             "Moonburn",
-            "Nycro",
             "Ozzatron",
-            "Piky",
             "PokerFace",
-            "Poroboros",
             "Raesh",
             "Sagittariod",
-            "Spider Prov",
+            "sixtydegrees",
             "StipulateVenus",
+            "Sunny",
             "_tofu",
             "Tomat",
             "Triangle",
-            "TYESKI (Universe)",
-            "Uncle Danny",
+            "TYESKI",
             "Xyk",
             "YuH",
-            // Former devs
-			"Afzofa",
+        };
+
+        public static IList<string> formerDevList = new List<string>()
+        {
+            "Afzofa",
             "AdipemDragon",
             "Akeeli",
             "Aleksh",
             "Alphi",
             "Altalyra",
             "Amadis",
+            "AquaSG",
             "AstroKnight",
             "Blast",
             "Blastitle",
             "Blockaroz",
             "Boffin",
             "Bravioli",
+            "Cei",
             "Chetto",
             "Chill Dude",
             "Cobalion",
             "Daim",
             "DarkTiny",
             "Demik",
+            "Dia",
             "DM Dokuro",
             "Doog",
             "drh",
@@ -119,9 +128,11 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "DylanDoe21",
             "Earth",
             "EchoDuck",
+            "Eddie Spaghetti",
             "Ein",
             "enamoured",
             "Enreden",
+            "ENNWAY",
             "Epsilon",
             "Fargowilta",
             "Frous",
@@ -149,22 +160,28 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Lompl Allimath",
             "Lucille Karma",
             "MarieArk",
+            "math2",
+            "Mercutio 'Merkalto' Takle",
             "Mihaii",
             "Minecat",
+            "Mishiro Usui",
             "Mrrp",
             "Nao",
             "Neverglide",
             "Nincity",
             "Niorin",
             "Nitro",
+            "Nycro",
             "NyctoDarkMatter",
             "PaleoStar",
             "Pbtopacio",
             "Phantasmal Deathray",
             "Phupperbat",
+            "Piky",
             "Pinkie Poss",
             "Poly",
             "Popo",
+            "Poroboros",
             "President Waluigi",
             "Puff",
             "Purple Necromancer",
@@ -179,9 +196,9 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "SixteenInMono",
             "Skeletony",
             "Sok",
+            "Spider Prov",
             "spooktacular",
             "Spoopyro",
-            "Sunny",
             "Svante",
             "Sylvium",
             "Teragat",
@@ -192,6 +209,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Trivaxy",
             "Tobias",
             "Uberransy",
+            "Uncle Danny",
             "Vaikyia",
             "Vladimier",
             "Yatagarasu",

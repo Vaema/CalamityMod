@@ -13,8 +13,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.damage = 620;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 180;
@@ -30,12 +28,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.useStyle = ItemUseStyleID.Shoot;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 200f;
+            Item.Calamity().donorItem = true;
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0 && Item.Calamity().Charge > 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
         public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 

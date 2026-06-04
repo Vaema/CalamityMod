@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee.Spears;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,10 +13,6 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override int ProjectileType => ModContent.ProjectileType<GildedProboscisProj>();
 
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-        }
         public override bool SizeModifiers => false;
         public override void SetDefaults()
         {

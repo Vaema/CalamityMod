@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
         public bool jitter = false;
         public Vector2 portalSpot;
         public Vector2 shadowPlacement;
-        public int clones = 9; // This is just a counter for the clones, it will not change how many spawn
+        public int clones = 6; // This is the number of clones spawned by the stealth strike
         NPC closestTarget;
         public override void SetDefaults()
         {
@@ -108,7 +109,7 @@ namespace CalamityMod.Projectiles.Rogue
                         Particle spark = new AltSparkParticle(Projectile.Center, -Projectile.velocity * randVel, false, lifetime, 1.2f, Color.Black);
                         GeneralParticleHandler.SpawnParticle(spark);
                         Particle spark2 = new SparkParticle(Projectile.Center, -Projectile.velocity * randVel, false, lifetime, 0.9f, Color.LightGreen);
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                        GeneralParticleHandler.SpawnParticle(spark2, false, GeneralDrawLayer.AfterEverything);
                         if (Main.rand.NextBool() && !Projectile.Calamity().stealthStrike)
                         {
                             Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
@@ -125,11 +126,11 @@ namespace CalamityMod.Projectiles.Rogue
                         Particle spark = new AltSparkParticle(placement, -Projectile.velocity * speed, false, 11, 0.8f, Color.Black);
                         GeneralParticleHandler.SpawnParticle(spark);
                         Particle spark2 = new SparkParticle(placement, -Projectile.velocity * speed, false, 11, 0.5f, Color.LightGreen);
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                        GeneralParticleHandler.SpawnParticle(spark2, false, GeneralDrawLayer.AfterEverything);
                     }
                     if (closestTarget != null && Projectile.numHits < 1 && closestTarget.CanBeChasedBy(Projectile))
                     {
-                        CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.95f, 16, 0.96f);
+                        CalamityUtils.HomeInOnSelectedNPC(Projectile, Projectile.Center.ClosestNPCAt(2000), true, 0.95f, 16, 0.96f);
                     }
                 }
             }
@@ -159,7 +160,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (closestTarget == null)
                     closestTarget = Projectile.Center.ClosestNPCAt(2000);
 
-                if (Projectile.Calamity().stealthStrike && time % 20 == 0)
+                if (Projectile.Calamity().stealthStrike && time % 20 == 0 && clones > 0)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2CircularEdge(450, 450) * Main.rand.NextFloat(0.7f, 1.3f), Vector2.Zero, ModContent.ProjectileType<AntumbraShardProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 1, 5);
                     clones--;
@@ -218,7 +219,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
 
                     Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen * 0.85f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1f, 18);
-                    GeneralParticleHandler.SpawnParticle(bolt2);
+                    GeneralParticleHandler.SpawnParticle(bolt2, false, GeneralDrawLayer.AfterEverything);
 
                     Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f * (storedVelocity.X > 0 ? 1 : -1));
                 }
@@ -256,7 +257,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.83f);
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
 

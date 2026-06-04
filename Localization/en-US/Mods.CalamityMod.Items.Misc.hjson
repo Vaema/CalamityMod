@@ -329,3 +329,8 @@ LegendaryShortTooltip:
 	[c/FF6F00:Tales of legends past radiate around you...]
 	[c/BABABA:Hold Shift to listen closer]
 	'''
+
+DisgustingSlop: {
+	DisplayName: Disgusting Slop
+	Tooltip: Can be extractinated
+}

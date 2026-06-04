@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
@@ -48,6 +49,23 @@ namespace CalamityMod.Projectiles.Melee
         public int bounces = 0;
         public bool fadingOut => Projectile.timeLeft <= (Lifetime - fadeOutTime);
 
+        private Vector2 GetAimDirection()
+        {
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 toMouse = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                float aimAngle = toMouse.ToRotation();
+                if (Math.Abs(MathHelper.WrapAngle(aimAngle - Projectile.localAI[1])) > 0.02f)
+                {
+                    Projectile.localAI[1] = aimAngle;
+                    if (Projectile.timeLeft % 6 == 0)
+                        Projectile.netUpdate = true;
+                }
+                return toMouse;
+            }
+            return Projectile.localAI[1].ToRotationVector2();
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -71,6 +89,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
+            if (time == 0)
+                Projectile.scale = Owner.GetMeleeScale();
             if ((CurrentState & State.HasSpawned) == 0)
             {
                 Projectile.timeLeft = Lifetime + ChargeupTime;
@@ -81,7 +101,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 foreach (var target in Main.ActiveNPCs)
                 {
-                    if ((CurrentState & State.LeftTarget) == 0 && CircularHitboxCollision(Projectile.Center, Projectile.width / ((CurrentState & State.LeftTarget) != 0 ? 0.5f : 1), target.getRect()))
+                    if ((CurrentState & State.LeftTarget) == 0 && CircularHitboxCollision(Projectile.Center, Projectile.width / ((CurrentState & State.LeftTarget) != 0 ? 0.5f : 1) * Projectile.scale, target.getRect()))
                     {
                         SoundStyle stuck = new("CalamityMod/Sounds/Item/DemonSwordImpact", 2);
                         SoundEngine.PlaySound(stuck with { Volume = 0.75f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = 3 }, Projectile.Center);
@@ -134,23 +154,27 @@ namespace CalamityMod.Projectiles.Melee
                 CurrentState &= ~State.HitTarget;
             }
 
+            if ((CurrentState & State.Thrown) != 0 && (CurrentState & (State.StuckInGround | State.StuckInTarget)) == 0)
+                Projectile.extraUpdates = 1;
+
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             Projectile.spriteDirection = Projectile.direction;
             Vector3 Light = Color.Firebrick.ToVector3();
             Lighting.AddLight(Projectile.Center, Light * 0.5f);
 
-            if (Projectile.timeLeft == Lifetime)
+            if (Projectile.timeLeft == Lifetime && Main.myPlayer == Projectile.owner)
             {
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                Vector2 toMouse = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                Vector2 toMouse = GetAimDirection();
                 Projectile.velocity = toMouse * 14;
-                Projectile.Center = Owner.MountedCenter + toMouse * 12f;
+                Projectile.Center = Owner.MountedCenter + toMouse * 12f * Projectile.scale;
                 Projectile.spriteDirection = Projectile.direction;
                 CurrentState |= State.Thrown;
                 time = 0;
                 Projectile.extraUpdates = 1;
                 Projectile.tileCollide = true;
+                Projectile.netUpdate = true;
             }
 
             if (Projectile.velocity.X > 0)
@@ -220,17 +244,18 @@ namespace CalamityMod.Projectiles.Melee
                     if (Main.rand.NextBool(3))
                     {
                         Dust dust = Dust.NewDustPerfect(
-                            Projectile.Center + safeVel.RotatedBy((CurrentState & State.LeftTarget) != 0 ? Projectile.rotation - MathHelper.ToRadians(Projectile.direction * 45) : 0) * ((CurrentState & State.LeftTarget) != 0 ? 45 : 60),
-                            ModContent.DustType<LightDust>(),
+                            Projectile.Center + safeVel.RotatedBy((CurrentState & State.LeftTarget) != 0 ? Projectile.rotation - MathHelper.ToRadians(Projectile.direction * 45) : 0) * ((CurrentState & State.LeftTarget) != 0 ? 45 : 60) * Projectile.scale,
+                            ModContent.DustType<SquashDust>(),
                             dustVel,
                             0,
                             default,
-                            ((CurrentState & State.LeftTarget) != 0 ? 1.5f : 1) * Main.rand.NextFloat(0.8f, 0.9f));
+                            ((CurrentState & State.LeftTarget) != 0 ? 1.5f : 1) * Main.rand.NextFloat(0.8f, 0.9f) * Projectile.scale);
                         dust.noGravity = true;
                         dust.color = Main.rand.NextBool() ? Color.Red : Color.Crimson;
                         dust.noLight = true;
                         dust.noLightEmittence = true;
                         dust.alpha = 100;
+                        dust.fadeIn = Projectile.scale - 1;
                     }
                 }
                 if (Main.rand.NextBool(5))
@@ -241,7 +266,7 @@ namespace CalamityMod.Projectiles.Melee
                         texture: "CalamityMod/Particles/DemonSigilParticle",
                         affectedByGravity: false,
                         lifetime: 17,
-                        scale: Main.rand.NextFloat(0.2f, 0.3f),
+                        scale: Main.rand.NextFloat(0.2f, 0.3f) * Projectile.scale,
                         color: Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.6f,
                         stretch: new Vector2(1f, 1f),
                         extraRotation: Main.rand.NextFloat(-1f, 1f));
@@ -275,19 +300,21 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 dustVel = new Vector2(10, 10).RotatedByRandom(Math.PI) * Main.rand.NextFloat(0.2f, 1f) * Projectile.Opacity;
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), dustVel, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), dustVel, 0, default, Main.rand.NextFloat(1.1f, 1.4f) * Projectile.scale);
                 dust.noGravity = true;
                 dust.color = Main.rand.NextBool() ? Color.Red : Color.Crimson;
                 dust.noLight = true;
                 dust.noLightEmittence = true;
                 dust.alpha = 100;
                 dust.velocity += Projectile.velocity;
+                dust.fadeIn = Projectile.scale - 1;
             }
         }
 
         public void throwAnimation()
         {
-            Owner.ChangeDir(MathF.Sign(Owner.Calamity().mouseWorld.X - Owner.Center.X));
+            Vector2 aimDirection = GetAimDirection();
+            Owner.ChangeDir(MathF.Sign(aimDirection.X));
 
             float armRotation = ArmAnticipationMovement() * Owner.direction;
 
@@ -295,7 +322,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.spriteDirection = Owner.direction;
             Projectile.direction = Owner.direction;
 
-            Projectile.Center = Owner.MountedCenter + Vector2.UnitY.RotatedBy(armRotation * Owner.gravDir) * -45f * Owner.gravDir;
+            Projectile.Center = Owner.MountedCenter + Vector2.UnitY.RotatedBy(armRotation * Owner.gravDir) * -45f * Owner.gravDir * Projectile.scale;
             Projectile.rotation = (-MathHelper.PiOver4 * Projectile.direction + armRotation) * Owner.gravDir;
 
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, MathHelper.Pi + armRotation);
@@ -358,6 +385,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             SoundStyle stuck = new("CalamityMod/Sounds/Item/DemonSwordImpact", 2);
             SoundEngine.PlaySound(stuck with { Volume = 0.75f, Pitch = Main.rand.NextFloat(0.2f, 0.3f), MaxInstances = 3 }, Projectile.Center);
+            Projectile.netUpdate = true;
         }
 
         public override bool? CanDamage()
@@ -370,7 +398,7 @@ namespace CalamityMod.Projectiles.Melee
 
         // After exiting a target, the hitbox is larger
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-            => (Projectile.numHits <= 0 || (CurrentState & State.LeftTarget) != 0) && CircularHitboxCollision(Projectile.Center, Projectile.width / ((CurrentState & State.LeftTarget) != 0 ? 0.5f : 1), targetHitbox);
+            => (Projectile.numHits <= 0 || (CurrentState & State.LeftTarget) != 0) && CircularHitboxCollision(Projectile.Center, Projectile.width / ((CurrentState & State.LeftTarget) != 0 ? 0.5f : 1) * Projectile.scale, targetHitbox);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -407,11 +435,22 @@ namespace CalamityMod.Projectiles.Melee
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write((byte)CurrentState);
+            writer.Write(Projectile.rotation);
+            writer.Write(Projectile.localAI[1]);
+            writer.Write(impalePos.X);
+            writer.Write(impalePos.Y);
+            writer.Write(stuckTimer);
+            writer.Write((short)bounces);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             CurrentState = (State)reader.ReadByte();
+            Projectile.rotation = reader.ReadSingle();
+            Projectile.localAI[1] = reader.ReadSingle();
+            impalePos = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            stuckTimer = reader.ReadInt32();
+            bounces = reader.ReadInt16();
         }
     }
 }

@@ -26,11 +26,10 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 52;
             Item.height = 74;
-            Item.damage = 270;
+            Item.damage = 150;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 6;
-            Item.useTime = 12;
-            Item.useAnimation = 12;
+            Item.mana = 16;
+            Item.useAnimation = Item.useTime = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.2f;
@@ -59,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Magic
                     var p = Main.projectile.First(x => x.type == ModContent.ProjectileType<DracoConstellation>() && x.active && x.owner == player.whoAmI);
                     p.timeLeft = (int)MathHelper.Min(p.timeLeft, 60);
                 } else
-                    Projectile.NewProjectile(source, player.Center + new Vector2(-125,-100), -Vector2.Zero, ModContent.ProjectileType<DracoConstellation>(), damage * 3, knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, player.Center + new Vector2(-125,-100), -Vector2.Zero, ModContent.ProjectileType<DracoConstellation>(), (int)(damage * 4f), knockback, player.whoAmI);
                 return false;
             }
             var mousePos = player.Calamity().mouseWorld;

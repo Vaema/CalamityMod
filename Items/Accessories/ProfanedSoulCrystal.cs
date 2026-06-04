@@ -36,7 +36,11 @@ namespace CalamityMod.Items.Accessories
 
         public const int maxMinionRequirement = 10;
         public const int maxPscAnimTime = 120;
-        public static SummonTag SummonTag = new() { MultiplicativeTagDamage = 0.2f, TagModifyHitEffects = ApplyTagModifyHit, AutoDrawTooltip = false };
+        public static SummonTag SummonTag = new() {
+            MultiplicativeTagDamage = 0.2f,
+            TagModifyHitEffects = ApplyTagModifyHit,
+            AutoDrawTooltip = false
+        };
 
         public static void ApplyTagModifyHit(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers, ref float tagDamageMult, ref float critChance)
         {
@@ -221,7 +225,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetDefaults()
         {
-            SummonTag.TagItem = Item.type;
+            SummonTag.TagItem = Type;
             SummonTag.TagTexture = TextureAssets.Item[Type];
             Item.width = 50;
             Item.height = 50;
@@ -427,17 +431,9 @@ namespace CalamityMod.Items.Accessories
                         player.Calamity().profanedSoulWeaponUsage = 0;
                     }
                     int manaCost = (int)(100 * player.manaCost);
-                    if (player.statMana < manaCost && player.Calamity().profanedSoulWeaponUsage == 0)
-                    {
-                        if (player.manaFlower)
-                        {
-                            player.QuickMana();
-                        }
-                    }
-                    if (player.statMana >= manaCost && player.Calamity().profanedSoulWeaponUsage == 0 && !player.silence)
+                    if (player.Calamity().profanedSoulWeaponUsage == 0 && !player.silence && player.CheckMana(manaCost, true))
                     {
                         player.manaRegenDelay = (int)player.maxRegenDelay;
-                        player.statMana -= manaCost;
                         correctedVelocity *= 25f;
                         SoundEngine.PlaySound(SoundID.Item20, player.Center);
                         int magefireBaseDamage = 900;

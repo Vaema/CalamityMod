@@ -33,6 +33,7 @@ using CalamityMod.NPCs.Signus;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Typeless;
@@ -175,7 +176,7 @@ namespace CalamityMod.Events
 
                 new Boss(NPCID.EaterofWorldsHead, permittedNPCs: new int[] { NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.VileSpitEaterOfWorlds }),
 
-                new Boss(NPCID.BrainofCthulhu, permittedNPCs: NPCID.Creeper),
+                new Boss(NPCID.BrainofCthulhu, permittedNPCs: new int[] { NPCID.Creeper, ModContent.NPCType<BrainIllusion>(), ModContent.NPCType<FalseBrain>() }),
 
                 new Boss(ModContent.NPCType<HiveMind>(), permittedNPCs: new int[] { ModContent.NPCType<DankCreeper>(), ModContent.NPCType<DarkHeart>(), ModContent.NPCType<HiveBlob>() }),
 
@@ -185,7 +186,13 @@ namespace CalamityMod.Events
 
                 new Boss(NPCID.QueenBee, permittedNPCs: new int[] { NPCID.Bee, NPCID.BeeSmall, NPCID.LittleHornetHoney, NPCID.HornetHoney, NPCID.BigHornetHoney }),
 
-                new Boss(NPCID.Deerclops),
+                new Boss(NPCID.Deerclops, spawnContext: type =>
+                {
+                    Player plr = Main.player[ClosestPlayerToWorldCenter];
+                    int deer = NPC.NewNPC(Source, (int)plr.Center.X, (int)(plr.Center.Y - 400f), type, 1);
+                    Main.npc[deer].timeLeft *= 20;
+                    CalamityUtils.BossAwakenMessage(deer);
+                } ),
 
                 new Boss(NPCID.SkeletronHead, TimeChangeContext.Night, type =>
                 {
@@ -524,6 +531,10 @@ namespace CalamityMod.Events
             // Handle dialogue as appropriate.
             BossRushDialogueSystem.Tick();
 
+            // Tier 1 animation between Xeroc's initial dialogue and the first boss.
+            if (BossRushSpawnCountdown == 179 && EndTimer == 0 && CurrentlyFoughtBoss == NPCID.KingSlime)
+                CreateTierAnimation(1);
+
             // Disable the stupid credits sequence.
             if (CreditsRollEvent.IsEventOngoing)
                 CreditsRollEvent.SetRemainingTimeDirect(1);
@@ -695,7 +706,8 @@ namespace CalamityMod.Events
             // Killing any split Deus head ends the fight instantly. You don't need to kill both.
             else if (npc.type == ModContent.NPCType<AstrumDeusHead>() && npc.Calamity().newAI[0] != 0f)
             {
-                BossRushStage++;
+                if (BossRushStage <= Bosses.FindIndex(boss => boss.EntityID == ModContent.NPCType<AstrumDeusHead>()))
+                    BossRushStage++;
                 CalamityUtils.KillAllHostileProjectiles();
                 HostileProjectileKillCounter = 3;
             }

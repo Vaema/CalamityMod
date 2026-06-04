@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.Victide
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public string BulkTexture => "CalamityMod/Items/Armor/Victide/VictideBreastplate_Bulk";
 
-        public static int RegenBoost = 2;
+        public static int RegenBoost = 1;
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond());
 

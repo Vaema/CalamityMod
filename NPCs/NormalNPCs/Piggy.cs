@@ -46,19 +46,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            for (int i = 0; i < Main.maxPlayers; i++)
+            // Force bestiary unlock
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active)
-                    continue;
-
-                if (NPC.Hitbox.Intersects(player.HitboxForBestiaryNearbyCheck))
-                {
-                    NPC nPC = new NPC();
-                    nPC.SetDefaults(ModContent.NPCType<Piggy>());
-                    Main.BestiaryTracker.Kills.RegisterKill(nPC);
-                    break;
-                }
+                Main.BestiaryTracker.Kills.RegisterKill(NPC);
             }
         }
 

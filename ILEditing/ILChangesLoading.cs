@@ -3,7 +3,6 @@ using CalamityMod.Tiles.FurnitureExo;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
@@ -105,13 +104,19 @@ namespace CalamityMod.ILEditing
             // Damage and health balance
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
+            IL_Projectile.Damage += PreventVanillaWhipTagCrits;
             IL_Projectile.Damage += VanillaBossResistChanges;
+            IL_Projectile.AI_026 += PygmyAggroOnClosestPointInHitbox;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
+            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
+            IL_Projectile.AI_015_Flails += IncreaseFlowerPowRetSpeed;
             IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
             On_Player.ConsumeSolarFlare += SolarWingsDashChange;
             On_Projectile.IsDamageDodgable += GFBNurseMeteorUndodgeable;
             IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
+            On_Projectile.ghostHeal += AdjustSpectreHealing;
+            On_Projectile.vampireHeal += AdjustVampireHealing;
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
@@ -146,11 +151,9 @@ namespace CalamityMod.ILEditing
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
-            IL_Player.ItemCheck_Shoot += RemoveForcedInaccuracyFromChainGunAndGatligator;
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
-            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
             IL_Projectile.AI_061_FishingBobber += WhitelistVictideBobber;
             On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 

@@ -291,16 +291,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                 }
             }
 
-            // Adjust slowing debuff immunity
-            bool immuneToSlowingDebuffs = doSpiral || getFuckedAI;
-            NPC.buffImmune[ModContent.BuffType<GlacialState>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<TemporalSadness>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<Eutrophication>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
-
             // Spawn segments
             if (calamityGlobalNPC.newAI[2] == 0f && NPC.ai[0] == 0f)
             {

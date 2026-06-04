@@ -36,11 +36,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<MountedScannerSummon>();
             Item.shootSpeed = 1f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 85f;
-            modItem.ChargePerUse = 0.85f;
-            modItem.ChargePerAltUse = 0f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

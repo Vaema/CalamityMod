@@ -1,8 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Enums;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -22,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 130;
             Item.height = 130;
-            Item.damage = 110;
+            Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -89,7 +90,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 Particle spark3 = new AltSparkParticle(partPos, partVel, false, 24, partScale, Color.Black);
                 GeneralParticleHandler.SpawnParticle(spark3);
                 Particle spark2 = new SparkParticle(partPos, partVel, false, 24, partScale * 0.6f, Color.LightGreen);
-                GeneralParticleHandler.SpawnParticle(spark2);
+                GeneralParticleHandler.SpawnParticle(spark2, false, GeneralDrawLayer.AfterEverything);
             }
             Vector2 dustVel2 = new Vector2(5 * swordDirection, -5).RotatedBy(swingRotation - 1.7f * swordDirection);
 
@@ -102,7 +103,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<MeldConstruct>(15).
+                AddIngredient<MeldBlob>(18).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -21,8 +21,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 78;
             Item.height = 28;
             Item.DamageType = DamageClass.Magic;
@@ -30,7 +28,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.knockBack = 10f;
             Item.useTime = Item.useAnimation = 90;
             Item.autoReuse = true;
-            Item.mana = 60;
+            Item.mana = 120;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = FireSound;
@@ -41,10 +39,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<TeslaCannonShot>();
             Item.shootSpeed = 5f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.7f;
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)

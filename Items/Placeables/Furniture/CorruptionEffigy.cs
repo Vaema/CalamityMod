@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public static float MoveSpeedBoost = 0.1f;
         public static int CritBoost = 10; // Both 10% so we only need just one in the tooltip
-        public static float DamageReductionLoss = 0.05f;
+        public static float DamageReductionLoss = 0.1f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritBoost, DamageReductionLoss.ToPercent());
 
         public override void SetDefaults()

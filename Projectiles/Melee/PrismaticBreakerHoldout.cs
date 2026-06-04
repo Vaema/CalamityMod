@@ -25,6 +25,12 @@ namespace CalamityMod.Projectiles.Melee
         public float StarTimer = 0f;
         public float StarFrequency = 47f;
 
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.DamageType = MeleeRangedHybridDamageClass.Instance;
+        }
+
         public override void HoldoutAI()
         {
             if (Owner.CantUseHoldout())
@@ -88,7 +94,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            float drawRotation = Projectile.rotation + (MathHelper.PiOver4 * Projectile.spriteDirection) + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            float drawRotation = Projectile.rotation + (MathHelper.PiOver4 * Projectile.spriteDirection) + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.PiOver2 * Owner.direction : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 

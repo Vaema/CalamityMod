@@ -57,8 +57,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 46;
             Item.damage = 100;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 10;
-            Item.useAnimation = 10;
+            Item.crit = 21;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -71,8 +71,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = ShootSpeed;
         }
 
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 21;
         public override bool AltFunctionUse(Player player) => true;
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
@@ -125,8 +123,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 return false;
             }
 
-            // The holdout deals 2x base damage.
-            Projectile.NewProjectile(source, position, velocity, Item.shoot, damage * 2, knockback, player.whoAmI);
+            // The holdout deals 1.5x base damage.
+            Projectile.NewProjectile(source, position, velocity, Item.shoot, (int)(damage * 1.5), knockback, player.whoAmI);
             return false;
         }
 

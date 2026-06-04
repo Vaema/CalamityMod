@@ -1,10 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.Projectiles.Ranged.BlissfulBombardierHoldout;
@@ -133,10 +136,11 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
         }
+
         public override void OnKill(int timeLeft)
         {
-            // Only do rocket effects for the owner client side
-            if (Projectile.owner != Main.myPlayer)
+            // Don't do rocket effects on the server
+            if (Main.dedServ)
                 return;
 
             var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID)

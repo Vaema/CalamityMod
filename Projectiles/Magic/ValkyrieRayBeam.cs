@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Magic
             // The beam itself still stops on tiles, but its invisible "source" projectile ignores them.
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.localNPCHitCooldown = Lifetime / 2;
 
             // The beam lasts for only some frames and fades out over that time.
             Projectile.timeLeft = Lifetime;
@@ -195,7 +196,7 @@ namespace CalamityMod.Projectiles.Magic
                 // If the beam isn't at max scale, then make additional smaller dust.
                 if (Projectile.scale != MaxBeamScale)
                 {
-                    Dust smallDust = Dust.CloneDust(d);
+                    Dust smallDust = Dust.BetterCloneDust(d);
                     smallDust.scale /= 2f;
                 }
             }

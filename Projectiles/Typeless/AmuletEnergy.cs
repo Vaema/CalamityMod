@@ -28,8 +28,6 @@ namespace CalamityMod.Projectiles.Typeless
         public ref float energyNumber => ref Projectile.ai[1]; // The number assigned to this energy, ranging from 1 to the max number of energies
         public bool idle => Projectile.ai[2] == 0; // Floating around the player
         public bool healing = false; // If the energies should heal the player. If false they will attack
-        public int soundCooldown = 0; // A cooldown after making a sound. Also used for some of the visuals when a sound is made
-        public SlotId soundSlot;
         public NPC targeted;
         public override void SetStaticDefaults()
         {
@@ -51,12 +49,11 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            bool spoke = (soundCooldown >= 250 * Projectile.MaxUpdates);
             int startTime = 100; // Time after launch when it will begin attacking/healing
             int endTime = 300; // Time after launch when it's movement code reaches it's cap on strength
 
-            // Color is in blues if idle or healing, but becomes orange breifley if they speak or constantly if they are attacking
-            float colorShift = spoke ? Utils.GetLerpValue(250 * Projectile.MaxUpdates, 300 * Projectile.MaxUpdates, soundCooldown) : (idle || healing ? 0 : Utils.GetLerpValue(0, startTime, time));
+            // Color is in blues if idle or healing, but becomes orange if they are attacking
+            float colorShift = (idle || healing ? 0 : Utils.GetLerpValue(0, startTime, time));
             float rate = Main.GlobalTimeWrappedHourly * 5;
             List<Color> eColors = new List<Color>()
             {
@@ -85,9 +82,6 @@ namespace CalamityMod.Projectiles.Typeless
 
             // Emit some light
             Lighting.AddLight(Projectile.Center, bColor.ToVector3() * 0.65f);
-
-            if (SoundEngine.TryGetActiveSound(soundSlot, out var sound) && sound.IsPlaying)
-                sound.Position = Projectile.Center;
 
             if (idle) // Following Ai
             {
@@ -124,22 +118,12 @@ namespace CalamityMod.Projectiles.Typeless
                         Projectile.velocity *= 0.985f;
                     if (!outOfRange)
                         Projectile.velocity = Projectile.velocity.RotatedBy(0.0065f * (energyNumber % 2 == 0 ? -1 : 1)) * 1.004f;
-
-                    if (soundCooldown == 0 && Main.rand.NextBool(4500 * Projectile.MaxUpdates) && visuals && time > 18000 * Projectile.MaxUpdates && !Main.dedServ) // Sounds are an easter egg that only plays if they've been alive for over 5 minutes
-                    {
-                        SoundStyle certainlyNotADeadChild = new("CalamityMod/Sounds/Item/AmuletVox", 6);
-                        soundSlot = SoundEngine.PlaySound(certainlyNotADeadChild with { Volume = 0.3f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, Projectile.Center);
-                        soundCooldown = 800 * Projectile.MaxUpdates;
-                    }
-                    if (soundCooldown > 0)
-                        soundCooldown--;
                 }
                 else
                     Projectile.velocity *= 0.99f;
             }
             else // Attack/Healing Ai
             {
-                soundCooldown = 0;
                 if (Projectile.ai[2] == 5) // Effects for the moment they stop being idle
                 {
                     Projectile.netUpdate = true;
@@ -209,13 +193,13 @@ namespace CalamityMod.Projectiles.Typeless
                 GeneralParticleHandler.SpawnParticle(fadeInfx);
             }
 
-            Projectile.scale = MathHelper.Lerp(Projectile.scale, spoke ? 0.9f : 0.5f, 0.1f);
+            Projectile.scale = MathHelper.Lerp(Projectile.scale, 0.5f, 0.1f);
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             time++;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 420);
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 180);
             Projectile.netUpdate = true;
         }
         public override void OnKill(int timeLeft)

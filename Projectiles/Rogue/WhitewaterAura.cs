@@ -65,21 +65,25 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            Player Owner = Main.player[Projectile.owner];
             target.AddBuff(BuffID.Wet, 300);
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 300);
 
             Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
-            target.MoveNPC(launchVel, 9, true);
+            target.MoveNPC(launchVel, 9, true, Owner);
         }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
             Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/SoftRoundExplosion").Value;
             Color drawColor2 = Color.LightBlue;
+            float rotMult = CalamityClientConfig.Instance.Photosensitivity ? 0f : 1f;
 
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 }, 0, tex.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f, Projectile.rotation, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f, -Projectile.rotation, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
+            float opacityMult = CalamityClientConfig.Instance.Photosensitivity ? 0.33f : 1f;
+
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * opacityMult, 0, tex.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f * opacityMult, Projectile.rotation * rotMult, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f * opacityMult, -Projectile.rotation * rotMult, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
 
             return false;
         }

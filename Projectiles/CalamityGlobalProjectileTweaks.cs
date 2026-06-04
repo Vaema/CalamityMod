@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.HiveFive, RebalanceYoyo(24f, 320f, 20f, 0, 15) },
 
                 // original: 8s lifetime | 215px range | 13px/f top speed | 0 extra updates
-                { ProjectileID.JungleYoyo, RebalanceYoyo(20f, 288f, 17f, 0, 20) }, // Amazon
+                { ProjectileID.JungleYoyo, RebalanceYoyo(24f, 320f, 20f, 0, 20) }, // Amazon
 
                 // original: INF lifetime | 340px range | 16px/f top speed | 0 extra updates
                 { ProjectileID.Kraken, RebalanceYoyo(-1f, 480f, 54f, 2) },
@@ -122,10 +122,11 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.BlueCounterweight, counterweightTweaks },
                 { ProjectileID.BlueMoon, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Bullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.BulletHighVelocity, Do(LocalIFrames(-1)) },
-                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(7), ScaleExact(1.5f)) },
+                { ProjectileID.BulletHighVelocity, Do(ExtraUpdatesDelta(+2), LocalIFrames(-1)) },
+                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(10), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
+                { ProjectileID.ChlorophyteJackhammer, standardDrillTweaks },
                 { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
@@ -138,15 +139,15 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ClusterFragmentsII, Do(IDStaticIFrames(15)) },
                 { ProjectileID.ClusterSnowmanRocketI, Do(LocalIFrames(15)) },
                 { ProjectileID.ClusterSnowmanRocketII, Do(LocalIFrames(15)) },
-                { ProjectileID.DangerousSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
+                { ProjectileID.DangerousSpider, Do( ExtraUpdatesExact(2), LocalIFrames(90)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3), DefaultIDStaticIFrames) }, // Flying Dragon
                 { ProjectileID.DeadlySphere, Do(LocalIFrames(30)) },
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
-                { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150), DefaultIDStaticIFrames) },
-                { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
+                { ProjectileID.Flamarang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FlamingJack, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FlowerPetal, Do(MaxUpdatesExact(4), LocalIFrames(10)) }, // Orichalcum armor
                 { ProjectileID.FlyingKnife, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
@@ -165,7 +166,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.InfluxWaver, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.InfernoFriendlyBolt, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.InfernoFriendlyBlast, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
-                { ProjectileID.JumperSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
+                { ProjectileID.JumperSpider, Do( ExtraUpdatesExact(2), LocalIFrames(90)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.LaserDrill, Do(ArmorPenetrationDelta(+25), LocalIFrames(5)) },
                 { ProjectileID.LightDisc, Do(MaxUpdatesExact(3), DefaultIDStaticIFrames) },
                 { ProjectileID.LostSoulHostile, Do(TileCollide) }, // Ragged Caster
@@ -187,6 +188,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PalladiumDrill, standardDrillTweaks },
                 { ProjectileID.PartyBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.PurpleCounterweight, counterweightTweaks },
+                { ProjectileID.PurpleLaser, Do(LocalIFrames(10 * 5)) }, // Laser Rifle, accounting for extra updates
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
                 { ProjectileID.RedCounterweight, counterweightTweaks },
@@ -198,26 +200,24 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Shroomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.SolarFlareDrill, standardDrillTweaks },
                 { ProjectileID.StardustDrill, standardDrillTweaks },
-                { ProjectileID.Starfury, Do(TimeLeftExact(75), DefaultIDStaticIFrames) },
                 { ProjectileID.StarWrath, Do(NoPiercing) },
                 { ProjectileID.Sunfury, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.SwordBeam, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) }, // Beam Sword projectile
                 { ProjectileID.Terragrim, Do(TrueMeleeNoSpeed, ScaleExact(1.25f), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.ThunderStaffShot, Do(PiercingExact(3), DefaultIDStaticIFrames) }, //Thunder Zapper projectile
+                { ProjectileID.ThunderStaffShot, Do(PiercingExact(2), DefaultIDStaticIFrames) }, //Thunder Zapper projectile
                 { ProjectileID.TitaniumChainsaw, standardChainsawTweaks },
                 { ProjectileID.TitaniumDrill, standardDrillTweaks },
                 { ProjectileID.Trimarang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.TrueNightsEdge, Do(PiercingExact(4)) },
                 { ProjectileID.VenomBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
+                { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(90)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
-                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3), TimeLeftExact(1920)) },
+                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 
                 #region CATEGORY 3: True Melee support
-                { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
                 { ProjectileID.CopperShortswordStab, trueMelee },
                 { ProjectileID.DarkLance, trueMelee },
                 { ProjectileID.GoldShortswordStab, trueMelee },
@@ -237,6 +237,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ShadowJoustingLance, trueMelee },
                 { ProjectileID.SilverShortswordStab, trueMelee },
                 { ProjectileID.SolarFlareChainsaw, trueMeleeNoSpeed },
+                { ProjectileID.Spark, trueMeleeNoSpeed },
                 { ProjectileID.Spear, trueMelee },
                 { ProjectileID.StardustChainsaw, trueMeleeNoSpeed },
                 { ProjectileID.Swordfish, trueMelee },
@@ -249,18 +250,30 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 4: Defense Damage support
-                { ProjectileID.Cthulunado, defenseDamage }, // Duke Fishron's larger Sharknados
+                { ProjectileID.BombSkeletronPrime, defenseDamage },
+                { ProjectileID.CannonballHostile, defenseDamage },
+                { ProjectileID.Cthulunado, defenseDamage },
+                { ProjectileID.CultistBossFireBall, defenseDamage },
+                { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Also used by Storm Weaver
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
-                { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
-                { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
-                { ProjectileID.PaladinsHammerHostile, defenseDamage },
+                { ProjectileID.DeerclopsRangedProjectile, defenseDamage },
+                { ProjectileID.FairyQueenLance, defenseDamage }, // EoL lance
+                { ProjectileID.FairyQueenSunDance, defenseDamage }, // EoL sun dance
+                { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking scythes
+                { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves, reused by Storm Weaver
+                { ProjectileID.HallowBossRainbowStreak, defenseDamage }, // EoL rainbow bolt
+                { ProjectileID.HallowBossLastingRainbow, defenseDamage }, // EoL everlasting rainbow
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
+                { ProjectileID.Present, defenseDamage }, // Santa-NK1 presents
+                { ProjectileID.QueenSlimeSmash, defenseDamage },
+                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
                 { ProjectileID.SaucerDeathray, defenseDamage },
+                { ProjectileID.SaucerMissile, defenseDamage },
                 { ProjectileID.Sharknado, defenseDamage },
-                { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) }, // Plantera bouncing thorn balls
+                { ProjectileID.Spike, defenseDamage }, // Santa-NK1 spike balls
+                { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) },
                 #endregion
 
                 #region CATEGORY 5: ID-Static Immunity Frame changes
@@ -328,7 +341,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CrimsandBallGun, defaultIFrames },
                 { ProjectileID.CrimsonHeart, defaultIFrames },
                 { ProjectileID.CrimsonSpray, defaultIFrames },
-                { ProjectileID.CrystalDart, Do( ExtraUpdatesExact(2), LocalIFrames(-1)) },
+                { ProjectileID.CrystalDart, Do(ExtraUpdatesExact(2), LocalIFrames(-1)) },
                 { ProjectileID.CrystalLeaf, defaultIFrames },
                 { ProjectileID.CrystalLeafShot, defaultIFrames },
                 { ProjectileID.CrystalPulse, defaultIFrames },
@@ -338,7 +351,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CrystalVileShardHead, defaultIFrames },
                 { ProjectileID.CrystalVileShardShaft, defaultIFrames },
                 { ProjectileID.CursedArrow, defaultIFrames },
-                { ProjectileID.CursedDart, Do( ExtraUpdatesExact(1), LocalIFrames(20)) },
+                { ProjectileID.CursedDart, Do(ExtraUpdatesExact(1), LocalIFrames(20)) },
                 { ProjectileID.CursedDartFlame, defaultIFrames },
                 { ProjectileID.CursedFlameFriendly, defaultIFrames },
                 { ProjectileID.CursedFlare, defaultIFrames },
@@ -397,7 +410,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.IceBlock, defaultIFrames },
                 { ProjectileID.IceBolt, defaultIFrames },
                 { ProjectileID.IchorArrow, defaultIFrames },
-                { ProjectileID.IchorDart, Do( ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
+                { ProjectileID.IchorDart, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.JackOLantern, defaultIFrames },
                 { ProjectileID.JavelinFriendly, defaultIFrames },
                 { ProjectileID.JestersArrow, defaultIFrames },
@@ -412,13 +425,13 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.LavaSnowmanRocket, defaultIFrames },
                 { ProjectileID.Leaf, defaultIFrames },
                 { ProjectileID.LifeCrystalBoulder, defaultIFrames },
-                { ProjectileID.MagicMissile, Do(IDStaticIFrames(8)) }, // Has an exception in Vanilla iframe code, uses 8 iframes
+                { ProjectileID.MagicMissile, Do(IDStaticIFrames(8), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 8 iframes
                 { ProjectileID.MagnetSphereBolt, defaultIFrames },
                 { ProjectileID.MedusaHead, defaultIFrames },
                 { ProjectileID.MedusaHeadRay, defaultIFrames },
-                { ProjectileID.Meteor1, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.Meteor2, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.Meteor3, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.Meteor1, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.Meteor2, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.Meteor3, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.MinecartMechLaser, defaultIFrames },
                 { ProjectileID.MiniBoulder, defaultIFrames },
                 { ProjectileID.MiniMinotaur, defaultIFrames },
@@ -441,13 +454,12 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.NailFriendly, Do(IDStaticIFrames(1)) }, // Has an exception in Vanilla iframe code, uses 1 iframe
                 { ProjectileID.NebulaArcanumExplosionShot, defaultIFrames },
                 { ProjectileID.NebulaArcanumExplosionShotShard, defaultIFrames },
-                { ProjectileID.NebulaBlaze1, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.NebulaBlaze2, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.NebulaBlaze1, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.NebulaBlaze2, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.NettleBurstEnd, defaultIFrames },
                 { ProjectileID.NettleBurstLeft, defaultIFrames },
                 { ProjectileID.NettleBurstRight, defaultIFrames },
                 { ProjectileID.NightBeam, defaultIFrames },
-                { ProjectileID.NorthPoleSnowflake, defaultIFrames },
                 { ProjectileID.NorthPoleSpear, defaultIFrames },
                 { ProjectileID.NorthPoleWeapon, defaultIFrames },
                 { ProjectileID.NurseSyringeHeal, defaultIFrames },
@@ -466,7 +478,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PhantasmArrow, defaultIFrames },
                 { ProjectileID.PineNeedleFriendly, defaultIFrames },
                 { ProjectileID.PlatinumCoin, defaultIFrames },
-                { ProjectileID.PoisonDart,  Do( ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
+                { ProjectileID.PoisonDart, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.PoisonDartBlowgun, defaultIFrames },
                 { ProjectileID.PoisonDartTrap, defaultIFrames },
                 { ProjectileID.PoisonedKnife, defaultIFrames },
@@ -479,7 +491,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PulseBolt, defaultIFrames },
                 { ProjectileID.PureSpray, defaultIFrames },
                 { ProjectileID.PurificationPowder, defaultIFrames },
-                { ProjectileID.PurpleLaser, defaultIFrames },
                 { ProjectileID.PygmySpear, defaultIFrames },
                 { ProjectileID.QuarterNote, defaultIFrames },
                 { ProjectileID.RainbowFlare, defaultIFrames },
@@ -543,13 +554,14 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Stake, defaultIFrames },
                 { ProjectileID.StarAnise, defaultIFrames },
                 { ProjectileID.StarCannonStar, defaultIFrames },
+                { ProjectileID.Starfury, defaultIFrames },
                 { ProjectileID.StardustCellMinion, defaultIFrames },
                 { ProjectileID.StardustGuardianExplosion, defaultIFrames },
                 { ProjectileID.StickyBomb, defaultIFrames },
                 { ProjectileID.StickyDynamite, defaultIFrames },
                 { ProjectileID.StickyGrenade, defaultIFrames },
                 { ProjectileID.StormTigerGem, defaultIFrames },
-                { ProjectileID.Stynger, Do(IDStaticIFrames(7)) }, // Has an exception in Vanilla iframe code, uses 7 iframes
+                { ProjectileID.Stynger, Do(IDStaticIFrames(7), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 7 iframes
                 { ProjectileID.StyngerShrapnel, defaultIFrames },
                 { ProjectileID.TentacleSpike, defaultIFrames },
                 { ProjectileID.ThornChakram, defaultIFrames },
@@ -566,7 +578,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ToxicFlask, defaultIFrames },
                 { ProjectileID.Truffle, defaultIFrames },
                 { ProjectileID.TruffleSpore, defaultIFrames },
-                { ProjectileID.Typhoon, Do(IDStaticIFrames(6)) }, // Has an exception in Vanilla iframe code, uses 6 iframes
                 { ProjectileID.UFOLaser, defaultIFrames },
                 { ProjectileID.UFOMinion, defaultIFrames },
                 { ProjectileID.UnholyArrow, defaultIFrames },
@@ -864,6 +875,18 @@ namespace CalamityMod.Projectiles
             }
         }
         internal static IProjectileTweak ScaleRatio(float f) => new ScaleRatioRule(f);
+        #endregion
+
+        #region Single Hit Immunity
+        internal class SingleHitImmunityRule : IProjectileTweak
+        {
+            internal readonly bool flag = false;
+
+            public SingleHitImmunityRule(bool imm) => flag = imm;
+            public bool AppliesTo(Projectile proj) => true;
+            public void ApplyTweak(Projectile proj) => proj.appliesImmunityTimeOnSingleHits = flag;
+        }
+        internal static IProjectileTweak SingleHitImmunity => new SingleHitImmunityRule(true);
         #endregion
 
         #region Tile Collide

@@ -37,6 +37,8 @@ namespace CalamityMod.Tiles.Abyss
             {
                 WorldGen.KillTile(i, j + 1);
             }
+
+            World.Abyss.FillTileWithWater(i, j);
         }
 
         public override void RandomUpdate(int i, int j)

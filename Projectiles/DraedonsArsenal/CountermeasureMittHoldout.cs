@@ -17,7 +17,6 @@ using static Terraria.Player;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    [PierceResistException]
     public class CountermeasureMittHoldout : BaseGunHoldoutProjectile
     {
         public new string LocalizationCategory => "Projectiles.Misc";
@@ -74,7 +73,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public float alteredRotationRot = 0.7f; // Alteration to the holdout rotation so it's not directly to the mouse, changes with the attack cycle
         public float alteredRotation => Projectile.rotation + (f2r * alteredRotationRot * -Projectile.direction);
         public Vector2 palmBlastPos => Owner.Center + alteredRotation.ToRotationVector2() * 55 * Projectile.scale;
-        public int palmManaCost => HeldItem.mana * 30;
+        public int palmManaCost => HeldItem.mana * 15;
         public int hitTimer = 0;
         public override void SetDefaults()
         {
@@ -103,7 +102,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Vector2 handPos = Owner.GetBackHandPosition(CompositeArmStretchAmount.None, Owner.compositeBackArm.rotation) + (Owner.compositeBackArm.rotation + MathHelper.PiOver2).ToRotationVector2() * 9;
             
             // Every laser has collision for the single hitbox, so it works more like a large wide piercing single beam
-            float beamLength = 1500 * Projectile.scale;
+            float beamLength = 2000 * Projectile.scale;
             float beamThickness = 20 * Projectile.scale;
             float fingerLength = 6 * Projectile.scale;
             float _ = float.NaN;
@@ -153,6 +152,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             if (hitTimer > 0)
                 hitTimer--;
+
+            if (Owner.dead)
+            {
+                EndSounds();
+                Projectile.Kill();
+                return;
+            }
 
             Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, (alteredRotation + MathHelper.PiOver2 * -Projectile.direction) + (Owner.direction == -1 ? MathHelper.Pi : 0));
 
@@ -396,21 +402,39 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     {
                         for (int i = 0; i < 25; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(pos, Effects.ArsenalEffects.ArsenalLaserDust, vel.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.4f) * Main.rand.NextFloat(10f, 35f), 0, default, Main.rand.NextFloat(1f, 1.8f));
+                            float size = Main.rand.NextFloat(0.4f, 1f);
+                            Dust dust = Dust.NewDustPerfect(npc.Center + Main.rand.NextVector2Circular(10, 10), ModContent.DustType<SquashDust>(), -vel.SafeNormalize(Vector2.UnitX).RotatedBy(0.95f * (Main.rand.NextBool() ? 1 : -1)) * Main.rand.NextFloat(4f, 18f) * size, 0, default, Main.rand.NextFloat(1.1f, 1.9f) + (1 - size));
+                            dust.noGravity = true;
+                            dust.color = Effects.ArsenalEffects.ArsenalLaserColor;
+                            dust.fadeIn = 0.7f;
+                        }
+                        for (int i = 0; i < 25; i++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(pos + Main.rand.NextVector2Circular(20, 20), Effects.ArsenalEffects.ArsenalLaserDust, vel.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(10f, 45f), 0, default, Main.rand.NextFloat(1f, 1.8f));
                             dust.noGravity = true;
                             dust.color = Effects.ArsenalEffects.ArsenalLaserColor;
                             dust.alpha = 100;
                             dust.fadeIn = 20;
+                            if (i % 2 == 0)
+                            {
+                                Dust dust2 = Dust.NewDustPerfect(pos + Main.rand.NextVector2Circular(20, 20), Effects.ArsenalEffects.ArsenalLaserDust, vel.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(40f, 65f), 0, default, Main.rand.NextFloat(0.6f, 1.1f));
+                                dust2.noGravity = true;
+                                dust2.color = Effects.ArsenalEffects.ArsenalLaserColor;
+                                dust2.alpha = 100;
+                                dust2.fadeIn = 10;
+                            }
                         }
                         for (int i = 0; i < 2; i++)
                         {
-                            Particle pulse = new CustomSpark(pos, vel.SafeNormalize(Vector2.UnitX) * 1, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 20, 0.08f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(2f, 0.7f), shrinkSpeed: -0.1f);
+                            Particle pulse = new CustomSpark(pos, vel.SafeNormalize(Vector2.UnitX) * 2, "CalamityMod/Particles/BloomRing", false, 20, 1f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(2f, 0.7f), shrinkSpeed: -0.2f);
                             GeneralParticleHandler.SpawnParticle(pulse);
-                            Particle pulse1 = new CustomSpark(pos, vel.SafeNormalize(Vector2.UnitX) * 15, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 18, 0.06f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(2f, 0.7f), shrinkSpeed: -0.1f);
+                            Particle pulse1 = new CustomSpark(pos, vel.SafeNormalize(Vector2.UnitX) * 18, "CalamityMod/Particles/BloomRing", false, 18, 0.8f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(2f, 0.7f), shrinkSpeed: -0.2f);
                             GeneralParticleHandler.SpawnParticle(pulse1);
-                            Particle pulse2 = new CustomSpark(pos, vel.SafeNormalize(Vector2.UnitX) * 25, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 16, 0.04f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(2f, 0.7f), shrinkSpeed: -0.1f);
+                            Particle pulse2 = new CustomSpark(pos, vel.SafeNormalize(Vector2.UnitX) * 34, "CalamityMod/Particles/BloomRing", false, 16, 0.6f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(2f, 0.7f), shrinkSpeed: -0.2f);
                             GeneralParticleHandler.SpawnParticle(pulse2);
                         }
+                        Particle bloom = new CustomSpark(pos, vel.SafeNormalize(Vector2.UnitX) * 8, "CalamityMod/Particles/BloomCircle", false, 22, 0.7f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(1f, 8f), true, true, shrinkSpeed: -0.5f, extraRotation: MathHelper.PiOver2);
+                        GeneralParticleHandler.SpawnParticle(bloom);
                         oneFx = false;
                     }
                     damageMult -= 6;
@@ -537,8 +561,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Main.EntitySpriteDraw(finger, basePosition - Main.screenPosition, null, fingerColor, alteredRotation + rot, fingerOrgin, fingerScale, SpriteEffects.None);
 
                 Vector2 velocity = (alteredRotation + rot).ToRotationVector2();
-                Main.EntitySpriteDraw(laser, basePosition - Main.screenPosition + velocity * 545 * Projectile.scale, null, Effects.ArsenalEffects.ArsenalLaserColor with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser.Size() / 2, new Vector2(2.5f * randSize * fx, 55f) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
-                Main.EntitySpriteDraw(laser2, basePosition - Main.screenPosition + velocity * 545 * Projectile.scale, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, 0.3f) with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser2.Size() / 2, new Vector2(0.4f * Math.Min(fx, 1), 55f) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
+                float laserLength = 2.5f;
+                Main.EntitySpriteDraw(laser, basePosition - Main.screenPosition + velocity * 542 * laserLength * Projectile.scale, null, Effects.ArsenalEffects.ArsenalLaserColor with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser.Size() / 2, new Vector2(2.5f * randSize * fx, 55 * laserLength) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
+                Main.EntitySpriteDraw(laser2, basePosition - Main.screenPosition + velocity * 542 * laserLength * Projectile.scale, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, 0.3f) with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser2.Size() / 2, new Vector2(0.4f * Math.Min(fx, 1), 55 * laserLength) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
 
                 for (int y = 0; y < 2; y++)
                     Main.EntitySpriteDraw(bloom, basePosition - Main.screenPosition + velocity * 7 * Projectile.scale, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, y) with { A = 0 } * (fx - 1), velocity.ToRotation() + MathHelper.PiOver2, bloom.Size() / 2, new Vector2(2 + 0.05f * (fx + 25), 1) * Projectile.scale * MathHelper.Lerp(fx, 1, 0.7f) * (0.03f - 0.01f * y), SpriteEffects.FlipVertically);
@@ -546,7 +571,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (forcePalm)
             {
                 for (int y = 0; y < 8; y++)
-                    Main.EntitySpriteDraw(bloom, palmBlastPos - Main.screenPosition + thrustAddition, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, y * 0.1f) with { A = 0 } * fadeIn * 0.25f, alteredRotation, bloom.Size() / 2, new Vector2(1f, 1f) * Projectile.scale * (0.3f - 0.02f * y) * randSize, SpriteEffects.FlipVertically);
+                    Main.EntitySpriteDraw(bloom, palmBlastPos - Main.screenPosition + thrustAddition, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, y * 0.1f) with { A = 0 } * fadeIn * 0.25f, alteredRotation + Main.rand.NextFloat(-4, 4), bloom.Size() / 2, new Vector2(0.4f, 1.8f) * Projectile.scale * (0.3f - 0.02f * y) * randSize, SpriteEffects.FlipVertically);
+                Main.EntitySpriteDraw(diamond, palmBlastPos - Main.screenPosition + thrustAddition, null, Color.White with { A = 0 } * fadeIn, 0, diamond.Size() / 2, new Vector2(1.7f * Main.rand.NextFloat(1, 1.6f) * (float)Math.Pow(fadeIn, 3), 0.06f) * Projectile.scale * 0.3f, SpriteEffects.FlipVertically);
+                Main.EntitySpriteDraw(bloom, palmBlastPos - Main.screenPosition + thrustAddition, null, Effects.ArsenalEffects.ArsenalLaserColor with { A = 0 } * fadeIn * 0.35f, 0, bloom.Size() / 2, new Vector2(1.8f, 0.5f) * Projectile.scale * 0.4f * randSize, SpriteEffects.FlipVertically);
             }
             return false;
         }

@@ -31,12 +31,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 7f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-        public override float UseSpeedMultiplier(Player player)
-        {
-            if (Main.zenithWorld) // It's S tier
-                return 6;
-            return 1f;
-        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable()) // Stealth strikes throw a cluster bomb, the throw count is increased to insure that bubble fusing works
@@ -56,7 +50,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             }
             return false;
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
 
         public override void AddRecipes()
         {

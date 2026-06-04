@@ -34,6 +34,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             base.SetStaticDefaults();
             Main.projFrames[Type] = 6;
         }
@@ -146,7 +148,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (!Main.dedServ)
                 {
                     // For the fucking love of any god you can think of, this sound sucks but I can't find another one that fits better.
-                    SoundEngine.PlaySound(SoundID.Item28, Projectile.Center);
+                    SoundEngine.PlaySound(SoundID.Item28 with { Volume = 0.6f }, Projectile.Center);
                 }
 
                 TimerForShooting = 0f;

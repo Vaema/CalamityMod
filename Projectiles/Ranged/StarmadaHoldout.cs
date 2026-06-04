@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -28,14 +29,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public int time = 0;
         public int lastUseTime = 0;
-        public int perfectLeniancy = 2;
+        public static int perfectLeniancy = 3;
+        public static int goodLeniancy = perfectLeniancy + 6;
+        public static int starburstPerfectTime = 23;
         public float frontRecoil = 0;
-        public int goodLeniancy => perfectLeniancy + 6;
         public ref float shootingCooldown => ref Projectile.ai[0];
         public ref float starburstTimer => ref Projectile.ai[1];
         public int extendedCooldown => (int)(lastUseTime * 1.2f);
         public int perfectCooldown => (int)(lastUseTime * 1.5f);
-        public int starburstPerfectTime = 23;
         public float recoilIntensity = 0;
         public int recoilTimerMax = 62;
         public Vector2 recoilDirection;
@@ -57,6 +58,19 @@ namespace CalamityMod.Projectiles.Ranged
         public bool naildriver => ((starburstTimer <= starburstPerfectTime + perfectLeniancy) && (starburstTimer >= starburstPerfectTime - perfectLeniancy)); // if within perfect frame window
         public bool scattershot => !naildriver && ((starburstTimer <= starburstPerfectTime + goodLeniancy) && (starburstTimer >= starburstPerfectTime - goodLeniancy)); // If within early or late frame window
         public override void KillHoldoutLogic() { }
+        public override void SendExtraAIHoldout(BinaryWriter writer)
+        {
+            writer.Write(lastUseTime);
+            writer.Write(gunPower);
+            writer.Write(lastGunPower);
+        }
+
+        public override void ReceiveExtraAIHoldout(BinaryReader reader)
+        {
+            lastUseTime = reader.ReadInt32();
+            gunPower = reader.ReadInt32();
+            lastGunPower = reader.ReadInt32();
+        }
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -97,10 +111,10 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
             }
             bool hasAmmo = Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, true);
-            bool leftShootChecks = (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
-            bool rightShootChecks = Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
+            bool leftShootChecks = Owner.whoAmI == Main.myPlayer && (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
+            bool rightShootChecks = Owner.whoAmI == Main.myPlayer && Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
             
-            if (Main.mouseLeft && !hasAmmo && shake < 0.1f)
+            if (Owner.whoAmI == Main.myPlayer && Main.mouseLeft && !hasAmmo && shake < 0.1f)
             {
                 shake = 0.8f;
                 SoundStyle click = new("CalamityMod/Sounds/Item/DudFire");
@@ -111,6 +125,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FireShotgun();
             if (rightShootChecks)
             {
+                Projectile.ForceNetUpdate();
                 SoundStyle blast1 = new("CalamityMod/Sounds/Item/StarfleetStarburst");
                 AudSlot1 = SoundEngine.PlaySound(blast1 with { Volume = 0.7f + gunPower * 0.1f, Pitch = 0f, MaxInstances = 8 }, Projectile.Center);
                 SoundStyle blast2 = new("CalamityMod/Sounds/Item/StarfleetStarburst");
@@ -171,7 +186,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             float slowdown = (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax / 2, recoilTimerMax, Math.Max(shootingCooldown, starburstCooldown), true), 4);
             Vector2 movement = recoilDirection * (recoilIntensity) * slowdown;
-            if (Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
+            bool enableRecoil = false;
+            if (!enableRecoil || Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
             {
                 recoilIntensity = 0;
                 return;
@@ -191,6 +207,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public void FireShotgun()
         {
+            Projectile.ForceNetUpdate();
             // 50% chance to not consume ammo
             Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.NextBool());
 
@@ -209,7 +226,8 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle shotgunFire = new("CalamityMod/Sounds/Item/StarmadaFire");
                 for (int i = 0; i < (naildriver ? 2 : 1); i++)
                     SoundEngine.PlaySound(shotgunFire with { Volume = (naildriver && i == 0 ? 0.3f : 0.6f), Pitch = ((naildriver && i == 0) ? -0.2f : 0f), MaxInstances = 2 }, Projectile.Center);
-
+                if (naildriver)
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HellkiteFullCharge") with { Volume = 0.7f, Pitch = 1.2f + 0.1f * gunPower, MaxInstances = 2 }, Projectile.Center);
                 for (int b = 0; b < 24; b++)
                 {
                     int parts2 = 4;
@@ -224,11 +242,11 @@ namespace CalamityMod.Projectiles.Ranged
                         dust.velocity = vel * power * (0.7f + gunPower * 0.2f);
                         dust.noGravity = true;
                         dust.color = GetRandomColor();
-                        dust.fadeIn = 0f;
+                        dust.fadeIn = naildriver ? -0.5f : 0f;
 
                         if (b == 0)
                         {
-                            Particle aura = new CustomSpark(gunBackPosition, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 20, size * 0.9f, shiftColor, new Vector2(0.65f, 1f), glowCenter: true, glowOpacity: 0.8f, glowCenterScale: 0.85f, extraRotation: Projectile.rotation + (i % 2 == 0 ? MathHelper.PiOver2 : 0), shrinkSpeed: 0.1f);
+                            Particle aura = new CustomSpark(gunBackPosition, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, naildriver ? 35 : 20, (0.8f + 0.35f * gunPower) * 0.85f, shiftColor, new Vector2(0.65f, 1f), glowCenter: true, glowOpacity: 0.8f, glowCenterScale: 0.85f, extraRotation: Projectile.rotation + (i % 2 == 0 ? MathHelper.PiOver2 : 0), shrinkSpeed: 0.1f);
                             GeneralParticleHandler.SpawnParticle(aura);
                         }
                     }
@@ -254,8 +272,9 @@ namespace CalamityMod.Projectiles.Ranged
                     float randomVel = Main.rand.NextFloat(0.8f, 1f);
                     float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
                     float spread = (i == 0 ? 0f : naildriver ? 0.06f : scattershot ? 0.9f : 0.25f) * MathHelper.Lerp(gunPower, 1, 0.75f);
-                    Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ProjectileType<StarmadaStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
-                    shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                    int starExtraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                    Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ProjectileType<StarmadaStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, starExtraUpdates, Main.rand.Next(0, 300 + 1));
+                    shotgun.extraUpdates = starExtraUpdates;
                 }
             }
             for (int i = 0; i < (int)(25 * gunPowerMult); i++)

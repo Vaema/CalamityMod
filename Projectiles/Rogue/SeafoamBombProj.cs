@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
                 float throwCount = Projectile.localAI[0];
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    for (int i = 0; i < (Main.zenithWorld ? 38 : 8); i++)
+                    for (int i = 0; i < 8; i++)
                     {
                         throwCount++;
                         Vector2 vel = (Vector2.UnitY * -5).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.8f, 1.3f);

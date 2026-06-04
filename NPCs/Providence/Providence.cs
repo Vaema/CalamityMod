@@ -30,7 +30,9 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Graphic;
 using CalamityMod.Tiles.Ores;
+using CalamityMod.Utilities;
 using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -97,6 +99,9 @@ namespace CalamityMod.NPCs.Providence
         public bool Dying = false;
         public int DeathAnimationTimer;
         public static float borderRadius = 3000f;
+        int spearDir = 1;
+        int starDir = 1;
+        public Vector2? borderPosition = null;
 
         // Sounds
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceSpawn") { Volume = 1.2f };
@@ -323,6 +328,7 @@ namespace CalamityMod.NPCs.Providence
             writer.Write((Half)SoundWarningLevel);
             writer.Write(DeathAnimationTimer);
             writer.Write(borderRadius);
+            writer.WriteVector2(borderPosition ?? Vector2.Zero);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -352,6 +358,9 @@ namespace CalamityMod.NPCs.Providence
             SoundWarningLevel = (float)reader.ReadHalf();
             DeathAnimationTimer = reader.ReadInt32();
             borderRadius = reader.ReadSingle();
+            borderPosition = reader.ReadVector2();
+            if (borderPosition == Vector2.Zero)
+                borderPosition = null;
 
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
@@ -363,6 +372,10 @@ namespace CalamityMod.NPCs.Providence
 
         public override void AI()
         {
+            //ensure projectiles all despawn when she does
+            if (NPC.timeLeft == 1)
+                DespawnSpecificProjectiles(true);
+
             // Set the border drawing to true if it isn't set to true
             // Can happen when another mod sets to false for a difficulty and that difficulty is then toggled off.
             shouldDrawInfernoBorder = true;
@@ -707,7 +720,7 @@ namespace CalamityMod.NPCs.Providence
                                 Main.dust[dust].noGravity = true;
                                 Main.dust[dust].scale = 1f;
                                 Main.dust[dust].fadeIn = Main.rand.NextFloat() * 2f;
-                                Dust dust2 = Dust.CloneDust(dust);
+                                Dust dust2 = Dust.BetterCloneDust(dust);
                                 Dust dust3 = dust2;
                                 dust3.scale /= 2f;
                                 dust3 = dust2;
@@ -1245,6 +1258,8 @@ namespace CalamityMod.NPCs.Providence
 
                 case (int)Phase.FlameCocoon:
 
+                    borderPosition ??= NPC.Center;
+                    borderPosition = Vector2.Lerp(borderPosition.Value, NPC.Center, 0.02f);
                     Vector2 fireSparklesFrom = fireFrom + new Vector2(0, -30);
                     if (!targetDead && !getFuckedAI)
                     {
@@ -1278,7 +1293,7 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 spinningPoint = normalSpread ? new Vector2(0f, -cocoonProjVelocity) : new Vector2(-velocityX, -cocoonProjVelocity);
                             for (int i = 0; i < chains; i++)
                             {
-                                Vector2 vector2 = spinningPoint.RotatedBy(radians * i + MathHelper.ToRadians(NPC.ai[2]));
+                                Vector2 vector2 = spinningPoint.RotatedBy(radians * i + MathHelper.ToRadians(NPC.ai[2]) * starDir);
 
                                 if (Main.rand.NextBool(healingStarChance) && !death)
                                 {
@@ -1353,7 +1368,7 @@ namespace CalamityMod.NPCs.Providence
                                 Main.dust[dust].noGravity = true;
                                 Main.dust[dust].scale = 3f;
                                 Main.dust[dust].fadeIn = Main.rand.NextFloat() * 2f;
-                                Dust dust2 = Dust.CloneDust(dust);
+                                Dust dust2 = Dust.BetterCloneDust(dust);
                                 Dust dust3 = dust2;
                                 dust3.scale /= 2f;
                                 dust3 = dust2;
@@ -1418,6 +1433,7 @@ namespace CalamityMod.NPCs.Providence
                         }
 
                         text = false;
+                        starDir *= -1;
                         AIState = (int)Phase.PhaseChange;
                         NPC.localAI[2] = attackDelayAfterCocoon;
                         NPC.TargetClosest();
@@ -1514,6 +1530,10 @@ namespace CalamityMod.NPCs.Providence
 
                 case (int)Phase.SpearCocoon:
 
+                    
+                    borderPosition ??= NPC.Center;
+                    borderPosition = Vector2.Lerp(borderPosition.Value, NPC.Center, 0.02f);
+
                     if (!targetDead && !getFuckedAI)
                     {
                         if (NPC.velocity.Length() <= 2f)
@@ -1569,7 +1589,7 @@ namespace CalamityMod.NPCs.Providence
                                 spearRateIncrease = 1f;
 
                             float radialOffset = MathHelper.Lerp(0.2f, 0.4f, spearRateIncrease);
-                            calamityGlobalNPC.newAI[1] += radialOffset;
+                            calamityGlobalNPC.newAI[1] += radialOffset * spearDir;
                         }
 
                         calamityGlobalNPC.newAI[2] += 1f;
@@ -1595,7 +1615,9 @@ namespace CalamityMod.NPCs.Providence
                     NPC.ai[3] += 1f;
                     if (NPC.ai[3] >= phaseTime)
                     {
+
                         AIState = (int)Phase.PhaseChange;
+                        spearDir *= -1;
                         NPC.localAI[2] = attackDelayAfterCocoon;
                         NPC.TargetClosest();
                     }
@@ -1644,7 +1666,7 @@ namespace CalamityMod.NPCs.Providence
                                         Main.dust[dust].noGravity = true;
                                         Main.dust[dust].scale = 1f + i;
                                         Main.dust[dust].fadeIn = Main.rand.NextFloat() * 2f;
-                                        Dust dust2 = Dust.CloneDust(dust);
+                                        Dust dust2 = Dust.BetterCloneDust(dust);
                                         Dust dust3 = dust2;
                                         dust3.scale /= 2f;
                                         dust3 = dust2;
@@ -1874,7 +1896,7 @@ namespace CalamityMod.NPCs.Providence
 
         public float CalculateBurnIntensity(float attackDelayAfterCocoon = 1f)
         {
-            float distanceToTarget = Vector2.Distance(Main.player[NPC.target].Center, NPC.Center);
+            float distanceToTarget = Vector2.Distance(Main.player[NPC.target].Center, borderPosition ?? NPC.Center);
             float aiTimer = NPC.ai[3];
 
             // This bool is only relevant for non-Zenith enraged AI
@@ -1883,7 +1905,7 @@ namespace CalamityMod.NPCs.Providence
             float baseDistance = 2800f;
             float shorterFlameCocoonDistance = (CalamityWorld.death || fullPower) ? 600f : CalamityWorld.revenge ? 400f : Main.expertMode ? 200f : 0f;
             float shorterSpearCocoonDistance = (CalamityWorld.death || fullPower) ? 1000f : CalamityWorld.revenge ? 650f : Main.expertMode ? 300f : 0f;
-            float shorterDistance = AIState == (int)Phase.FlameCocoon ? shorterFlameCocoonDistance : shorterSpearCocoonDistance;
+            float shorterDistance = baseDistance - (AIState == (int)Phase.FlameCocoon ? shorterFlameCocoonDistance : shorterSpearCocoonDistance);
 
             bool guardianAlive = false;
             if (CalamityGlobalNPC.holyBossAttacker != -1 && Main.npc[CalamityGlobalNPC.holyBossAttacker].active)
@@ -1906,11 +1928,10 @@ namespace CalamityMod.NPCs.Providence
             // Distance does not get shorter if in GFB / Guardians are alive
             if (!guardianAlive && NPC.localAI[1] < (float)BossMode.Rainbow)
             {
-                maxDistance = baseDistance;
                 if (AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon)
-                    maxDistance -= shorterDistance * shorterDistanceFade;
+                    maxDistance = MathHelper.Lerp(baseDistance, shorterDistance, shorterDistanceFade);
                 else if (attackDelayAfterCocoon > 1f)
-                    maxDistance -= shorterDistance * (NPC.localAI[2] / attackDelayAfterCocoon);
+                    maxDistance = MathHelper.Lerp(baseDistance, shorterDistance, (NPC.localAI[2] / attackDelayAfterCocoon));
             }
 
             float drawFireDistanceStart = maxDistance - 800f;
@@ -2565,10 +2586,10 @@ namespace CalamityMod.NPCs.Providence
             shader.Parameters["colorMult"].SetValue(prov.hasBeenGivenFullPower ? 7.65f : 7.35f); //I want you to know it took considerable restraint to deliberately misspell colour.
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["radius"].SetValue(borderDistance);
-            shader.Parameters["anchorPoint"].SetValue(npc.Center);
+            shader.Parameters["anchorPoint"].SetValue(prov.borderPosition ?? npc.Center);
             shader.Parameters["screenPosition"].SetValue(Main.screenPosition);
             shader.Parameters["screenSize"].SetValue(Main.ScreenSize.ToVector2());
-            shader.Parameters["burnIntensity"].SetValue(holyInfernoIntensity);
+            shader.Parameters["burnIntensity"].SetValue(holyInfernoIntensity*0.5f + 0.5f);
             shader.Parameters["playerPosition"].SetValue(target.Center);
             shader.Parameters["maxOpacity"].SetValue(maxOpacity);
             shader.Parameters["day"].SetValue(!prov.hasBeenGivenFullPower);
@@ -2865,6 +2886,14 @@ namespace CalamityMod.NPCs.Providence
     // These will be used for almost every single one of her projectiles, so it's useful to have.
     public static class ProvUtils
     {
+        /// <summary>
+        /// This lease should be used to draw all of a projectile's effects onto directly, then be drawn onto the screen as one. This is for opacity reasons
+        /// </summary>
+        public static RenderTargetLease PrimaryLease { get => field ??= ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice); set; }
+        /// <summary>
+        /// This should be used for secondary effects like trails, then drawn to PrimaryLease. This is for opacity reasons.
+        /// </summary>
+        public static RenderTargetLease SecondaryLease { get => field ??= ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice); set; }
         public static bool StandardAI() => (CalamityGlobalNPC.holyBoss == -1 || !Main.npc[CalamityGlobalNPC.holyBoss].Calamity().CurrentlyEnraged) && !Main.zenithWorld;
 
         public static int CalculateProvidenceDamage(this int damage)

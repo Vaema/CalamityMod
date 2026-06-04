@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.scale = 1.85f;
             Projectile.friendly = true;
             Projectile.extraUpdates = 3;
+            Projectile.tileCollide = false;
             Projectile.timeLeft = 600;
             Projectile.penetrate = -1;
             Projectile.DamageType = DamageClass.Magic;
@@ -51,6 +52,8 @@ namespace CalamityMod.Projectiles.Magic
             // naturally dissipate entirely before despawning. Of course, it's also coded so that the laser stops dealing damage 
             // entirely once this is done to avoid hitting targets multiple times, so functionally the projectile remains the same
             // and this change should have little to no effect on gameplay. If it does, ping me about it.
+            // 2FEB2026: sunny:
+            // Due to Calclone's new border, lasers no longer have tile collision, so this part of the code is now only used for hitting targets.
             if (ShouldStopAndDie)
             {
                 Projectile.velocity *= 0f;

@@ -25,10 +25,10 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float shootingTimer => ref Projectile.ai[2]; // Dual functions for rapid fire shooting cooldown and recoil
         public bool isTired => cooldownTimer > 0;
         public float revSpeed = 1;
-        public bool secondShot = true;
         public int maxFrames = 420;
         public int initialFireTime = 45;
         public float shineScale = 0;
+        private bool secondShot = true;
 
         public override void KillHoldoutLogic()
         {
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             revSpeed = Utils.Remap(revFrames, 0, maxFrames - 120, 1, 20, true);
-            if (shootingTimer >= initialFireTime && revFrames < maxFrames && secondShot)
+            if (shootingTimer >= initialFireTime && revFrames < maxFrames && secondShot && Owner.whoAmI == Main.myPlayer)
             {
                 Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                 
@@ -56,10 +56,10 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
 
-                if (Main.myPlayer == Projectile.owner)
+                if (Owner.whoAmI == Main.myPlayer)
                 {
                     float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
                 
                 for (int i = 0; i <= 3; i++)
@@ -69,17 +69,18 @@ namespace CalamityMod.Projectiles.Ranged
                 }
 
                 OffsetLengthFromArm -= 5f;
-                secondShot = false;
                 shineScale = 1;
+                secondShot = false;
             }
             if (shootingTimer >= 60 && revFrames < maxFrames)
             {
                 Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
-                if (Main.myPlayer == Projectile.owner)
+                if (Owner.whoAmI == Main.myPlayer)
                 {
                     float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread).RotatedByRandom(0.04f), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                    Projectile.netUpdate = true;
                 }
                 shootingTimer = 0;
                 secondShot = true;
@@ -89,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
             revFrames++;
             shineScale *= 0.77f;
 
-            if (revFrames >= maxFrames && !isTired || (Owner.Calamity().mouseRight && revFrames > 2 ))
+            if (revFrames >= maxFrames && !isTired && Owner.whoAmI == Main.myPlayer)
             {
                 Owner.SetScreenshake(6.5f);
                 OffsetLengthFromArm -= 35f;

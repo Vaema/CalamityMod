@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 22;
             Item.damage = 75;
             Item.DamageType = DamageClass.Ranged;
-
+            Item.crit = 10;
             Item.useTime = 40;
             Item.useAnimation = 40;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -31,11 +31,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 20); // Sold by Arms Dealer
             Item.rare = ItemRarityID.Orange;
         }
 
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 10;
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override void HoldItem(Player player)
         {

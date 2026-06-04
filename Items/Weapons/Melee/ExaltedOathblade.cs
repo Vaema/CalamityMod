@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 88;
             Item.height = 88;
             Item.damage = 90;
+            Item.crit = 31;
             Item.useAnimation = Item.useTime = 45;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -39,12 +40,13 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Yellow;
         }
         public override bool MeleePrefix() => true;
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 31;
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && !player.Calamity().mouseRight;
         public override void HoldItem(Player player)
         {
             player.Calamity().mouseWorldListener = true;
-            if (player.Calamity().mouseRight && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
+            if (player.whoAmI != Main.myPlayer)
+                return;
+            if (player.Calamity().mouseRight && !player.mouseInterface && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
             {
                 SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");
                 SoundEngine.PlaySound(buff with { Volume = 0.95f }, player.Center);
@@ -71,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 15, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 23x damage.
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 16, Item.knockBack, player.whoAmI, 0, throwCount);
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

@@ -56,6 +56,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 172;
             Item.damage = 507;
             Item.DamageType = DamageClass.MeleeNoSpeed;
+            Item.crit = 10;
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.useAnimation = 20;
@@ -70,9 +71,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 16f;
         }
-
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 10;
 
         public override bool AltFunctionUse(Player player) => true;
 

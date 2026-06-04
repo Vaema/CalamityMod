@@ -76,8 +76,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 136;
-            Item.damage = 1700;
+            Item.damage = 1800;
             Item.DamageType = DamageClass.MeleeNoSpeed;
+            Item.crit = 15;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 15;
@@ -92,9 +93,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 28f;
             Item.rare = RarityType<BurnishedAuric>();
         }
-
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 15;
 
         public override bool AltFunctionUse(Player player) => true;
 
@@ -127,10 +125,11 @@ namespace CalamityMod.Items.Weapons.Melee
                 // If it has been less than N frames since the last alt function use, this is a double right click.
                 bool rightMouseDoubleClick = rmbFrames > 0;
 
-                // Check if a parry holdout is already present.
+                // Check if a parry holdout or blast is already present.
                 Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
+                Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
 
-                bool canExecuteBlast = rightMouseDoubleClick && Charge > 0;
+                bool canExecuteBlast = rightMouseDoubleClick && Charge > 0 && blast is null;
                 bool canExecuteParry = parrier is null && !canExecuteBlast;
 
                 // The blast is checked first, so that it overrides the first right click triggering a parry. Blasts delete any active parry holdouts on use.

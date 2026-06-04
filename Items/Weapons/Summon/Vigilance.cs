@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.DamageType = DamageClass.Summon;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<CalamityRed>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

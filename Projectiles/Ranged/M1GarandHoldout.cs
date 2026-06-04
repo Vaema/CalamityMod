@@ -315,11 +315,11 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (pingAnimationTimer <= PingAnimationDuration)
                 {
-                    Texture2D pingTexture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value :  ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
+                    Texture2D pingTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
                     Vector2 origin = pingTexture.Size() * 0.5f;
                     Vector2 pingDrawPosition;
 
-                    Vector2 finalPosition = Owner.Center + new Vector2(40f * -Owner.direction, -40f);
+                    Vector2 finalPosition = Owner.Center + new Vector2(40f * -Owner.direction, -40f * Owner.gravDir);
                     float progress = (float)pingAnimationTimer / PingAnimationDuration;
 
                     if (pingAnimationTimer < 15)
@@ -374,7 +374,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     // Calculate scale to display with all factors combined
                     Vector2 finalPingScale = new Vector2(basePingDrawScale * stretchScaleX, basePingDrawScale * stretchScaleY);
-                    Main.EntitySpriteDraw(pingTexture, pingDrawPosition, null, drawColor, Owner.direction == 1 ? -0.25f : 0.25f, origin, finalPingScale, SpriteEffects.None, 0f);
+                    Main.EntitySpriteDraw(pingTexture, pingDrawPosition, null, drawColor, (Owner.direction == 1 ? -0.25f : 0.25f) + (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f), origin, finalPingScale, (Owner.gravDir == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None), 0f);
                 }
                 else
                 {

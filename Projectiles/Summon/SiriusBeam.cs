@@ -45,7 +45,6 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnSpawn(IEntitySource source)
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
         }
 
         public override void AI()

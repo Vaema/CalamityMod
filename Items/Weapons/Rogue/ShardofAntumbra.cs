@@ -15,12 +15,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 48;
             Item.height = 48;
-            Item.damage = 144;
+            Item.damage = 111;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 17;
+            Item.useTime = Item.useAnimation = 17;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 17;
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -31,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 0.65f;
+        public override float StealthDamageMultiplier => 0.7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -50,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<MeldConstruct>(12).
+                AddIngredient<MeldBlob>(18).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

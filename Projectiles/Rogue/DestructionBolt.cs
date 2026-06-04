@@ -1,4 +1,6 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Enums;
+using CalamityMod.Graphics.Renderers;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -104,7 +106,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < 2; i++)
                 {
                     Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen with { A = 0 }, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), Projectile.ai[1] * 0.5f, Projectile.ai[1] * 0.3f, 15, false);
-                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    GeneralParticleHandler.SpawnParticle(blastRing, false, GeneralDrawLayer.AfterEverything);
                 }
             }
             else

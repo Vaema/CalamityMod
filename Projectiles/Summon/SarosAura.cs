@@ -1,10 +1,13 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.IO;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -57,11 +60,11 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 while (minionSlotsAvaliable >= 1 && MinionSlotsToAdd > 0)
                 {
-
                     Projectile.minionSlots++;
                     minionSlotsAvaliable--;
                     MinionSlotsToAdd--;
                     player.channel = false;
+                    Projectile.netUpdate = true;
                 }
                 if (MinionSlotsToAdd > 0)
                 {
@@ -114,6 +117,7 @@ namespace CalamityMod.Projectiles.Summon
                         Vector2 source = Projectile.Center;
                         for (var i = 0; i < 3; i++)
                         {
+                            SoundEngine.PlaySound(SarosPossession.FiringSound, Projectile.Center);
                             var velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * shootSpeed;
                             Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<SarosSunfire>(), damage, Projectile.knockBack, Projectile.owner, 120, ai1: (Projectile.minionSlots - 1) / 9f);
                             beam.DamageType = DamageClass.Summon;
@@ -125,6 +129,15 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.minionSlots);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.minionSlots = reader.ReadSingle();
+        }
         NPC GetTargetInRange(float range)
         {
             var player = Main.player[Projectile.owner];
