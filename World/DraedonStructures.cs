@@ -307,7 +307,7 @@ namespace CalamityMod.World
 
         #region Sunken Sea Lab
 
-        public static void FillSunkenSeaLaboratoryChest(Chest chest, int type, bool hasPlacedLogAndSchematic)
+        public static void FillSunkenSeaLaboratoryChest(Chest chest, int type, bool notFirstChest)
         {
             int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
             List<ChestItem> contents = new List<ChestItem>()
@@ -324,7 +324,7 @@ namespace CalamityMod.World
             //Adds the Planetoid Seeking Mechanism
             contents.Insert(0, new ChestItem(ModContent.ItemType<YellowSeekingMechanism>(), 1));
 
-            if (!hasPlacedLogAndSchematic)
+            if (notFirstChest)
             {
                 contents.Insert(0, new ChestItem(ModContent.ItemType<DraedonsLogSunkenSea>(), 1));
                 contents.Insert(1, new ChestItem(ModContent.ItemType<EncryptedSchematicSunkenSea>(), 1));
@@ -396,7 +396,7 @@ namespace CalamityMod.World
         #endregion
 
         #region Ice Lab
-        public static void FillIceLaboratoryChest(Chest chest, int type, bool hasPlacedLogAndSchematic)
+        public static void FillIceLaboratoryChest(Chest chest, int type, bool notFirstChest)
         {
             int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
             List<ChestItem> contents = new List<ChestItem>()
@@ -413,7 +413,7 @@ namespace CalamityMod.World
             //Adds the Base Seeking Mechanism
             contents.Insert(0, new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1));
 
-            if (!hasPlacedLogAndSchematic)
+            if (notFirstChest)
             {
                 contents.Insert(0, new ChestItem(ModContent.ItemType<DraedonsLogSnowBiome>(), 1));
                 contents.Insert(1, new ChestItem(ModContent.ItemType<EncryptedSchematicIce>(), 1));
