@@ -36,6 +36,7 @@ using CalamityMod.Items.Armor.TitanHeart;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
@@ -6401,6 +6402,9 @@ namespace CalamityMod.CalPlayer
 
             // Elephant Killer consumes stealth in a special wa- hey maybe this is a sign this class needs some work huh
             if (it.type == ItemType<ElephantKiller>())
+                playerUsingWeapon = false;
+
+            if (it.type == ItemType<Spadefish>())
                 playerUsingWeapon = false;
 
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.

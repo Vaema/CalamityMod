@@ -277,6 +277,20 @@ HydrothermalCrate: {
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
 }
 
+Spadefish: {
+	DisplayName: Spadefish
+	Tooltip:
+		'''
+		Throws a spadefish at enemies
+		Stealth Strikes cause you to spin the spade before throwing, damaging nearby enemies
+		[c/aaaaaa:Shift-<right> this item in your inventory to [TOGGLE] breaking tiles]
+		'How can a fish be used to dig through the ground?
+		Some questions are best left unanswered...'
+		'''
+	TextWhileEnabled: disable
+	TextWhileDisabled: enable
+}
+
 StuffedFish: {
 	DisplayName: Stuffed Fish
 	Tooltip: Press <right> to extract [HERBS] herbs and [SEEDS] seeds
