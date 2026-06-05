@@ -92,7 +92,7 @@ namespace CalamityMod.Items.Tools
             orig(self, player, npc);
 
             // Immediately exit early if it's Remix world, or if it's an NPC that should not be affected by happiness
-            if (Main.remixWorld || NPCID.Sets.NoTownNPCHappiness[npc.type] || NPCID.Sets.IsTownPet[npc.type])
+            if (Main.remixWorld || !npc.isLikeATownNPC || NPCID.Sets.NoTownNPCHappiness[npc.type] || NPCID.Sets.IsTownPet[npc.type])
                 return;
 
             var gtnpc = npc.GetGlobalNPC<CalamityGlobalTownNPC>();
