@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Potions
         public override void SetDefaults()
         {
             Item.DefaultToHealingPotion(50, 56, 500);
-            Item.value = Item.sellPrice(silver: 20);
+            Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
 

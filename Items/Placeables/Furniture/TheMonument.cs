@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.width = 40;
             Item.height = 50;
             Item.rare = ItemRarityID.Pink;
-            Item.value = Item.sellPrice(gold: 20);
+            Item.value = Item.buyPrice(platinum: 1);
         }
 
         public override void Load()

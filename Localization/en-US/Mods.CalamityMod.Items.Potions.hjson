@@ -163,7 +163,7 @@ TheConcoction: {
 	Tooltip: ""
 	SalesPitch:
 		'''
-		‘Aren’t you tired of how unreliable your healing potions are? What if you’re in the middle of a zombie horde and sick to the core of those things?!’
+		‘Aren't you tired of how unreliable your healing potions are? What if you're in the middle of a zombie horde and sick to the core of those things?!’
 		‘With my concoction, you won’t have to worry about that! Just a sip of this bad boy and you’ll be good as new, ready to take on the world!’
 		'''
 }
@@ -194,8 +194,8 @@ BaconOil: {
 		'''
 	SalesPitch:
 		'''
-		‘Monks go on and on about forgoing attachment. I don’t think this is what they meant. It’s better!’
-		‘Don’t mind the accident disclaimer: get yourself some of this slippery fat oil, and not a bit of this world will be able to hold you down!’
+		‘Monks go on and on about forgoing attachment. I don't think this is what they meant. It's better!’
+		‘Don't mind the accident disclaimer: get yourself some of this slippery fat oil, and not a bit of this world will be able to hold you down!’
 		'''
 }
 
@@ -642,6 +642,6 @@ TheSandwich: {
 	SalesPitch:
 		'''
 		‘...You want to buy my lunch?’
-		‘Well, no matter! But it won’t be cheap! This sandwich is made with the best the market can offer, so get your wallet out!’
+		‘Well, no matter! But it won’t be cheap! This sandwich is made with the best the market can offer, so ready your wallet!’
 		'''
 }
