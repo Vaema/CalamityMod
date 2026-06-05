@@ -292,11 +292,10 @@ namespace CalamityMod.Projectiles.Typeless
             if (deadPig) // Only spawn explosion if death is from collision
             {
                 int pigNum = Owner.ownedProjectileCounts[Projectile.type];
-                int damage = (int)((pigNum * 2 + Projectile.damage) * MathF.Pow(Owner.GetBestClassDamage().ApplyTo(1), 0.4f + pigNum * 0.6f)); // Damage scales with number of pigions at 0.7 power
                 float blastSize = 100;
                 float minMultiplier = 0.1f;
                 int hitsToMinMult = 4;
-                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(damage), -15, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage*pigNum), -15, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                 blast.timeLeft = 5;
                 blast.DamageType = AverageDamageClass.Instance;
                 blast.CritChance = 100;
