@@ -14,8 +14,6 @@ namespace CalamityMod.Items.Potions
 {
     public class TheConcoction : ModItem, ILocalizedModType
     {
-        private static int hoverTimer = 0;
-        private static bool wasHovering = false;
         public new string LocalizationCategory => "Items.Potions";
 
         public override void SetStaticDefaults()
@@ -32,37 +30,28 @@ namespace CalamityMod.Items.Potions
         public override void SetDefaults()
         {
             Item.DefaultToHealingPotion(50, 56, 500);
-            Item.value = Item.sellPrice(silver: 60);
+            Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
 
 
         public override void OnConsumeItem(Player player)
         {
-            TheConcoctionPlayer cocPlayer = player.GetModPlayer<TheConcoctionPlayer>();
-            cocPlayer.swinesWrathCounter = 1200; // Creates a 10 second delay before the buff is visible (triggers at 600)
+            TheConcoctionPlayer concoctionPlayer = player.GetModPlayer<TheConcoctionPlayer>();
+            concoctionPlayer.swinesWrathCounter = 1200; // Creates a 10 second delay before the buff is visible (triggers at 600)
         }
 
-
-        public override void UpdateInventory(Player player)
-        {
-            wasHovering = Main.HoverItem?.type == Type;
-        }
-
-        // Display different text for the first 10 frames of hovering over the item's tooltip.
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            bool isHovering = Main.HoverItem?.type == Type;
+            TheConcoctionPlayer concoctionPlayer = Main.LocalPlayer.GetModPlayer<TheConcoctionPlayer>();
 
-            if (isHovering && !wasHovering)
-                hoverTimer = 0;
-            if (isHovering)
-                hoverTimer++;
-
-            if (hoverTimer <= 10 && hoverTimer > 0)
+            if (concoctionPlayer.hoverTimer <= 10 && concoctionPlayer.hoverTimer > 0)
             {
                 TooltipLine healLine = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "HealLife");
-                healLine?.Text = this.GetLocalization("EasterEggText").Value;
+                if (healLine != null)
+                {
+                    healLine.Text = this.GetLocalization("EasterEggText").Value;
+                }
             }
         }
     }
@@ -70,19 +59,38 @@ namespace CalamityMod.Items.Potions
     public class TheConcoctionPlayer : ModPlayer
     {
         public int swinesWrathCounter = -1;
-        
+
+        public int hoverTimer = 0;
+        public bool wasHovering = false;
+
         public override void PostUpdate()
         {
             if (swinesWrathCounter > 0)
             {
                 swinesWrathCounter--;
 
-                if (swinesWrathCounter <= 600 && !Player.HasBuff<SwinesWrathBuff>()) // When there is 10 seconds left
+                if (swinesWrathCounter <= 600 && !Player.HasBuff<SwinesWrathBuff>())
                 {
                     Player.AddBuff(ModContent.BuffType<SwinesWrathBuff>(), 600);
-
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/SwinesWrathProc"), Player.Center);
                 }
+            }
+
+            if (Main.myPlayer == Player.whoAmI)
+            {
+                // Check if hover over the right item
+                bool isHovering = Main.HoverItem?.type == ModContent.ItemType<TheConcoction>();
+
+                if (isHovering && !wasHovering)
+                    hoverTimer = 0;
+
+                if (isHovering)
+                    hoverTimer++;
+                else
+                    hoverTimer = 0;
+
+                // Save the state for the next frame
+                wasHovering = isHovering;
             }
         }
     }

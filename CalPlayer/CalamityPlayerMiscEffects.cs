@@ -4990,6 +4990,53 @@ namespace CalamityMod.CalPlayer
                     RecipeUnlockHandler.HasFoundIceSchematic = true;
                     shouldSync = true;
                 }
+
+                if (Main.mouseItem.type == ModContent.ItemType<LuxorsGift>() && !RecipeUnlockHandler.HasFoundLuxorsGift)
+                {
+                    RecipeUnlockHandler.HasFoundLuxorsGift = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<FungalSymbiote>() && !RecipeUnlockHandler.HasFoundFungalSymbiote)
+                {
+                    RecipeUnlockHandler.HasFoundFungalSymbiote = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<TrinketofChi>() && !RecipeUnlockHandler.HasFoundTrinketOfChi)
+                {
+                    RecipeUnlockHandler.HasFoundTrinketOfChi = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<FrozenCube>() && !RecipeUnlockHandler.HasFoundFrozenCube)
+                {
+                    RecipeUnlockHandler.HasFoundFrozenCube = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<GladiatorsLocket>() && !RecipeUnlockHandler.HasFoundGladiatorsLocket)
+                {
+                    RecipeUnlockHandler.HasFoundGladiatorsLocket = true;
+                    shouldSync = true;
+                }
+                if (Main.mouseItem.type == ModContent.ItemType<UnstableGraniteCore>() && !RecipeUnlockHandler.HasFoundUnstableGraniteCore)
+                {
+                    RecipeUnlockHandler.HasFoundUnstableGraniteCore = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<CrimsonEffigy>() && !RecipeUnlockHandler.HasFoundCrimsonEffigy)
+                {
+                    RecipeUnlockHandler.HasFoundCrimsonEffigy = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<CorruptionEffigy>() && !RecipeUnlockHandler.HasFoundCorruptionEffigy)
+                {
+                    RecipeUnlockHandler.HasFoundCorruptionEffigy = true;
+                    shouldSync = true;
+                }
             }
 
             if (shouldSync)

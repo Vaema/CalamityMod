@@ -14,10 +14,11 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
         }
+        
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().fishStocks = true;
