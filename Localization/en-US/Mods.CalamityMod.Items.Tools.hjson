@@ -187,7 +187,7 @@ DisgustingMeat: {
 	Tooltip:
 		'''
 		<left> will remove health and mana upgrades, use with no Calamity upgrades to remove vanilla upgrades
-		<right> will remove rage and adrenaline upgrades, plus other miscellaneous boosters
+		<right> will remove Rage and Adrenaline upgrades, plus other miscellaneous boosters such as Demon Heart
 		Removed boosters will be vomited out of you as items
 		'''
 }
