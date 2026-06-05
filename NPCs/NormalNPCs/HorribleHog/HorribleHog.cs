@@ -10,6 +10,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Tools;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Utilities.Daybreak;
@@ -821,6 +822,15 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             }
         }
 
+        public override void OnKill()
+        {
+            CalamityGlobalNPC.SetNewBossJustDowned(NPC);
+
+            // Mark Horrible Hog as dead
+            DownedBossSystem.downedHorribleHog = true;
+            CalamityNetcode.SyncWorld();
+        }  
+        
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             //Always drops Disgusting Meat, 50% chance to drop Money Trough, 25%/33% chance to drop Laudanum

@@ -786,6 +786,11 @@ GluttonyBlender: {
 		A strange industrial contraption which appears to process food
 		Has the potential to turn food into something more nutritious... maybe
 		'''
+	SalesPitch:
+		'''
+		'A state of the art machine, created by my partner Hoggart! You can put anything in it, and it'll make a nutritious delicacy for you to snack on!'
+		'I myself can attest for its quality, I use it to make my breakfast, lunch and dinner!'
+		'''
 }
 
 LanternCenter: {
@@ -967,6 +972,11 @@ TheMonument: {
 		'''
 		A monument celebrating the accomplishments of capitalism
 		Funded by the taxes of nearby Town NPCs, though they may not be too happy about that
+		'''
+	SalesPitch:
+		'''
+		'Don't you think your town is a bit too boring? Don't you wish you could get more money out of your troubles? Well, I've got you the perfect two-in-one deal!'
+		'This statue I made myself is so marvelous that it'll singlehandedly raise the price of housing around here! Just sit back, and enjoy the sight and the money!'
 		'''
 }
 
@@ -4679,6 +4689,11 @@ MossyStone: {
 GreedPot: {
 	DisplayName: Urn of Avarice
 	Tooltip: Offer your treasures to the Urn, and your avarice may at last be satiated
+	SalesPitch:
+		'''
+		'Say, you use all kinds of ores for your stuff, but finding precious minerals isn't easy, is it? Well, I got the solution for you!'
+		'Just throw any ore you got in this urn and they'll turn into even rarer ones! No more looking for tungsten for hours on end!'
+		'''
 }
 
 HorribleHogBanner.DisplayName: Horrible Hog Banner

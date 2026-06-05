@@ -856,8 +856,11 @@ OmniGun: {
 		The second shot is a burst of 10 standard bullets
 		The third shot is a devastating point blank spread
 		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
-		'What kind of gun is it?'
-		'Yes'
+		'''
+	SalesPitch:
+		'''
+		'Why carry four different guns when you can carry just one? That's what I used to ask myself!'
+		'With this thing-a-beauty, even a bumbling moron can become invincible - and for the right price, it can be yours!'
 		'''
 }
 
