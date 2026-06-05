@@ -25,6 +25,6 @@ namespace CalamityMod.Cooldowns
         public override Color CooldownStartColor => Color.Brown;
         public override Color CooldownEndColor => Color.Khaki;
 
-        public override SoundStyle? EndSound => new("CalamityMod/Sounds/Item/AscendantOff");
+        public override SoundStyle? EndSound => new("CalamityMod/Sounds/Item/StooldownResolve");
     }
 }
