@@ -129,7 +129,7 @@ Celestus: {
 		'''
 		Throws a high-velocity scythe that splits into multiple phantom scythes on enemy hits
 		Stealth strikes reverse direction and home in on enemies after returning to the player
-        Struck enemies are atomized by [cbuff:CalamityMod/MiracleBlight]
+        Struck enemies are decimated by [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 

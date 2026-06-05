@@ -211,7 +211,7 @@ CosmicImmaterializer: {
 		'''
 		Summons a cosmic energy spiral to fight for you
 		The spiral will fire swarms of homing energy bolts when enemies are detected by it
-		      Struck enemies are cleasned by [cbuff:CalamityMod/MiracleBlight]
+		Struck enemies are cleansed by [cbuff:CalamityMod/MiracleBlight]
 		There can only be one energy spiral
 		'''
 }

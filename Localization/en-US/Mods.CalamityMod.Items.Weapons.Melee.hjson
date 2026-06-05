@@ -55,7 +55,7 @@ AnarchyBlade: {
 	Tooltip:
 		'''
 		The lower your life the more damage this blade does
-		Your hits will generate a large explosion of [cbuff:CalamityMod/BrimstoneFlames]
+		Your hits will generate a large explosion
 		While below 50% life your hits have a chance to instantly kill regular enemies
 		'''
 }
@@ -145,7 +145,7 @@ BalefulHarvester: {
 	Tooltip:
 		'''
 		A flaming scythe which is rapidly swung around three times in succession
-		Enemy hits summon [cbuff:OnFire3] skulls that split into homing fire orbs
+		Enemy hits summon flaming skulls that split into homing fire orbs
 		'''
 }
 
@@ -194,7 +194,7 @@ Bonebreaker: {
 	Tooltip:
 		'''
 		Fires javelins that stick to enemies before bursting into shrapnel
-		Stuck javelins cause [cbuff:CalamityMod/HeavyBleeding], [cbuff:Venom], and [cbuff:CalamityMod/ArmorCrunch]
+		Stuck javelins inflict several debuffs
 		'''
 }
 
@@ -210,7 +210,7 @@ Brimlance: {
 
 Brimlash: {
 	DisplayName: Brimlash
-	Tooltip: Fires a bolt of [cbuff:CalamityMod/BrimstoneFlames] that explodes into more bolts on hit
+	Tooltip: Fires a brimstone bolt that explodes into more bolts on hit
 }
 
 BrimstoneSword: {
@@ -265,12 +265,12 @@ BurntSienna: {
 
 Carnage: {
 	DisplayName: Carnage
-	Tooltip: Causes [cbuff:CalamityMod/HeavyBleeding] and enemies explode into homing blood on death
+	Tooltip: Enemies explode into homing blood on death
 }
 
 CelestialClaymore: {
 	DisplayName: Celestial Claymore
-	Tooltip: Spawns cosmic energy stars near the cursor that inflict [cbuff:Frostburn2], [cbuff:OnFire3], or [cbuff:Ichor]
+	Tooltip: Spawns cosmic energy stars near the cursor
 }
 
 ClamCrusher: {
@@ -430,7 +430,6 @@ EarthenPike: {
 	Tooltip:
 		'''
 		Sprays fossil shards on swing
-		Inflicts [cbuff:CalamityMod/ArmorCrunch] on enemies
 		'''
 }
 
@@ -502,6 +501,7 @@ Exoblade: {
 		Enemy hits from the blade during the dash result in massive damage and a rebound
 		Press <left> immediately after a rebound to perform a powerful slash
 		Powerful slashes are larger, heal you, and create a large explosion
+        Struck enemies are torn apart by [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -533,7 +533,6 @@ FlarefrostBlade: {
 	Tooltip:
 		'''
 		Fires a homing flarefrost orb
-		Inflicts both [cbuff:OnFire3] and [cbuff:Frostburn2]
 		'''
 }
 
@@ -709,7 +708,7 @@ Greentide: {
 	Tooltip:
 		'''
 		Launches a spread of four teeth with one stronger piercing tooth in the center
-		Hitting with the blade creates two jaws of teeth to chomp on the enemy closest to your cursor, causing [cbuff:CalamityMod/HeavyBleeding]
+		Hitting with the blade creates two jaws of teeth to chomp on the enemy closest to your cursor
 		'''
 }
 
@@ -778,7 +777,7 @@ Lacerator: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Striking enemies conjures a bloody saw to shred them, inflicting [cbuff:CalamityMod/Laceration]
+		Striking enemies conjures a bloody saw to shred them
 		The saw does more damage the more often the yoyo hits, and fades away when not striking enemies
 		Enemies touching the edge of the sawblade get blood orbs torn out of them
 		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
@@ -1191,7 +1190,6 @@ SpineOfThanatos: {
 		Releases 3 fast metallic whips outward
 		Once all three collide, a prism of light is shot outward
 		If an enemy is within the line of sight of the whips on collision, the light will fire towards it
-		Enemies bathed in light are annihilated by [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 

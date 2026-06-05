@@ -333,7 +333,6 @@ FrigidflashBolt: {
 		Casts a fast ball of flash-freezing magma that bounces off tiles
 		When hitting a tile, a flarefrost burst is produced
 		Press <right> to cast an empowered ball that creates a collapsing flarefrost vortex which explodes
-		Inflicts both [cbuff:OnFire3] and [cbuff:Frostburn2]
 		'''
 }
 
@@ -843,6 +842,7 @@ SubsumingVortex: {
 		When enemies are near the vortex, it sends multiple fast-moving smaller vortices towards them
 		Releasing <right> fires the vortex towards the mouse if enough time has passed
 		Damage scales based on how long the vortex was held out
+        Struck enemies are completely consumed by [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -1017,7 +1017,7 @@ VitriolicViper: {
 	DisplayName: Vitriolic Viper
 	Tooltip:
 		'''
-		Charges up and fires a slithering [cbuff:CalamityMod/Irradiated] beam
+		Charges up and fires a slithering beam of radiation
 		If fully charged, instead fires a huge spread of short range fangs
 		'''
 }
@@ -1028,6 +1028,7 @@ VividClarity: {
 		'''
 		Fires five randomized rays of exo-energy towards the cursor
 		Enemy and tile hits either cause a big flash explosion, an additional laser from the sky, or split into energy orbs
+        Struck enemies are liquified by [cbuff:CalamityMod/MiracleBlight]
 		'Its majesty inspires a stroke of unparalleled genius'
 		'''
 }
@@ -1099,6 +1100,6 @@ YharimsCrystal: {
 	DisplayName: Yharim's Crystal
 	GFBName: yermes christal
 	Tooltip: "[GFB]"
-	TooltipNormal: Fires draconic beams of total annihilation
+	TooltipNormal: Fires [cbuff:CalamityMod/Dragonfire] beams of total annihilation
 	TooltipGFB: ...throughs a pice of dnimite
 }

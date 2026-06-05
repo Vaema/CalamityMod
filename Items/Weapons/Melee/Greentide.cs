@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
         internal const int TotalTeeth = 3;
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<RiptideDebuff>(), BuffID.Wet];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<RiptideDebuff>(), BuffID.Wet, ModContent.BuffType<HeavyBleeding>()];
         }
         public override void SetDefaults()
         {
