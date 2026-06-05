@@ -2,6 +2,7 @@
 {
     public class HorribleHogBanner : BaseBanner
     {
-        public override int BannerTileID => 152;
+        public override int BannerTileStyle => 152;
+        public override int BannerKillRequirement => 25;
     }
 }
