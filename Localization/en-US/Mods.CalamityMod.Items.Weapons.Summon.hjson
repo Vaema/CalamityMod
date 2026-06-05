@@ -782,7 +782,7 @@ TacticalPlagueEngine: {
 	DisplayName: Tactical Plague Engine
 	Tooltip:
 		'''
-		Summons a plague jet to pummel your enemies into submission
+		Summons a [cbuff:CalamityMod/Plague] jet to pummel your enemies into submission
 		Jets will fire bullets from your inventory
 		Sometimes shoots a missile instead of a bullet
 		50% chance to save ammo

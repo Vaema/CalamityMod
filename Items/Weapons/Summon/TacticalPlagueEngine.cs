@@ -14,11 +14,7 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int BulletShootRate = 125;
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Plague>()];
-        }
-
+   
         public override void SetDefaults()
         {
             Item.width = 28;
