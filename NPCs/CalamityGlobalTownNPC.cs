@@ -233,6 +233,7 @@ namespace CalamityMod.NPCs
         [
             "Morshu", // <@!194931581826236416> (uberransy)
             "Spamton G. Spamton", // <@!497146350438318101> (j.u.n.e.s)
+            "Goldluna", // <@!442449102857568257> (goldluna)
         ];
         private static readonly string[] NurseNames =
         [
@@ -329,6 +330,7 @@ namespace CalamityMod.NPCs
             "Bagman", // <@!701831892990820383> (supportcrispy)
             "Old Man Scrooge", // <@!1392141158255427655> (vortexgaming18)
             "Jerry Atric", // <@!181545975901454337> (halleyvetica)
+            "22 Platinum Coin Guy", // <@!921440724766040064> (tsukarin_)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
@@ -346,7 +348,6 @@ namespace CalamityMod.NPCs
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
             "Wonton", // <@!1198092982923043040> (imonthatgudkush)
             "Mad Lad", // <@!215269032360804352> (crimsoncb)
-            "Nokko", // <@!706732954079985745> (violet.prime)
         ];
         private static readonly string[] WitchDoctorNames =
         [
@@ -478,6 +479,7 @@ namespace CalamityMod.NPCs
             "Saffie", // <@!319753595161411584> (CDMusic)
             "Willow", // <@!319753595161411584> (CDMusic)
             "Maine", // <@!731141759484297226> (trianglepixel)
+            "Pluey", // <@!706732954079985745> (violet.prime)
         ];
         private static readonly string[] TownCatOrangeTabbyNames =
         [
