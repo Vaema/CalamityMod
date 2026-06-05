@@ -212,6 +212,11 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            // Don't activate for non-friendly projectiles (obviously).
+            // Override CanHitNPC if you want a hostile projectile that can also damage enemies.
+            if (!proj.friendly)
+                return;
+
             //Undo raider crit after hit
             if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
             {
@@ -454,6 +459,15 @@ namespace CalamityMod.CalPlayer
                     // Music easter egg in GFB
                     if (Main.zenithWorld)
                         GungeonMusicSystem.GUN();
+                }
+
+                // Used by Megalodon, Seadragon & Voidragon, allows bullets to track their damage scaling
+                if (cgp.sharkBullets)
+                {
+                    if (proj.numHits == 0)
+                    {
+                        sharkGunDamageScaling++;
+                    }
                 }
 
                 if (cgp.fireBullet)

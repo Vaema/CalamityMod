@@ -5,6 +5,7 @@ using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.NormalNPCs.HorribleHog;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
@@ -528,6 +529,9 @@ namespace CalamityMod.Tiles
                 /* case 151:
                     npc = NPCType<StormlionScout>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
                     break; */
+                case 152:
+                    npc = NPCType<HorribleHog>();
+                    break;
                 default:
                     break;
             }

@@ -4,8 +4,8 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.Localization;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -65,7 +65,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             return false;
         }
-
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
     }
 }

@@ -22,7 +22,7 @@ Baguette: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MinorStats}
-		Goes well with [cbuff:CalamityMod/RedWineBuff]
+		Goes well with [cbuffplr:CalamityMod/RedWineBuff]
 		[c/FCE391:'je suis Monte']
 		'''
 }
@@ -573,6 +573,16 @@ Cometfruit: {
 		'''
 		{$CommonItemTooltip.MediumStats}
 		'Tastes stellar!'
+		'''
+}
+
+DivineMeat: {
+	DisplayName: Divine Meat
+	Tooltip:
+		'''
+		{$CommonItemTooltip.MinorStats}
+		Not consumabale
+		'A blessed strip of pork that never seems to be entirely consumed...'
 		'''
 }
 

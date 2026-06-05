@@ -114,7 +114,7 @@ namespace CalamityMod.Items
             int standardTooltipCount = 0;
             for (int i = 0; i < tooltips.Count; i++)
             {
-                if (tooltips[i].Name.StartsWith("Tooltip"))
+                if (tooltips[i]?.Name?.StartsWith("Tooltip") == true)
                 {
                     if (firstTooltipIndex == -1)
                         firstTooltipIndex = i;

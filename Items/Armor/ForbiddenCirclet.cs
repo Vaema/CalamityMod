@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Armor
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent(), RogueVelocityBoost.ToPercent());
 
         // Set Bonus
-        public static float SetBonusRogueStealth = 0.4f;
+        public static float SetBonusRogueStealth = 1.05f;
         public static int TagDuration = CalamityUtils.SecondsToFrames(10);
         public static int StormManaCost = 60;
         public static int StormCooldown = 45;

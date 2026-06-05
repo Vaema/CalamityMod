@@ -13,6 +13,8 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Summon/CnidarianJellyfishOnTheString";
 
+        public static int ReelChancePerFrame = 100;
+
         public Player Owner => Main.player[Projectile.owner];
         public ref float ParentProjectile => ref Projectile.ai[2];
         public Projectile Parent => Main.projectile[(int)ParentProjectile];
@@ -40,7 +42,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             // Automatic reeling
-            if (Projectile.ai[0] == 0f && Projectile.ai[1] < 0f && Main.rand.NextBool(40))
+            if (Projectile.ai[0] == 0f && Projectile.ai[1] < 0f && Main.rand.NextBool(ReelChancePerFrame))
             {
                 Projectile.ai[0] = 1f;
                 Projectile.localAI[0] = 1f;

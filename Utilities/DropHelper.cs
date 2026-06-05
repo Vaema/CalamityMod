@@ -275,7 +275,7 @@ namespace CalamityMod
         public static void AddRevBagAccessories(this ILoot loot)
         {
             var lcr = new LeadingConditionRule(If(() => CalamityWorld.revenge));
-            lcr.Add(new OneFromOptionsDropRule(20, 1, ModContent.ItemType<Laudanum>(), ModContent.ItemType<HeartofDarkness>(), ModContent.ItemType<StressPills>()));
+            lcr.Add(new OneFromOptionsDropRule(20, 1, ModContent.ItemType<HeartofDarkness>(), ModContent.ItemType<StressPills>()));
             loot.Add(lcr);
         }
 

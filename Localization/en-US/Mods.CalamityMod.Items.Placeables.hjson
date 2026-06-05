@@ -938,7 +938,7 @@ ThankYouPainting: {
 		'''
 		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
 		The confines of this painting is not enough to fit the entire team
-		Hold Shift to see a list of past and current developers
+		Hold Shift to see a list of developers and press Shift to switch between current and past developers
 		'''
 }
 
@@ -4738,3 +4738,5 @@ GreedPot: {
 		‘Just throw any ore you got on this urn and they’ll turn into even rarer ones! No more looking for tungsten for hours on end!’
 		'''
 }
+
+HorribleHogBanner.DisplayName: Horrible Hog Banner
