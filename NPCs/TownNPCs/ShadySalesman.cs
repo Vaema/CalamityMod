@@ -56,6 +56,7 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 Velocity = 1f // Draws the NPC in the bestiary as if its walking +1 tiles in the x direction
             };
+            ContentSamples.NpcBestiaryRarityStars[Type] = 3; //Same as the Traveling Merchant
             NPCID.Sets.NPCBestiaryDrawOffset.Add(NPC.type, drawModifiers);
         }
 
