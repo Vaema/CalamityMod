@@ -1346,6 +1346,18 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.Bacon);
+            r.AddIngredient<PiggyGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<PiggyGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.DisableDecraft();
         }
         #endregion
 
