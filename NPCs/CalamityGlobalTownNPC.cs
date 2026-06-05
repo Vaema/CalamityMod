@@ -113,6 +113,7 @@ namespace CalamityMod.NPCs
             "Johnny Test", // <@!589966747977777197> (konorango)
             "Bling Bling Boy", // <@!522970788203069442> (phallguy)
             "RICE", // <@!400107830889152524> (rice_xd.)
+            "Quest Boy", // <@!770103186093637663> (justanothersoldiermain)
         ];
         private static readonly string[] ArmsDealerNames =
         [
@@ -132,13 +133,14 @@ namespace CalamityMod.NPCs
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
             "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
             "Perrin", // <@!253764551139393537> (easyperrin)
-            "Dorkyy", // <@!427765391662514185> (dorkblaze01)
+            "Spud McGee", // <@!727111000658018326> (starchman)
         ];
         private static readonly string[] CyborgNames =
         [
             "Sylux", // <@!331812782183809025> (gonkachino)
             "Nemesis", // <@!1104036024063107082> (yashimayamanata)
             "Univerze", // <@!1256376346536448150> (unizumi02)
+            "Hunk", // <@!447597886260248578> (bagel_san)
         ];
         private static readonly string[] DemolitionistNames =
         [
@@ -172,6 +174,8 @@ namespace CalamityMod.NPCs
             "Bars Boldia", // <@!332989575708540939> (careless_imp)
             "Basel Raiden John Clive Fantasy 16", // <@!529392083136413696> (raiden_ii)
             "Gobby, Destroyer of Wallets", // <@!429024941296582658> (bwlstorm)
+            "Potential Man", // <@!320787277007552512> (veruze)
+            "Donny G", // <@!308736236523225088> (donnyg66)
         ];
         private static readonly string[] GolferNames = null;
         private static readonly string[] GuideNames =
@@ -195,6 +199,7 @@ namespace CalamityMod.NPCs
             "Wamy", // Fab added this name with no Discord ID. May be a donor who has no Discord account.
             "Baggute", // <@!535140564174110720> (thebaggutegamer)
             "Jacob Bryson", // <@!879794107218817026> (.melongun)
+            "ImaShoe", // <@!926957605056819261> (imashoe.)
         ];
         private static readonly string[] MechanicNames =
         [
@@ -217,6 +222,8 @@ namespace CalamityMod.NPCs
             "Fanny", // <@!799749125720637460> (zombiewolf511)
             "Mausi", // <@!194156349347594241> (sadouken)
             "Fiona", // <@!475216964168450048> (thatgayguy69)
+            "Tikoh", // <@!618149904224616458> (r.fractal)
+            "Vivienne", // <@!1043188879185952848> (thanat.oshi)
         ];
         private static readonly string[] PainterNames =
         [
@@ -228,6 +235,7 @@ namespace CalamityMod.NPCs
             "Arin", // <@!268169458302976012> (kiyotu)
             "Typhäne", // <@!222064016107896832> (typhane.)
             "Charlotte Linlin", // <@!563406464522125323> (vixcalibur)
+            "Shmizzle Dizzle", // <@!1070551501283528724> (shmizzledizzle)
         ];
         private static readonly string[] PirateNames =
         [
@@ -264,6 +272,9 @@ namespace CalamityMod.NPCs
             "Papyrus Undertale", // <@!262663471189983242> (nycro)
             "Mr. Bones", // <@!359215912856977408> (jaybones.)
             "Freakbob", // <@!377863128140087296> (jevilamv)
+            "Bone Cold Steve Austin", // <@!282704860992897024> (raendrag_of_rovan)
+            "Them Bones", // <@!322208584534589450> (dogvtf)
+            "Deep-Vein Thrombonesis", // <@!557473830457704458> (thessyll)
         ];
         private static readonly string[] SteampunkerNames =
         [
@@ -275,6 +286,7 @@ namespace CalamityMod.NPCs
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
             "Cathlyn", // <@!156672312425316352> (xaqult)
             "Eunice", // <@!358376627400605699> (srmg267)
+            "Zera", // <@!543914166969172106> (zer0_0_0_0)
         ];
         private static readonly string[] StylistNames =
         [
@@ -282,9 +294,9 @@ namespace CalamityMod.NPCs
             "Faith", // <@!509050283871961123> (toasty1007)
             "Xsiana", // <@!625780237489143839> (lokistic)
             "Lain", // <@!655201622863118337> (literallyadeerfr)
-            "Hamis", // <@!608455754093035521> (haefer)
             "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
             "Vanessa", // <@!638901548591611945> (mediocreking)
+            "Melanie", // <@!356115964800139267> (schwarzerhumor)
         ];
         private static readonly string[] TavernkeepNames =
         [
@@ -298,6 +310,7 @@ namespace CalamityMod.NPCs
             "Emmett",
             "Bagman", // <@!701831892990820383> (supportcrispy)
             "Old Man Scrooge", // <@!1392141158255427655> (vortexgaming18)
+            "Jerry Atric", // <@!181545975901454337> (halleyvetica)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
@@ -307,6 +320,8 @@ namespace CalamityMod.NPCs
             "Postman Hiss", // <@!454638106122125312> (karinthefairy)
             "Cosmoec", // <@!793660591449309204> (cosmoecark)
             "Junorism", // <@!740625002596008036> (hewhoshallnotbebaned)
+            "Koral", // <@!1354908256681590845> (koral12244_)
+            "Phantom", // <@!1360706992506667241> (phantomz980)
         ];
         private static readonly string[] TruffleNames =
         [
@@ -323,6 +338,7 @@ namespace CalamityMod.NPCs
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
             "Tequila", // <@!889175547744239677> (thecrispistofnuggets)
             "Bee Movie Script", // <@!407949998173454341> (literally_jesuschrist)
+            "Which Doctor", // <@!746103484017016832> (sepulchre0001)
         ];
         private static readonly string[] WizardNames =
         [
@@ -337,6 +353,7 @@ namespace CalamityMod.NPCs
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
             "Derin", // <@!466703979695308820> (god_15)
             "Umbara", // <@!450062421294579712> (umbaraeclipse)
+            "Reyloth Grey", // <@!255043013116428298> (pantyslack)
         ];
         private static readonly string[] ZoologistNames =
         [
@@ -347,11 +364,16 @@ namespace CalamityMod.NPCs
             "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
             "Zora", // <@!752687500656640030> (oxytoxy365)
+            "Summer", // <@!608455754093035521> (haefer)
+            "Foxy", // <@!602954046332207164> (squid_san)
         ];
         // Town Slimes
         private static readonly string[] ClumsySlimeNames = null;
         private static readonly string[] CoolSlimeNames = null;
-        private static readonly string[] DivaSlimeNames = null;
+        private static readonly string[] DivaSlimeNames =
+        [
+            "Rise Kujikawa", // <@!630100236689342475> (roald27)
+        ];
         private static readonly string[] ElderSlimeNames = null;
         private static readonly string[] MysticSlimeNames = null;
         private static readonly string[] NerdySlimeNames =
@@ -377,6 +399,7 @@ namespace CalamityMod.NPCs
             "Ozymandias", // <@!146333264871686145> (ozzatron)
             "Miss Throws a Lot", // <@!799345607847182400> (oakhamsam)
             "Brikwilla", // <@!543803736909414438> (lavendercobra)
+            "Melody", // <@!1030635650963214446> (weisslerren)
         ];
         private static readonly string[] TownDogLabradorNames =
         [
@@ -387,6 +410,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogPitBullNames =
         [
             "Splinter", // <@!320320801213775873> (kaimonick)
+            "Mack", // <@!427765391662514185> (dorkblaze01)
         ];
         private static readonly string[] TownDogBeagleNames =
         [
@@ -401,6 +425,7 @@ namespace CalamityMod.NPCs
         [
             "Yoshi", // <@!541127291426832384> (gregthespinarak)
             "Franklin", // <@!338315261352476682> (tyeski)
+            "Rocco", // <@!682411821067796480> (little_one777)
         ];
 
         private const int TownCatSiameseVanillaNames = 12;
@@ -417,6 +442,7 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
+            "Kreska", // <@!130037366852157440> (nuclearnecro)
         ];
         private static readonly string[] TownCatSiameseNames =
         [
