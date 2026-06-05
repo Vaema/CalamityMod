@@ -1413,6 +1413,7 @@ ThreadOfEradication: {
 		Charges up [ceffect/dog:God's Bane Doombeam]
 		Channelling the weapon causes it to charge up [ceffect/dog:Hyperdeath Rift] instead
 		While charging [ceffect/dog:Hyperdeath Rift], the bow's turning speed is slowed down
+        Always critically strikes, with critical strike chance increasing critical strike damage
 		'''
 }
 
