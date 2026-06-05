@@ -49,6 +49,12 @@ namespace CalamityMod
                 case "desert scourge":
                     return DownedBossSystem.downedDesertScourge;
 
+                case "horriblehog":
+                case "horrible hog":
+                case "thehorriblehog":
+                case "the horrible hog":
+                    return DownedBossSystem.downedHorribleHog;
+
                 case "clam":
                 case "giantclam":
                 case "giant clam":

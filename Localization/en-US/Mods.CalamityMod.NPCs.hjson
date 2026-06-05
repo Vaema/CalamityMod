@@ -321,7 +321,6 @@ Shoreskipper.DisplayName: Shoreskipper
 BrainIllusion.DisplayName: Brain Illusion
 FalseBrain.DisplayName: False Brain
 BloodBomb.DisplayName: Blood Bomb
-// Town NPCs, Pets, etc
 AndroombaFriendly.DisplayName: Androomba Pal
 
 Archmage: {
@@ -642,10 +641,4 @@ TownPiggy: {
 	}
 }
 
-DraconicSwarmer.DisplayName: Draconic Swarmer
-Dragonfolly.DisplayName: Dragonfolly
-Shoreskipper.DisplayName: Shoreskipper
-BrainIllusion.DisplayName: Brain Illusion
-FalseBrain.DisplayName: False Brain
-BloodBomb.DisplayName: Blood Bomb
 HorribleHog.DisplayName: Horrible Hog

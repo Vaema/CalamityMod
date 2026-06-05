@@ -555,6 +555,9 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void PreUpdateWorld()
         {
+            if (!DownedBossSystem.downedHorribleHog) // Cannot spawn before Horrible Hog has been killed.
+                return;
+
             if (Main.dayTime)
             {
                 CanSpawnTonight = true;

@@ -70,6 +70,7 @@ namespace CalamityMod
     internal class Downed
     {
         public static readonly Func<bool> DownedDesertScourge = () => DownedBossSystem.downedDesertScourge;
+        public static readonly Func<bool> DownedHorribleHog = () => DownedBossSystem.downedHorribleHog;
         public static readonly Func<bool> DownedGiantClam = () => DownedBossSystem.downedCLAM;
         public static readonly Func<bool> DownedCrabulon = () => DownedBossSystem.downedCrabulon;
         public static readonly Func<bool> DownedHiveMind = () => DownedBossSystem.downedHiveMind;
