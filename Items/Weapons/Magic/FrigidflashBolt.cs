@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;

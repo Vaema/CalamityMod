@@ -2,6 +2,7 @@
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
