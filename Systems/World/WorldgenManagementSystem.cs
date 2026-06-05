@@ -373,6 +373,12 @@ namespace CalamityMod.Systems
                     SulphurousSea.SulphurSeaGenerationAfterAbyss();
                 }));
 
+                tasks.Insert(++currentFinalIndex, new PassLegacy("Iron Ball", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.IronBall").Value;
+                    MiscWorldgenRoutines.GenerateIronBall();
+                }));
+
                 // No Traps/GFB Auric Land Mines
                 if (Main.noTrapsWorld)
                 {

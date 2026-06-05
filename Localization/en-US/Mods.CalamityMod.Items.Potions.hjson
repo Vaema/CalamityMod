@@ -561,6 +561,16 @@ Cometfruit: {
 		'''
 }
 
+DivineMeat: {
+	DisplayName: Divine Meat
+	Tooltip:
+		'''
+		{$CommonItemTooltip.MinorStats}
+		Not consumabale
+		'A blessed strip of pork that never seems to be entirely consumed...'
+		'''
+}
+
 Jackfruit: {
 	DisplayName: Jackfruit
 	Tooltip: "{$CommonItemTooltip.MinorStats}"

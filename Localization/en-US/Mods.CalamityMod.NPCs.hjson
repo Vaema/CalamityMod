@@ -172,6 +172,7 @@ CrawlerTopaz.DisplayName: Topaz Crawler
 CrimulanBlightSlime.DisplayName: Crimulan Blight Slime
 Cryon.DisplayName: Cryon
 CryoSlime.DisplayName: Cryo Slime
+DivineSwine.DisplayName: Divine Swine
 EbonianBlightSlime.DisplayName: Ebonian Blight Slime
 Eidolist.DisplayName: Eidolist
 FearlessGoldfishWarrior.DisplayName: Fearless Goldfish Warrior
@@ -186,6 +187,7 @@ OverloadedSoldier.DisplayName: Overloaded Soldier
 PerennialSlime.DisplayName: Perennial Slime
 PhantomSpirit.DisplayName: Phantom Spirit
 Piggy.DisplayName: Piggy
+PiggyGold.DisplayName: Gold Piggy
 PlanterasFreeTentacle.DisplayName: Plantera's Tentacle
 ProfanedEnergyBody.DisplayName: Profaned Energy
 Rimehound.DisplayName: Rimehound
@@ -576,3 +578,5 @@ TownPiggy: {
 		2: Snort!
 	}
 }
+
+HorribleHog.DisplayName: Horrible Hog

@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Laudanum>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HeartofDarkness>();
         }
 
         public override void SetDefaults()

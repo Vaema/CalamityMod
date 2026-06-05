@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.TownNPCs
             AIType = NPCID.TownBunny;
             NPC.damage = 0;
             NPC.defense = 0;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 250;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.5f;
