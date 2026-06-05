@@ -566,7 +566,7 @@ DivineMeat: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MinorStats}
-		Not consumabale
+		{$Common.NotConsumable}
 		'A blessed strip of pork that never seems to be entirely consumed...'
 		'''
 }
