@@ -134,17 +134,22 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueSpikyBall = Factory.CreateBoolSet(ItemType<BurningStrife>(), ItemType<GodsParanoia>(), ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<SystemBane>(),
-                ItemType<WebBall>());
+        public static bool[] RogueSpikyBall = Factory.CreateNamedSet("RogueSpikyBall")
+            .Description("Labels this item as a rogue spiky ball, only exists for objective classification.")
+            .RegisterBoolSet(ItemType<BurningStrife>(), ItemType<GodsParanoia>(), ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<SystemBane>(), ItemType<WebBall>());
 
         /// <summary>
         /// Force display expandable tooltip debuff info for infliction on an enemy
         /// </summary>
-        public static List<int>[] ExtraDebuffTooltip_Enemy = Factory.CreateCustomSet<List<int>>(new());
+        public static List<int>[] ExtraDebuffTooltip_Enemy = Factory.CreateNamedSet("EnemyDebuffTooltip")
+            .Description("Force display expandable tooltip debuff info for infliction on an enemy")
+            .RegisterCustomSet<List<int>>(new());
 
         /// <summary>
         /// Force display expandable tooltip debuff info for infliction on a player
         /// </summary>
-        public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateCustomSet<List<int>>(new());
+        public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateNamedSet("PlayerDebuffTooltip")
+            .Description("Force display expandable tooltip debuff info for infliction on a player")
+            .RegisterCustomSet<List<int>>(new());
     }
 }
