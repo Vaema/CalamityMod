@@ -412,6 +412,7 @@ HeliumFlash: {
 	Tooltip:
 		'''
 		Launches volatile star cores which erupt into colossal fusion blasts
+        Always critically strikes, with critical strike chance increasing critical strike damage
 		'The power of a galaxy, if only for mere moments'
 		'''
 }
@@ -1000,7 +1001,11 @@ Vehemence: {
 
 VenusianTrident: {
 	DisplayName: Venusian Trident
-	Tooltip: Casts an infernal trident that erupts into a gigantic explosion of fire and magma shards
+	Tooltip:
+        '''
+        Casts an infernal trident that erupts into a gigantic explosion of fire and magma shards
+        Always critically strikes, with critical strike chance increasing critical strike damage
+        '''
 }
 
 Vesuvius: {

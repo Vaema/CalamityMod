@@ -580,7 +580,7 @@ DivineMeat: {
 	DisplayName: Divine Meat
 	Tooltip:
 		'''
-		{$CommonItemTooltip.MinorStats}
+		{$CommonItemTooltip.MediumStats}
 		{$Common.NotConsumable}
 		'A blessed strip of pork that never seems to be entirely consumed...'
 		'''
