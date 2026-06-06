@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -75,10 +76,15 @@ namespace CalamityMod.Projectiles.Magic
             }
             return false;
         }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Frostburn, 120);
+            target.AddBuff(ModContent.BuffType<WindChilled>(), 120);
+            target.AddBuff(BuffID.Frozen, 30);
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<WindChilled>(), 120);
             target.AddBuff(BuffID.Frozen, 30);
         }
     }
