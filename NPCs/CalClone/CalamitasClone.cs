@@ -154,6 +154,7 @@ namespace CalamityMod.NPCs.CalClone
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Calamitas")
             });
         }
