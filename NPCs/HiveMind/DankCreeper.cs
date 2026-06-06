@@ -12,6 +12,10 @@ namespace CalamityMod.NPCs.HiveMind
 {
     public class DankCreeper : ModNPC
     {
+        public override void SetStaticDefaults()
+        {
+            NPCID.Sets.BossBestiaryPriority.Add(Type);
+        }
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;

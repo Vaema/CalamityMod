@@ -19,7 +19,11 @@ namespace CalamityMod.NPCs.HiveMind
         private const float TelegraphDuration = 120f;
         private bool FastVariant => NPC.ai[2] > 0f;
 
-        public override void SetStaticDefaults() => NPCID.Sets.NeedsExpertScaling[Type] = true;
+        public override void SetStaticDefaults()
+        {
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.BossBestiaryPriority.Add(Type);
+        }
 
         public static int VileClotDamage = 8; // 32
 
