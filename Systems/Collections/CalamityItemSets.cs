@@ -156,7 +156,7 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to an empty list.
         /// </summary>
         public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateNamedSet("PlayerDebuffTooltip")
-            .Description("Defines buff IDs to force display as expandable tooltip with debuff info for enemy infliction.")
+            .Description("Defines buff IDs to force display as expandable tooltip with debuff info for player infliction.")
             .RegisterCustomSet<List<int>>(new());
 
         /// <summary>
