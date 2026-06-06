@@ -170,10 +170,6 @@ namespace CalamityMod.CalPlayer
                     else
                         itemDrop = ModContent.ItemType<CragBullhead>();
                 }
-                if (ZoneBasaltGully)
-                {
-                    itemDrop = ModContent.ItemType<MoltenFishron>();
-                }
                 return;
             }
 
@@ -370,14 +366,6 @@ namespace CalamityMod.CalPlayer
                 if (Player.ZoneDesert && Main.rand.NextBool())
                     return;
 
-                int commonCatch = ModContent.ItemType<CoralskinFoolfish>();
-                if (ZonePolypForest)
-                    commonCatch = ModContent.ItemType<GleamingCucumber>();
-                else if (ZoneGleamingBurrows)
-                    commonCatch = ModContent.ItemType<SpecularSturgeon>();
-                else if (ZoneTimelessShores)
-                    commonCatch = ModContent.ItemType<Squidoom>();
-
                 if (attempt.legendary)
                 {
                     List<int> legendaryCatches =
@@ -411,7 +399,7 @@ namespace CalamityMod.CalPlayer
                 else if (Main.rand.NextBool()) // 50% chance the common fish is replaced with driftwood
                     itemDrop = ModContent.ItemType<Driftwood>();
                 else
-                    itemDrop = commonCatch;
+                    itemDrop = ModContent.ItemType<PrismaticGuppy>();
                 return;
             }
             // There is no complete fishing pool here, so most of it is vanilla default

@@ -21,7 +21,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
         private Asset<Texture2D> springTexture;
         private Asset<Texture2D> topTexture;
 
-        public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.Leggings);
+        public override Position GetDefaultPosition() => new AfterParent(PlayerDrawLayers.PortableStool);
 
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {

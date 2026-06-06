@@ -676,7 +676,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.DivingHelmet)
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
             if (item.type == ItemID.ArcticDivingGear)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1") + "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
+                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel") + "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
 
             // Great breath boost
             if (item.type == ItemID.GillsPotion)

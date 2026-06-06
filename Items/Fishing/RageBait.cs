@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Fishing
             Item.height = 12;
             Item.maxStack = Item.CommonMaxStack;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.sellPrice(copper: 1);
+            Item.value = Item.buyPrice(copper: 5);
             Item.bait = 100;
             Item.consumable = true;
         }

@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer;
+using CalamityMod.CustomRecipes;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -23,6 +24,15 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
+        }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient && !RecipeUnlockHandler.HasFoundTrinketOfChi)
+            {
+                RecipeUnlockHandler.HasFoundTrinketOfChi = true;
+                CalamityNetcode.SyncWorld();
+            }
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

@@ -75,6 +75,11 @@ Arbalest: {
 		'''
 }
 
+AquashardShotgun: {
+	DisplayName: Aquashard Shotgun
+	Tooltip: Converts musket balls into aquashards that split upon hitting an enemy
+}
+
 Archerfish: {
 	DisplayName: Archerfish
 	Tooltip:
@@ -856,8 +861,11 @@ OmniGun: {
 		The second shot is a burst of 10 standard bullets
 		The third shot is a devastating point blank spread
 		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
-		'What kind of gun is it?'
-		'Yes'
+		'''
+	SalesPitch:
+		'''
+		'Why carry four different guns when you can carry just one? That's what I used to ask myself!'
+		'With this thing-a-beauty, even a bumbling moron can become invincible - and for the right price, it can be yours!'
 		'''
 }
 
@@ -1117,18 +1125,6 @@ Shadethrower: {
 		'''
 }
 
-Shardshocker: {
-	DisplayName: Shardshocker
-	Tooltip:
-		'''
-		Fires an electrically charged crystal that travels a short distance before stopping
-		The crystal will hang in the air and occasionally give off damaging pulses of electricity
-		Hitting a stopped crystal with a moving one will detonate both in a massive explosion that lets off homing shards
-		Direct hits with the crystal will create a smaller explosion and inflict [cbuff:CalamityMod/GalvanicCorrosion]
-		'Plasmaaaaaa!'
-		'''
-}
-
 Shellshooter: {
 	DisplayName: Shellshooter
 	Tooltip:
@@ -1358,15 +1354,6 @@ TheBallista: {
 	Tooltip: Converts wooden arrows into greatarrows that cause [cbuff:CalamityMod/ArmorCrunch] and break into shards
 }
 
-TheBlunderbass: {
-	DisplayName: The Blunderbass
-	Tooltip:
-		'''
-		Fires a large crystal that travels a short distance before bursting into homing shards
-		Direct hits with the crystal inflict [cbuff:CalamityMod/Eutrophication], stunning enemies and increase the amount of shards created
-		'''
-}
-
 TheHive: {
 	DisplayName: The Hive
 	Tooltip:
@@ -1429,6 +1416,7 @@ ThreadOfEradication: {
 		Charges up [ceffect/dog:God's Bane Doombeam]
 		Channelling the weapon causes it to charge up [ceffect/dog:Hyperdeath Rift] instead
 		While charging [ceffect/dog:Hyperdeath Rift], the bow's turning speed is slowed down
+		Always critically strikes, with critical strike chance increasing critical strike damage
 		'''
 }
 

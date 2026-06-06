@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.value = Item.sellPrice(silver: 2);
+            Item.value = Item.buyPrice(silver: 10);
             Item.rare = ItemRarityID.Blue;
             Item.DefaultToFood(28, 51, 0, 0, true);
         }

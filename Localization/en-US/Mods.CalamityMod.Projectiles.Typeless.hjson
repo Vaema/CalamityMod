@@ -41,6 +41,7 @@ CursorProj.DisplayName: Aestheticus Crystal
 CursorProjSplit.DisplayName: Aestheticus Crystal
 CyanLabSeeker.DisplayName: Seeking Mechanism
 DarkIce.DisplayName: Dark Ice
+DebuffSpreadEffect.DisplayName: Debuff Spread Effect
 DeepseaBlaze.DisplayName: Deepsea Blaze
 DevourerofCodsBobber.DisplayName: Devourer of Cods Bobber
 DiamondOfTheDeepProjectile.DisplayName: Abyss Spirit
@@ -135,6 +136,7 @@ SerpentsBiteHook.DisplayName: Serpent's Bite
 ShadeNimbus.DisplayName: Shade Nimbus
 ShadeNimbusRain.DisplayName: Shade Rain
 ShadeNimbusSpawner.DisplayName: Dank Creeper
+ShadySalesmanGunshot.DisplayName: Elephant-Killing Round
 SkyFlareFriendly.DisplayName: Flare
 SlimeStream.DisplayName: Slime Stream
 SlurperBobber.DisplayName: Slurper Bobber
@@ -145,6 +147,7 @@ StarStruckWaterBottle.DisplayName: Bottle
 StepStoolBonusFX.DisplayName: Step Stool Bonus
 StickyFeatherAero.DisplayName: Feather
 StomperSlam.DisplayName: Stomper Slam
+StratusBlackHole.DisplayName: Stratus Singularity
 SuicideBomberDemon.DisplayName: Demon
 SulphuricAcidBubbleFriendly.DisplayName: Acid Bubble
 SulphurousSandBallGun.DisplayName: Sulphurous Sand Ball
@@ -160,10 +163,6 @@ TrustyOldBobber.DisplayName: Trusty Old Bobber
 UrsaSlash.DisplayName: Ursa Slash
 V8000SoulVisual.DisplayName: V8000 Soul
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
-VictideBarrier.DisplayName: Tidal Barrier
-VictideBobber.DisplayName: Snail Bobber
-VictideSeaSnail.DisplayName: Sea Snail
-VictideSpirit.DisplayName: Bubbly Spirit
 VoidFieldGenerator.DisplayName: Void Field Generator
 VolcanicSandBallFalling.DisplayName: Volcanic Sand Ball
 VolcanicSandBallGun.DisplayName: Volcanic Sand Ball
@@ -178,5 +177,3 @@ WulfrumLureSignal.DisplayName: Signal
 YellowLabSeeker.DisplayName: Seeking Mechanism
 XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
-StratusBlackHole.DisplayName: Stratus Singularity
-DebuffSpreadEffect.DisplayName: Debuff Spread Effect

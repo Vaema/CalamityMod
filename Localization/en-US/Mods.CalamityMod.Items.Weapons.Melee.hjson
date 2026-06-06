@@ -42,12 +42,7 @@ AirSpinner: {
 
 AmidiasTrident: {
 	DisplayName: Amidias' Trident
-	Tooltip:
-		'''
-		[c/CCE9FF:Striking enemies inflicts] [c/28A3FF:Sea King's Assurance], [c/CCE9FF:which can stack up to eight]
-		Right click to spin the trident then thrust into the air, expending all nearby stacks of Sea King's Assurance
-		Secondary attack deals more damage for every stack applied
-		'''
+	Tooltip: Shoots homing whirlpools
 }
 
 AnarchyBlade: {
@@ -1087,7 +1082,7 @@ Riptide: {
 	Tooltip:
 		'''
 		{$Common.YoyoStats}
-		Rapidly pulses riptide waves which get larger the more hits landed by the yoyo
+		Sprays a spiral of aqua streams
 		'''
 }
 
@@ -1123,6 +1118,11 @@ SausageMaker: {
 ScourgeoftheCosmos: {
 	DisplayName: Scourge of the Cosmos
 	Tooltip: Throws a bouncing cosmic scourge that emits tiny homing cosmic scourges on enemy and tile hits
+}
+
+SeashineSword: {
+	DisplayName: Seashine Sword
+	Tooltip: Shoots an aqua sword beam
 }
 
 SeekingScorcher: {

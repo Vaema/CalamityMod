@@ -479,6 +479,21 @@ namespace CalamityMod.Items
                     }
                 }
             }
+            if (modPlayer.victideSet)
+            {
+                if ((item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MagicDamageClass>() ||
+                    item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<SummonDamageClass>()) &&
+                    Main.rand.NextBool(10) && !item.channel)
+                {
+                    if (player.whoAmI == Main.myPlayer)
+                    {
+                        // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
+                        int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
+
+                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
+                    }
+                }
+            }
 
             return true;
         }
@@ -716,10 +731,6 @@ namespace CalamityMod.Items
 
             // Restrict behavior when reading Dreadon's Log.
             if (PopupGUIManager.AnyGUIsActive)
-                return false;
-
-            // Can't use anything while burrowing
-            if (player.ownedProjectileCounts[ProjectileType<VictideSpirit>()] > 0)
                 return false;
 
             if (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 &&
@@ -1334,8 +1345,6 @@ namespace CalamityMod.Items
             // Then, apply flat grab range boosts.
             if (player.Calamity().reaverExplore)
                 grabRange += ReaverHeadExplore.SetBonusGrabRangeBoost;
-            if (player.Calamity().victideSnailSet)
-                grabRange += VictideHeadSnail.SetBonusGrabRangeBoost;
 
             // Nebula boosters have greater pickup range while hovering with Nebula Mantle.
             if (player.wingsLogic == (int)VanillaWingID.WingsNebula && player.wingTime > 0f && player.controlJump && player.TryingToHoverDown && ItemID.Sets.NebulaPickup[item.type])

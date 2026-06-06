@@ -559,6 +559,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // Equipment
             npcLoot.Add(ModContent.ItemType<GiantPearl>(), 3);
+            npcLoot.Add(ModContent.ItemType<AmidiasPendant>(), 3);
 
             // Trophy
             npcLoot.Add(ModContent.ItemType<GiantClamTrophy>(), 10);

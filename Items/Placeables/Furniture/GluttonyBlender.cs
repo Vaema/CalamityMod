@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<GluttonyBlenderTile>());
             Item.rare = ItemRarityID.Orange;
-            Item.value = Item.buyPrice(gold: 5);
+            Item.value = Item.sellPrice(gold: 2);
         }
     }
 
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetDefaults()
         {
             Item.DefaultToFood(32, 30, BuffID.WellFed3, CalamityUtils.MinutesToFrames(30));
-            Item.value = Item.sellPrice(gold: 1);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ItemRarityID.Orange;
         }
     }

@@ -476,8 +476,10 @@ namespace CalamityMod.Projectiles
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
-            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
+            // 24DEC2025: Ozzatron: victide bobber culled with SSO 
+            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
                 return false;
+
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
             #region Vanilla Summons AI Changes
@@ -2955,12 +2957,6 @@ namespace CalamityMod.Projectiles
             bool reelingIn = projectile.ai[0] == 1;
             bool lineSnapped = projectile.ai[0] == 2;
 
-            //Make sure Victide Snail actually fishes when using a minigame rod
-            foreach (var item in Main.ActiveProjectiles)
-            {
-                if (item.type == ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
-                    item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
-            }
             #region Utilities
             void SmallSplashAtOffset(Vector2 offset)
             {
@@ -3305,7 +3301,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }
@@ -3699,7 +3695,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }

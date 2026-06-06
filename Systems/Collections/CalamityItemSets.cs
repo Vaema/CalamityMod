@@ -1,7 +1,13 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
@@ -151,5 +157,13 @@ namespace CalamityMod.Systems.Collections
         public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateNamedSet("PlayerDebuffTooltip")
             .Description("Force display expandable tooltip debuff info for infliction on a player")
             .RegisterCustomSet<List<int>>(new());
+
+        /// <summary>
+        /// Marks that this item has Shady Salesman text and the actual tooltip should draw small below it. Does not support Vanilla items
+        /// </summary>
+        public static bool[] HasSalesmanText = Factory.CreateNamedSet("HasSalesmanText")
+            .Description("Marks that this item has Shady Salesman text and the actual tooltip should draw small below it. Does not support Vanilla items")
+            .RegisterBoolSet(ItemType<FishStocks>(), ItemType<TrustyOldRod>(), ItemType<RageBait>(), ItemType<GluttonyBlender>(), ItemType<TheMonument>(), ItemType<GreedPot>(), ItemType<BaconOil>(), ItemType<TheSandwich>(), ItemType<TheConcoction>(), ItemType<TheElixir>(), ItemType<TheGift>(), ItemType<OmniGun>(),
+            ItemType<CombatVoucher>(), ItemType<AggressiveVoucher>(), ItemType<OddVoucher>(), ItemType<UnbreakableVoucher>(), ItemType<HurriedVoucher>());
     }
 }

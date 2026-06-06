@@ -965,9 +965,8 @@ SandDollar: {
 	DisplayName: Sand Dollar
 	Tooltip:
 		'''
-		Throws gliding sand dollars which can pierce enemies or bounce off floors
-		After bouncing, sand dollars lose their pierce but split into damaging shards on impact
-		Stealth strikes linger in place after bouncing, creating a small sandstorm around them
+		Throws up to 2 returning sand dollars
+		Stealth strikes throw 2 long ranged sand dollars that explode into coral shards on enemy hits
 		'''
 }
 
@@ -1004,10 +1003,8 @@ SeafoamBomb: {
 	DisplayName: Seafoam Bomb
 	Tooltip:
 		'''
-		Hurls a lightweight bomb which bursts into a foam bubble
-		Foam bubbles combine in pairs to form huge bubbles
-		Huge bubbles pop into small homing suds after a delay
-		Stealth strikes are cluster bombs that release eight normal bombs
+		Throws a bomb that explodes into a bubble which deals extra damage to enemies
+		Stealth strikes are faster and explode into 5 bubbles
 		'''
 }
 

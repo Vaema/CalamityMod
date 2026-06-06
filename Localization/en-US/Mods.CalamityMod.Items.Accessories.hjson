@@ -104,6 +104,11 @@ AmbrosialAmpoule: {
 		'''
 }
 
+AmidiasPendant: {
+	DisplayName: Amidias' Pendant
+	Tooltip: Periodically rains down prism shards that can briefly stun enemies
+}
+
 AncientFossil: {
 	DisplayName: Ancient Fossil
 	Tooltip:
@@ -800,6 +805,11 @@ FishStocks: {
 		+0.55 luck
 		1.5x coin drops
 		'''
+	SalesPitch:
+		'''
+		'Fishing is hard, but you know what's easy? Economy! With this little gadget made by my partner Hoggart, you can make the process just as easy!'
+		'Pull the line when it's up, don't when it's down! It's as simple as that!'
+		'''
 }
 
 FlameLickedShell: {
@@ -872,8 +882,7 @@ GiantPearl: {
 	Tooltip:
 		'''
 		You have a light aura around you
-		Enemies within the aura are afflicted with [cbuff:CalamityMod/PearlAura] and slowed down
-		Enemies that remain within the aura are bombarded by homing prism shards
+		Enemies within the aura are slowed down
 		{$Common.AbyssGlow}
 		'''
 }
@@ -996,12 +1005,7 @@ HowlsHeart: {
 
 IlmerisSpark: {
 	DisplayName: Ilmeris' Spark
-	Tooltip:
-		'''
-		Attacks inflict [cbuff:CalamityMod/StaticDischarge] while underwater
-		Taking damage causes the enemy to be shocked
-		Shocked enemies constantly release sparks
-		'''
+	Tooltip: Taking damage releases a blast of sparks
 }
 
 InfectedJewel: {
@@ -1645,12 +1649,8 @@ ShieldoftheOcean: {
 	DisplayName: Shield of the Ocean
 	Tooltip:
 		'''
-		Pressing [KEY] will activate a parry, encasing you in a bubble
-		Being hit shortly after encasement will pop the bubble, granting 60% DR for that hit
-		Upon popping, nearby enemies are violently launched away from you, and will be damaged if they collide with tiles
-		Enemies which cannot be launched instead directly take large damage
-		After popping, the damage reducing effect goes on a 20 second cooldown
-		Damage parried whilst on cooldown will not be reduced, and will not deal collision damage to launched enemies
+		Increased defense by 5 when submerged in liquid
+		10% increased movement speed and +1 HP/s life regen while wearing Victide armor
 		'''
 }
 

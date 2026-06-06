@@ -834,21 +834,15 @@ namespace CalamityMod.NPCs.Providence
                             if (NPC.Center.X < player.Center.X)
                             {
                                 flightPath = 1;
-                                calamityGlobalNPC.newAI[0] = 0f;
                                 NPC.netUpdate = true;
                             }
                             else
                             {
                                 flightPath = -1;
-                                calamityGlobalNPC.newAI[0] = 0f;
                                 NPC.netUpdate = true;
                             }
                         }
                     }
-
-                    // Increase speed over time if flying in same direction for too long
-                    if (revenge)
-                        calamityGlobalNPC.newAI[0] += 1f;
 
                     // Distance needed from target to change direction
                     float changeDirectionThreshold = 800f;
@@ -881,7 +875,6 @@ namespace CalamityMod.NPCs.Providence
 
                     // Velocity and acceleration
                     float speedIncreaseTimer = fullPowerAI ? 75f : death ? 120f : 150f;
-                    bool increaseSpeed = calamityGlobalNPC.newAI[0] > speedIncreaseTimer;
                     float accelerationBoost = death ? 0.3f * (1f - lifeRatio) : 0.2f * (1f - lifeRatio);
                     float velocityBoost = death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
                     float acceleration = (expertMode ? 1.1f : 1.05f) + accelerationBoost;
@@ -893,14 +886,8 @@ namespace CalamityMod.NPCs.Providence
                     }
                     if (laserPhaseSlow)
                     {
-                        acceleration *= getFuckedAI ? 0.6f : 0.4f;
-                        velocity *= getFuckedAI ? 0.6f : 0.4f;
-                    }
-                    else if (increaseSpeed)
-                    {
-                        velocity += (calamityGlobalNPC.newAI[0] - speedIncreaseTimer) * 0.04f;
-                        if (velocity > 30f)
-                            velocity = 30f;
+                        acceleration *= getFuckedAI ? 0.6f : 0.2f;
+                        velocity *= getFuckedAI ? 0.6f : 0.2f;
                     }
 
                     if (Main.getGoodWorld)

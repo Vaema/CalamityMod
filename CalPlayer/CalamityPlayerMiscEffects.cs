@@ -2553,13 +2553,6 @@ namespace CalamityMod.CalPlayer
                 else
                     flameLickedShellParry--;
             }
-            if (shieldOfTheOceanParry > 0)
-            {
-                if (shieldOfTheOcean)
-                    ShieldoftheOcean.HandleParryCountdown(Player);
-                else
-                    shieldOfTheOceanParry--;
-            }
 
             if (!flameLickedShell && flameLickedShellParry > 0)
                 flameLickedShellParry--;
@@ -3228,7 +3221,7 @@ namespace CalamityMod.CalPlayer
                         (Player.arcticDivingGear ? 5D : 0D) +
                         (aquaticEmblem ? 5D : 0D) +
                         (Player.accMerman ? 8D : 0D) +
-                        (victideBurrowHead ? 2D : 0D) +
+                        (victideSet ? 2D : 0D) +
                         ((aquaticHeart && NPC.downedBoss3) ? 8D : 0D) +
                         (abyssalDivingSuit ? 8D : 0D) +
                         externalBreathTickBoost;
@@ -3751,10 +3744,7 @@ namespace CalamityMod.CalPlayer
                             continue;
                         float distance = (npc.Center - Player.Center).Length();
                         if (distance < GiantPearl.AuraRadius)
-                        {
                             npc.AddBuff(ModContent.BuffType<PearlAura>(), 20, false);
-                            npc.Calamity().pearlAuraOwner = Player.whoAmI;
-                        }
                     }
                 }
             }
@@ -4988,6 +4978,53 @@ namespace CalamityMod.CalPlayer
                 if (Main.mouseItem.type == ModContent.ItemType<EncryptedSchematicIce>() && !RecipeUnlockHandler.HasFoundIceSchematic)
                 {
                     RecipeUnlockHandler.HasFoundIceSchematic = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<LuxorsGift>() && !RecipeUnlockHandler.HasFoundLuxorsGift)
+                {
+                    RecipeUnlockHandler.HasFoundLuxorsGift = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<FungalSymbiote>() && !RecipeUnlockHandler.HasFoundFungalSymbiote)
+                {
+                    RecipeUnlockHandler.HasFoundFungalSymbiote = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<TrinketofChi>() && !RecipeUnlockHandler.HasFoundTrinketOfChi)
+                {
+                    RecipeUnlockHandler.HasFoundTrinketOfChi = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<FrozenCube>() && !RecipeUnlockHandler.HasFoundFrozenCube)
+                {
+                    RecipeUnlockHandler.HasFoundFrozenCube = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<GladiatorsLocket>() && !RecipeUnlockHandler.HasFoundGladiatorsLocket)
+                {
+                    RecipeUnlockHandler.HasFoundGladiatorsLocket = true;
+                    shouldSync = true;
+                }
+                if (Main.mouseItem.type == ModContent.ItemType<UnstableGraniteCore>() && !RecipeUnlockHandler.HasFoundUnstableGraniteCore)
+                {
+                    RecipeUnlockHandler.HasFoundUnstableGraniteCore = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<CrimsonEffigy>() && !RecipeUnlockHandler.HasFoundCrimsonEffigy)
+                {
+                    RecipeUnlockHandler.HasFoundCrimsonEffigy = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<CorruptionEffigy>() && !RecipeUnlockHandler.HasFoundCorruptionEffigy)
+                {
+                    RecipeUnlockHandler.HasFoundCorruptionEffigy = true;
                     shouldSync = true;
                 }
             }
