@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn, BuffID.Frozen];
         }
 
         public override void SetDefaults()

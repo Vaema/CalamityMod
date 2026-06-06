@@ -13,10 +13,6 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
 
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<RiptideDebuff>()];
-        }
         public override void SetDefaults()
         {
             Item.width = 30;

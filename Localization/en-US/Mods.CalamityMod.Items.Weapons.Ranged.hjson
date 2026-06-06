@@ -60,7 +60,7 @@ AntiMaterielRifle: {
 	DisplayName: Anti-materiel Rifle
 	Tooltip:
 		'''
-		Converts musket balls into .50 caliber sniper rounds that cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
+		Converts musket balls into .50 caliber sniper rounds that rip apart enemy defense and cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		Unleashes a second swarm of bullets on hit, with additional bullets on critical strikes
 		'''
 }

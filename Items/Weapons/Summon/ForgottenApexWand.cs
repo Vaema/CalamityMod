@@ -4,6 +4,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
+using CalamityMod.Buffs.StatDebuffs;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HeavyBleeding>()];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HeavyBleeding>(), ModContent.BuffType<ArmorCrunch>()];
         }
         public override void SetDefaults()
         {

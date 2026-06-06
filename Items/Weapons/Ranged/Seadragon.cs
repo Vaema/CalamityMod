@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<CrushDepth>(), BuffID.OnFire3];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<RiptideDebuff>()];
         }
 
         public override void SetDefaults()

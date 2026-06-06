@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Laceration>()];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Laceration>(), ModContent.BuffType<BurningBlood>()];
         }
 
         public const int BoomLifetime = 40;

@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -15,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HadopelagicPressure>()];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HadopelagicPressure>(), ModContent.BuffType<ArmorCrunch>()];
         }
         public override void SetDefaults()
         {

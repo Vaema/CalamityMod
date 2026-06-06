@@ -10,10 +10,6 @@ namespace CalamityMod.Items.Weapons.Magic
     public class TheSwarmer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Venom, BuffID.Poisoned];
-        }
         public override void SetDefaults()
         {
             Item.width = 60;
