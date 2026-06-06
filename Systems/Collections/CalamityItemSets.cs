@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Placeables;
