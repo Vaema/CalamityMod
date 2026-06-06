@@ -330,7 +330,7 @@ BloodPact: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
-Healing Potions are 33% more effective
+		Healing Potions are 33% more effective
 		Grants immunity to [cbuffplr:Bleeding], [cbuffplr:CalamityMod/BurningBlood] and [cbuffplr:CalamityMod/HeavyBleeding]
 		'''
 }
@@ -400,7 +400,7 @@ ChaliceOfTheBloodGod: {
 		This bleeding does not interfere with life regeneration
 		Drinking a healing potion removes some of the remaining bleed, up to 50% of its heal value
 		Unequipping this accessory while bleeding inflicts the remaining damage instantly
-Grants immunity to [cbuffplr:Bleeding], [cbuffplr:CalamityMod/BurningBlood], [cbuffplr:CalamityMod/HeavyBleeding] and [cbuffplr:CalamityMod/Laceration]
+		Grants immunity to [cbuffplr:Bleeding], [cbuffplr:CalamityMod/BurningBlood], [cbuffplr:CalamityMod/HeavyBleeding] and [cbuffplr:CalamityMod/Laceration]
 		'All that for a drop of blood...'
 		'''
 }

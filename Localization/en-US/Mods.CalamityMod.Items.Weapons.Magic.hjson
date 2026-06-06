@@ -843,7 +843,7 @@ SubsumingVortex: {
 		When enemies are near the vortex, it sends multiple fast-moving smaller vortices towards them
 		Releasing <right> fires the vortex towards the mouse if enough time has passed
 		Damage scales based on how long the vortex was held out
-        Struck enemies are completely consumed by [cbuff:CalamityMod/MiracleBlight]
+		Struck enemies are completely consumed by [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -1033,7 +1033,7 @@ VividClarity: {
 		'''
 		Fires five randomized rays of exo-energy towards the cursor
 		Enemy and tile hits either cause a big flash explosion, an additional laser from the sky, or split into energy orbs
-        Struck enemies are liquified by [cbuff:CalamityMod/MiracleBlight]
+		Struck enemies are liquified by [cbuff:CalamityMod/MiracleBlight]
 		'Its majesty inspires a stroke of unparalleled genius'
 		'''
 }

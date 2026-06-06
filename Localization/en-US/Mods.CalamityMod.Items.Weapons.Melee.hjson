@@ -422,10 +422,7 @@ Earth: {
 
 EarthenPike: {
 	DisplayName: Earthen Pike
-	Tooltip:
-		'''
-		Sprays fossil shards on swing
-		'''
+	Tooltip: Sprays fossil shards on swing
 }
 
 EmpyreanKnives: {
@@ -496,7 +493,7 @@ Exoblade: {
 		Enemy hits from the blade during the dash result in massive damage and a rebound
 		Press <left> immediately after a rebound to perform a powerful slash
 		Powerful slashes are larger, heal you, and create a large explosion
-        Struck enemies are torn apart by [cbuff:CalamityMod/MiracleBlight]
+		Struck enemies are torn apart by [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -525,10 +522,7 @@ FeralthornClaymore: {
 
 FlarefrostBlade: {
 	DisplayName: Flarefrost Blade
-	Tooltip:
-		'''
-		Fires a homing flarefrost orb
-		'''
+	Tooltip: Fires a homing flarefrost orb
 }
 
 Floodtide: {
