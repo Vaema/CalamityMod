@@ -23,7 +23,6 @@ namespace CalamityMod.Buffs.DamageOverTime
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
             CalamityBuffSets.DebuffDataset[Type] = debuffData;
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Laceration>()];
         }
 
         public override void Update(Player player, ref int buffIndex)
