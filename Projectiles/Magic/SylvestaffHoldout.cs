@@ -72,6 +72,9 @@ namespace CalamityMod.Projectiles.Magic
 
             if (LeftRibbon is null && RightRibbon is null)
                 InitializeRibbons();
+            // Refund the mana used to spawn the holdout
+            if (Time == 0)
+                Owner.statMana += Owner.GetManaCost(Owner.HeldItem);
 
             AimTowardsMouse();
             HandleHoldoutLogic();
