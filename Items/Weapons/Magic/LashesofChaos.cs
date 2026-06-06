@@ -1,7 +1,9 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -17,6 +19,10 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public int FiringMode = 0; // 0 = hellfireballs, 1 = hellblasts
         public int ProjectilesFired = 0;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 28;

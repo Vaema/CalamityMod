@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Melee.MaceFlails;
+using CalamityMod.Systems.Collections;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +12,11 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public static readonly SoundStyle BlowSound = new("CalamityMod/Sounds/Item/FuguBlow") { PitchVariance = 0.1f };
 
-        public override void SetStaticDefaults() => ItemID.Sets.ToolTipDamageMultiplier[Type] = 2f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ToolTipDamageMultiplier[Type] = 2f;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Poisoned];
+        }
         public override void SetDefaults()
         {
             Item.width = 30;

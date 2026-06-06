@@ -1,5 +1,7 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -15,6 +17,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static int AmmoSavedPercent = 33;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Wet, ModContent.BuffType<RiptideDebuff>()];
+        }
 
         public override void SetDefaults()
         {

@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +16,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         // For more consistent DPS, always alternates between throwing 1 and 2 instead of picking randomly
         private bool throwTwo = true;
-
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Voidfrost>(), BuffID.Frozen];
+        }
         public override void SetDefaults()
         {
             Item.width = 46;

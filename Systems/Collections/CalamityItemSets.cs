@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Placeables;
@@ -119,7 +120,7 @@ namespace CalamityMod.Systems.Collections
                 ItemType<GleamingDagger>(), ItemType<InfernalKris>(), ItemType<Mycoroot>(), ItemType<ShinobiBlade>(), ItemType<SporeKnife>(), ItemType<WulfrumKnife>(), ItemType<CobaltKunai>(),
                 ItemType<CorpusAvertor>(), ItemType<CursedDagger>(), ItemType<LeviathanTeeth>(), ItemType<Malachite>(), ItemType<MythrilKnife>(), ItemType<OrichalcumSpikedGemstone>(),
                 ItemType<Prismalline>(), ItemType<RadiantStar>(), ItemType<StellarKnife>(), ItemType<StormfrontRazor>(), ItemType<TerrorTalons>(), ItemType<CosmicKunai>(), ItemType<JawsOfOblivion>(),
-                ItemType<LunarKunai>(), ItemType<Sacrifice>(), ItemType<Seraphim>(), ItemType<ShatteredDawn>(), ItemType<TarragonThrowingDart>(), ItemType<TimeBolt>(), ItemType<TwistingThunder>(), 
+                ItemType<LunarKunai>(), ItemType<Sacrifice>(), ItemType<Seraphim>(), ItemType<ShatteredDawn>(), ItemType<TarragonThrowingDart>(), ItemType<TimeBolt>(), ItemType<TwistingThunder>(),
                 ItemType<UtensilPoker>());
 
         /// <summary>
@@ -143,10 +144,28 @@ namespace CalamityMod.Systems.Collections
             .RegisterBoolSet(ItemType<BurningStrife>(), ItemType<GodsParanoia>(), ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<SystemBane>(), ItemType<WebBall>());
 
         /// <summary>
-        /// Marks that this item has Shady Salesman text and the actual tooltip should draw small below it. Does not support Vanilla items
+        /// Defines a list of buff IDs to force display as an expandable tooltip with debuff info for enemy infliction on an item.<br/>
+        /// Defaults to an empty list.
+        /// </summary>
+        public static List<int>[] ExtraDebuffTooltip_Enemy = Factory.CreateNamedSet("EnemyDebuffTooltip")
+            .Description("Defines buff IDs to force display as expandable tooltip with debuff info for enemy infliction.")
+            .RegisterCustomSet<List<int>>(new());
+
+        /// <summary>
+        /// Defines a list of buff IDs to force display as an expandable tooltip with debuff info for player infliction on an item.<br/>
+        /// Defaults to an empty list.
+        /// </summary>
+        public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateNamedSet("PlayerDebuffTooltip")
+            .Description("Defines buff IDs to force display as expandable tooltip with debuff info for player infliction.")
+            .RegisterCustomSet<List<int>>(new());
+
+        /// <summary>
+        /// Does not support vanilla items. If <see langword="true"/> for an item type, this item has special "sales pitch" flavor text from the Shady Salesman.<br/>
+        /// This causes the flavor text to draw at the top of the tooltip, with the actual tooltip being drawn below and with a smaller size.<br/>
+        /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] HasSalesmanText = Factory.CreateNamedSet("HasSalesmanText")
-            .Description("Marks that this item has Shady Salesman text and the actual tooltip should draw small below it. Does not support Vanilla items")
+            .Description("Labels this item as having Shady Salesman flavor text, making it draw at the top of the tooltip and the actual tooltip being drawn small below it.")
             .RegisterBoolSet(ItemType<FishStocks>(), ItemType<TrustyOldRod>(), ItemType<RageBait>(), ItemType<GluttonyBlender>(), ItemType<TheMonument>(), ItemType<GreedPot>(), ItemType<BaconOil>(), ItemType<TheSandwich>(), ItemType<TheConcoction>(), ItemType<TheElixir>(), ItemType<TheGift>(), ItemType<OmniGun>(),
             ItemType<CombatVoucher>(), ItemType<AggressiveVoucher>(), ItemType<OddVoucher>(), ItemType<UnbreakableVoucher>(), ItemType<HurriedVoucher>());
     }
