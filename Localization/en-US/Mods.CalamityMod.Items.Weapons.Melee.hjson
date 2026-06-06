@@ -113,12 +113,12 @@ ArkoftheElements: {
 
 AstralPike: {
 	DisplayName: Astral Pike
-	Tooltip: Summons astral star swarms on hit and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Summons astral star swarms on hit that spread the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 AstralScythe: {
 	DisplayName: Astral Scythe
-	Tooltip: Shoots a scythe ring that accelerates over time and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Shoots a scythe ring that accelerates over time and spreads the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 Ataraxia: {
@@ -161,7 +161,7 @@ BansheeHook: {
 
 Basher: {
 	DisplayName: Basher
-	Tooltip: Swings a rotten club that inflicts [cbuff:CalamityMod/Irradiated] while knocking you back in the process
+	Tooltip: Swings a rotten club while knocking you back in the process
 }
 
 BladecrestOathsword: {
@@ -181,7 +181,7 @@ BladecrestOathsword: {
 
 BlightedCleaver: {
 	DisplayName: Blighted Cleaver
-	Tooltip: Fires homing blazing blades
+	Tooltip: Fires homing, blazing blades
 }
 
 Bonebreaker: {
@@ -189,7 +189,7 @@ Bonebreaker: {
 	Tooltip:
 		'''
 		Fires javelins that stick to enemies before bursting into shrapnel
-		Javelins cause [cbuff:CalamityMod/HeavyBleeding], [cbuff:Venom], and [cbuff:CalamityMod/ArmorCrunch]
+		Stuck javelins inflict several debuffs
 		'''
 }
 
@@ -200,7 +200,7 @@ BotanicPiercer: {
 
 Brimlance: {
 	DisplayName: Brimlance
-	Tooltip: Creates brimstone explosions on enemy hits
+	Tooltip: Creates an explosion of [cbuff:CalamityMod/BrimstoneFlames] on enemy hits
 }
 
 Brimlash: {
@@ -212,7 +212,7 @@ BrimstoneSword: {
 	DisplayName: Brimstone Sword
 	Tooltip:
 		'''
-		Summons brimstone geysers on hit
+		Summons geysers of [cbuff:CalamityMod/BrimstoneFlames] on hit
 		Press <right> to throw the sword like a javelin that explodes on hit
 		'''
 }
@@ -265,14 +265,14 @@ Carnage: {
 
 CelestialClaymore: {
 	DisplayName: Celestial Claymore
-	Tooltip: Spawns cosmic energy stars near the cursor that inflict [cbuff:Frostburn2], [cbuff:OnFire3], or [cbuff:Ichor]
+	Tooltip: Spawns cosmic energy stars near the cursor
 }
 
 ClamCrusher: {
 	DisplayName: Clam Crusher
 	Tooltip:
 		'''
-		Launches a huge clam that stuns enemies for a short amount of time
+		Launches a huge clam that inflicts [cbuff:CalamityMod/Eutrophication], stunning enemies for a short amount of time
 		Starts being affected by gravity and does much more damage after being airborne for a while
 		'''
 }
@@ -286,7 +286,7 @@ CosmicDischarge: {
 	DisplayName: Cosmic Discharge
 	Tooltip:
 		'''
-		Striking an enemy with the whip causes glacial explosions and grants the player the [cbuffplr:CalamityMod/CosmicFreeze] buff
+		Striking an enemy with the whip causes glacial explosions that grant the player the [cbuffplr:CalamityMod/CosmicFreeze] buff
 		[cbuffplr:CalamityMod/CosmicFreeze] gives the player +2 HP/s life regen while standing still and freezes enemies near the player
 		'''
 }
@@ -390,7 +390,7 @@ DragonPow: {
 	DisplayName: Dragon Pow
 	Tooltip:
 		'''
-		Fires a dragon head that releases draconic sparks
+		Fires a dragon head that releases [cbuff:CalamityMod/Dragonfire] sparks
 		Summons a barrage of petals and waterfalls on enemy hits
 		'''
 }
@@ -415,18 +415,14 @@ Earth: {
 		'''
 		A beautiful prismatic blade with unrivaled close combat proficiency
 		Heals you greatly on hit
-		Every other swing will summon three Gaia meteors to annihilate nearby enemies with [cbuff:CalamityMod/MiracleBlight]
+		Every other swing will summon three Gaia meteors to annihilate nearby enemies
 		'All Its spawn shall know the beauty and wrath of their creator'
 		'''
 }
 
 EarthenPike: {
 	DisplayName: Earthen Pike
-	Tooltip:
-		'''
-		Sprays fossil shards on swing
-		Inflicts [cbuff:CalamityMod/ArmorCrunch]
-		'''
+	Tooltip: Sprays fossil shards on swing
 }
 
 EmpyreanKnives: {
@@ -497,7 +493,7 @@ Exoblade: {
 		Enemy hits from the blade during the dash result in massive damage and a rebound
 		Press <left> immediately after a rebound to perform a powerful slash
 		Powerful slashes are larger, heal you, and create a large explosion
-		Inflicts [cbuff:CalamityMod/MiracleBlight]
+		Struck enemies are torn apart by [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -637,7 +633,7 @@ GalileoGladius: {
 
 GeliticBlade: {
 	DisplayName: Gelitic Blade
-	Tooltip: Fires a fast gel wave that speeds up on enemy hits
+	Tooltip: Fires a fast gel wave that speeds up on enemy hits and covers them with [cbuff:Slimed]
 }
 
 GildedProboscis: {
@@ -760,7 +756,7 @@ InsidiousImpaler: {
 	DisplayName: Insidious Impaler
 	Tooltip:
 		'''
-		Throws self-propelling radioactive harpoons which chase foes and cause [cbuff:CalamityMod/SulphuricPoisoning]
+		Throws self-propelling radioactive harpoons which chase foes
 		Harpoons ricochet at close range for additional hits
 		'''
 }
@@ -799,7 +795,7 @@ LionHeart: {
 	DisplayName: Lion Heart
 	Tooltip:
 		'''
-		Summons an energy explosion on enemy hits
+		Summons an energy explosion on hit
 		Press <right> to summon an energy shell for a few seconds that halves all damage sources
 		This has a 45 second cooldown
 		'''
@@ -899,14 +895,14 @@ Nadir: {
 	DisplayName: Nadir
 	Tooltip:
 		'''
-		Fires void essences which flay nearby enemies with [cbuff:CalamityMod/Voidfrost] tentacles
+		Fires void essences which flay nearby enemies with tentacles
 		'The abyss has stared back at you long enough. It now speaks, and it does not speak softly'
 		'''
 }
 
 Nebulash: {
 	DisplayName: Nebulash
-	Tooltip: Fires a whip sword that emits particle explosions on hit and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Fires a whip sword that emits particle explosions on hit and spreads the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 NeptunesBounty: {
@@ -929,7 +925,7 @@ Oblivion: {
 
 OldLordClaymore: {
 	DisplayName: Old Lord Claymore
-	Tooltip: A slow but powerful blade that lights enemies with [cbuff:OnFire3] and has substantial knockback
+	Tooltip: A slow but powerful blade that sets enemies ablaze and has substantial knockback
 	HoldShiftTooltip:
 		'''
 		[c/df4420:A gift to outstanding Demons, a replica of the sword used by the greatest of all Demon Lords.]
@@ -1012,7 +1008,7 @@ PhotonRipper: {
 	DisplayName: Photon Ripper
 	Tooltip:
 		'''
-		Projects a directed stream of hardlight teeth at ultra high velocity which cause [cbuff:CalamityMod/MiracleBlight]
+		Projects a directed stream of hardlight teeth at ultra high velocity
 		This weapon and its projectiles function as a chainsaw
 		Press <right> to use without chopping down trees
 		'''
@@ -1061,7 +1057,6 @@ RemsRevenge: {
 	Tooltip:
 		'''
 		Summons blood explosions and inflicts [cbuff:CalamityMod/WitherDebuff] on hit
-		[cbuff:CalamityMod/WitherDebuff] lowers enemy defense by {0}
 		'A deadly morning star befitting its demonic owner'
 		'''
 }
@@ -1111,7 +1106,7 @@ SaharaSlicers: {
 
 SausageMaker: {
 	DisplayName: Sausage Maker
-	Tooltip: Sprays homing blood and causes [cbuff:CalamityMod/BurningBlood] on hit
+	Tooltip: Sprays homing blood on hit
 }
 
 ScourgeoftheCosmos: {
@@ -1178,7 +1173,7 @@ SoulHarvester: {
 	Tooltip:
 		'''
 		Shoots a soul scythe
-		Enemies explode when on low health, spreading the [cbuff:CalamityMod/Plague]
+		Enemies explode when on low health, spreading the plague
 		'''
 }
 
@@ -1283,7 +1278,7 @@ TaintedBlade: {
 
 TeardropCleaver: {
 	DisplayName: Teardrop Cleaver
-	Tooltip: Gives your enemies [cbuff:CalamityMod/TemporalSadness]
+	Tooltip: Makes your enemies cry
 }
 
 TenebreusTides: {
@@ -1291,7 +1286,7 @@ TenebreusTides: {
 	Tooltip:
 		'''
 		Shoots a water spear that pierces enemies and terrain
-		Striking enemies summon liquid blades and spears to assault the struck foe
+		Striking enemies summons liquid blades and spears to assault the struck foe
 		'Inundatio ex Laminis'
 		'''
 }
@@ -1344,13 +1339,17 @@ TheGodsGambit: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Fires a stream of slime when enemies are near
+		Fires a stream of damaging slime when enemies are near
 		'''
 }
 
 TheLastMourning: {
 	DisplayName: The Last Mourning
-	Tooltip: Summons flaming pumpkins and mourning skulls that split into fire orbs on enemy hits
+	Tooltip:
+		'''
+		Summons flaming pumpkins and mourning skulls
+		Pumpkins and skulls split into homing fire orbs on enemy hits
+		'''
 }
 
 TheMicrowave: {
@@ -1358,7 +1357,7 @@ TheMicrowave: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Fries nearby enemies with radiation and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+		Fries nearby enemies with radiation and spreads the [cbuff:CalamityMod/AstralInfectionDebuff]
 		'Cooking, Astral Infection style'
 		'''
 }
@@ -1393,7 +1392,7 @@ TheOracle: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Emits an aura of [cbuff:CalamityMod/AuricRebuke] lightning which charges up when hitting enemies
+		Emits an aura of auric lightning which charges up when hitting enemies
 		Fires auric orbs when supercharged
 		'Gaze into the past, the present, the future... and the circumstances of your inevitable demise'
 		'''
@@ -1403,7 +1402,7 @@ TitanArm: {
 	DisplayName: Titan Arm
 	Tooltip:
 		'''
-		Sends enemies straight to the stars at the speed of light and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+		Sends enemies straight to the stars at the speed of light
 		Slap Hand but better
 		'''
 }

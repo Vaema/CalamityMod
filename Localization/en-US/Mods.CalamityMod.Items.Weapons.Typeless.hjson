@@ -13,7 +13,7 @@ ClaretCannon: {
 		'''
 		Fires a hypercondensed claret round
 		The round explodes upon striking an enemy and releases blood orbs
-		The explosion shreds enemies, inflicting [cbuff:CalamityMod/Laceration] and dramatically reducing their defense
+		The explosion shreds enemies, dramatically reducing their defense
 		Picking up the blood orbs will reduce [cbuffplr:PotionSickness] when possible
 		If you do not have [cbuffplr:PotionSickness], your natural regeneration will be enhanced
 		Can only fire once every 10 seconds
@@ -31,7 +31,7 @@ EyeofMagnus: {
 	Tooltip:
 		'''
 		Fires seeking cosmic masses that restore health and mana on hit
-		Explodes into a nebula cloud which reduces enemy protection
+		Explodes into a nebula cloud that cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		{$Common.AverageDamageInfo}
 		'''
 }
@@ -40,7 +40,7 @@ LunicEye: {
 	DisplayName: Lunic Eye
 	Tooltip:
 		'''
-		Fires seeking energy bolts that reduce enemy protection
+		Fires seeking energy bolts that cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		{$Common.AverageDamageInfo}
 		'''
 }

@@ -238,7 +238,7 @@ AsgardianAegis: {
 		'''
 		{$Common.KnockbackImmunity}
 		Allows the ability to ram dash, empowered by a cosmic inferno
-		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/GodSlayerInferno]
+		This dash can ram through enemies without taking damage
 		'''
 }
 
@@ -330,8 +330,8 @@ BloodPact: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
-		Grants immunity to Bleeding, Burning Blood and Heavy Bleeding
 		Healing Potions are 33% more effective
+		Grants immunity to [cbuffplr:Bleeding], [cbuffplr:CalamityMod/BurningBlood] and [cbuffplr:CalamityMod/HeavyBleeding]
 		'''
 }
 
@@ -395,12 +395,12 @@ ChaliceOfTheBloodGod: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
-		Grants immunity to Bleeding, Burning Blood, Heavy Bleeding and Laceration
 		+2 HP/s life regen and reduces the cooldown of healing potions by 25%
 		Taking more than 5 damage converts the hit into a damage over time bleed effect
 		This bleeding does not interfere with life regeneration
 		Drinking a healing potion removes some of the remaining bleed, up to 50% of its heal value
 		Unequipping this accessory while bleeding inflicts the remaining damage instantly
+		Grants immunity to [cbuffplr:Bleeding], [cbuffplr:CalamityMod/BurningBlood], [cbuffplr:CalamityMod/HeavyBleeding], and [cbuffplr:CalamityMod/Laceration]
 		'All that for a drop of blood...'
 		'''
 }
@@ -710,7 +710,7 @@ ElysianAegis: {
 		'''
 		{$Common.KnockbackImmunity}
 		Allows the ability to dash, empowered by holy fire
-		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/HolyFlames]
+		This dash can ram through enemies without taking damage
 		'Blessed by the Profaned Flame'
 		'''
 }
@@ -843,7 +843,7 @@ FrostBarrier: {
 	Tooltip:
 		'''
 		You will freeze nearby enemies when you are struck
-		Grants immunity to Chilled and Frostburn
+		Grants immunity to [cbuffplr:Chilled] and [cbuffplr:Frostburn]
 		'''
 }
 
@@ -852,10 +852,9 @@ FrostFlare: {
 	Tooltip:
 		'''
 		All attacks and projectiles inflict [cbuff:Frostburn2]
-		Grants immunity to Frostburn, Chilled and Frozen
 		Being above {0}% life grants {1}% increased damage
 		Being below {0}% life grants {2} defense and {3}% increased max movement speed and acceleration
-		Grants resistance against cold attacks
+		Grants resistance against cold attacks, [cbuffplr:Frostburn], [cbuffplr:Chilled] and [cbuffplr:Frozen]
 		'''
 }
 
@@ -1077,7 +1076,7 @@ JellyChargedBattery: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1, and summon damage by 7%
-		Minion attacks create orbs of [cbuff:CalamityMod/StaticDischarge]
+		Minion attacks create charged orbs
 		'''
 }
 
@@ -1100,7 +1099,7 @@ LeviathanAmbergris: {
 	Tooltip:
 		'''
 		100% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
-		Your dashes are empowered by water, knocking back and damaging enemies with vicious currents that inflict [cbuff:CalamityMod/RiptideDebuff]
+		Your dashes are empowered by water, knocking back and damaging enemies with vicious currents
 		Visual effects are reduced if visibility is disabled
 		'''
 }
@@ -1300,7 +1299,7 @@ OrnateShield: {
 	Tooltip:
 		'''
 		Allows the ability to dash
-		This dash can ram through enemies without taking damage, inflicting [cbuff:Frostburn2]
+		This dash can ram through enemies without taking damage
 		'''
 }
 
@@ -1347,7 +1346,7 @@ PlaguedFuelPack: {
 		8% increased rogue damage and 15% increased rogue projectile velocity
 		Stealth generates 10% faster
 		Press [KEY] to consume 25% of your maximum stealth to perform a swift upwards diagonal dash
-		This dash leaves a trail of plagued clouds
+		The dash leaves a lingering trail of [cbuff:CalamityMod/Plague] clouds
 		This effect has a 1 second cooldown before it can be used again
 		'''
 }
@@ -1725,7 +1724,7 @@ StarbusterCore: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Summons release an [cbuff:CalamityMod/AstralInfectionDebuff] explosion on enemy hits
+		Summons release an astral explosion on enemy hits
 		'''
 }
 

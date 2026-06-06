@@ -2,7 +2,7 @@ AbandonedSlimeStaff: {
 	DisplayName: Abandoned Slime Staff
 	Tooltip:
 		'''
-		Summons an astral slime that inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+		Summons an astral slime that spreads the [cbuff:CalamityMod/AstralInfectionDebuff]
 		Consumes all of the remaining minion slots on use
 		Must be used from the hotbar
 		Increased power and size based on the number of minion slots used
@@ -72,7 +72,7 @@ AtlasMunitionsBeacon: {
 
 BelladonnaSpiritStaff: {
 	DisplayName: Belladonna Spirit Staff
-	Tooltip: Summons a cute forest spirit that flings magical [cbuff:Poisoned] petals
+	Tooltip: Summons a cute forest spirit that flings magical petals
 }
 
 BlackHawkRemote: {
@@ -90,7 +90,7 @@ BorealisBomber: {
 	Tooltip:
 		'''
 		Summons aureus bombers to chase down your enemies
-		Aureus bombers explode violently on enemy impact, inflicting [cbuff:CalamityMod/AstralInfectionDebuff]
+		Aureus bombers explode violently on enemy impact, spreading the [cbuff:CalamityMod/AstralInfectionDebuff]
 		Does not consume minion slots
 		'''
 }
@@ -210,7 +210,8 @@ CosmicImmaterializer: {
 	Tooltip:
 		'''
 		Summons a cosmic energy spiral to fight for you
-		The orb will fire swarms of homing energy bolts that cause [cbuff:CalamityMod/MiracleBlight]
+		The spiral will fire swarms of homing energy bolts when enemies are detected by it
+		Struck enemies are cleansed by [cbuff:CalamityMod/MiracleBlight]
 		There can only be one energy spiral
 		'''
 }
@@ -394,7 +395,7 @@ FleshOfInfidelity: {
 
 FlowersOfMortality: {
 	DisplayName: Flowers of Mortality
-	Tooltip: Summons five rainbow flowers over your head that inflict [cbuff:CalamityMod/ElementalMix]
+	Tooltip: Summons five rainbow flowers over your head
 }
 
 ForgottenApexWand: {
@@ -484,6 +485,7 @@ HivePod: {
 		'''
 		{$CommonItemTooltip.Sentry}
 		Summons an astraglomerate to spawn glomerings at your enemies
+		      Glomerings spread the [cbuff:CalamityMod/AstralInfectionDebuff] on impact
 		'''
 }
 
@@ -743,7 +745,7 @@ StaffOfNecrosteocytes: {
 
 StarspawnHelixStaff: {
 	DisplayName: Starspawn Helix Staff
-	Tooltip: Summons astral probes that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Summons astral probes that spread the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 StellarTorusStaff: {
@@ -769,7 +771,7 @@ TacticalPlagueEngine: {
 	DisplayName: Tactical Plague Engine
 	Tooltip:
 		'''
-		Summons a plague jet to pummel your enemies into submission
+		Summons a [cbuff:CalamityMod/Plague] jet to pummel your enemies into submission
 		Jets will fire bullets from your inventory
 		Sometimes shoots a missile instead of a bullet
 		50% chance to save ammo

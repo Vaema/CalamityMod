@@ -1,5 +1,7 @@
 ﻿using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
+using CalamityMod.Systems.Collections;
+using CalamityMod.Buffs.StatDebuffs;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Magic
     public class SlitheringEels : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Irradiated>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 34;
