@@ -160,7 +160,11 @@ SupremeManaPotion: {
 TheConcoction: {
 	DisplayName: The Concoction
 	EasterEggText: Removes 9999 life
-	Tooltip: "Can even be used while you have potion sickness if Quick Heal is repeatedly pressed"
+	Tooltip:
+		'''
+		Restores 9999 life
+		Can even be used while you have potion sickness if Quick Heal is repeatedly pressed
+		'''
 	SalesPitch:
 		'''
 		'Aren't you tired of how unreliable your healing potions are? What if you're in the middle of a zombie horde and sick to the core of those things?!'

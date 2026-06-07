@@ -31,16 +31,28 @@ namespace CalamityMod.Items.Potions
         }
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(50, 56, healValue);
+            Item.UseSound = SoundID.Item3;
+            Item.useStyle = 9;
+            Item.useTurn = true;
+            Item.useAnimation = (Item.useTime = 17);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.consumable = true;
+            Item.width = 50;
+            Item.height = 56;
+            Item.potion = true;
+
             Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
         public override bool CanUseItem(Player player)
         {
-            return true;
+            TheConcoctionPlayer concoctionPlayer = Main.LocalPlayer.GetModPlayer<TheConcoctionPlayer>();
+            return concoctionPlayer.swinesWrathCounter == -1;
         }
         public override void OnConsumeItem(Player player)
         {
+            player.HealPlayer(TheConcoction.healValue);
+            SoundEngine.PlaySound(SoundID.Item3, player.Center);
             TheConcoctionPlayer concoctionPlayer = player.GetModPlayer<TheConcoctionPlayer>();
             concoctionPlayer.swinesWrathCounter = 1200; // Creates a 10 second delay before the buff is visible (triggers at 600)
         }
@@ -51,7 +63,7 @@ namespace CalamityMod.Items.Potions
 
             if (concoctionPlayer.hoverTimer <= 10 && concoctionPlayer.hoverTimer > 0)
             {
-                TooltipLine healLine = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "HealLife");
+                TooltipLine healLine = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip0");
                 if (healLine != null)
                 {
                     healLine.Text = this.GetLocalization("EasterEggText").Value;
@@ -89,8 +101,6 @@ namespace CalamityMod.Items.Potions
                 spamTimer--;
             if (spamTimer >= 180)
             {
-                SoundEngine.PlaySound(SoundID.Item3, Player.Center);
-                Player.HealPlayer(TheConcoction.healValue);
                 Player.ConsumeItem(ModContent.ItemType<TheConcoction>());
                 swinesWrathCounter = 1200;
                 spamTimer = -1;
