@@ -264,8 +264,6 @@ namespace CalamityMod.Projectiles.Boss
         }
         void DrawBurnOrb(Projectile Projectile)
         {
-                Main.spriteBatch.Draw(ProvUtils.SecondaryLease.Target, Vector2.Zero, null, Color.White * 0.75f, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-
                 float lerpMult = MathHelper.Lerp(0.5f, 1.5f, Math.Abs(MathF.Sin(Projectile.localAI[1] / 10f)));
 
                 Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
