@@ -857,6 +857,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.GravityGlobe)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("GravityGlobe"));
 
+            // Reworked Volatile Gelatin
+            if (item.type == ItemID.VolatileGelatin)
+                EditTooltipByNum(0, (line) => line.Text += "\n" + EditedTooltip("VolatileGelatin"));
+
             // Flame Waker Boots now has a functional effect which inherits to Hellfire Treads.
             if (item.type == ItemID.FlameWakerBoots)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlameWakerBoots"));

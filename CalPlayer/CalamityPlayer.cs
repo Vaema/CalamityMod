@@ -882,6 +882,7 @@ namespace CalamityMod.CalPlayer
         public bool eGauntlet = false;
         /// <summary> <inheritdoc cref="magmaStoneVisuals"/> </summary>
         public bool eGauntletVisuals = true;
+        public bool volatileGelatinVisuals = true;
         /// <summary>
         /// Used to prevent melee speed stacking with Feral Claws and its upgrades.<br/>
         /// Feral Claws = 1, Power Glove = 2, Mechanical Glove = 3, Fire Gauntlet = 4, Elemental Gauntlet = 5
@@ -1174,6 +1175,7 @@ namespace CalamityMod.CalPlayer
         public int voidFrameCounter = 0;
         /// <summary> <inheritdoc cref="voidFrameCounter"/> </summary>
         public int voidFrame = 0;
+        public int volatileGelHits = 0;
         public bool rottenDogTooth = false;
         public bool angelicAlliance = false;
         public int angelicActivate = -1;
@@ -2449,6 +2451,7 @@ namespace CalamityMod.CalPlayer
             ascendantInsignia = false;
             fishStocks = false;
             magmaStoneVisuals = true;
+            volatileGelatinVisuals = true;
             eGauntlet = false;
             eGauntletVisuals = true;
             gloveLevel = 0;

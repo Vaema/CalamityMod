@@ -2951,6 +2951,29 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (Player.volatileGelatin)
+            {
+                Player.volatileGelatinCounter++;
+
+                int npcCount = 0;
+                int npcType = ModContent.NPCType<VolatileSlime>();
+                for (int x = 0; x < Main.maxNPCs; x++)
+                {
+                    NPC npc = Main.npc[x];
+                    if (npc.active && npc.type == npcType && npc.ai[1] == Player.whoAmI && npc.ai[3] == 0)
+                        npcCount++;
+                }
+                int wingFlatBoost = 15; // 0.3 seconds of flight
+                float jumpSpeedBoost = 0.25f; // 5% jump speed
+
+                if (Player.wingTimeMax > 0)
+                    Player.wingTimeMax += (wingFlatBoost * npcCount);
+                Player.jumpSpeedBoost += (jumpSpeedBoost * npcCount);
+            }
+            else
+                volatileGelHits = 0;
+            
+
             // Vortex Armor nerf
             if (Player.vortexStealthActive && Player.HeldItem.type != ItemID.PsychoKnife)
             {
