@@ -11,6 +11,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Food
@@ -19,8 +20,10 @@ namespace CalamityMod.Items.Potions.Food
     {
         private static Asset<Texture2D> FadedStarRing;
         private static Asset<Texture2D> BloomFlare;
+        private static int DivineMeatCooldown = CalamityUtils.MinutesToFrames(15);
 
         public new string LocalizationCategory => "Items.Potions";
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DivineMeatCooldown / 60).FramesToSeconds());
 
         public override void Load()
         {
@@ -56,9 +59,16 @@ namespace CalamityMod.Items.Potions.Food
             Item.UseSound = SoundID.Item2;
             Item.useStyle = ItemUseStyleID.EatFood;
             Item.buffType = BuffID.WellFed2;
-            Item.buffTime = CalamityUtils.MinutesToFrames(8);
+            Item.buffTime = CalamityUtils.MinutesToFrames(15);
             Item.useTurn = true;
             Item.consumable = false;
+        }
+
+        public override bool CanUseItem(Player player) => player.GetModPlayer<DivineMeatPlayer>().divineMeatCooldown <= 0;
+        public override bool? UseItem(Player player)
+        {
+            player.GetModPlayer<DivineMeatPlayer>().divineMeatCooldown = DivineMeatCooldown;
+            return null;
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
@@ -112,6 +122,35 @@ namespace CalamityMod.Items.Potions.Food
             spriteBatch.Draw(pixelationLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
 
             return true;
+        }
+
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            if (Main.LocalPlayer.GetModPlayer<DivineMeatPlayer>().divineMeatCooldown <= 0)
+                return;
+
+            Vector2 barScale = new Vector2(1.25f, 1f);
+            var barBG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
+            var barFG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
+
+            Vector2 drawPos = position + new Vector2((frame.Width - barBG.Width * 0.95f) * scale, (frame.Height - 3f) * scale);
+            Rectangle frameCrop = new Rectangle(0, 0, (int)((1 - Main.LocalPlayer.GetModPlayer<DivineMeatPlayer>().divineMeatCooldown / (float)DivineMeatCooldown) * barFG.Width), barFG.Height);
+            Color colorBG = Color.Black;
+            Color colorFG = Color.White;
+
+            spriteBatch.Draw(barBG, drawPos, null, colorBG, 0f, origin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barFG, drawPos, frameCrop, colorFG * 0.8f, 0f, origin, scale * barScale, 0f, 0f);
+        }
+    }
+
+    public class DivineMeatPlayer : ModPlayer
+    {
+        public int divineMeatCooldown = 0;
+
+        public override void PostUpdateMiscEffects()
+        {
+            if (divineMeatCooldown > 0)
+                divineMeatCooldown--;
         }
     }
 }
