@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -11,6 +13,10 @@ namespace CalamityMod.Items.Weapons.Melee
     public class WindBlade : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WindChilled>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 58;
