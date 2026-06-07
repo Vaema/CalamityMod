@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using CalamityMod.Rarities;
+using CalamityMod.Scenes.MusicScenes;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -15,7 +18,7 @@ namespace CalamityMod.Items.Potions
     public class TheConcoction : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-
+        public static int healValue = 9999;
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 30;
@@ -26,15 +29,16 @@ namespace CalamityMod.Items.Potions
                 new Color(246, 34, 79)
             };
         }
-
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(50, 56, 500);
+            Item.DefaultToHealingPotion(50, 56, healValue);
             Item.value = Item.buyPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
-
-
+        public override bool CanUseItem(Player player)
+        {
+            return true;
+        }
         public override void OnConsumeItem(Player player)
         {
             TheConcoctionPlayer concoctionPlayer = player.GetModPlayer<TheConcoctionPlayer>();
@@ -59,12 +63,39 @@ namespace CalamityMod.Items.Potions
     public class TheConcoctionPlayer : ModPlayer
     {
         public int swinesWrathCounter = -1;
+        public int spamTimer = 0;
+        public bool holdingHeal = false;
 
         public int hoverTimer = 0;
         public bool wasHovering = false;
 
         public override void PostUpdate()
         {
+            if (!holdingHeal && Player.controlQuickHeal && spamTimer >= 0 && Player.InventoryHas(ModContent.ItemType<TheConcoction>()))
+            {
+                Vector2 vel = -Vector2.UnitY.RotatedByRandom(0.4f);
+                Particle chug = new CustomSpark(Player.Center + vel * 35, vel * Main.rand.NextFloat(2, 3), "CalamityMod/Items/Potions/TheConcoction", false, 22, 0.6f, Color.White, Vector2.One, false, false, 0, false, false, noShrink: true, spin: 0.01f * Math.Sign(vel.X));
+                GeneralParticleHandler.SpawnParticle(chug);
+                SoundStyle tryChug = new("CalamityMod/Sounds/Custom/AbilitySounds/PotionSicknessOver");
+                SoundEngine.PlaySound(tryChug with { pitch = Main.rand.NextFloat(0.6f, 0.8f), MaxInstances = -1 }, Player.Center);
+                spamTimer += 80;
+                if (spamTimer > 230)
+                    spamTimer = 230;
+                holdingHeal = true;
+            }
+            if (!Player.controlQuickHeal)
+                holdingHeal = false;
+            if (spamTimer > 0)
+                spamTimer--;
+            if (spamTimer >= 180)
+            {
+                SoundEngine.PlaySound(SoundID.Item3, Player.Center);
+                Player.HealPlayer(TheConcoction.healValue);
+                Player.ConsumeItem(ModContent.ItemType<TheConcoction>());
+                swinesWrathCounter = 1200;
+                spamTimer = -1;
+            }
+
             if (swinesWrathCounter > 0)
             {
                 swinesWrathCounter--;
