@@ -25,6 +25,8 @@ namespace CalamityMod.Tiles
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileLighted[Type] = true;
+            Main.tileSpelunker[Type] = true;
+            Main.tileOreFinderPriority[Type] = 770; // Same as Chillet
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             TileObjectData.newTile.StyleHorizontal = true;
@@ -34,7 +36,7 @@ namespace CalamityMod.Tiles
 
             DustType = DustID.Silver;
 
-            AddMapEntry(new Color(108, 118, 134));
+            AddMapEntry(new Color(108, 118, 134), CalamityUtils.GetText("Tiles.IronBall"));
             RegisterItemDrop(ModContent.ItemType<IronBall>());
             FlexibleTileWand.RubblePlacementSmall.AddVariations(ModContent.ItemType<IronBall>(), Type, 0);
         }
