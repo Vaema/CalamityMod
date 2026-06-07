@@ -1937,7 +1937,7 @@ namespace CalamityMod.NPCs.Providence
                 Projectile projectile = Main.projectile[x];
                 if (projectile.active)
                 {
-                    if (projectile.type == ModContent.ProjectileType<HolyFire2>() || projectile.type == ModContent.ProjectileType<HolyFlare>())
+                    if (projectile.type == ModContent.ProjectileType<HolyFire2>() || projectile.type == ModContent.ProjectileType<HolyFlare>() || projectile.type == ModContent.ProjectileType<HolyBlastFrags>())
                         projectile.Kill();
                     else if (projectile.type == ModContent.ProjectileType<HolyBlast>() || projectile.type == ModContent.ProjectileType<HolyFire>())
                         projectile.active = false;
