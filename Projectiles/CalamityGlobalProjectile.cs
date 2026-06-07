@@ -359,7 +359,7 @@ namespace CalamityMod.Projectiles
                     projectile.extraUpdates = 1;
                 if (projectile.timeLeft > 700)
                     projectile.timeLeft = 700;
-                projectile.damage = (int)(projectile.damage * 0.95f); // 5% damage nerf
+                projectile.damage = (int)(projectile.damage * 0.60f); // 40% damage nerf
                 NPC closeTarget = projectile.Center.ClosestNPCAt(640);
                 Vector2 velocity = (projectile.Center.DirectionTo(closeTarget.Center) + closeTarget.velocity * 0.03f).SafeNormalize(Vector2.UnitX);
                 projectile.velocity = velocity * 12;
