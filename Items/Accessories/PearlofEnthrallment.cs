@@ -17,7 +17,6 @@ namespace CalamityMod.Items.Accessories
         public static int ElementalDamage = 65;
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn2];
             CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WindChilled>(), BuffID.Confused];
         }
 
