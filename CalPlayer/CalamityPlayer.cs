@@ -1148,6 +1148,7 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurioVisuals = false;
         public float scionsCurioDebuffDamage = 0;
         public bool frozenCube = false;
+        public bool frozenCubeVanity = false;
         public bool frozenCubeVisuals = false;
         public float frozenCubeDebuffBoost = 0;
         public float frozenCubeElumphantBoost = 0;
@@ -2531,7 +2532,7 @@ namespace CalamityMod.CalPlayer
             camper = false;
             corrosiveSpine = false;
             scionsCurio = false;
-            frozenCube = false; frozenCubeDebuffBoost = 0; frozenCubeElumphantBoost = 0; frozenCubeUsedDefense = 0;
+            frozenCube = false; frozenCubeVanity = false; frozenCubeDebuffBoost = 0; frozenCubeElumphantBoost = 0; frozenCubeUsedDefense = 0;
             rottenDogTooth = false;
             angelicAlliance = false;
             ChaosStone = false;
