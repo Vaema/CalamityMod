@@ -833,10 +833,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
         
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            //Always drops Disgusting Meat, 50% chance to drop Money Trough, 25%/33% chance to drop Laudanum
+            //Always drops Disgusting Meat, 50% chance to drop Money Trough, 25%/33% chance to drop Laudanum, 10% chance to drop Bloody Tear
             npcLoot.Add(ModContent.ItemType<DisgustingMeat>());
             npcLoot.Add(ModContent.ItemType<Laudanum>(), Main.expertMode ? 3 : 4);
             npcLoot.Add(ItemID.MoneyTrough, 2);
+            npcLoot.Add(ItemID.BloodMoonStarter, 10);
 
             // 10-12 Blood Orbs Post-EoC to match Wandering Eye Fish and Zombie Merman as Blood Moon's faux minibosses.
             LeadingConditionRule postEoC = npcLoot.DefineConditionalDropSet(DropHelper.PostEoC());

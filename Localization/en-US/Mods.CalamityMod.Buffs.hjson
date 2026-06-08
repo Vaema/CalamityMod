@@ -826,7 +826,7 @@ AeolianEarthBuff: {
 		You are strengthened by primordial powers
 		Damage reduction increased by {0}%, damage increased by {1}%, and massively buffed mana regen
 		'''
-	ItemTooltipPlayer: Increases damage, damage reduction, and mana regeneration
+	ItemTooltipPlayer: Increases your damage reduction by 8%, damage by 15%, and massively buffs mana regen
 }
 
 Afflicted: {
@@ -1027,7 +1027,7 @@ ReaverRage: {
 		Rage of the earth
 		Defense increased by {0} and damage increased by {1}%
 		'''
-	ItemTooltipPlayer: Increased defense and damage
+	ItemTooltipPlayer: Increases your defense by 10 and damage by 10%
 }
 
 SandsWindBuff: {
@@ -1037,7 +1037,7 @@ SandsWindBuff: {
 		You are strengthened by the powers of sand
 		Defense increased by {0}, damage increased by {1}%, and greatly buffed mana regen 
 		'''
-	ItemTooltipPlayer: Increases damage, defense, and mana regeneration
+	ItemTooltipPlayer: Increases your defense by 12, damage by 12%, and greatly buffs mana regen
 }
 
 SilvaRevival: {
@@ -1235,7 +1235,7 @@ WitherDebuff: {
 		Withered...
 		Defense decreased by {0}
 		'''
-	ItemTooltipEnemy: Decreases defense
+	ItemTooltipEnemy: Decreases defense by 20
 }
 
 // Summons

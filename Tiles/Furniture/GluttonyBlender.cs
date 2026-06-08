@@ -156,6 +156,8 @@ namespace CalamityMod.Tiles.Furniture
             if (ItemLoader.ConsumeItem(item, player))
             {
                 item.stack--;
+                if (player.selectedItem == 58)
+                    Main.mouseItem.stack--;
                 if (item.stack <= 0)
                     item.TurnToAir();
             }

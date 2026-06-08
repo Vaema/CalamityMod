@@ -1,5 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,6 +16,12 @@ namespace CalamityMod.Items.Weapons.Magic
         public const float BurnOutTime = 560f;
         public const int BurnOutReuseDelay = 150;
         public const float FizzleOutTime = 40f;
+
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+            CalamityItemSets.ExtraDebuffTooltip_Player[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+        }
 
         public override void SetDefaults()
         {

@@ -322,6 +322,22 @@ namespace CalamityMod.Items
                 }
             }
 
+            foreach (var buffID in CalamityItemSets.ExtraDebuffTooltip_Enemy[item.type])
+            {
+                if (!buffIdsInTooltip.ContainsKey(buffID))
+                    buffIdsInTooltip.Add(buffID, 0);
+                else if (buffIdsInTooltip[buffID] == 1)
+                        buffIdsInTooltip[buffID] = 2;
+            }
+            foreach (var buffID in CalamityItemSets.ExtraDebuffTooltip_Player[item.type])
+            {
+                if (!buffIdsInTooltip.ContainsKey(buffID))
+                    buffIdsInTooltip.Add(buffID, 1);
+                else if (buffIdsInTooltip[buffID] == 0)
+                        buffIdsInTooltip[buffID] = 2;
+
+            }
+
             if (buffIdsInTooltip.Count > 0)
             {
                 bool showTheTip = false;
