@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 float SpeedX = velocity.X + Main.rand.Next(-spread, spread + 1) * 0.05f;
                 float SpeedY = velocity.Y + Main.rand.Next(-spread, spread + 1) * 0.05f;
-                Projectile arrow = Projectile.NewProjectileDirect(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * arrowScale), knockback * arrowScale, player.whoAmI);
+                Projectile arrow = Projectile.NewProjectileDirect(source, position, new Vector2(SpeedX, SpeedY), type, (int)(damage * arrowScale), knockback * arrowScale, player.whoAmI);
                 arrow.scale = arrowScale;
                 arrow.extraUpdates += 1;
             }
