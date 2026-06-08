@@ -38,9 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             float SpeedX = velocity.X + (float)Main.rand.Next(-10, 11) * 0.05f;
             float SpeedY = velocity.Y + (float)Main.rand.Next(-10, 11) * 0.05f;
-            int index = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<IcicleArrowProj>(), (int)(damage * 0.7f), knockback, player.whoAmI);
-            Main.projectile[index].noDropItem = true;
-
+            Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<IcicleArrowProj>(), (int)(damage * 0.7f), knockback, player.whoAmI);
             return true;
         }
     }
