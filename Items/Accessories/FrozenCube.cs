@@ -59,6 +59,19 @@ namespace CalamityMod.Items.Accessories
                 Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
+        public override void UpdateVanity(Player player)
+        {
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.frozenCubeVanity = true;
+            modPlayer.frozenCubeVisuals = true;
+
+            int projectile = ProjectileType<Elumphant>();
+            if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
+            {
+                int damage = 0;
+                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
+            }
+        }
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
