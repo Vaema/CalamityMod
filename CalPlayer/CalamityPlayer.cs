@@ -4315,9 +4315,9 @@ namespace CalamityMod.CalPlayer
                 return null;
 
             int attempts = 25;
-            int rangeX = 300;
-            int rangeY = 300;
-            int randomFluff = 500;
+            int rangeX = 100;
+            int rangeY = 100;
+            int randomFluff = 400;
             Point finalTeleportPoint = Point.Zero;
             for (int i = 0; i < attempts; i++)
             {
@@ -4325,13 +4325,13 @@ namespace CalamityMod.CalPlayer
                 {
                     for (int y = 0; y <= rangeY; y++)
                     {
-                        int teleportPosX = foundX + x + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosX = foundX + (dungeonOnRightSide ? x : -x) + Main.rand.Next(-randomFluff, randomFluff);
                         int teleportPosY = foundY + y + Main.rand.Next(-randomFluff, randomFluff);
                         Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
                         Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
                         Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
 
-                        if (!tileAbove.HasTile && tileBelow.HasTile && tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        if (!tileAbove.HasTile && WorldGen.ActiveAndWalkableTile(tileBelow.X(), tileBelow.Y()) && tile.WallType == WallID.LihzahrdBrickUnsafe)
                         {
                             finalTeleportPoint = new(tile.X(), tile.Y());
                             if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
@@ -4383,20 +4383,20 @@ namespace CalamityMod.CalPlayer
             // Define an area around the center to search for a valid spot to tp
             int teleportStartX = WorldgenManagementSystem.DungeonArchivePos.X;
             int teleportStartY = WorldgenManagementSystem.DungeonArchivePos.Y;
+            bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
 
             // Manually search for the Archives from the bottom of the world if the Archive position isn't saved.
             if (WorldgenManagementSystem.DungeonArchivePos == Point.Zero)
             {
                 int foundX = -1;
                 int foundY = -1;
-                bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
                 int xSearchStart = dungeonOnRightSide ? Main.maxTilesX - 20 : 20;
 
                 if (dungeonOnRightSide)
                 {
-                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    for (int y = Main.maxTilesY; y >= (int)Main.worldSurface; y--)
                     {
-                        for (int x = xSearchStart; x >= Main.maxTilesX / 2; x -= 2)
+                        for (int x = xSearchStart; x >= Main.spawnTileX; x += 2)
                         {
                             Tile tile = Framing.GetTileSafely(x, y);
                             if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
@@ -4413,9 +4413,9 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                 {
-                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    for (int y = Main.maxTilesY; y >= (int)Main.worldSurface; y--)
                     {
-                        for (int x = xSearchStart; x <= Main.maxTilesX / 2; x += 2)
+                        for (int x = xSearchStart; x <= Main.spawnTileX; x += 2)
                         {
                             Tile tile = Framing.GetTileSafely(x, y);
                             if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
@@ -4431,6 +4431,7 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
+                //Main.NewText($"Dungeon Coords - {foundX},{foundY}");
                 if (foundY == -1)
                     return null;
 
@@ -4438,24 +4439,25 @@ namespace CalamityMod.CalPlayer
                 teleportStartY = foundY;
             }
 
+
             int attempts = 25;
-            int rangeX = 100;
-            int rangeY = 200;
-            int randomFluff = 60;
+            int rangeX = 50;
+            int rangeY = 50;
+            int randomFluff = 20;
             Point finalTeleportPoint = Point.Zero;
             for (int i = 0; i < attempts; i++)
             {
-                for (int x = -rangeX; x <= rangeX; x++)
+                for (int x = 0; x <= rangeX; x++)
                 {
                     for (int y = 0; y <= rangeY; y++)
                     {
-                        int teleportPosX = teleportStartX + x + Main.rand.Next(-randomFluff, randomFluff);
-                        int teleportPosY = teleportStartY + y + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosX = teleportStartX + (dungeonOnRightSide ? -x : x) + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = teleportStartY - y + Main.rand.Next(-randomFluff, randomFluff);
                         Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
                         Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
                         Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
 
-                        if (!tileAbove.HasTile && tileBelow.HasUnactuatedTile && Main.wallDungeon[tile.WallType])
+                        if (!tileAbove.HasTile && WorldGen.ActiveAndWalkableTile(tileBelow.X(), tileBelow.Y()) && Main.tileDungeon[tile.TileType] && Main.wallDungeon[tile.WallType])
                         {
                             finalTeleportPoint = new(tile.X(), tile.Y());
                             if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))

@@ -4,8 +4,10 @@ using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Chat;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Localization;
 
 namespace CalamityMod.Items.Potions
 {
@@ -45,27 +47,42 @@ namespace CalamityMod.Items.Potions
         {
             if (Main.rand.NextBool(4))
             {
-                int locationIndex = Main.rand.Next(3);
-                if (Main.dedServ)
-                    TheElixirTeleportSyncPacket.Send(player, locationIndex);
-
-                Vector2? location = locationIndex switch
+                if (player.whoAmI == Main.myPlayer)
                 {
-                    1 => CalamityPlayer.GetAbyssVoidTeleportPosition(player),
-                    2 => CalamityPlayer.GetTempleTeleportPosition(player),
-                    _ => CalamityPlayer.GetDungeonArchivesTeleportPosition(player)
-                };
+                    Vector2? location = null;
+                    int locationIndex = Main.rand.Next(3);
+                    if (locationIndex == 0)
+                        location = CalamityPlayer.GetDungeonArchivesTeleportPosition(player);
+                    if (locationIndex == 1)
+                        location = CalamityPlayer.GetAbyssVoidTeleportPosition(player);
+                    if (locationIndex == 2)
+                        location = CalamityPlayer.GetTempleTeleportPosition(player);
 
-                if (!location.HasValue)
-                    return false;
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        if (!location.HasValue)
+                            return false;
 
-                player.AddBuff(BuffID.ChaosState, 300, false);
-                player.AddBuff(BuffID.Cursed, 300, false);
-                CalamityPlayer.ModTeleport(player, location.Value, false, TeleportationStyleID.RecallPotion);
+                        player.AddBuff(BuffID.ChaosState, 300, false);
+                        player.AddBuff(BuffID.Cursed, 300, false);
+                        CalamityPlayer.ModTeleport(player, location.Value, false, TeleportationStyleID.RecallPotion);
+                    }
+                    else
+                    {
+                        TheElixirTeleportSyncPacket.Send(player, locationIndex);
+                        SoundEngine.PlaySound(SoundID.Item6, player.Center);
+                    }
+                }
             }
             //If it doesn't fail, just act like a Potion of Return
             else
-                player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
+                    SoundEngine.PlaySound(SoundID.Item6, player.Center);
+                }
+            }
 
             //Dust and Teleport sounds happen regardless of if it fails or not
             Rectangle rect = player.getRect();
@@ -105,7 +122,6 @@ namespace CalamityMod.Items.Potions
                 }
                 dust.scale *= 0.8f;
             }
-            SoundEngine.PlaySound(SoundID.Item6, player.Center);
             return true;
         }
     }

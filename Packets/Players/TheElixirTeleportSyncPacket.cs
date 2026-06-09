@@ -29,12 +29,13 @@ namespace CalamityMod.Packets
             if (player is null)
                 return;
 
-            Vector2? location = locationIndex switch
-            {
-                1 => CalamityPlayer.GetAbyssVoidTeleportPosition(player),
-                2 => CalamityPlayer.GetTempleTeleportPosition(player),
-                _ => CalamityPlayer.GetDungeonArchivesTeleportPosition(player)
-            };
+            Vector2? location = null;
+            if (locationIndex == 0)
+                location = CalamityPlayer.GetDungeonArchivesTeleportPosition(player);
+            if (locationIndex == 1)
+                location = CalamityPlayer.GetAbyssVoidTeleportPosition(player);
+            if (locationIndex == 2)
+                location = CalamityPlayer.GetTempleTeleportPosition(player);
 
             if (!location.HasValue)
                 return;
