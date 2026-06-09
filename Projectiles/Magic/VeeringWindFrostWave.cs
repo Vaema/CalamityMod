@@ -29,13 +29,18 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 90;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 15;
+            Projectile.idStaticNPCHitCooldown = 18;
         }
 
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3() * 0.6f);
+            if (Collision.SolidCollision(Projectile.Center, Projectile.width / 2, Projectile.height / 2))
+            {
+                Projectile.velocity *= 0.97f;
+                Projectile.timeLeft -= 2;
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -44,6 +49,12 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.damage = (int)(Projectile.damage * 0.5);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
+
+            if (Projectile.numHits < 2)
+            {
+                target.AddBuff(ModContent.BuffType<WindChilled>(), (int)(120 / (Projectile.numHits == 0 ? 1 : 2)));
+                target.AddBuff(BuffID.Frozen, (int)(30 / (Projectile.numHits == 0 ? 1 : 2)));
+            }
         }
 
         public override bool PreDraw(ref Color lightColor) // Photoviscerator ball drawcode, slightly edited.
@@ -75,17 +86,6 @@ namespace CalamityMod.Projectiles.Magic
                 Main.EntitySpriteDraw(lightTexture, drawPosition, null, innerColor, Projectile.rotation, lightTexture.Size() * 0.5f, innerScale * 0.6f, SpriteEffects.None, 0);
             }
             return false;
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), 120);
-            target.AddBuff(BuffID.Frozen, 30);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), 120);
-            target.AddBuff(BuffID.Frozen, 30);
         }
     }
 }
