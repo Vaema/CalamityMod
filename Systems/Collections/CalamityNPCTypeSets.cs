@@ -20,8 +20,7 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityNPCTypeSets
     {
-        private static SetFactory Factory = new SetFactory(NPCLoader.NPCCount, "CalamityMod/NPCType", Search);
-        private static IdDictionary Search = IdDictionary.Create<NPCID, int>();
+        private static SetFactory Factory = NPCID.Sets.Factory;
 
         // Used for dropping Ancient Bone Dust, vanilla has a Skeleton NPCID set which has more unwanted enemies in it
         public static bool[] Skeleton = Factory.CreateNamedSet("Skeleton")

@@ -48,8 +48,7 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityNPCSets
     {
-        private static SetFactory Factory = new SetFactory(NPCLoader.NPCCount, "CalamityMod/NPCID", Search);
-        private static IdDictionary Search = IdDictionary.Create<NPCID, int>();
+        private static SetFactory Factory = NPCID.Sets.Factory;
 
         /// <summary>
         /// If <see langword="true"/> for an NPC type, makes this NPC be susceptible to <see cref="BuffID.Confused"/>.<br/>
@@ -232,6 +231,100 @@ namespace CalamityMod.Systems.Collections
         public static bool[] DontCountAsEnemy = Factory.CreateNamedSet("DontCountAsEnemy")
             .Description("Prevents Calamity's IsAnEnemy method from considering this NPC an enemy.")
             .RegisterBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
+
+        /// <summary>
+        /// The intended kill times of Calamity bosses, in frames
+        /// </summary>
+        public static int[] BossKillTimes = Factory.CreateNamedSet("BossKillTimes")
+            .Description("The intended kill times of Calamity bosses, in frames")
+            .RegisterIntSet(0,
+                NPCID.KingSlime, 5400, // 1:30 (90 seconds)
+                NPCID.EyeofCthulhu, 5400, // 1:30 (90 seconds)
+                NPCID.EaterofWorldsHead, 7200, // 2:00 (120 seconds)
+                NPCID.EaterofWorldsBody, 7200,
+                NPCID.EaterofWorldsTail, 7200,
+                NPCID.BrainofCthulhu, 7200, // 2:00 (120 seconds, total length of fight including Creepers phase)
+                NPCID.Creeper, 1800, // 0:30 (30 seconds, length of Creepers phase)
+                NPCID.Deerclops, 5400, // 1:30 (90 seconds)
+                NPCID.QueenBee, 7200, // 2:00 (120 seconds)
+                NPCID.SkeletronHead, 7200, // 2:00 (120 seconds)
+                NPCID.WallofFlesh, 7200, // 2:00 (120 seconds)
+                NPCID.WallofFleshEye, 7200,
+                NPCID.QueenSlimeBoss, 7200, // 2:00 (120 seconds)
+                NPCID.Spazmatism, 10800, // 3:00 (180 seconds)
+                NPCID.Retinazer, 10800,
+                NPCID.TheDestroyer, 10800, // 3:00 (180 seconds)
+                NPCID.TheDestroyerBody, 10800,
+                NPCID.TheDestroyerTail, 10800,
+                NPCID.SkeletronPrime, 10800, // 3:00 (180 seconds)
+                NPCID.Plantera, 10800, // 3:00 (180 seconds)
+                NPCID.Golem, 9000, // 2:30 (150 seconds)
+                NPCID.GolemHead, 3600, // 1:00 (60 seconds)
+                NPCID.DukeFishron, 9000, // 2:30 (150 seconds)
+                NPCID.HallowBoss, 10800, // 3:00 (180 seconds)
+                NPCID.CultistBoss, 9000, // 2:30 (150 seconds)
+                NPCID.MoonLordCore, 14400, // 4:00 (240 seconds)
+                NPCID.MoonLordHand, 7200, // 2:00 (120 seconds)
+                NPCID.MoonLordHead, 7200, // 2:00 (120 seconds)
+
+                //
+                // CALAMITY BOSSES
+                //
+                NPCType<DesertScourgeHead>(), 5400, // 1:30 (90 seconds)
+                NPCType<DesertScourgeBody>(), 5400,
+                NPCType<DesertScourgeTail>(), 5400,
+                NPCType<Crabulon>(), 5400, // 1:30 (90 seconds)
+                NPCType<HiveMind>(), 7200, // 2:00 (120 seconds)
+                NPCType<PerforatorHive>(), 7200, // 2:00 (120 seconds)
+                NPCType<SlimeGodCore>(), 9000, // 2:30 (150 seconds) -- total length of Slime God fight
+                NPCType<EbonianPaladin>(), 4500, // 1:15 (75 seconds)
+                NPCType<CrimulanPaladin>(), 4500, // 1:15 (75 seconds)
+                NPCType<SplitEbonianPaladin>(), 4500, // 1:15 (75 seconds) -- split slimes should spawn at 1:15 and die at around 2:30
+                NPCType<SplitCrimulanPaladin>(), 4500, // 1:15 (75 seconds)
+                NPCType<Cryogen>(), 10800, // 3:00 (180 seconds)
+                NPCType<AquaticScourgeHead>(), 9000, // 2:30 (150 seconds)
+                NPCType<AquaticScourgeBody>(), 9000,
+                NPCType<AquaticScourgeBodyAlt>(), 9000,
+                NPCType<AquaticScourgeTail>(), 9000,
+                NPCType<BrimstoneElemental>(), 10800, // 3:00 (180 seconds)
+                NPCType<CalamitasClone>(), 10800, // 3:00 (180 seconds)
+                NPCType<Anahita>(), 10800, // 3:00 (180 seconds)
+                NPCType<Leviathan>(), 10800,
+                NPCType<AstrumAureus>(), 10800, // 3:00 (180 seconds)
+                NPCType<AstrumDeusHead>(), 7200, // 2:00 (120 seconds) -- first phase is 1:00
+                NPCType<AstrumDeusBody>(), 7200,
+                NPCType<AstrumDeusTail>(), 7200,
+                NPCType<PlaguebringerGoliath>(), 10800, // 3:00 (180 seconds)
+                NPCType<RavagerBody>(), 10800, // 3:00 (180 seconds)
+                NPCType<ProfanedGuardianCommander>(), 7200, // 2:00 (120 seconds)
+                NPCType<Dragonfolly>(), 7200, // 2:00 (120 seconds)
+                NPCType<Providence>(), 14400, // 4:00 (240 seconds)
+                NPCType<CeaselessVoid>(), 10800, // 3:00 (180 seconds)
+                NPCType<DarkEnergy>(), 1200, // 0:20 (20 seconds)
+                NPCType<StormWeaverHead>(), 8100, // 2:15 (135 seconds)
+                NPCType<StormWeaverBody>(), 8100,
+                NPCType<StormWeaverTail>(), 8100,
+                NPCType<Signus>(), 7200, // 2:00 (120 seconds)
+                NPCType<Polterghast>(), 10800, // 3:00 (180 seconds)
+                NPCType<OldDuke>(), 10800, // 3:00 (180 seconds)
+                NPCType<DevourerofGodsHead>(), 14400, // 4:00 (240 seconds)
+                NPCType<DevourerofGodsBody>(), 14400, // DoG Phase 1 is 1:30, DoG Phase 2 is 2:30
+                NPCType<DevourerofGodsTail>(), 14400,
+                NPCType<Yharon>(), 14400, // 4:00 (240 seconds)
+                NPCType<Apollo>(), 21600, // 6:00 (360 seconds)
+                NPCType<Artemis>(), 21600,
+                NPCType<AresBody>(), 21600, // 6:00 (360 seconds)
+                NPCType<AresGaussNuke>(), 21600,
+                NPCType<AresLaserCannon>(), 21600,
+                NPCType<AresPlasmaFlamethrower>(), 21600,
+                NPCType<AresTeslaCannon>(), 21600,
+                NPCType<ThanatosHead>(), 21600, // 6:00 (360 seconds)
+                NPCType<ThanatosBody1>(), 21600,
+                NPCType<ThanatosBody2>(), 21600,
+                NPCType<ThanatosTail>(), 21600,
+                NPCType<SupremeCalamitas>(), 18000, // 5:00 (300 seconds)
+                NPCType<PrimordialWyrmHead>(), 18000 // 5:00 (300 seconds)
+             );
 
         /// <summary>
         /// Associates an NPC type with the base value of their max health in Boss Rush.<br/>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.TownNPCs;
@@ -2255,6 +2256,14 @@ namespace CalamityMod
                         if (!castID(args[1], out int npcType6))
                             return new ArgumentException("ERROR: The first argument to \"AddToBossHPScalingConfig\" must be an int or short ID.");
                         return AddToHPScaling(npcType6);
+                    }
+                case "GetDebuffDamage":
+                    {
+                        if (args.Length < 2)
+                            return new ArgumentNullException("ERROR: Must specify an NPC and a buff type int");
+                        if (args[1] is not NPC npc || args[2] is not int type)
+                            return new ArgumentException("ERROR: The first argument to \"GetDebuffDamage\" must be an NPC, and the second must be an int.");
+                        return DebuffData.GetDebuffRegenValue(npc, type);
                     }
                 default:
                     return new ArgumentException("ERROR: Invalid method name.");

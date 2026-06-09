@@ -14,8 +14,7 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityProjectileSets
     {
-        private static SetFactory Factory = new SetFactory(ProjectileLoader.ProjectileCount, "CalamityMod/ProjectileID", Search);
-        private static IdDictionary Search = IdDictionary.Create<ProjectileID, int>();
+        private static SetFactory Factory = ProjectileID.Sets.Factory;
 
         /// <summary>
         /// If <see langword="true"/> for a projectile type, then that minion will completely ignore Calamity's summon damage penalty mechanic with no exceptions.<br/>
