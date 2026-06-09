@@ -240,6 +240,8 @@ namespace CalamityMod.Tiles
         BezierCurve path = null;
         private bool Success = false;
 
+        private int random = -1;
+
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -260,10 +262,20 @@ namespace CalamityMod.Tiles
             Projectile.netUpdate = true;
         }
 
+        public override bool PreAI()
+        {
+            if (Projectile.timeLeft == 120)
+            {
+                GreedPotTE te = TileEntity.ByID[(int)Projectile.ai[2]] as GreedPotTE;
+                te.Activated = true;
+                te.TimeSinceActivation = 0;
+            }
+            return true;
+        }
 
         public override void AI()
         {
-            if(path == null)
+            if (path == null)
             {
                 Vector2 startPoint = StartPosition;
                 Vector2 endPoint = PotPosition - Vector2.UnitY * 64;
@@ -306,10 +318,13 @@ namespace CalamityMod.Tiles
             bool darken = animTime < 90;
             bool transform = animTime < 110;
 
-            if(beforeDarken)
+            if (random == -1)
+                random = Main.rand.Next(120);
+
+            if (beforeDarken)
             {
                 Texture2D tex = TextureAssets.Item[InputItemType].Value;
-                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, lightColor, Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, lightColor, Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
             }
             else if (darken)
             {
@@ -322,7 +337,7 @@ namespace CalamityMod.Tiles
                 glowLerp = CalamityUtils.SineInEasing(glowLerp, 1);
 
                 Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
-                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson * glowLerp, Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, glowLerp), 0, 0);
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Crimson * glowLerp, Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, glowLerp), 0, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(snap);
@@ -331,7 +346,7 @@ namespace CalamityMod.Tiles
                 darkenLerp = CalamityUtils.CircInEasing(darkenLerp, 1);
 
                 Texture2D tex = TextureAssets.Item[InputItemType].Value;
-                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Lerp(lightColor, Color.Black, darkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Lerp(lightColor, Color.Black, darkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
             }
             else if(transform)
             {
@@ -341,7 +356,7 @@ namespace CalamityMod.Tiles
                 Main.spriteBatch.Begin(newSnap);
 
                 Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
-                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson, Projectile.rotation, glow.Size() * 0.5f, 0.15f, 0, 0);
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Crimson, Projectile.rotation, glow.Size() * 0.5f, 0.15f, 0, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(snap);
@@ -351,8 +366,8 @@ namespace CalamityMod.Tiles
                 float transformLerp = MathHelper.Clamp((animTime - 90) / 10f, 0f, 1f);
                 //transformLerp = CalamityUtils.SineInOutEasing(transformLerp, 1);
 
-                Main.spriteBatch.Draw(inputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, 1 - transformLerp, 0, 0);
-                Main.spriteBatch.Draw(outputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, transformLerp, 0, 0);
+                Main.spriteBatch.Draw(inputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, 1 - transformLerp, 0, 0);
+                Main.spriteBatch.Draw(outputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, transformLerp, 0, 0);
             }
             else
             {
@@ -365,13 +380,13 @@ namespace CalamityMod.Tiles
                 Main.spriteBatch.Begin(newSnap);
 
                 Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
-                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson * (1 - undarkenLerp), Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, (1 - undarkenLerp)), 0, 0);
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Crimson * (1 - undarkenLerp), Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, (1 - undarkenLerp)), 0, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(snap);
 
                 Texture2D tex = TextureAssets.Item[Success ? SuccessOutputItemType : ItemID.StoneBlock].Value;
-                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Lerp(Color.Black, lightColor, undarkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Lerp(Color.Black, lightColor, undarkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
             }
             return false;
         }
@@ -415,14 +430,11 @@ namespace CalamityMod.Tiles
                 return null;
 
             if (Main.myPlayer == player.whoAmI)
-                Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), player.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, player.whoAmI, item.type, transmutation.Result, Main.rand.Next(120));
+                Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), player.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, player.whoAmI, item.type, transmutation.Result, greedPotTE.ID);
 
             greedPotTE.Activated = true;
             greedPotTE.TimeSinceActivation = 0;
-            if(Main.dedServ)
-                NetMessage.SendData(MessageID.TileEntitySharing, number: greedPotTE.ID);
             player.ApplyItemTime(item, 0.5f, false);
-
             return false;
         }
 
