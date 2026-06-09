@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
@@ -63,6 +64,18 @@ namespace CalamityMod.NPCs.Other
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
         }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(travelSpeed);
+            writer.Write(gravIntensity);
+            writer.WriteVector2(goalPositionRand);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            travelSpeed = reader.ReadSingle();
+            gravIntensity = reader.ReadSingle();
+            goalPositionRand = reader.ReadVector2();
+        }
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 1.0;
@@ -78,9 +91,14 @@ namespace CalamityMod.NPCs.Other
         {
             if (doOnSpawnEffects)
             {
+                // In multiplayer, the spawned npc won't spawn with the proper owner, so it just sets it to be the player it spawns on top of
+                int player = NPC.FindClosestPlayer();
+                NPC.ai[1] = player;
+
                 NPC.Opacity = 1;
                 NPC.scale = 0;
                 doOnSpawnEffects = false;
+                NPC.netUpdate = true;
             }
             float rate = (time * 0.05f);
             List<Color> eColors = new List<Color>()
@@ -108,6 +126,7 @@ namespace CalamityMod.NPCs.Other
 
                 NPC.ai[3] = 1; // release the slimes
                 NPC.netUpdate = true;
+                NPC.SyncMotionToServer();
             }
 
             if (released)
@@ -123,7 +142,10 @@ namespace CalamityMod.NPCs.Other
             else
             {
                 if (time % 120 == 0)
+                {
                     goalPositionRand = Main.rand.NextVector2Circular(90, 90);
+                    NPC.netUpdate = true;
+                }
                 randPos = Vector2.Lerp(randPos, goalPositionRand, 0.04f);
 
                 float sineX = (float)Math.Sin(time * 0.4f / MathHelper.Pi);
@@ -142,11 +164,11 @@ namespace CalamityMod.NPCs.Other
                         destination += Utils.DirectionFrom(NPC.Center, npc.Center) * Utils.GetLerpValue(150, 0, distFromNPC) * 25;
                 }
                 travelSpeed = MathHelper.Lerp(travelSpeed, (owner.controlJump ? 2 : 25), 0.03f);
-
+                
                 NPC.velocity = (destination - NPC.Center) / travelSpeed;
 
-                //NPC.velocity = owner.velocity;
-                //NPC.Center = owner.Center + Vector2.UnitX * (40 + 35 * NPC.ai[2]);
+                if (owner.controlJump && time % 3 == 0)
+                    NPC.netUpdate = true;
             }
             if (NPC.velocity.X > 0 || NPC.velocity.X < 0)
                 NPC.spriteDirection = Math.Sign(NPC.velocity.X);
@@ -157,17 +179,18 @@ namespace CalamityMod.NPCs.Other
             if (NPC.collideX)
             {
                 NPC.velocity.X *= -1.2f;
+                NPC.netUpdate = true;
             }
             if (NPC.collideY)
             {
                 NPC.velocity.Y += -5.5f * gravIntensity - NPC.velocity.Y;
+                NPC.netUpdate = true;
             }
 
             // Kill slime after enough time freed
             if (Main.netMode != NetmodeID.MultiplayerClient && ((time >= 600f && released) || (!owner.volatileGelatin) || (owner.dead && !released)))
             {
                 NPC.StrikeInstantKill();
-                //NPC.active = false;
                 NPC.netUpdate = true;
             }
 
@@ -198,6 +221,7 @@ namespace CalamityMod.NPCs.Other
                     dust2.noLightEmittence = true;
                 }
             }
+            NPC.netUpdate = true;
         }
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {

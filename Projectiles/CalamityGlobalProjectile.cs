@@ -32,7 +32,6 @@ using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
-using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
@@ -366,6 +365,7 @@ namespace CalamityMod.Projectiles
                 projectile.penetrate = 6; // this is for bounces, actually has pierce 4
                 Player player = Main.player[projectile.owner];
                 projectile.ApplyStatsFromSource(player.GetSource_FromThis());
+                projectile.netUpdate = true;
             }
 
             void ApplyGrapeBeer()
@@ -623,6 +623,8 @@ namespace CalamityMod.Projectiles
 
                 if (projectile.numHits > 4)
                     projectile.Kill();
+                if (projectile.timeLeft % 5 == 0)
+                    projectile.netUpdate = true;
             }
             
             if (projectile.type == ProjectileID.Skull)
@@ -4823,17 +4825,18 @@ namespace CalamityMod.Projectiles
 
                     if (npcCount < slimeCap && player.wingTime > 0)
                     {
-                        if (Main.netMode == NetmodeID.SinglePlayer)
-                        {
-                            NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawnPosition.X, (int)spawnPosition.Y, npcType, ai1: player.whoAmI, ai2: npcCount);
-                            return;
-                        }
-                        else if (Main.netMode == NetmodeID.MultiplayerClient)
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
                         {
                             SpawnNPCOnPlayerPacket.Send(player, (int)spawnPosition.X, (int)spawnPosition.Y, npcType);
                         }
+                        else if (Main.netMode == NetmodeID.SinglePlayer)
+                        {
+                            NPC slime = NPC.NewNPCDirect(player.GetSource_FromThis(), (int)spawnPosition.X, (int)spawnPosition.Y, npcType, ai1: player.whoAmI, ai2: npcCount);
+                        }
                     }
                 }
+
+                projectile.netUpdate = true;
             }
 
             if (modPlayer.rottenDogTooth && projectile.Calamity().stealthStrike && !modPlayer.vampiricTalisman)
