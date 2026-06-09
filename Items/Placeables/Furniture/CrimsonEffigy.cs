@@ -10,8 +10,8 @@ namespace CalamityMod.Items.Placeables.Furniture
     {
         public new string LocalizationCategory => "Items.Placeables";
 
-        public static float DamageBoost = 0.15f;
-        public static int DefenseBoost = 6;
+        public static float DamageBoost = 0.1f;
+        public static int DefenseBoost = 5;
         public static float MaxHealthLossPercent = 0.1f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), DefenseBoost, MaxHealthLossPercent.ToPercent());
 

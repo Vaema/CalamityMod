@@ -46,12 +46,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 float SpeedY = velocity.Y + Main.rand.Next(-25, 26) * 0.05f;
 
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<MistArrow>(), damage, knockback, player.whoAmI);
-                else
-                {
-                    int proj = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
-                    Main.projectile[proj].noDropItem = true;
-                }
+                    type = ModContent.ProjectileType<MistArrow>();
+
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

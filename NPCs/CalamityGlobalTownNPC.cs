@@ -490,7 +490,10 @@ namespace CalamityMod.NPCs
         ];
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
-        private static readonly string[] TownBunnyDutchNames = null;
+        private static readonly string[] TownBunnyDutchNames =
+        [
+            "windy", // lower case intended ~ <@!498414879502368768> (altixal)
+        ];
         private static readonly string[] TownBunnyFlemishNames = null;
         private static readonly string[] TownBunnyLopNames = null;
         private static readonly string[] TownBunnySilverNames = null;

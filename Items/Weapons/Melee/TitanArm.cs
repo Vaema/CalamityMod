@@ -12,10 +12,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 46;
             Item.height = 58;
-            Item.damage = 69;
+            Item.damage = 200;
             Item.crit = 100;
             Item.knockBack = 80f; //This number doesn't mean anything, but it's not 9001f because that caused bugs.
-            Item.useAnimation = Item.useTime = 12;
+            Item.useAnimation = Item.useTime = 20;
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.autoReuse = true;
@@ -29,6 +29,13 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
             YeetEnemies(player, target, hit.Crit);
+        }
+
+        public override void ModifyHitNPC(Player player, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SetCrit();
+            float critDamage = player.GetTotalCritChance(Item.DamageType) * 0.02f;
+            modifiers.CritDamage += critDamage;
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)

@@ -83,7 +83,7 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] ShowScalingCritDamageTooltip = Factory.CreateNamedSet("ShowScalingCritDamageTooltip")
             .Description("Replaces the item's critical strike chance tooltip line with a line about critical damage.")
-            .RegisterBoolSet(ItemType<GildedProboscis>(), ItemType<HeliumFlash>(), ItemType<ThreadOfEradication>(), ItemType<VenusianTrident>());
+            .RegisterBoolSet(ItemType<GildedProboscis>(), ItemType<HeliumFlash>(), ItemType<ThreadOfEradication>(), ItemType<TitanArm>(), ItemType<VenusianTrident>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a rogue bomb.<br/>

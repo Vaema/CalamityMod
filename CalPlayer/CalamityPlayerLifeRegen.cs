@@ -585,9 +585,8 @@ namespace CalamityMod.CalPlayer
             if (community)
             {
                 int regenBoost = 1 + (int)(TheCommunity.CalculatePower() * TheCommunity.RegenMultiplier);
-                bool lesserEffect = Player.buffType.Any(i => CalamityBuffSets.DebuffDataset[i] is not null && CalamityBuffSets.DebuffDataset[i].AlcoholLevel > 0);
                 if (Player.lifeRegen < 0)
-                    Player.lifeRegen += lesserEffect ? 1 : regenBoost;
+                    Player.lifeRegen += regenBoost;
             }
 
             if (manaOverloader)

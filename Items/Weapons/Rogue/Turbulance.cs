@@ -52,7 +52,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<AerialiteBar>(7).
-                AddIngredient(ItemID.SunplateBlock, 3).
                 AddTile(TileID.Anvils).
                 Register();
         }
