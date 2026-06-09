@@ -18,7 +18,6 @@ using CalamityMod.NPCs.GreatSandShark;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.NPCs.PlagueEnemies;
@@ -36,7 +35,6 @@ using Terraria.Audio;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.UI;
 
 namespace CalamityMod.Systems
 {
@@ -46,7 +44,7 @@ namespace CalamityMod.Systems
         // Some spawns change with progression
         public static void SpawnTrustyOldRodNPC(Player owner, int bobberWhoAmI, int rarity = 1, bool Lava = false, bool Honey = false)
         {
-            Projectile bobber = Main.projectile[bobberWhoAmI];
+            Projectile bobber = Main.projectile.FirstOrDefault(p => p.identity == bobberWhoAmI);
             bool common = rarity == 1;
             bool rare = rarity == 2;
             bool ultraRare = rarity == 3;
@@ -668,7 +666,7 @@ namespace CalamityMod.Systems
 
         public static void DoTrustyOldRodVFX(Player owner, int bobberWhoAmI, int rarity = 1, bool Lava = false, bool Honey = false)
         {
-            Projectile bobber = Main.projectile[bobberWhoAmI];
+            Projectile bobber = Main.projectile.FirstOrDefault(p => p.identity == bobberWhoAmI);
             bool common = rarity == 1;
             bool rare = rarity == 2;
             bool ultraRare = rarity == 3;

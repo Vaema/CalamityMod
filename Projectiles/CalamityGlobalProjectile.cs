@@ -3773,11 +3773,11 @@ namespace CalamityMod.Projectiles
                 else rarity = 1; // Common ~(4/5)
 
                 if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
-                    TrustyOldRodEnemyPacket.Send(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                    TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
                 else if(Main.netMode == NetmodeID.SinglePlayer)
-                    TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                    TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
 
-                TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
                 projectile.ai[0] = 2; // snap line
                 return false;
             }
