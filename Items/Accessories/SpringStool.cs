@@ -98,7 +98,7 @@ namespace CalamityMod.Items.Accessories
                 bool standingStill = Player.velocity.Y == 0 && Math.Abs(Player.velocity.X) < 0.1f;
                 bool highEnoughCeiling = !Collision.SolidCollision(new Vector2(Player.position.X, Player.position.Y - 64), Player.width, 64);
 
-                if (holdingUp && standingStill && highEnoughCeiling && !Player.mount.Active)
+                if (holdingUp && standingStill && highEnoughCeiling && !Player.mount.Active && !(Player.grappling[0] >= 0))
                 {
                     int boost = 61;
                     if (IsVanillaStoolEquipped(Player))
