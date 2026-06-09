@@ -375,6 +375,20 @@ namespace CalamityMod.Tiles
             }
             return false;
         }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(StartPosition);
+            writer.WriteVector2(PotPosition);
+            writer.Write(Success);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            StartPosition = reader.ReadVector2();
+            PotPosition = reader.ReadVector2();
+            Success = reader.ReadBoolean();
+        }
     }
 
     public class GreedTransmutationGlobalItem : GlobalItem
@@ -405,8 +419,8 @@ namespace CalamityMod.Tiles
 
             greedPotTE.Activated = true;
             greedPotTE.TimeSinceActivation = 0;
-            //if(Main.dedServ)
-            //    NetMessage.SendData(MessageID.TileEntitySharing, number: greedPotTE.ID);
+            if(Main.dedServ)
+                NetMessage.SendData(MessageID.TileEntitySharing, number: greedPotTE.ID);
             player.ApplyItemTime(item, 0.5f, false);
 
             return false;
