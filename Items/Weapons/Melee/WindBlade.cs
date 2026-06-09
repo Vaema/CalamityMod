@@ -21,11 +21,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 58;
             Item.height = 58;
-            Item.damage = 38;
+            Item.damage = 30;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = 22;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 20;
             Item.useTurn = true;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
@@ -38,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, damage / 2, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, type, damage * 6 / 10, knockback, player.whoAmI);
             return false;
         }
 
