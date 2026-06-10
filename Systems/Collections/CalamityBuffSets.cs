@@ -20,8 +20,7 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityBuffSets
     {
-        private static SetFactory Factory = new SetFactory(BuffLoader.BuffCount, "CalamityMod/BuffID", Search);
-        private static IdDictionary Search = IdDictionary.Create<BuffID, int>();
+        private static SetFactory Factory = BuffID.Sets.Factory;
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff will have its duration extended with The Amalgam equipped.<br/>

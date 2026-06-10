@@ -24,8 +24,7 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityItemSets
     {
-        private static SetFactory Factory = new SetFactory(ItemLoader.ItemCount, "CalamityMod/ItemID", Search);
-        private static IdDictionary Search = IdDictionary.Create<ItemID, int>();
+        private static SetFactory Factory = ItemID.Sets.Factory;
 
         /// <summary>
         /// If <see langword="true"/> for an item type, prevents an item from removing Calamity's summon damage penalty mechanic despite having tool power.<br/>

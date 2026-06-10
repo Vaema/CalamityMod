@@ -105,8 +105,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     NPC.timeLeft *= 20;
                     NPC.npcSlots = 16f;
                     NPC.damage = NPC.defDamage;
-                    CalamityGlobalNPC.BossKillTimes.TryGetValue(NPC.type, out int revKillTime);
-                    calamityGlobalNPC.KillTime = revKillTime;
+                    calamityGlobalNPC.KillTime = CalamityNPCSets.BossKillTimes[NPC.type];
                     calamityGlobalNPC.newAI[0] = 1f;
                     nonHostile = false;
                     NPC.chaseable = true;
