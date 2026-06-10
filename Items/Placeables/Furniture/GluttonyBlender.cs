@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<GluttonyBlenderTile>());
             Item.rare = ItemRarityID.Orange;
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.buyPrice(gold: 10); // Sold by Shady Salesman
         }
     }
 

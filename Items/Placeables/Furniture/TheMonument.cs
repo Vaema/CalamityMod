@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.width = 40;
             Item.height = 50;
             Item.rare = ItemRarityID.Pink;
-            Item.value = Item.buyPrice(platinum: 1);
+            Item.value = Item.buyPrice(platinum: 1); // Sold by Shady Salesman
         }
 
         public override void Load()

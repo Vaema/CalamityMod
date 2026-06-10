@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CrimsonEffigy>());
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.buyPrice(gold: 10); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Orange;
         }
 

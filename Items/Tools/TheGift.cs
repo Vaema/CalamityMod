@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);  // Sold by Shady Salesman
             Item.rare = ItemRarityID.Green;
         }
 

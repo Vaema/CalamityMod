@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Potions
             Item.height = 56;
             Item.potion = true;
 
-            Item.value = Item.buyPrice(gold: 1);
+            Item.value = Item.buyPrice(gold: 1); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Green;
         }
         public override bool CanUseItem(Player player)
