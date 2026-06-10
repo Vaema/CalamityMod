@@ -167,7 +167,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<WintersFury>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add<PermafrostsConcoction>()
                 .Add(ItemID.SuperManaPotion)
-                .Add<DeliciousMeat>()
                 .Add<Popo>()
                 .Add<FrigidMonolith>()
                 .Add<BloodRune>(Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
