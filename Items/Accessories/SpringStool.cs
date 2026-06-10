@@ -72,7 +72,8 @@ namespace CalamityMod.Items.Accessories
 
         public override void PostUpdateEquips()
         {
-            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active && hasGroundedSinceJump)
+            // Ensures the special jump initiates only works when unmounted, not grappled to a surface, and the ability is off cooldown
+            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active && hasGroundedSinceJump && !(Player.grappling[0] >= 0))
             {
                 springStoolTimer = 12;
 
