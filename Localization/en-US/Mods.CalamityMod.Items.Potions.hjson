@@ -65,7 +65,7 @@ DeliciousMeat: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MediumStats}
-		{$Common.NotConsumable}
+		{$Common.NotConsumable}, but takes {0} minutes to regenerate
 		'A blessed strip of pork that never seems to be entirely consumed...'
 		'''
 }
