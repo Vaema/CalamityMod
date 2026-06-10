@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Typeless
         public void SetElumphantPower()
         {
             int usedDefense = Owner.Calamity().frozenCubeUsedDefense;
-            if (time == 0) // Show the player how much defense is being used
+            if (time == 0 && !Owner.Calamity().frozenCubeVanity) // Show the player how much defense is being used
                 CombatText.NewText(Projectile.Hitbox, color2, -usedDefense,false, true);
 
             frozenCubePower = usedDefense * 0.05f; // 1 point of defense = 5% effectiveness
@@ -598,6 +598,11 @@ namespace CalamityMod.Projectiles.Typeless
                 attackTimer = 0;
 
             attackTimer += recoiling ? -0.75f : 1 + 0.4f * Projectile.numHits;
+            if (Owner.Calamity().frozenCubeVanity)
+            {
+                fxFade = 0;
+                attackTimer = 0;
+            }
             time++;
             if (mammothOops)
                 hopTimer++;
@@ -611,7 +616,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             lastProjPos = Projectile.Center;
 
-            if (!Owner.Calamity().frozenCube)
+            if (!Owner.Calamity().frozenCube && !Owner.Calamity().frozenCubeVanity)
             {
                 if (SoundEngine.TryGetActiveSound(soundSlot, out var sound2) && sound2.IsPlaying)
                     sound2?.Stop();

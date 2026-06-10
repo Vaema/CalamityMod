@@ -11,8 +11,7 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityTileSets
     {
-        private static SetFactory Factory = new SetFactory(TileLoader.TileCount, "CalamityMod/TileID", Search);
-        private static IdDictionary Search = IdDictionary.Create<TileID, int>();
+        private static SetFactory Factory = TileID.Sets.Factory;
 
         /// <summary>
         /// Should only contain modded tiles. If <see langword="true"/> for a tile type, then that tile can be replaced by the Abyss during world generation.<br/>

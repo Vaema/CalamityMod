@@ -490,7 +490,10 @@ namespace CalamityMod.NPCs
         ];
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
-        private static readonly string[] TownBunnyDutchNames = null;
+        private static readonly string[] TownBunnyDutchNames =
+        [
+            "windy", // lower case intended ~ <@!498414879502368768> (altixal)
+        ];
         private static readonly string[] TownBunnyFlemishNames = null;
         private static readonly string[] TownBunnyLopNames = null;
         private static readonly string[] TownBunnySilverNames = null;
@@ -1327,8 +1330,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Merchant)
             {
-                shop.InsertBefore(ItemID.LesserHealingPotion, ItemID.Bottle)
-                .InsertAfter(ItemID.ManaPotion, ItemID.WormholePotion, Condition.HappyEnoughToSellPylons)
+                shop.InsertAfter(ItemID.ManaPotion, ItemID.WormholePotion, Condition.HappyEnoughToSellPylons)
                 .InsertAfter(ItemID.Safe, ItemID.MusicBox)
                 .InsertAfter(ItemID.Flare, ItemID.Flare, hasFlareGunUpgrade)
                 .InsertAfter(ItemID.BlueFlare, ItemID.BlueFlare, hasFlareGunUpgrade)
@@ -1468,7 +1470,6 @@ namespace CalamityMod.NPCs
             if (type == NPCID.SkeletonMerchant)
             {
                 shop.InsertAfter(ItemID.HealingPotion, ItemType<CalciumPotion>(), Condition.MoonPhasesHalf0)
-                .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton, Condition.MoonPhasesHalf1)
                 .InsertAfter(ItemID.SpelunkerFlare, ItemID.SpelunkerFlare, spelunkerGlowCondition, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode, Condition.MoonPhases26) // 26 = half moons
                 .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 15), gibbousMoons)

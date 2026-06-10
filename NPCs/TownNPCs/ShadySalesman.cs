@@ -130,13 +130,12 @@ namespace CalamityMod.NPCs.TownNPCs
                 }
             }
 
+            NPC.UpdateHomeTileState(false, -1, -1);
             return true;
         }
 
         public override void AI()
         {
-            NPC.homeless = true;
-
             if (NPC.ai[0] == 12f) // Attacking
             {
                 attackFrameTimer++;

@@ -10,15 +10,15 @@ namespace CalamityMod.Items.Placeables.Furniture
     {
         public new string LocalizationCategory => "Items.Placeables";
 
-        public static float DamageBoost = 0.15f;
-        public static int DefenseBoost = 6;
+        public static float DamageBoost = 0.1f;
+        public static int DefenseBoost = 5;
         public static float MaxHealthLossPercent = 0.1f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), DefenseBoost, MaxHealthLossPercent.ToPercent());
 
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CrimsonEffigy>());
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.buyPrice(gold: 10); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Orange;
         }
 

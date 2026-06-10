@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<TrustyOldBobber>();
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 35); // Same price as Sitting Duck's Fishing Pole; Sold by Shady Salesman
         }
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
         {

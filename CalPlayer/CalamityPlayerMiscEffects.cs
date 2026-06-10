@@ -3857,7 +3857,7 @@ namespace CalamityMod.CalPlayer
             if (eutrophication)
                 Player.velocity = Vector2.Zero;
 
-            if (vaporfied || galvanicCorrosion)
+            if (vaporfied || galvanicCorrosion || windChilled)
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -102,6 +103,12 @@ namespace CalamityMod.Projectiles.Enemy
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.ai[0] >= 60f && Projectile.ai[0] <= (Projectile.ai[1] == 1f ? 735f : 540f);
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        {
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(ModContent.BuffType<WindChilled>(), 120, true);
+        }
 
         public override bool PreDraw(ref Color lightColor)
         {

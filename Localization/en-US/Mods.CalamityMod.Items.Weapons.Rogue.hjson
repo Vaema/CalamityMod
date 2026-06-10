@@ -180,7 +180,7 @@ CosmicKunai: {
 	Tooltip:
 		'''
 		Fires a rapid stream of short-range kunai
-		Stealth strikes make kunai pierce foes, travel farther, and spawn 5 homing scythes
+		Stealth strikes make kunai pierce foes, travel farther, and spawn 9 homing scythes
 		'''
 }
 

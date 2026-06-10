@@ -97,8 +97,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     float speedX4 = mouseXDist + Main.rand.Next(-120, 121) * 0.02f;
                     float speedY5 = mouseYDist + Main.rand.Next(-120, 121) * 0.02f;
-                    int num121 = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI);
-                    Main.projectile[num121].noDropItem = true;
+                    Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI);
                 }
             }
             return false;

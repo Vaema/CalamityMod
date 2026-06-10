@@ -4,7 +4,9 @@ using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Chat;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
@@ -25,9 +27,9 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.value = Item.buyPrice(silver: 10);
-            Item.rare = ItemRarityID.Blue;
             Item.DefaultToFood(28, 51, 0, 0, true);
+            Item.value = Item.buyPrice(silver: 10); // Sold by Shady Salesman
+            Item.rare = ItemRarityID.Blue;
         }
 
         // Player is unable to use the item when Chaos State is enabled to prevent spamming the item.
@@ -43,29 +45,33 @@ namespace CalamityMod.Items.Potions
 
         public override bool? UseItem(Player player)
         {
+            // 25% chance to "fail" a teleport and send the player to one of three random dangerous locations.
             if (Main.rand.NextBool(4))
             {
-                int locationIndex = Main.rand.Next(3);
-                if (Main.dedServ)
-                    TheElixirTeleportSyncPacket.Send(player, locationIndex);
-
-                Vector2? location = locationIndex switch
+                if (Main.netMode == NetmodeID.SinglePlayer)
                 {
-                    1 => CalamityPlayer.GetAbyssVoidTeleportPosition(player),
-                    2 => CalamityPlayer.GetTempleTeleportPosition(player),
-                    _ => CalamityPlayer.GetDungeonArchivesTeleportPosition(player)
-                };
+                    player.GetModPlayer<TheElixirPlayer>().RunDangerousLocationTeleportation();
+                }
+                else if (player.whoAmI == Main.myPlayer)
+                {
+                    TheElixirTeleportSyncPacket.Send(player);
+                }
 
-                if (!location.HasValue)
-                    return false;
-
-                player.AddBuff(BuffID.ChaosState, 300, false);
-                player.AddBuff(BuffID.Cursed, 300, false);
-                CalamityPlayer.ModTeleport(player, location.Value, false, TeleportationStyleID.RecallPotion);
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    player.AddBuff(BuffID.ChaosState, 300, false);
+                    player.AddBuff(BuffID.Cursed, 300, false);
+                }
             }
             //If it doesn't fail, just act like a Potion of Return
             else
-                player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
+                    SoundEngine.PlaySound(SoundID.Item6);
+                }
+            }
 
             //Dust and Teleport sounds happen regardless of if it fails or not
             Rectangle rect = player.getRect();
@@ -105,8 +111,25 @@ namespace CalamityMod.Items.Potions
                 }
                 dust.scale *= 0.8f;
             }
-            SoundEngine.PlaySound(SoundID.Item6, player.Center);
             return true;
+        }
+    }
+
+    public class TheElixirPlayer : ModPlayer
+    {
+        public void RunDangerousLocationTeleportation()
+        {
+            int locationIndex = Main.rand.Next(3);
+            Vector2? location = null;
+            if (locationIndex == 0)
+                location = CalamityPlayer.GetDungeonArchivesTeleportPosition(Player);
+            if (locationIndex == 1)
+                location = CalamityPlayer.GetAbyssVoidTeleportPosition(Player);
+            if (locationIndex == 2)
+                location = CalamityPlayer.GetTempleTeleportPosition(Player);
+
+            if (location.HasValue)
+                CalamityPlayer.ModTeleport(Player, location.Value, true, TeleportationStyleID.RecallPotion);
         }
     }
 }

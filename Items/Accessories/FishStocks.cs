@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 38;
-            Item.value = Item.buyPrice(gold: 5);
+            Item.value = Item.buyPrice(gold: 7, silver: 77); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
         }

@@ -321,7 +321,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (ShouldTurnAway || leavingWorldTop || leavingWorldBottom || leavingWorldLeft || leavingWorldRight)
                 {
                     AvoidTileCollision(MaxSpeed + 0.6f, ref leavingWorldTop, ref leavingWorldBottom, ref leavingWorldLeft, ref leavingWorldRight);
-                    IdleMovementTimer = 0f;
+                    IdleMovementTimer = 150f;
                 }
                 else
                 {
@@ -520,6 +520,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (leavingWorldRight)
                 idealVelocity = Vector2.UnitX * -2f;
 
+            IdleMovementVector = idealVelocity;
             NPC.velocity = Vector2.Lerp(NPC.velocity, idealVelocity, turnAwayStrength);
         }
 
@@ -646,7 +647,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                     continue;
 
                 Main.instance.LoadNPC(npc.whoAmI);
-                npc.position += npc.netOffset;
 
                 Rectangle npcRectangle = new((int)(npc.Bottom.X - npc.frame.Width * 0.5f), (int)(npc.Bottom.Y - npc.frame.Height), npc.frame.Width, npc.frame.Height);
                 NPCLoader.ModifyHoverBoundingBox(npc, ref npcRectangle);
@@ -675,17 +675,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 DivineSwineOfferingPacket.Send(npc.ModNPC<DivineSwine>(), offeringState);
                         }
                     }
-                    npc.position -= npc.netOffset;
                 }
 
-                // Change the mouse display to just show the name and not the text.
+                // Change the mouse display to just show the name and not the HP number.
                 if (hoveringOverHitbox && !player.mouseInterface)
                 {
                     self.MouseTextHackZoom(npc.GivenOrTypeName);
                     Main.mouseText = true;
-                    npc.position -= npc.netOffset;
                 }
-                npc.position -= npc.netOffset;
             }
         }
 

@@ -2949,6 +2949,7 @@ namespace CalamityMod.Projectiles
         public float PersistentFishingData = -1;
         /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
         public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
+
         public bool RunFishingMinigames(Projectile projectile)
         {
             var owner = Main.player[projectile.owner];
@@ -3759,22 +3760,27 @@ namespace CalamityMod.Projectiles
             }
 
             bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+
             if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
             {
                 // Remove any item you would have fished up
                 projectile.ai[1] = 0;
                 // Get rarity of pull
-                int rarity = 0;
+                int rarity;
                 int roll = Main.rand.Next(1, 100 + 1);
                 if (roll == 1) rarity = 3; // UltraRare (1/100)
                 else if (roll <= 21) rarity = 2; // Rare ~(1/5)
                 else rarity = 1; // Common ~(4/5)
 
-                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
+                    TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+                else if(Main.netMode == NetmodeID.SinglePlayer)
+                    TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+
+                TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
                 projectile.ai[0] = 2; // snap line
                 return false;
             }
-
             return false;
         }
         #endregion

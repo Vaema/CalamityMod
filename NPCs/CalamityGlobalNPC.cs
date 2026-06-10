@@ -93,9 +93,6 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary> Data structure used for storing Calamity's intended boss kill times. </summary>
-        public static SortedDictionary<int, int> BossKillTimes;
-
         /// <summary> Data structure used for storing the damage reduction values of NPCs. </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
@@ -1055,120 +1052,18 @@ namespace CalamityMod.NPCs
                 { NPCID.WallofFlesh, 0.15f },
             };
             #endregion
-
-            // Somehow the SetStatic is called few times before SetStaticDefaults
-            // So We Initialize the Dictionary first. And Push Data later (At SetStaticDefaults)
-            BossKillTimes = [];
         }
 
         public override void Unload()
         {
             DRValues?.Clear();
             DRValues = null;
-
-            BossKillTimes?.Clear();
-            BossKillTimes = null;
         }
         #endregion
 
         #region Set Defaults
         public override void SetStaticDefaults()
         {
-            #region Add Entries to BossKillTimes
-            BossKillTimes.AddRange<int, int>(new Dictionary<int, int>(){
-
-                //
-                // VANILLA BOSSES
-                //
-                { NPCID.KingSlime, 5400 }, // 1:30 (90 seconds)
-                { NPCID.EyeofCthulhu, 5400 }, // 1:30 (90 seconds)
-                { NPCID.EaterofWorldsHead, 7200 }, // 2:00 (120 seconds)
-                { NPCID.EaterofWorldsBody, 7200 },
-                { NPCID.EaterofWorldsTail, 7200 },
-                { NPCID.BrainofCthulhu, 7200 }, // 2:00 (120 seconds, total length of fight including Creepers phase)
-                { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
-                { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
-                { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
-                { NPCID.SkeletronHead, 7200 }, // 2:00 (120 seconds)
-                { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
-                { NPCID.WallofFleshEye, 7200 },
-                { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
-                { NPCID.Spazmatism, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Retinazer, 10800 },
-                { NPCID.TheDestroyer, 10800 }, // 3:00 (180 seconds)
-                { NPCID.TheDestroyerBody, 10800 },
-                { NPCID.TheDestroyerTail, 10800 },
-                { NPCID.SkeletronPrime, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Plantera, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Golem, 9000 }, // 2:30 (150 seconds)
-                { NPCID.GolemHead, 3600 }, // 1:00 (60 seconds)
-                { NPCID.DukeFishron, 9000 }, // 2:30 (150 seconds)
-                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
-                { NPCID.CultistBoss, 9000 }, // 2:30 (150 seconds)
-                { NPCID.MoonLordCore, 14400 }, // 4:00 (240 seconds)
-                { NPCID.MoonLordHand, 7200 }, // 2:00 (120 seconds)
-                { NPCID.MoonLordHead, 7200 }, // 2:00 (120 seconds)
-
-                //
-                // CALAMITY BOSSES
-                //
-                { NPCType<DesertScourgeHead>(), 5400 }, // 1:30 (90 seconds)
-                { NPCType<DesertScourgeBody>(), 5400 },
-                { NPCType<DesertScourgeTail>(), 5400 },
-                { NPCType<Crabulon.Crabulon>(), 5400 }, // 1:30 (90 seconds)
-                { NPCType<HiveMind.HiveMind>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<PerforatorHive>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<SlimeGodCore>(), 9000 }, // 2:30 (150 seconds) -- total length of Slime God fight
-                { NPCType<EbonianPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { NPCType<CrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { NPCType<SplitEbonianPaladin>(), 4500 }, // 1:15 (75 seconds) -- split slimes should spawn at 1:15 and die at around 2:30
-                { NPCType<SplitCrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { NPCType<Cryogen.Cryogen>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<AquaticScourgeHead>(), 9000 }, // 2:30 (150 seconds)
-                { NPCType<AquaticScourgeBody>(), 9000 },
-                { NPCType<AquaticScourgeBodyAlt>(), 9000 },
-                { NPCType<AquaticScourgeTail>(), 9000 },
-                { NPCType<BrimstoneElemental.BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<CalamitasClone>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<Leviathan.Leviathan>(), 10800 },
-                { NPCType<AstrumAureus.AstrumAureus>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<AstrumDeusHead>(), 7200 }, // 2:00 (120 seconds) -- first phase is 1:00
-                { NPCType<AstrumDeusBody>(), 7200 },
-                { NPCType<AstrumDeusTail>(), 7200 },
-                { NPCType<PlaguebringerGoliath.PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<ProfanedGuardianCommander>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<Dragonfolly>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<Providence.Providence>(), 14400 }, // 4:00 (240 seconds)
-                { NPCType<CeaselessVoid.CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<DarkEnergy>(), 1200 }, // 0:20 (20 seconds)
-                { NPCType<StormWeaverHead>(), 8100 }, // 2:15 (135 seconds)
-                { NPCType<StormWeaverBody>(), 8100 },
-                { NPCType<StormWeaverTail>(), 8100 },
-                { NPCType<Signus.Signus>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<Polterghast.Polterghast>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<OldDuke.OldDuke>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<DevourerofGodsHead>(), 14400 }, // 4:00 (240 seconds)
-                { NPCType<DevourerofGodsBody>(), 14400 }, // DoG Phase 1 is 1:30, DoG Phase 2 is 2:30
-                { NPCType<DevourerofGodsTail>(), 14400 },
-                { NPCType<Yharon.Yharon>(), 14400 }, // 4:00 (240 seconds)
-                { NPCType<Apollo>(), 21600 }, // 6:00 (360 seconds)
-                { NPCType<Artemis>(), 21600 },
-                { NPCType<AresBody>(), 21600 }, // 6:00 (360 seconds)
-                { NPCType<AresGaussNuke>(), 21600 },
-                { NPCType<AresLaserCannon>(), 21600 },
-                { NPCType<AresPlasmaFlamethrower>(), 21600 },
-                { NPCType<AresTeslaCannon>(), 21600 },
-                { NPCType<ThanatosHead>(), 21600 }, // 6:00 (360 seconds)
-                { NPCType<ThanatosBody1>(), 21600 },
-                { NPCType<ThanatosBody2>(), 21600 },
-                { NPCType<ThanatosTail>(), 21600 },
-                { NPCType<SupremeCalamitas.SupremeCalamitas>(), 18000 }, // 5:00 (300 seconds)
-                { NPCType<PrimordialWyrmHead>(), 18000 } // 5:00 (300 seconds)
-            });
-            #endregion
-
             // Set Plantera to be able to update oldPos[x]
             // This is only used for her Rev+ AI charge attacks
             NPCID.Sets.TrailingMode[NPCID.Plantera] = 1;
@@ -1195,8 +1090,8 @@ namespace CalamityMod.NPCs
             }
 
             // Aquatic Scourge sets kill time in AI, not here.
-            if (BossKillTimes.TryGetValue(npc.type, out int revKillTime) && !CalamityNPCTypeSets.AquaticScourge.Contains(npc.type))
-                KillTime = revKillTime;
+            if (!CalamityNPCTypeSets.AquaticScourge.Contains(npc.type))
+                KillTime = CalamityNPCSets.BossKillTimes[npc.type];
 
             // Fixing more red mistakes
             if (npc.type == NPCID.WallofFleshEye)
