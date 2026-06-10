@@ -1192,7 +1192,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if(featherCrown && mageCrownCount == 5)
                 {
-                    target.AddBuff(BuffType<WindChilled>(), 120);
+                    target.AddBuff(BuffType<StaticDischarge>(), 120);
                 }
             }
             if (summon && !whip)

@@ -767,7 +767,7 @@ FeatherCrown: {
 		'''
 		Summons a [c/81B7F7:Skyline Feather] every 2 seconds, up to a maximum of 5
 		Each [c/81B7F7:Skyline Feather] increases magic damage by 2% and decreases mana cost by 1%
-		With 5 feathers, increases magic critical strike chance by 5% and all magic attacks inflict [cbuff:CalamityMod/WindChilled]
+		With 5 feathers, increases magic critical strike chance by 5% and all magic attacks inflict [cbuff:CalamityMod/StaticDischarge]
 		Running out of mana or drinking a mana potion sheds all feathers
 		Upon shedding a feather, no new feathers can be gained for 5 seconds
 		'''
