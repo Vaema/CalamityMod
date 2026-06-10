@@ -15,7 +15,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Food
 {
-    public class DeliciousMeat : ModItem, ILocalizedModType
+    [LegacyName("DeliciousMeat")]
+    public class DivineMeat : ModItem, ILocalizedModType
     {
         private static Asset<Texture2D> FadedStarRing;
         private static Asset<Texture2D> BloomFlare;

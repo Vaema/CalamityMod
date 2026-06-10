@@ -60,8 +60,8 @@ CeaselessHungerPotion: {
 	Tooltip: Causes you to suck up all items in the world
 }
 
-DeliciousMeat: {
-	DisplayName: Delicious Meat
+DivineMeat: {
+	DisplayName: Divine Meat
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MediumStats}

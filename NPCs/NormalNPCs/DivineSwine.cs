@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         private static Asset<Texture2D> MagicStarCircle;
         private static Asset<Texture2D> FadedStarRing;
         private static Asset<Texture2D> DistortionTexture;
-        private static Asset<Texture2D> DeliciousMeatTexture;
+        private static Asset<Texture2D> DivineMeatTexture;
 
         private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineIdle", 4);
         private static SoundStyle CoinFailSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineCoinFail", 3);
@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 MagicStarCircle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/MagicStarCircle");
                 FadedStarRing = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/FadedStarRing");
                 DistortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Smudges");
-                DeliciousMeatTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Potions/Food/DeliciousMeat");
+                DivineMeatTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Potions/Food/DivineMeat");
             }
         }
 
@@ -403,12 +403,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
             }
 
-            // Delicious meat granted
+            // Divine meat granted
             if (Timer == 210f)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int meat = Item.NewItem(NPC.GetSource_GiftOrReward(), NPC.Center, ModContent.ItemType<DeliciousMeat>());
+                    int meat = Item.NewItem(NPC.GetSource_GiftOrReward(), NPC.Center, ModContent.ItemType<DivineMeat>());
                     Main.item[meat].velocity = Vector2.UnitY * -3f;
                 }
 
@@ -879,7 +879,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 float rotation = (float)(Main.timeForVisualEffects / MathHelper.Pi * 0.08f) + NPC.whoAmI;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / backShadowCount + rotation) * backShadowDistance;
-                spriteBatch.Draw(DeliciousMeatTexture.Value, backglowDrawPosition, DeliciousMeatTexture.Value.Frame(1, 3), NPC.GetAlpha(Color.White) * backShadowInterpolant, NPC.rotation, DeliciousMeatTexture.Value.Frame(1, 3).Size() * 0.5f, 1f, 0, 0f);
+                spriteBatch.Draw(DivineMeatTexture.Value, backglowDrawPosition, DivineMeatTexture.Value.Frame(1, 3), NPC.GetAlpha(Color.White) * backShadowInterpolant, NPC.rotation, DivineMeatTexture.Value.Frame(1, 3).Size() * 0.5f, 1f, 0, 0f);
             }
 
             spriteBatch.SetBlendState(BlendState.AlphaBlend);

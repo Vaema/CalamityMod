@@ -584,7 +584,7 @@ namespace CalamityMod.NPCs.Other
         {
             double pisquaredover6 = Math.Pow(MathHelper.Pi, 2) / 6;
             npcLoot.Add(ModContent.ItemType<SuspiciousLookingNOU>());
-            npcLoot.Add(ModContent.ItemType<DeliciousMeat>(), 1, 22, (int)(pisquaredover6 * 100));
+            npcLoot.Add(ModContent.ItemType<DivineMeat>(), 1, 22, (int)(pisquaredover6 * 100));
         }
     }
 }
