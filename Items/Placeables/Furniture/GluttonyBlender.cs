@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetDefaults()
         {
             Item.DefaultToFood(32, 30, BuffID.WellFed3, CalamityUtils.MinutesToFrames(30));
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Orange;
         }
     }
