@@ -583,15 +583,16 @@ namespace CalamityMod.NPCs.TownNPCs
                     return;
             }
 
-            if (!Main.rand.NextBool(4))
-            {
-                CanSpawnTonight = false;
-                return;
-            }
-
             int petPig = NPC.FindFirstNPC(ModContent.NPCType<TownPiggy>());
             if (petPig == -1)
+            {
+                if (!Main.rand.NextBool(4))
+                {
+                    CanSpawnTonight = false;
+                    return;
+                }
                 ShadySalesman.SpawnTravelNPC(townNPCs[Main.rand.Next(townNPCs.Count)]);
+            }
             else
             {
                 string name = Main.npc[petPig].GivenName;
