@@ -52,8 +52,8 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.numHits < 2)
             {
-                target.AddBuff(ModContent.BuffType<WindChilled>(), (int)(120 / (Projectile.numHits == 0 ? 1 : 2)));
-                target.AddBuff(BuffID.Frozen, (int)(30 / (Projectile.numHits == 0 ? 1 : 2)));
+                target.AddBuff(ModContent.BuffType<WindChilled>(), Projectile.numHits == 0 ? 120 : 60);
+                target.AddBuff(BuffID.Frozen, Projectile.numHits == 0 ? 30 : 15);
             }
         }
 
