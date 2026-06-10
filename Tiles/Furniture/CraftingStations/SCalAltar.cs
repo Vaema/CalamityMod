@@ -79,9 +79,9 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
         public static void HoverItemIcon(int i, int j)
         {
-            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DivineMeat>() && Main.zenithWorld;
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DeliciousMeat>() && Main.zenithWorld;
             if (vodka)
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<DivineMeat>();
+                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<DeliciousMeat>();
             else if (Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
                 Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CeremonialUrn>();
             else
@@ -108,12 +108,12 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
         public static bool AttemptToSummonSCal(int i, int j)
         {
             if (!Main.LocalPlayer.HasItem(ModContent.ItemType<AshesofCalamity>()) &&
-                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DivineMeat>() && Main.zenithWorld))
+                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DeliciousMeat>() && Main.zenithWorld))
             {
                 return true;
             }
 
-            bool meat = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DivineMeat>() && Main.zenithWorld;
+            bool meat = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DeliciousMeat>() && Main.zenithWorld;
 
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) || BossRushEvent.BossRushActive)
                 return true;
@@ -134,7 +134,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
             if (meat)
             {
-                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<DivineMeat>(), true);
+                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<DeliciousMeat>(), true);
                 foreach (NPC n in Main.ActiveNPCs)
                 {
                     if (n.type == ModContent.NPCType<Archmage>())
