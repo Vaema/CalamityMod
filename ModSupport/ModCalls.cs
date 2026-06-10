@@ -2265,6 +2265,8 @@ namespace CalamityMod
                             return new ArgumentException("ERROR: The first argument to \"GetDebuffDamage\" must be an NPC, and the second must be an int.");
                         return DebuffData.GetDebuffRegenValue(npc, type);
                     }
+                case "GetDebuffDamageFunction": //This exists because Calamity's Mod Call lookup is slow due to this string switch, and this method may be called hundreds of times per frame by some addons.
+                    return (object)DebuffData.GetDebuffRegenValue;
                 default:
                     return new ArgumentException("ERROR: Invalid method name.");
             }
