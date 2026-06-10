@@ -69,7 +69,9 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
+using CalamityMod.Tiles.Abyss;
 using CalamityMod.Utilities;
+using CalamityMod.Walls.UnsafeWalls;
 using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -4270,10 +4272,10 @@ namespace CalamityMod.CalPlayer
         {
             int foundX = -1;
             int foundY = -1;
-            bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
-            int xSearchEnd = dungeonOnRightSide ? 20 : Main.maxTilesX - 20;
+            bool templeOnLeftSide = Main.dungeonX > Main.spawnTileX;
+            int xSearchEnd = templeOnLeftSide ? 20 : Main.maxTilesX - 20;
 
-            if (dungeonOnRightSide)
+            if (templeOnLeftSide)
             {
                 for (int i = Main.spawnTileX; i >= xSearchEnd; i -= 2)
                 {
@@ -4325,7 +4327,7 @@ namespace CalamityMod.CalPlayer
                 {
                     for (int y = 0; y <= rangeY; y++)
                     {
-                        int teleportPosX = foundX + (dungeonOnRightSide ? x : -x) + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosX = foundX + (templeOnLeftSide ? x : -x) + Main.rand.Next(-randomFluff, randomFluff);
                         int teleportPosY = foundY + y + Main.rand.Next(-randomFluff, randomFluff);
                         Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
                         Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
@@ -4350,28 +4352,83 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public static Vector2? GetAbyssVoidTeleportPosition(Player player)
         {
-            bool canSpawn = false;
             int halfWorldWidth = Main.maxTilesX / 2;
-
             int abyssStartX = Abyss.AtLeftSideOfWorld ? halfWorldWidth - (halfWorldWidth - 135) + 35 : halfWorldWidth + (halfWorldWidth - 135) - 35;
-            int abyssXRange = 50;
+            int abyssEndX = Abyss.AtLeftSideOfWorld ? 0 : Main.maxTilesX;
 
-            int teleportStartY = Main.remixWorld ? SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f) : Main.maxTilesY - 300;
-            int teleportRangeY = 80;
+            int foundX = -1;
+            int foundY = -1;
 
-            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            if (Abyss.AtLeftSideOfWorld)
             {
-                mostlySolidFloor = false,
-                avoidAnyLiquid = false,
-                avoidLava = true,
-                avoidHurtTiles = true,
-                avoidWalls = false,
-                attemptsBeforeGivingUp = 1000,
-                maximumFallDistanceFromOrignalPoint = 10
-            };
+                for (int y = Main.maxTilesY; y >= (int)Main.worldSurface; y--)
+                {
+                    for (int x = abyssStartX; x >= abyssEndX; x -= 2)
+                    {
+                        Tile tile = Framing.GetTileSafely(x, y);
+                        if (tile.TileType == ModContent.TileType<Voidstone>())
+                        {
+                            foundX = x;
+                            foundY = y;
+                            break;
+                        }
+                    }
 
-            Vector2 teleportPosition = player.CheckForGoodTeleportationSpot(ref canSpawn, abyssStartX, abyssXRange, teleportStartY, teleportRangeY, settings);
-            return canSpawn ? teleportPosition : null;
+                    if (foundY != -1)
+                        break;
+                }
+            }
+            else
+            {
+                for (int y = Main.maxTilesY; y >= (int)Main.worldSurface; y--)
+                {
+                    for (int x = abyssStartX; x <= abyssEndX; x += 2)
+                    {
+                        Tile tile = Framing.GetTileSafely(x, y);
+                        if (tile.TileType == ModContent.TileType<Voidstone>())
+                        {
+                            foundX = x;
+                            foundY = y;
+                            break;
+                        }
+                    }
+
+                    if (foundY != -1)
+                        break;
+                }
+            }
+
+            if (foundY == -1)
+                return null;
+
+            int attempts = 25;
+            int rangeX = 100;
+            int rangeY = 200;
+            int randomFluff = 200;
+            Point finalTeleportPoint = new(foundX, foundY);
+            for (int i = 0; i < attempts; i++)
+            {
+                for (int x = 0; x <= rangeX; x++)
+                {
+                    for (int y = 0; y <= rangeY; y++)
+                    {
+                        int teleportPosX = foundX + (Abyss.AtLeftSideOfWorld ? x : -x) + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = foundY - y + Main.rand.Next(-randomFluff, randomFluff);
+                        Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
+                        Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
+                        Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
+
+                        if (!tileAbove.HasTile && WorldGen.ActiveAndWalkableTile(tileBelow.X(), tileBelow.Y()) && tile.WallType == ModContent.WallType<UnsafeVoidstoneWall>())
+                        {
+                            finalTeleportPoint = new(tile.X(), tile.Y());
+                            if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
         }
 
         /// <summary>
@@ -4396,7 +4453,7 @@ namespace CalamityMod.CalPlayer
                 {
                     for (int y = Main.maxTilesY; y >= (int)Main.worldSurface; y--)
                     {
-                        for (int x = xSearchStart; x >= Main.spawnTileX; x += 2)
+                        for (int x = xSearchStart; x >= Main.spawnTileX; x -= 2)
                         {
                             Tile tile = Framing.GetTileSafely(x, y);
                             if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
@@ -4431,7 +4488,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                //Main.NewText($"Dungeon Coords - {foundX},{foundY}");
                 if (foundY == -1)
                     return null;
 

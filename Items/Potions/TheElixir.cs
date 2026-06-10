@@ -59,17 +59,19 @@ namespace CalamityMod.Items.Potions
 
                 if (player.whoAmI == Main.myPlayer)
                 {
-                    player.AddBuff(BuffID.ChaosState, 300);
-                    player.AddBuff(BuffID.Cursed, 300);
+                    player.AddBuff(BuffID.ChaosState, 300, false);
+                    player.AddBuff(BuffID.Cursed, 300, false);
                 }
             }
             //If it doesn't fail, just act like a Potion of Return
             else
             {
                 if (player.whoAmI == Main.myPlayer)
+                {
                     player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
+                    SoundEngine.PlaySound(SoundID.Item6);
+                }
             }
-
 
             //Dust and Teleport sounds happen regardless of if it fails or not
             Rectangle rect = player.getRect();
