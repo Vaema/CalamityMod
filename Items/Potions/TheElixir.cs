@@ -27,9 +27,9 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
+            Item.DefaultToFood(28, 51, 0, 0, true);
             Item.value = Item.buyPrice(silver: 10); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Blue;
-            Item.DefaultToFood(28, 51, 0, 0, true);
         }
 
         // Player is unable to use the item when Chaos State is enabled to prevent spamming the item.
