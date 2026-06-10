@@ -235,7 +235,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             NPC.height = 28;
             NPC.damage = 20;
             NPC.defense = 14;
-            NPC.lifeMax = 600;
+            NPC.lifeMax = 700;
             NPC.knockBackResist = 0f;
             NPC.npcSlots = 5f;
             NPC.rarity = 4;

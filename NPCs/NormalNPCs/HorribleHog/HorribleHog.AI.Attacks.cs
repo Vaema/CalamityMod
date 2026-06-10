@@ -15,12 +15,12 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
     public partial class HorribleHog
     {
         #region Static Behavior Properties
-        public static int Damage_HogCharge => 10;
-        public static int Damage_ShockwaveProjectile => 10;
+        public static int Damage_HogCharge => 14;
+        public static int Damage_ShockwaveProjectile => 13;
         public static int Damage_ShockwaveRubbleProjectile => 12;
-        public static int Damage_VomitChunkProjectile => 12;
-        public static int Damage_VomitBombProjectile => 18;
-        public static int Damage_VomitEyeProjectile => 14;
+        public static int Damage_VomitChunkProjectile => 13;
+        public static int Damage_VomitBombProjectile => 16;
+        public static int Damage_VomitEyeProjectile => 13;
 
         public static int ChaseTime => 180;
         public static float ChasePlayer_MaxSpeed => 5f;
