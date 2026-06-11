@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(blastG);
                 Particle blastB = new CustomPulse(Projectile.Center, Vector2.Zero, TriactisHammerFlare.GetColor(3f) * 0.7f, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, rotation + MathHelper.ToRadians(240f), 0f, 0.4f, 24);
                 GeneralParticleHandler.SpawnParticle(blastB);
-                Owner.SetScreenshake(40f);
+                Owner.SetScreenshake(15f);
             }
 
             if (Timer % 4f == 0f)
