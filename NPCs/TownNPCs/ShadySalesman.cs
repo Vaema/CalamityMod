@@ -109,11 +109,6 @@ namespace CalamityMod.NPCs.TownNPCs
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.netMode == NetmodeID.SinglePlayer)
-                        Main.NewText(Language.GetTextValue("LegacyMisc.35", NPC.FullName), 50, 125, 255);
-                    else
-                        ChatHelper.BroadcastChatMessage(NetworkText.FromKey("LegacyMisc.35", NPC.GetFullNetName()), new Color(50, 125, 255));
-
                     if (CalamityWorld.unlockedTownPig)
                     {
                         string name = NPC.GivenName;
@@ -122,14 +117,18 @@ namespace CalamityMod.NPCs.TownNPCs
                     }
                     else
                     {
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                            Main.NewText(Language.GetTextValue("LegacyMisc.35", NPC.FullName), 50, 125, 255);
+                        else
+                            ChatHelper.BroadcastChatMessage(NetworkText.FromKey("LegacyMisc.35", NPC.GetFullNetName()), new Color(50, 125, 255));
                         NPC.active = false;
                         NPC.netSkip = -1;
                     }
                     return false;
                 }
             }
-
-            NPC.UpdateHomeTileState(false, -1, -1);
+            if (!CalamityWorld.unlockedTownPig)
+                NPC.UpdateHomeTileState(false, -1, -1);
             return true;
         }
 
@@ -601,14 +600,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 Main.npc[petPig].GivenName = name;
 
                 string fullName = Main.npc[petPig].FullName;
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                {
-                    Main.NewText(Language.GetTextValue("Announcement.HasArrived", fullName), 50, 125);
-                }
-                else if (Main.netMode == NetmodeID.Server)
-                {
-                    ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasArrived", Main.npc[petPig].GetFullNetName()), new Color(50, 125, 255));
-                }
             }
             CanSpawnTonight = false;
         }
