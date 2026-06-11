@@ -770,6 +770,7 @@ FeatherCrown: {
 		With 5 feathers, increases magic critical strike chance by 5% and all magic attacks inflict [cbuff:CalamityMod/StaticDischarge]
 		Running out of mana or drinking a mana potion sheds all feathers
 		Upon shedding a feather, no new feathers can be gained for 5 seconds
+		Feathers are transparent and silent if visibility is disabled
 		'''
 	HoldShiftTooltip:
 		'''
@@ -835,6 +836,7 @@ FleshTotem: {
 		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
 		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
+		The effigy is transparent and silent if visibility is disabled
 		'''
 }
 
@@ -1191,7 +1193,8 @@ MoonstoneCrown: {
 		With 5 sigils, increases mana regeneration by +5 MP/s
 		With 10 sigils, increases magic critical strike chance by 10% and all magic attacks inflict [cbuff:CalamityMod/Nightwither]
 		Running out of mana or using a mana potion shatters all sigils
-		Upon shattering a sigil, no new sigils can appear for 5 seconds 
+		Upon shattering a sigil, no new sigils can appear for 5 seconds
+		Sigils are transparent and silent if visibility is disabled
 		'''
 	HoldShiftTooltip:
 		'''
