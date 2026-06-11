@@ -169,9 +169,11 @@ namespace CalamityMod.Items
                 float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(item.DamageType) * 0.02f;
                 tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
             }
-            
+
             //Add "Uses X Minion Slots right above "Uses X Mana"
-            if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0)
+            //Solutions set their "shoot" to 145 less than the projectile id of the spray, effectively making them a COMPLETELY RANDOM projectile that would change based on the folder structure of the mod.
+            //So, we must blacklist solutions from the item.shoot check.
+            if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || (item.ammo != AmmoID.Solution && ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0))
             {
                 float cost = ItemID.Sets.StaffMinionSlotsRequired[item.type];
                 if (item.type == ModContent.ItemType<YharonsKindleStaff>() && Main.LocalPlayer.Calamity().fadedIdolatry)
