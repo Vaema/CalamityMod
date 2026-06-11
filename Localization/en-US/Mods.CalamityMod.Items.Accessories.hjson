@@ -1495,7 +1495,7 @@ ReaperToothNecklace: {
 	Tooltip:
 		'''
 		20% increased damage
-		Increases armor penetration by 15
+		Increases armor penetration by 30
 		'A grisly trophy from the ultimate predator'
 		'''
 }
