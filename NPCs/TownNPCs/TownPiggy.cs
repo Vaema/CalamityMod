@@ -72,7 +72,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override bool CanTownNPCSpawn(int numTownNPCs)
         {
-            if (CalamityWorld.unlockedTownPig)
+            if (CalamityWorld.unlockedTownPig && !NPC.AnyNPCs(ModContent.NPCType<ShadySalesman>()))
             {
                 return true;
             }
