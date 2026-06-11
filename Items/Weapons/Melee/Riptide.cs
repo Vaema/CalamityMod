@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Melee.Yoyos;
+using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -29,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 46;
             Item.height = 48;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 14;
+            Item.damage = 12;
             Item.knockBack = 1f;
             Item.useTime = 25;
             Item.useAnimation = 25;

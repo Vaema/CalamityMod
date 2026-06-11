@@ -1,7 +1,6 @@
 ﻿using System;
-using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Accessories;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -9,88 +8,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.DataStructures
 {
-    [ReinitializeDuringResizeArrays]
-    public static class BuffDatasets
-    {
-        private static DebuffData Alch(int level) => new DebuffData() { AlcoholLevel = level };
-        public static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
-            .Description("Stores DebuffData for a particular debuff")
-            .RegisterCustomSet<DebuffData>(null,
-                BuffID.OnFire, DebuffData.OnFire,
-                BuffID.OnFire3, DebuffData.Hellfire,
-                BuffID.CursedInferno, DebuffData.CursedInferno,
-                BuffID.ShadowFlame, DebuffData.Shadowflame,
-                BuffID.Daybreak, DebuffData.Daybroken,
-                BuffID.Burning, DebuffData.Burning,
-                BuffID.Frostburn, DebuffData.Frostburn,
-                BuffID.Frostburn2, DebuffData.Frostbite,
-                BuffID.Poisoned, DebuffData.Poisoned,
-                BuffID.Venom, DebuffData.AcidVenom,
-                BuffID.Electrified, DebuffData.Electrified,
-                BuffID.Oiled, DebuffData.Oiled,
-
-                BuffID.Tipsy, Alch(1),
-                ModContent.BuffType<BloodyMaryBuff>(), Alch(1),
-                ModContent.BuffType<CaribbeanRumBuff>(), Alch(1),
-                ModContent.BuffType<CinnamonRollBuff>(), Alch(1),
-                ModContent.BuffType<EvergreenGinBuff>(), Alch(1),
-                ModContent.BuffType<FireballBuff>(), Alch(1),
-                ModContent.BuffType<GrapeBeerBuff>(), Alch(1),
-                ModContent.BuffType<ManhattanBuff>(), Alch(1),
-                ModContent.BuffType<MargaritaBuff>(), Alch(1),
-                ModContent.BuffType<MoonshineBuff>(), Alch(1),
-                ModContent.BuffType<MoscowMuleBuff>(), Alch(1),
-                ModContent.BuffType<OldFashionedBuff>(), Alch(1),
-                ModContent.BuffType<PurpleHazeBuff>(), Alch(1),
-                ModContent.BuffType<RedWineBuff>(), Alch(1),
-                ModContent.BuffType<RumBuff>(), Alch(1),
-                ModContent.BuffType<ScrewdriverBuff>(), Alch(1),
-                ModContent.BuffType<StarBeamRyeBuff>(), Alch(1),
-                ModContent.BuffType<TequilaBuff>(), Alch(1),
-                ModContent.BuffType<TequilaSunriseBuff>(), Alch(1),
-                ModContent.BuffType<VodkaBuff>(), Alch(1),
-                ModContent.BuffType<WhiskeyBuff>(), Alch(1),
-                ModContent.BuffType<WhiteWineBuff>(), Alch(1),
-
-                ModContent.BuffType<EverclearBuff>(), Alch(2),
-                ModContent.BuffType<BaconOilBuff>(), Alch(3)
-            );
-        public static int GetBuffIDFromAlcoholType(AlcoholType type)
-        {
-            return type switch
-            {
-                AlcoholType.BaconOil => ModContent.BuffType<BaconOilBuff>(),
-                AlcoholType.BloodyMary => ModContent.BuffType<BloodyMaryBuff>(),
-                AlcoholType.CaribbeanRum => ModContent.BuffType<CaribbeanRumBuff>(),
-                AlcoholType.CinnamonRoll => ModContent.BuffType<CinnamonRollBuff>(),
-                AlcoholType.Everclear => ModContent.BuffType<EverclearBuff>(),
-                AlcoholType.EvergreenGin => ModContent.BuffType<EvergreenGinBuff>(),
-                AlcoholType.Fireball => ModContent.BuffType<FireballBuff>(),
-                AlcoholType.GrapeBeer => ModContent.BuffType<GrapeBeerBuff>(),
-                AlcoholType.Manhattan => ModContent.BuffType<ManhattanBuff>(),
-                AlcoholType.Margarita => ModContent.BuffType<MargaritaBuff>(),
-                AlcoholType.Moonshine => ModContent.BuffType<MoonshineBuff>(),
-                AlcoholType.MoscowMule => ModContent.BuffType<MoscowMuleBuff>(),
-                AlcoholType.OldFashioned => ModContent.BuffType<OldFashionedBuff>(),
-                AlcoholType.PurpleHaze => ModContent.BuffType<PurpleHazeBuff>(),
-                AlcoholType.RedWine => ModContent.BuffType<RedWineBuff>(),
-                AlcoholType.Rum => ModContent.BuffType<RumBuff>(),
-                AlcoholType.Screwdriver => ModContent.BuffType<ScrewdriverBuff>(),
-                AlcoholType.StarBeamRye => ModContent.BuffType<StarBeamRyeBuff>(),
-                AlcoholType.Tequila => ModContent.BuffType<TequilaBuff>(),
-                AlcoholType.TequilaSunrise => ModContent.BuffType<TequilaSunriseBuff>(),
-                AlcoholType.Vodka => ModContent.BuffType<VodkaBuff>(),
-                AlcoholType.Whiskey => ModContent.BuffType<WhiskeyBuff>(),
-                AlcoholType.WhiteWine => ModContent.BuffType<WhiteWineBuff>(),
-
-                // Vanilla treats both Ale and Sake as the "Tipsy" buff
-                AlcoholType.Ale => BuffID.Tipsy,
-                AlcoholType.Sake => BuffID.Tipsy,
-
-                _ => -1
-            };
-        }
-    }
     public class DebuffData
     {
         /// <summary>
@@ -239,8 +156,8 @@ namespace CalamityMod.DataStructures
         public static StatModifier ApplyScalingToStatModifer(StatModifier Modifer, float scaling)
         {
             StatModifier output = new();
-            output += (Modifer.Additive-1) * scaling;
-            output *= 1 + (Modifer.Multiplicative-1) * scaling;
+            output += (Modifer.Additive - 1) * scaling;
+            output *= 1 + (Modifer.Multiplicative - 1) * scaling;
             output.Base = Modifer.Base * scaling;
             output.Flat = Modifer.Flat * scaling;
             return output;
@@ -254,9 +171,9 @@ namespace CalamityMod.DataStructures
         public static StatModifier ForceModifierPositiveWithScaling(StatModifier Modifer, float scaling)
         {
             StatModifier output = new();
-            output += MathHelper.Max((Modifer.Additive - 1) * scaling,0);
-            output *= MathHelper.Max(1 + (Modifer.Multiplicative - 1) * scaling,1);
-            output.Base = MathHelper.Max(Modifer.Base * scaling,0);
+            output += MathHelper.Max((Modifer.Additive - 1) * scaling, 0);
+            output *= MathHelper.Max(1 + (Modifer.Multiplicative - 1) * scaling, 1);
+            output.Base = MathHelper.Max(Modifer.Base * scaling, 0);
             output.Flat = MathHelper.Max(Modifer.Flat * scaling, 0);
             return output;
         }
@@ -267,7 +184,7 @@ namespace CalamityMod.DataStructures
         /// </summary>
         public void DefaultUpdateOnPlayer(Player player, int buffType, ref int buffIndex, ref int damage)
         {
-            
+
         }
 
         /// <summary>
@@ -292,13 +209,13 @@ namespace CalamityMod.DataStructures
 
             //Ensure at least 25% effectiveness
             if (totalScaling.Multiplicative <= 0.25f)
-                totalScaling.Multiplicative = 0.25f; 
+                totalScaling.Multiplicative = 0.25f;
             if (totalScaling.Additive < 0.25f)
                 totalScaling.Additive = 0.25f;
 
             totalDPS = totalScaling.ApplyTo(totalDPS);
-            var totalDPSAdjusted = totalDPS-EnemyVanillaRegenToCancelOut;
-            npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(totalDPS*MultiplierDamageTickSize,MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+            var totalDPSAdjusted = totalDPS - EnemyVanillaRegenToCancelOut;
+            npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(totalDPS * MultiplierDamageTickSize, MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
         /// <summary>
         /// DoT functionality that takes into account Electric debuff's 4x DPS when moving
@@ -360,7 +277,7 @@ namespace CalamityMod.DataStructures
             // If there are no Daybreak impaled spears, Daybroken has 1x potency (it was applied some other way)
             int adjustedSpears = Math.Max(1, numImpaledSpears);
             int baseDaybreakDoTValue = (int)(npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(Daybroken.EnemyLostRegen) + (Daybroken.EnemyLostRegen * (adjustedSpears - 1)));
-            int totalDPSAdjusted = baseDaybreakDoTValue - Daybroken.EnemyVanillaRegenToCancelOut*numImpaledSpears;
+            int totalDPSAdjusted = baseDaybreakDoTValue - Daybroken.EnemyVanillaRegenToCancelOut * numImpaledSpears;
             if (numImpaledSpears == 0)
             {
                 totalDPSAdjusted -= Daybroken.EnemyVanillaRegenToCancelOut;
@@ -373,10 +290,10 @@ namespace CalamityMod.DataStructures
         public static void OiledNPCMethod(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
-            double totalDPS = ApplyScalingToStatModifer(cnpc.ActiveHeatDebuffMultiplier,Oiled.HeatDebuffScaling).ApplyTo(Oiled.EnemyLostRegen);
+            double totalDPS = ApplyScalingToStatModifer(cnpc.ActiveHeatDebuffMultiplier, Oiled.HeatDebuffScaling).ApplyTo(Oiled.EnemyLostRegen);
             if (totalDPS <= 0)
                 return;
-            npc.Calamity().ApplyDPSDebuff((int)(totalDPS), damage+(int)Math.Max(totalDPS * Oiled.MultiplierDamageTickSize, Oiled.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+            npc.Calamity().ApplyDPSDebuff((int)(totalDPS), damage + (int)Math.Max(totalDPS * Oiled.MultiplierDamageTickSize, Oiled.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
         /// <summary>
         /// Has Dryad's Bane scale with Calamity's town NPC buffs
@@ -500,6 +417,39 @@ namespace CalamityMod.DataStructures
             EnemyLostRegen = 8, //This is not used in the method, serves as a token amount for anything that may need to interface in the future.
             NPCLifeRegenMethod = DryadsBaneNPCMethod
         };
+        #endregion
+
+        #region Helpers
+        public static int GetDebuffRegenValue(NPC npc, int type)
+        {
+            var debuffData = CalamityBuffSets.DebuffDataset[type];
+            if (debuffData == null)
+                return 0;
+
+            var oldRegen = npc.lifeRegen;
+            var oldCount = npc.lifeRegenCount;
+            int dmg = 1;
+            npc.lifeRegenCount = 0;
+            npc.lifeRegen = 0;
+
+            int index = npc.FindBuffIndex(type);
+
+            if (debuffData == Oiled)
+            {
+                bool hasVanillaOil = npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
+                if (hasVanillaOil)
+                    npc.lifeRegen -= Oiled.EnemyVanillaRegenToCancelOut;
+                Oiled.NPCLifeRegenMethod(npc, BuffID.Oiled, ref index, ref dmg);
+            }
+
+            debuffData.NPCLifeRegenMethod(npc, type, ref index, ref dmg);
+
+            int done = npc.lifeRegen;
+            npc.lifeRegen = oldRegen;
+            npc.lifeRegenCount = oldCount;
+            return done;
+        }
+
         #endregion
     }
 }

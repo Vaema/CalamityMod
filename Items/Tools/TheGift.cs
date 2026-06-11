@@ -17,7 +17,8 @@ namespace CalamityMod.Items.Tools
         public static readonly SoundStyle BadBuzzer = new SoundStyle("CalamityMod/Sounds/Custom/BadGiftBuzzer") with { Volume = 0.85f };
         public override void SetDefaults()
         {
-            Item.width = Item.height = 20;
+            Item.width = 30;
+            Item.height = 20;
             Item.maxStack = Item.CommonMaxStack;
             Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -25,7 +26,7 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 5);  // Sold by Shady Salesman
             Item.rare = ItemRarityID.Green;
         }
 
@@ -94,7 +95,7 @@ namespace CalamityMod.Items.Tools
             orig(self, player, npc);
 
             // Immediately exit early if it's Remix world, or if it's an NPC that should not be affected by happiness
-            if (Main.remixWorld || NPCID.Sets.NoTownNPCHappiness[npc.type] || NPCID.Sets.IsTownPet[npc.type])
+            if (Main.remixWorld || !npc.isLikeATownNPC || NPCID.Sets.NoTownNPCHappiness[npc.type] || NPCID.Sets.IsTownPet[npc.type])
                 return;
 
             var gtnpc = npc.GetGlobalNPC<CalamityGlobalTownNPC>();

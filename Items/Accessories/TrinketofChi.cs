@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer;
+using CalamityMod.CustomRecipes;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -20,9 +21,18 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 34;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 10); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
+        }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient && !RecipeUnlockHandler.HasFoundTrinketOfChi)
+            {
+                RecipeUnlockHandler.HasFoundTrinketOfChi = true;
+                CalamityNetcode.SyncWorld();
+            }
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

@@ -198,18 +198,18 @@ namespace CalamityMod.CalPlayer
                 int buff = Player.buffType[l];
                 if (buff <= 0) continue;
 
-                var data = BuffDatasets.DebuffDataset[buff];
+                var data = CalamityBuffSets.DebuffDataset[buff];
                 if (data?.AlcoholLevel > 0)
                     alcoholPoisonLevel += data.AlcoholLevel;
             }
 
             if (dripPlayer.ivDripEquipped && dripPlayer.currentAlcohol != AlcoholType.None)
             {
-                int ivBuffID = BuffDatasets.GetBuffIDFromAlcoholType(dripPlayer.currentAlcohol);
+                int ivBuffID = CalamityBuffSets.GetBuffIDFromAlcoholType(dripPlayer.currentAlcohol);
 
                 if (ivBuffID != -1)
                 {
-                    var ivData = BuffDatasets.DebuffDataset[ivBuffID];
+                    var ivData = CalamityBuffSets.DebuffDataset[ivBuffID];
                     if (ivData?.AlcoholLevel > 0)
                         alcoholPoisonLevel += ivData.AlcoholLevel;
                 }
@@ -338,7 +338,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l] is not null && BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
+            if (permafrostsConcoction && Player.buffType.Any(l => CalamityBuffSets.DebuffDataset[l] is not null && CalamityBuffSets.DebuffDataset[l].HeatDebuffScaling > 0))
                 Player.lifeRegen += 6;
 
             if (grandDadHealTimer == 0 && grandDadHealPool >= 7)
@@ -493,9 +493,6 @@ namespace CalamityMod.CalPlayer
             if (sRegen)
                 Player.lifeRegen += SpiritGlyph.RegenBoost;
 
-            if (fortunesFavor)
-                Player.lifeRegen += FortunesFavor.FortunesFavorRegenBoost;
-
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;
 
@@ -588,9 +585,8 @@ namespace CalamityMod.CalPlayer
             if (community)
             {
                 int regenBoost = 1 + (int)(TheCommunity.CalculatePower() * TheCommunity.RegenMultiplier);
-                bool lesserEffect = Player.buffType.Any(i => BuffDatasets.DebuffDataset[i] is not null && BuffDatasets.DebuffDataset[i].AlcoholLevel > 0);
                 if (Player.lifeRegen < 0)
-                    Player.lifeRegen += lesserEffect ? 1 : regenBoost;
+                    Player.lifeRegen += regenBoost;
             }
 
             if (manaOverloader)

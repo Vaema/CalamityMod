@@ -44,8 +44,8 @@ namespace CalamityMod.Tiles.Furniture
         public override void MouseOver(int i, int j)
         {
             Player p = Main.LocalPlayer;
-            // You shouldn't be able to put the slop back into the blender
-            if (BuffID.Sets.IsWellFed[p.HeldItem.buffType] && p.HeldItem.type != ModContent.ItemType<QualitySlop>())
+            // You shouldn't be able to put the slop or something better than it back into the blender
+            if (BuffID.Sets.IsWellFed[p.HeldItem.buffType] && !(p.HeldItem.buffType == BuffID.WellFed3 && p.HeldItem.buffTime >= CalamityUtils.MinutesToFrames(30)))
             {
                 p.noThrow = 2;
                 p.cursorItemIconEnabled = true;
@@ -134,12 +134,12 @@ namespace CalamityMod.Tiles.Furniture
         {
             // Exit early if anyone of the following are true:
             // * Running on client that is not the local player
-            // * The item is not a food, is not consumable, or is Quality Slop (you cannot feed the slop back into the blender)
+            // * The item is not a food, is not consumable, or is Quality Slop/better than Quality Slop (you cannot feed the slop back into the blender)
             // * The Gluttony Blender tile entity doesn't exist for some reason
             // * The player isn't within the tile's interaction range
             if (Main.LocalPlayer.whoAmI != player.whoAmI)
                 return true;
-            if (!BuffID.Sets.IsWellFed[item.buffType] || !item.consumable || item.type == ModContent.ItemType<QualitySlop>())
+            if (!BuffID.Sets.IsWellFed[item.buffType] || !item.consumable || (item.buffType == BuffID.WellFed3 && item.buffTime >= CalamityUtils.MinutesToFrames(30)))
                 return true;
 
             Point mouseTile = Main.MouseWorld.ToTileCoordinates();
@@ -156,6 +156,8 @@ namespace CalamityMod.Tiles.Furniture
             if (ItemLoader.ConsumeItem(item, player))
             {
                 item.stack--;
+                if (player.selectedItem == 58)
+                    Main.mouseItem.stack--;
                 if (item.stack <= 0)
                     item.TurnToAir();
             }
@@ -232,7 +234,12 @@ namespace CalamityMod.Tiles.Furniture
 
             if (Projectile.timeLeft == 1 && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                int itemDrop = Main.rand.NextBool(GluttonyBlender.OneInXChanceForGoodSlop) ? ModContent.ItemType<QualitySlop>() : ModContent.ItemType<DisgustingSlop>();
+                Item dummy = new Item();
+                dummy.SetDefaults(ItemType);
+                // 0.5% per minute of duration, multiplied by 1.5x for T@ food and 2x for T3 food
+                float goodPercent = dummy.buffTime * (dummy.buffType == BuffID.WellFed3 ? 2f : dummy.buffType == BuffID.WellFed2 ? 1.5f : 1f) / 3600f / 2f;
+
+                int itemDrop = Main.rand.NextFloat(100f) < goodPercent ? ModContent.ItemType<QualitySlop>() : ModContent.ItemType<DisgustingSlop>();
                 int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, itemDrop);
                 Main.item[i].GetGlobalItem<GluttonyBlenderGlobalItem>().FromGluttonyBlender = true;
             }

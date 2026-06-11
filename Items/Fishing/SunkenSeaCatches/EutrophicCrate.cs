@@ -41,6 +41,16 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
                 ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.FurnitureDriftwood.Driftwood>(), 1, 20, 50)
             }));
 
+            // 10-20 Coral Blocks @ 100%; Individually 20%
+            itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[5]
+            {
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.CyanCoral>(), 1, 10, 20),
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.OrangeCoral>(), 1, 10, 20),
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.LimeCoral>(), 1, 10, 20),
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.MagentaCoral>(), 1, 10, 20),
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.YellowCoral>(), 1, 10, 20)
+            }));
+
             // 4-10 Prism Shards @ 50%
             // This is our equivalent to Crystal Shards/Ichor
             itemLoot.Add(ModContent.ItemType<PrismShard>(), 2, 4, 10);

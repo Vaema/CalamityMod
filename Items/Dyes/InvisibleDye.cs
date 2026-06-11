@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
@@ -20,6 +21,15 @@ namespace CalamityMod.Items.Dyes
         {
             Item.rare = ItemRarityID.Blue;
             Item.value = Item.sellPrice(silver: 20);
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe(2).
+                AddIngredient(ItemID.BottledWater, 2).
+                AddIngredient(ItemID.Lens).
+                AddTile(TileID.DyeVat).
+                Register();
         }
 
         #region On Edit Hell To Actually Make Player Body Not Draw

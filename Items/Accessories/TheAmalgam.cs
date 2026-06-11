@@ -1,6 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.DataStructures;
@@ -21,6 +23,7 @@ namespace CalamityMod.Items.Accessories
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(9, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrainRot>(), ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<CrushDepth>(), ModContent.BuffType<Plague>(), BuffID.Electrified, BuffID.Frostburn2];
         }
 
         public override void SetDefaults()
@@ -39,11 +42,11 @@ namespace CalamityMod.Items.Accessories
             modPlayer.rBrain = true; // Handles shaderain cloud spawning on hit
             modPlayer.amalgam = true;
             player.brainOfConfusionItem = Item;
-            modPlayer.HeatDebuffMultiplier += 3f;
-            modPlayer.ColdDebuffMultiplier += 3f;
-            modPlayer.SicknessDebuffMultiplier += 3f;
-            modPlayer.WaterDebuffMultiplier += 3f;
-            modPlayer.ElectricDebuffMultiplier += 3f;
+            modPlayer.HeatDebuffMultiplier += 2f;
+            modPlayer.ColdDebuffMultiplier += 2f;
+            modPlayer.SicknessDebuffMultiplier += 2f;
+            modPlayer.WaterDebuffMultiplier += 2f;
+            modPlayer.ElectricDebuffMultiplier += 2f;
         }
 
         public override void AddRecipes()

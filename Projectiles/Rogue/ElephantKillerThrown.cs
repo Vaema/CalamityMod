@@ -496,7 +496,7 @@ namespace CalamityMod.Projectiles.Rogue
                     for (int index = 0; index < Main.npc.Length; index++)
                     {
                         NPC target = Main.npc[index];
-                        if (!target.dontTakeDamage && target.active && target.life > 0)
+                        if (!target.dontTakeDamage && target.active && target.life > 0 && !target.townNPC)
                         {
                             float _ = float.NaN;
                             bool collides = Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), startPoint, endPoint, 10 * Projectile.scale, ref _);
@@ -522,7 +522,7 @@ namespace CalamityMod.Projectiles.Rogue
                     { resetHits = true; Projectile.numHits = 0; }
 
                     float minMult = 0.1f;
-                    int hitsToMinMult = 4;
+                    int hitsToMinMult = 5;
                     float damageFalloff = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
                     float adjustedDamageMult = damageMult * damageFalloff;
 

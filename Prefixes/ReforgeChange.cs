@@ -203,7 +203,7 @@ namespace CalamityMod.Prefixes
 
             // MELEE (includes tools and whips)
             // Melee-ranged hybrid weapons prioritize Legendary if available, otherwise go for Unreal
-            if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary) && !(item.type == ItemType<TheBurningSky>()))
+            if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>() || item.type == ItemType<EvilSmasher>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary) && !(item.type == ItemType<TheBurningSky>()))
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
                 // Other items that want to use Legendary2 are also compatible

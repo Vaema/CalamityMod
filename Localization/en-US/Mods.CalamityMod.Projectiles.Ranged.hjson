@@ -6,7 +6,7 @@ AngelicBeam.DisplayName: Angelic Beam
 AnimosityBullet.DisplayName: Brimstone Round
 AquaBlast.DisplayName: Aqua Blast
 AquaBlastToxic.DisplayName: Aqua Blast Toxic
-Aquashard.DisplayName: Aqua Crystal
+Aquashard.DisplayName: Aquashard
 AquashardSplit.DisplayName: Aquashard
 ArcherfishRing.DisplayName: Archerfish Ring
 ArcherfishShot.DisplayName: Water Round
@@ -188,7 +188,6 @@ ScorchedEarthClusterBomb.DisplayName: Cluster Bomb
 ScorchedEarthRocket.DisplayName: Rocket
 ScorpioRocket.DisplayName: Nano Missile
 ScorpioLargeRocket.DisplayName: Nano Nuke
-SeaDragonMuzzleBlast.DisplayName: Seadragon Muzzle Blast
 SeaDragonRocket.DisplayName: Seadragon RPG
 SeasSearingBubble.DisplayName: Searing Bubble
 SeasSearingSecondary.DisplayName: Hydroshower
@@ -202,7 +201,6 @@ SevensStrikerGrape.DisplayName: Grapes
 SevensStrikerOrange.DisplayName: Orange
 SevensStrikerPlatinumCoin.DisplayName: Platinum Coin
 ShadeFire.DisplayName: Shady Fire
-ShardshockerCrystal.DisplayName: Charged Aqua Crystal
 Shell.DisplayName: Shell
 Shockblast.DisplayName: Blast
 ShockblastRound.DisplayName: Round
@@ -261,12 +259,14 @@ VanquisherArrowMain.DisplayName: Vanquisher Arrow
 VanquisherArrowProj.DisplayName: Vanquisher Arrow Proj
 VeriumBoltProj.DisplayName: Verium Bolt
 VernalBolt.DisplayName: Vernal Bolt
-Voidragon.DisplayName: Voidragon Blast
-VoidragonTentacle.DisplayName: Voidragon Tentacle
 WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
+AbyssalFire.DisplayName: Abyssal Fire
+BlahajBlast.DisplayName: Blahaj Blast
+MegalodonRocket.DisplayName: Megalodon Rocket
+VoidBlast.DisplayName: Void Blast
 OmniSniperShot.DisplayName: Omni Sniper Shot
 OmniGrenade.DisplayName: Omni Grenade
 OmniShotgunShot.DisplayName: Omni Shotgun Shot

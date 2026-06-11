@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;
@@ -28,6 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             base.SetStaticDefaults();
             CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>()];
         }
 
         public override void SetDefaults()

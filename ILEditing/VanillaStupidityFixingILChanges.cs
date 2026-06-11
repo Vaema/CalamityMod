@@ -318,59 +318,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Allow Victide Bobber to Exist
-        private static void WhitelistVictideBobber(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Find the label which skips the "flag = true" that kills the projectile
-            ILLabel flagStorage = null;
-            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchBeq(out flagStorage)))
-            {
-                LogFailure("Allow Victide Bobber to Exist", "Failed to properly navigate label to direct to");
-                return;
-            }
-
-            // Properly perform the skip if the projectile type is the Victide Bobber
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldfld, typeof(Projectile).GetField("type"));
-            cursor.Emit(OpCodes.Ldc_I4, ModContent.ProjectileType<VictideBobber>());
-            cursor.Emit(OpCodes.Beq_S, flagStorage);
-        }
-        #endregion
-
-        #region Prevent Victide Bobber from Jammming
-        private static bool PreventVictideBobberFromJamming(On_Player.orig_ItemCheck_CheckFishingBobbers orig, Player self, bool canUse)
-        {
-            // Run through the original stuff
-            canUse = orig(self, canUse);
-
-            int bobberCount = 0;
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.active && proj.owner == self.whoAmI && proj.bobber)
-                {
-                    bobberCount++;
-                    if (proj.type == ModContent.ProjectileType<VictideBobber>())
-                    {
-                        // Go back to casting if there's nothing loaded
-                        if (proj.ai[1] == 0f)
-                            proj.ai[0] = 0f;
-
-                        // Allow you to still use the fishing rod
-                        canUse = true;
-                    }
-                }
-            }
-
-            // Unless.. you have a bobber already that's NOT Victide, then back to disabling
-            if (canUse && bobberCount > 1)
-                canUse = false;
-
-            return canUse;
-        }
-        #endregion
-
         #region Prevent UFO Mount from Dismounting in Water
         private static void PreventUFODismountInWater(ILContext il)
         {

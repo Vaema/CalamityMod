@@ -150,6 +150,11 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public bool fireBullet = false;
         /// <summary>
+        /// If true, allows projectiles to track damage scaling.<br/>
+        /// Used by Megalodon and Voidragon.
+        /// </summary>
+        public bool sharkBullets = false;
+        /// <summary>
         /// If true, adds an ice trail to the projectile, and makes it inflict Frostbite.<br/>
         /// Used by Thermocline Blaster.
         /// </summary>
@@ -385,6 +390,9 @@ namespace CalamityMod.Projectiles
                         grapeBeer = true;
                 }
 
+                // Apply some parent information to children
+                if (parent.Calamity().ParentNPCIndex != -1)
+                    ParentNPCIndex = parent.Calamity().ParentNPCIndex;
                 if (parent.Calamity().IgnoreBoCIllusions)
                     IgnoreBoCIllusions = true;
 
@@ -424,8 +432,14 @@ namespace CalamityMod.Projectiles
             }
 
         }
-        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
-        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
+        public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(ParentNPCIndex);
+        }
+        public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader)
+        {
+            ParentNPCIndex = binaryReader.ReadInt32();
+        }
         #endregion On Spawn
 
         #region Set Defaults
@@ -462,8 +476,10 @@ namespace CalamityMod.Projectiles
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
-            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
+            // 24DEC2025: Ozzatron: victide bobber culled with SSO 
+            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
                 return false;
+
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
             #region Vanilla Summons AI Changes
@@ -2933,6 +2949,7 @@ namespace CalamityMod.Projectiles
         public float PersistentFishingData = -1;
         /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
         public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
+
         public bool RunFishingMinigames(Projectile projectile)
         {
             var owner = Main.player[projectile.owner];
@@ -2941,12 +2958,6 @@ namespace CalamityMod.Projectiles
             bool reelingIn = projectile.ai[0] == 1;
             bool lineSnapped = projectile.ai[0] == 2;
 
-            //Make sure Victide Snail actually fishes when using a minigame rod
-            foreach (var item in Main.ActiveProjectiles)
-            {
-                if (item.type == ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
-                    item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
-            }
             #region Utilities
             void SmallSplashAtOffset(Vector2 offset)
             {
@@ -3291,7 +3302,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }
@@ -3685,7 +3696,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }
@@ -3749,22 +3760,27 @@ namespace CalamityMod.Projectiles
             }
 
             bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+
             if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
             {
                 // Remove any item you would have fished up
                 projectile.ai[1] = 0;
                 // Get rarity of pull
-                int rarity = 0;
+                int rarity;
                 int roll = Main.rand.Next(1, 100 + 1);
                 if (roll == 1) rarity = 3; // UltraRare (1/100)
                 else if (roll <= 21) rarity = 2; // Rare ~(1/5)
                 else rarity = 1; // Common ~(4/5)
 
-                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
+                    TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+                else if(Main.netMode == NetmodeID.SinglePlayer)
+                    TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+
+                TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
                 projectile.ai[0] = 2; // snap line
                 return false;
             }
-
             return false;
         }
         #endregion
@@ -3959,10 +3975,6 @@ namespace CalamityMod.Projectiles
                 // Return speed is also increased using an IL edit, because why does it have a slower return speed than Dao of Pow???
             }
             #endregion
-
-            // Starfury stars never collide with tiles
-            if (projectile.type == ProjectileID.Starfury)
-                projectile.tileCollide = false;
 
             // True Night's Edge projectiles instantly start with max velocity
             if (projectile.type == ProjectileID.TrueNightsEdge)
@@ -4621,15 +4633,15 @@ namespace CalamityMod.Projectiles
         }
         public override void GrapplePullSpeed(Projectile projectile, Player player, ref float speed)
         {
+            if (player.Calamity().bloomStone)
+                speed += 6f;
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
-            if (player.Calamity().bloomStone)
-                mult += 0.5f;
-            speed *= mult;
 
+            speed *= mult;
             if (player.velocity.Length() > 2f)
             {
                 player.Calamity().hookPullVisuals = 60;
@@ -4637,13 +4649,13 @@ namespace CalamityMod.Projectiles
         }
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
         {
+            if (player.Calamity().bloomStone)
+                speed += 6f;
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
-            if (player.Calamity().bloomStone)
-                mult += 0.5f;
             speed *= mult;
         }
         #endregion
@@ -4805,7 +4817,8 @@ namespace CalamityMod.Projectiles
                         Main.projectile[soul].tileCollide = false;
                         if (soul.WithinBounds(Main.maxProjectiles))
                             Main.projectile[soul].DamageType = DamageClass.Generic;
-                    }
+                            Main.projectile[soul].ArmorPenetration = 20;
+                    }  
                     extorterBoost = false;
                 }
             }
@@ -4816,9 +4829,17 @@ namespace CalamityMod.Projectiles
 
         #region Modify Hit Player
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
-        {
+        {                
             modifiers.FinalDamage.Flat -= flatDR;
             modifiers.FinalDamage *= 1f - multiplicativeDR;
+
+            // Reduce projectile damage if the enemy is inflicted with Whispering Death
+            if (ParentNPCIndex != -1)
+            {
+                NPC npc = Main.npc[(int)ParentNPCIndex];
+                if (npc.active && npc.Calamity().whisperingDeath)
+                    modifiers.FinalDamage *= 1f - WhisperingDeath.EnemyDamageReduction;
+            }
         }
         #endregion
 

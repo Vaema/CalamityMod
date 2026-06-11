@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -20,6 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
             {
                 Glow = ModContent.Request<Texture2D>(Texture + "Glow");
             }
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire];
         }
         public override void SetDefaults()
         {

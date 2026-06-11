@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Shellstone>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EutrophicSand>();
 
             //+5 flat damage
             ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<DuneSandBallGun>(), 5);

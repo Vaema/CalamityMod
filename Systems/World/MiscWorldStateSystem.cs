@@ -301,6 +301,7 @@ namespace CalamityMod
             flags12[3] = downedBossRush;
             flags12[4] = DraedonMechdusa;
             flags12[5] = unlockedTownPig;
+            flags12[5] = downedHorribleHog;
 
             writer.Write(flags);
             writer.Write(flags2);
@@ -456,6 +457,7 @@ namespace CalamityMod
             downedBossRush = flags12[3];
             DraedonMechdusa = flags12[4];
             unlockedTownPig = flags12[5];
+            downedHorribleHog = flags12[5];
 
             RecipeUnlockHandler.ReceiveData(reader);
 

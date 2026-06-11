@@ -1,10 +1,8 @@
 ﻿using System.IO;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -30,19 +28,17 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(Projectile.localAI[1]);
-            writer.Write(Projectile.localAI[2]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             Projectile.localAI[1] = reader.ReadSingle();
-            Projectile.localAI[2] = reader.ReadSingle();
         }
 
         public override void AI()
@@ -50,34 +46,72 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) // 200 blocks
                 Projectile.Kill();
 
-            Projectile.localAI[2]++;
-            if (Projectile.localAI[2] % 10 == 0)
+            Projectile.localAI[1]++;
+            if (Projectile.localAI[1] % 15f == 0f)
             {
-                Projectile proj = Projectile.NewProjectileDirect(new EntitySource_ItemUse(Main.player[Projectile.owner], Main.player[Projectile.owner].HeldItem),
-                    Projectile.Center,
-                    Vector2.Zero,
-                    ModContent.ProjectileType<RiptideWave>(),
-                    Projectile.damage,
-                    0f,
-                    Projectile.owner,
-                    Projectile.whoAmI,
-                    Projectile.localAI[1]);
-                (proj.ModProjectile as RiptideWave).RotationDirection = Projectile.localAI[2] % 20 == 0 ? -1 : 1;
+                float xVelocity = 0f;
+                float yVelocity = -10f;
+                float xIncrement = 1.2f;
+                float yIncrement = 0.2f;
+                switch (Projectile.localAI[1] / 15f)
+                {
+                    case 1:
+                        break;
+
+                    case 2:
+                        xVelocity = 5f;
+                        yVelocity = -5f;
+                        xIncrement = 0.7f;
+                        yIncrement = 0.7f;
+                        break;
+
+                    case 3:
+                        xVelocity = 10f;
+                        yVelocity = 0f;
+                        xIncrement = 0.2f;
+                        yIncrement = 1.2f;
+                        break;
+
+                    case 4:
+                        xVelocity = 5f;
+                        yVelocity = 5f;
+                        xIncrement = -0.7f;
+                        yIncrement = 0.7f;
+                        break;
+
+                    case 5:
+                        xVelocity = 0f;
+                        yVelocity = 10f;
+                        xIncrement = -1.2f;
+                        yIncrement = -0.2f;
+                        break;
+
+                    case 6:
+                        xVelocity = -5f;
+                        yVelocity = 5f;
+                        xIncrement = -0.7f;
+                        yIncrement = -0.7f;
+                        break;
+
+                    case 7:
+                        xVelocity = -10f;
+                        yVelocity = 0f;
+                        xIncrement = -0.2f;
+                        yIncrement = -1.2f;
+                        break;
+
+                    case 8:
+                        Projectile.localAI[1] = 0f;
+                        xVelocity = -10f;
+                        yVelocity = -10f;
+                        xIncrement = 0.7f;
+                        yIncrement = -0.7f;
+                        break;
+                }
+
+                SoundEngine.PlaySound(SoundID.Item21, Projectile.position);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(xVelocity, yVelocity), ModContent.ProjectileType<AquaStream>(), Projectile.damage, 0f, Projectile.owner, xIncrement, yIncrement);
             }
-        }
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            Projectile.localAI[1] = MathHelper.Lerp(Projectile.localAI[1], 2f, 0.09f);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Asset<Texture2D> glowTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-
-            Main.EntitySpriteDraw(glowTexture.Value, Projectile.Center - Main.screenPosition, glowTexture.Frame(), new Color(0.05f, 0.1f, 0.25f, 0f), 0f, glowTexture.Frame().Size() / 2, 0.3f * Projectile.localAI[1], SpriteEffects.None);
-
-            return true;
         }
     }
 }

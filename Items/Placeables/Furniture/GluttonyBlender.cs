@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Furniture;
+﻿using CalamityMod.Items.Fishing;
+using CalamityMod.Tiles.Furniture;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -10,13 +11,12 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class GluttonyBlender : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
-        public const int OneInXChanceForGoodSlop = 5;
 
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<GluttonyBlenderTile>());
             Item.rare = ItemRarityID.Orange;
-            Item.value = Item.buyPrice(gold: 5);
+            Item.value = Item.buyPrice(gold: 10); // Sold by Shady Salesman
         }
     }
 
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(32, 30, BuffID.WellFed3, CalamityUtils.MinutesToFrames(60));
+            Item.DefaultToFood(32, 30, BuffID.WellFed3, CalamityUtils.MinutesToFrames(30));
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Orange;
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ExtractinatorMode[Type] = ItemID.OldShoe;
+            ItemID.Sets.ExtractinatorMode[Type] = Type;
         }
         public override void SetDefaults()
         {
@@ -62,6 +62,28 @@ namespace CalamityMod.Items.Placeables.Furniture
             Item.maxStack = Item.CommonMaxStack;
             Item.rare = ItemRarityID.Gray;
             Item.MakeUsableWithChlorophyteExtractinator();
+        }
+
+        public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
+        {
+            float dropRand = Main.rand.NextFloat();
+            resultStack = 1;
+
+            // 50% chance for Poo
+            // 25% chance for Clay Block
+            // 15% chance for Apprentice Bait
+            // 7.5% chance for Grasshopper
+            // 2.5% chance for Rage Bait
+            if (dropRand < 0.025f)
+                resultType = ModContent.ItemType<RageBait>();
+            else if (dropRand < 0.1f)
+                resultType = ItemID.Grasshopper;
+            else if (dropRand < 0.25f)
+                resultType = ItemID.ApprenticeBait;
+            else if (dropRand < 0.5f)
+                resultType = ItemID.ClayBlock;
+            else
+                resultType = ItemID.PoopBlock;
         }
     }
 }

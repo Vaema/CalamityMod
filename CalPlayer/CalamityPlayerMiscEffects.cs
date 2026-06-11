@@ -908,6 +908,11 @@ namespace CalamityMod.CalPlayer
             int scoriaOreID = ModContent.TileType<ScoriaOre>();
             int abyssKelpID = ModContent.TileType<AbyssKelp>();
 
+            // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
+            // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
+            // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
+            // 25FEB2025 Ozzatron: Added external bool to control Auric Rejection immunity from the ore.
+            bool rejectionImmunity = auricSet || seraphTracers || Player.creativeGodMode || externalAuricRejectionImmunity;
             int auricRejectionDamage = 300;
             float auricRejectionKB = Player.noKnockback ? 20f : 40f;
 
@@ -944,11 +949,6 @@ namespace CalamityMod.CalPlayer
                         Player.AddBuff(BuffID.Burning, 2);
                 }
 
-                // Auric Ore causes an Auric Rejection unless you are wearing Auric Armor or have God Mode
-                // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
-                // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
-                // 25FEB2025 Ozzatron: Added external bool to control Auric Rejection immunity from the ore.
-                bool rejectionImmunity = auricSet || seraphTracers || Player.creativeGodMode || externalAuricRejectionImmunity;
                 bool oreRejection = (tile.TileType == auricOreID) && !rejectionImmunity;
 
                 // Repulsers always perform this effect because they are player-placed tiles made for this exact purpose
@@ -976,14 +976,17 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (Player.sitting.TryGetSittingBlock(Player, out Tile AuricToiletTile))
+            if (Player.sitting.TryGetSittingBlock(Player, out Tile AuricToiletTile) && !rejectionImmunity)
             {
-                Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), auricRejectionDamage, 0);
-                Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
-                Player.sitting.SitUp(Player, false);
-                Vector2 yeetVec = new Vector2(Player.direction, -1.5f);
-                Player.velocity += yeetVec * auricRejectionKB;
+                if (AuricToiletTile.TileType == ModContent.TileType<AuricToiletTile>())
+                {
+                    Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), auricRejectionDamage, 0);
+                    Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
+                    Player.sitting.SitUp(Player, false);
+                    Vector2 yeetVec = new Vector2(Player.direction, -1.5f);
+                    Player.velocity += yeetVec * auricRejectionKB;
+                }
             }
         }
         private void HandleBlazingMouseEffects()
@@ -1718,6 +1721,7 @@ namespace CalamityMod.CalPlayer
                         fishStockOldPower.Item2,
                         fishStockOldPower.Item3,
                         fishStockOldPower.Item4);
+                    fishStockPower = newFishStockPower;
                 }
                 // Stats
                 Player.GetDamage<GenericDamageClass>() += 0.15f * fishStockPower;
@@ -2391,7 +2395,7 @@ namespace CalamityMod.CalPlayer
 
             if (bloomStoneTotalHeal > 0)
             {
-                float healRateDiv = (Player.statLife >= Player.statLifeMax ? 5 : // 5 times as slow if at max hp already (overheal prevention)
+                float healRateDiv = (Player.statLife >= Player.statLifeMax ? 2 : // 2 times as slow if at max hp already (overheal prevention)
                 bloomStoneBuffedHealRateTimer > 0 ? Utils.Remap(bloomStoneBuffedHealRateTimer, 90, 0, 0.5f, 1f, true) // 2 times faster if pollen buffed, scales back down to regular speed as the buff fades
                 : 1); // Regular speed
                 bloomStoneHealRate = 1 / healRateDiv;
@@ -2548,13 +2552,6 @@ namespace CalamityMod.CalPlayer
                     FlameLickedShell.HandleParryCountdown(Player);
                 else
                     flameLickedShellParry--;
-            }
-            if (shieldOfTheOceanParry > 0)
-            {
-                if (shieldOfTheOcean)
-                    ShieldoftheOcean.HandleParryCountdown(Player);
-                else
-                    shieldOfTheOceanParry--;
             }
 
             if (!flameLickedShell && flameLickedShellParry > 0)
@@ -3224,7 +3221,7 @@ namespace CalamityMod.CalPlayer
                         (Player.arcticDivingGear ? 5D : 0D) +
                         (aquaticEmblem ? 5D : 0D) +
                         (Player.accMerman ? 8D : 0D) +
-                        (victideBurrowHead ? 2D : 0D) +
+                        (victideSet ? 2D : 0D) +
                         ((aquaticHeart && NPC.downedBoss3) ? 8D : 0D) +
                         (abyssalDivingSuit ? 8D : 0D) +
                         externalBreathTickBoost;
@@ -3747,10 +3744,7 @@ namespace CalamityMod.CalPlayer
                             continue;
                         float distance = (npc.Center - Player.Center).Length();
                         if (distance < GiantPearl.AuraRadius)
-                        {
                             npc.AddBuff(ModContent.BuffType<PearlAura>(), 20, false);
-                            npc.Calamity().pearlAuraOwner = Player.whoAmI;
-                        }
                     }
                 }
             }
@@ -3847,7 +3841,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeMagnet = true;
 
             if (whisperingDeath && !laudanum)
-                Player.GetDamage<GenericDamageClass>() -= 0.2f;
+                Player.GetDamage<GenericDamageClass>() -= WhisperingDeath.PlayerDamageReduction;
 
             if (armorCrunch && !laudanum)
             {
@@ -3863,7 +3857,7 @@ namespace CalamityMod.CalPlayer
             if (eutrophication)
                 Player.velocity = Vector2.Zero;
 
-            if (vaporfied || galvanicCorrosion)
+            if (vaporfied || galvanicCorrosion || windChilled)
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
@@ -4460,7 +4454,7 @@ namespace CalamityMod.CalPlayer
                         else if (hasBuff == ModContent.BuffType<WhisperingDeath>())
                         {
                             Player.lifeRegenCount += 5;
-                            Player.GetDamage<GenericDamageClass>() += 0.2f;
+                            Player.GetDamage<GenericDamageClass>() += WhisperingDeath.PlayerDamageReduction;
                         }
 
                         switch (hasBuff)
@@ -4984,6 +4978,53 @@ namespace CalamityMod.CalPlayer
                 if (Main.mouseItem.type == ModContent.ItemType<EncryptedSchematicIce>() && !RecipeUnlockHandler.HasFoundIceSchematic)
                 {
                     RecipeUnlockHandler.HasFoundIceSchematic = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<LuxorsGift>() && !RecipeUnlockHandler.HasFoundLuxorsGift)
+                {
+                    RecipeUnlockHandler.HasFoundLuxorsGift = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<FungalSymbiote>() && !RecipeUnlockHandler.HasFoundFungalSymbiote)
+                {
+                    RecipeUnlockHandler.HasFoundFungalSymbiote = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<TrinketofChi>() && !RecipeUnlockHandler.HasFoundTrinketOfChi)
+                {
+                    RecipeUnlockHandler.HasFoundTrinketOfChi = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<FrozenCube>() && !RecipeUnlockHandler.HasFoundFrozenCube)
+                {
+                    RecipeUnlockHandler.HasFoundFrozenCube = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<GladiatorsLocket>() && !RecipeUnlockHandler.HasFoundGladiatorsLocket)
+                {
+                    RecipeUnlockHandler.HasFoundGladiatorsLocket = true;
+                    shouldSync = true;
+                }
+                if (Main.mouseItem.type == ModContent.ItemType<UnstableGraniteCore>() && !RecipeUnlockHandler.HasFoundUnstableGraniteCore)
+                {
+                    RecipeUnlockHandler.HasFoundUnstableGraniteCore = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<CrimsonEffigy>() && !RecipeUnlockHandler.HasFoundCrimsonEffigy)
+                {
+                    RecipeUnlockHandler.HasFoundCrimsonEffigy = true;
+                    shouldSync = true;
+                }
+
+                if (Main.mouseItem.type == ModContent.ItemType<CorruptionEffigy>() && !RecipeUnlockHandler.HasFoundCorruptionEffigy)
+                {
+                    RecipeUnlockHandler.HasFoundCorruptionEffigy = true;
                     shouldSync = true;
                 }
             }

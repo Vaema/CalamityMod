@@ -212,6 +212,11 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            // Don't activate for non-friendly projectiles (obviously).
+            // Override CanHitNPC if you want a hostile projectile that can also damage enemies.
+            if (!proj.friendly)
+                return;
+
             //Undo raider crit after hit
             if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
             {
@@ -454,6 +459,15 @@ namespace CalamityMod.CalPlayer
                     // Music easter egg in GFB
                     if (Main.zenithWorld)
                         GungeonMusicSystem.GUN();
+                }
+
+                // Used by Megalodon, Seadragon & Voidragon, allows bullets to track their damage scaling
+                if (cgp.sharkBullets)
+                {
+                    if (proj.numHits == 0)
+                    {
+                        sharkGunDamageScaling++;
+                    }
                 }
 
                 if (cgp.fireBullet)
@@ -1226,11 +1240,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
-            if (ilSpark && Player.Calamity().countsAsAnyWet)
-            {
-                int duration = 60;
-                target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
             if (corrosiveSpine)
             {
                 target.AddBuff(BuffType<Irradiated>(), 120);
@@ -1289,7 +1298,7 @@ namespace CalamityMod.CalPlayer
                     //Nanotech has the same heal as Electrician's glove
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, electricianGlove ? 2f : 3f);
 
-                if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
+                if (proj.CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {

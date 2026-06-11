@@ -1,87 +1,239 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
+﻿using System;
 using CalamityMod.NPCs;
-using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
     [PierceResistException]
-    public class SparklingLaser : ModProjectile, ILocalizedModType
+    public class SparklingLaser : BaseLaserbeamProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public ref float time => ref Projectile.ai[0];
-        public bool isSplit => Projectile.ai[1] == 5;
-        public ref NPC targeted => ref Main.npc[(int)Projectile.ai[2]];
-        public Color mainColor = Color.Cyan;
+
+        public bool playedSound = false;
+        public const int ChargeupTime = 50;
+
+        public Player Owner => Main.player[Projectile.owner];
+        public override Color LightCastColor => new Color(204, 204, 255); //#CCCCFF
+        public override float Lifetime => 18000f;
+        public override float MaxScale => 1f;
+        public override float MaxLaserLength => 1600f; //100 tiles
+        public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/SparklingLaserBegin", AssetRequestMode.ImmediateLoad).Value;
+        public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/SparklingLaserMid", AssetRequestMode.ImmediateLoad).Value;
+        public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/SparklingLaserEnd", AssetRequestMode.ImmediateLoad).Value;
+        private const float AimResponsiveness = 0.8f; // Last Prism is 0.92f. Lower makes the laser turn faster.
+
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[Projectile.type] = 5;
+        }
+
         public override void SetDefaults()
         {
-            Projectile.width = 25;
-            Projectile.height = 25;
+            Projectile.width = 10;
+            Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 1;
-            Projectile.tileCollide = true;
-            Projectile.timeLeft = 300;
-            Projectile.ArmorPenetration = 20;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-            Projectile.extraUpdates = 3;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
+            Projectile.hide = true;
+            Projectile.timeLeft = 18000;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 20;
         }
-        public override void AI()
-        {
-            Player Owner = Main.player[Projectile.owner];
-            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-            if (time == 0)
-            {
-                mainColor = Main.rand.NextBool() ? Color.Cyan : Color.DodgerBlue;
-            }
-            if (targetDist < 1400)
-            {
-                float beamSize = (isSplit ? 0.4f : 1f);
-                Particle beamBody = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 65, Projectile.velocity * 0.05f, "CalamityMod/Particles/Crack", false, (int)(7 * (isSplit ? 2 : 1)), 0.15f * beamSize, mainColor * 0.7f, new Vector2(0.7f, 1.4f), true, true, extraRotation: MathHelper.ToRadians(180), shrinkSpeed: (isSplit ? 0.4f : 1.1f), glowCenterScale: 0.7f, glowOpacity: 0.4f);
-                GeneralParticleHandler.SpawnParticle(beamBody);
-            }
-            if (isSplit)
-            {
-                Projectile.velocity *= 0.98f;
-            }
-            else if (Projectile.velocity.Length() < 9)
-            {
-                Projectile.velocity *= 1.01f;
-                Projectile.velocity = Projectile.velocity.RotatedByRandom(0.035f);
-            }
-            time++;
-        }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (!isSplit)
-            {
-                Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 7;
-                Projectile splitProj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (shootDirection).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<SparklingLaser>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0, 5, target.whoAmI);
-                splitProj.timeLeft = 120;
-                splitProj.penetrate = -1;
-                splitProj.extraUpdates = 2;
-                for (int k = 0; k < 3; k++)
-                {
-                    Vector2 shootVel = (shootDirection).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.8f);
 
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), shootVel);
-                    dust2.scale = Main.rand.NextFloat(0.9f, 1.15f);
-                    dust2.noGravity = true;
-                    dust2.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Cyan;
+        public override void DetermineScale()
+        {
+            Projectile.scale = Time < ChargeupTime ? 0f : MaxScale;
+        }
+
+        public override float DetermineLaserLength()
+        {
+            return DetermineLaserLength_CollideWithTiles();
+        }
+
+        public override bool PreAI()
+        {
+            // Multiplayer support here, only run this code if the client running it is the owner of the projectile
+            if (Projectile.owner == Main.myPlayer)
+            {
+                Vector2 rrp = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
+                UpdateAim(rrp);
+                Projectile.direction = Main.MouseWorld.X > Owner.Center.X ? 1 : -1;
+                Projectile.netUpdate = true;
+            }
+
+            int dir = Projectile.direction;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.Center = Owner.Center + Projectile.velocity * 56f; //Distance offset
+            Projectile.timeLeft = 18000; //Infinite lifespan
+            Owner.ChangeDir(dir);
+            Owner.heldProj = Projectile.whoAmI;
+            Owner.itemTime = 2;
+            Owner.itemAnimation = 2;
+            Owner.itemRotation = ((Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * -Owner.direction).ToRotation();
+
+            if (!Owner.channel)
+            {
+                Projectile.Kill();
+                return false;
+            }
+            // Do we still have enough mana? If not, we kill the projectile because we cannot use it anymore
+            if (Owner.miscCounter % 10 == 0 && !Owner.CheckMana(Owner.HeldItem, -1, true))
+            {
+                Projectile.Kill();
+                return false;
+            }
+
+            if (Time < ChargeupTime)
+            {
+                // Crate charge-up dust.
+                int dustCount = (int)(Time / 20f);
+                Vector2 spawnPos = Projectile.Center;
+                for (int k = 0; k < dustCount + 1; k++)
+                {
+                    Dust dust = Dust.NewDustDirect(spawnPos, 1, 1, DustID.Electric, Projectile.velocity.X / 2f, Projectile.velocity.Y / 2f);
+                    dust.position += Main.rand.NextVector2Square(-10f, 10f);
+                    dust.velocity = Main.rand.NextVector2Unit() * (10f - dustCount * 2f) / 10f;
+                    dust.scale = Main.rand.NextFloat(0.5f, 1f);
+                    dust.noGravity = true;
+                }
+                Time++;
+                return false;
+            }
+
+            // Play a cool sound when fully charged.
+            if (!playedSound)
+            {
+                SoundEngine.PlaySound(SoundID.Item68, Projectile.Center);
+                playedSound = true;
+            }
+            return true;
+        }
+
+        public override void PostAI()
+        {
+            // Determine frames.
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter % 5f == 4f)
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+        }
+
+        // Gently adjusts the aim vector of the laser to point towards the mouse.
+        private void UpdateAim(Vector2 source)
+        {
+            Vector2 aimVector = Vector2.Normalize(Main.MouseWorld - source);
+            if (aimVector.HasNaNs())
+                aimVector = -Vector2.UnitY;
+            aimVector = Vector2.Normalize(Vector2.Lerp(aimVector, Vector2.Normalize(Projectile.velocity), AimResponsiveness));
+
+            if (aimVector != Projectile.velocity)
+                Projectile.netUpdate = true;
+            Projectile.velocity = aimVector;
+        }
+
+        public override bool ShouldUpdatePosition() => false;
+
+        public override bool? CanDamage() => Time >= ChargeupTime;
+
+        // Update CutTiles so the laser will cut tiles (like grass).
+        public override void CutTiles()
+        {
+            DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
+            Vector2 unit = Projectile.velocity;
+            Utils.PlotTileLine(Projectile.Center, Projectile.Center + unit * LaserLength, Projectile.width + 16, DelegateMethods.CutTiles);
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (target.life <= 0 && target.lifeMax > 5 && Projectile.owner == Main.myPlayer)
+            {
+                int shardDamage = Projectile.damage / 5;
+                int shardAmt = Main.rand.Next(2, 4);
+                for (int s = 0; s < shardAmt; s++)
+                {
+                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                    int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, velocity, ModContent.ProjectileType<AquashardSplit>(), shardDamage, 0f, Projectile.owner);
+                    if (shard.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[shard].DamageType = DamageClass.Magic;
                 }
             }
-            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), (isSplit ? 60 : 120));
-
-            float minMult = 0.25f;
-            int hitsToMinMult = 7;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult;
         }
-        public override bool? CanHitNPC(NPC target) => (target == targeted && isSplit) ? false : null;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // This should never happen, but just in case-
+            if (Projectile.velocity == Vector2.Zero || Time < ChargeupTime)
+                return false;
+
+            Color beamColor = LaserOverlayColor;
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+
+            // Start texture drawing.
+            // This is a lot more scuffed than other lasers... for some reason I'll try not to think about right now.
+            Vector2 laserBeginCenter = Projectile.Center - Main.screenPosition + Projectile.velocity * Projectile.scale * 50f;
+            Main.EntitySpriteDraw(LaserBeginTexture,
+                             laserBeginCenter,
+                             startFrameArea,
+                             beamColor,
+                             Projectile.rotation,
+                             LaserBeginTexture.Size() / 2f,
+                             Projectile.scale,
+                             SpriteEffects.None,
+                             0);
+
+            // Prepare things for body drawing.
+            float laserBodyLength = LaserLength;
+            laserBodyLength -= (startFrameArea.Height / 2 + endFrameArea.Height) * Projectile.scale;
+            Vector2 centerOnLaser = Projectile.Center - Main.screenPosition;
+            centerOnLaser += Projectile.velocity * Projectile.scale * 10.5f;
+
+            // Body drawing.
+            if (laserBodyLength > 0f)
+            {
+                float laserOffset = middleFrameArea.Height * Projectile.scale;
+                float incrementalBodyLength = 0f;
+                while (incrementalBodyLength + 1f < laserBodyLength)
+                {
+                    centerOnLaser += Projectile.velocity * laserOffset;
+                    incrementalBodyLength += laserOffset;
+                    Main.EntitySpriteDraw(LaserMiddleTexture,
+                                     centerOnLaser,
+                                     middleFrameArea,
+                                     beamColor,
+                                     Projectile.rotation,
+                                     LaserMiddleTexture.Width * 0.5f * Vector2.UnitX,
+                                     Projectile.scale,
+                                     SpriteEffects.None,
+                                     0);
+                }
+            }
+
+            // End texture drawing.
+            if (Math.Abs(LaserLength - DetermineLaserLength()) < 30f)
+            {
+                Main.EntitySpriteDraw(LaserEndTexture,
+                                 centerOnLaser,
+                                 endFrameArea,
+                                 beamColor,
+                                 Projectile.rotation,
+                                 LaserEndTexture.Frame(1, 1, 0, 0).Top(),
+                                 Projectile.scale,
+                                 SpriteEffects.None,
+                                 0);
+            }
+            return false;
+        }
     }
 }

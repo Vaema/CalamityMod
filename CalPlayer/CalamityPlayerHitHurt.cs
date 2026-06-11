@@ -43,6 +43,7 @@ using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Pets;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -282,17 +283,11 @@ namespace CalamityMod.CalPlayer
 
             // Custom Death Messages
 
+            #region DoT Sources
             if (damage == 10.0 && hitDirection == 0 && damageSource.SourceOtherIndex == 8)
             {
-                if (fishStocks && fishStockPower < 0)
-                {
-                    string year = DateTime.Now.ToString("yy");
-                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name, year));
-                }
                 if (alcoholPoisoning)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AlcoholBig" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
-                }
                 if (vHex)
                 {
                     // Unique messages appear half the time during each individual stage of SCal's fight
@@ -314,13 +309,9 @@ namespace CalamityMod.CalPlayer
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText(vHexKeyToUse).ToNetworkText(Player.name));
                 }
                 if (ZoneCalamity && Player.lavaWet)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.SearingLava" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
-                }
                 if (godSlayerInferno)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.GodSlayerInferno" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (sulphurPoison)
                 {
                     if (!Main.rand.NextBool(4)) // 75% custom
@@ -329,116 +320,76 @@ namespace CalamityMod.CalPlayer
                         damageSource = PlayerDeathReason.ByOther(9); // 25% generic Poisoned death text
                 }
                 if (dragonFire)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Dragonfire" + Main.rand.Next(1, 4 + 1)).ToNetworkText(Player.name));
-                }
                 if (vermillionFlux)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.VermillionFlux" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (auricRebuke)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRebuke" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (staticDischarge)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.StaticDischarge" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (miracleBlight)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.MiracleBlight" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (holyInferno)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.HolyInferno").ToNetworkText(Player.name));
-                }
                 if (holyFlames || banishingFire)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.HolyFlames" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (shadowflame)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Shadowflame").ToNetworkText(Player.name));
-                }
                 if (daybroken)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Daybroken").ToNetworkText(Player.name));
-                }
                 if (burningBlood)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BurningBlood" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
-                }
                 if (brainRot)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainRot" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (heavybleeding)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.HeavyBleeding" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (laceration)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Laceration" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (elementalMix)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ElementalMix" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
-                }
                 if (crushDepth)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CrushDepth" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (riptide)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Riptide" + Main.rand.Next(1, 2 + 1)).ToNetworkText(Player.name));
-                }
                 if (hadopelagicPressure)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.HadopelagicPressure" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (brimstoneFlames || weakBrimstoneFlames || demonicFlames)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrimstoneFlames" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (plague)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Plague" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (astralInfection)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AstralInfection" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
-                }
                 if (nightwither)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Nightwither").ToNetworkText(Player.name));
-                }
                 if (vaporfied)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Vaporfied").ToNetworkText(Player.name));
-                }
                 if (manaOverloader || ManaBurn)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaBurn").ToNetworkText(Player.name));
-                }
                 if (witheredDebuff)
-                {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Withered").ToNetworkText(Player.name));
-                }
             }
+            #endregion
+
+            #region Item Sources
             if (profanedCrystalBuffs && Player.Transformation().Type == ModContent.ItemType<ProfanedSoulCrystal>())
-            {
                 damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ProfanedSoulCrystal").ToNetworkText(Player.name));
+
+            if (fishStocks && fishStockPower < 0)
+            {
+                string year = DateTime.Now.ToString("yy");
+                damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name, year));
             }
 
-            // Leon Death Noise RE4
-            if (Main.zenithWorld)
-                SoundEngine.PlaySound(LeonDeathNoiseRE4_ForGFB, Player.Center);
+            if (damageSource.TryGetCausingEntity(out var Entity) && Entity is Projectile && (Entity as Projectile).type == ModContent.ProjectileType<LemonNadeProjectile>())
+                damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Lemonnade" + Main.rand.Next(1, 4)).ToNetworkText(Player.name));
 
             if (NorfleetCounter > 3 && NorfleetCounter < 1000)
                 damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Norfleet").ToNetworkText(Player.name));
             NorfleetCounter = 0;
+            #endregion
 
-            if (damageSource.TryGetCausingEntity(out var Entity) && Entity is NPC && (Entity as NPC).type == ModContent.NPCType<DevourerofGodsHead>())
+            #region NPC Sources
+            if (damageSource.TryGetCausingEntity(out var Entity2) && Entity2 is NPC && (Entity2 as NPC).type == ModContent.NPCType<DevourerofGodsHead>())
             {
                 var npc = Main.npc[damageSource.SourceNPCIndex];
                 if (npc.ai[3] < 2) //Divinity Devourer
@@ -446,6 +397,7 @@ namespace CalamityMod.CalPlayer
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.DivinityDevourer"+Main.rand.Next(1,4)).ToNetworkText(Player.name));
                 }
                 else if (npc.ai[3] >= 3)
+                {
                     if (npc.life > npc.lifeMax / 4) //Dimensional Drive
                     {
                         damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.DimensionalDrive").ToNetworkText(Player.name));
@@ -454,6 +406,7 @@ namespace CalamityMod.CalPlayer
                     {
                         damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.UltracosmicMaelstrom" + Main.rand.Next(1, 3)).ToNetworkText(Player.name));
                     }
+                }
             }
 
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()))
@@ -461,6 +414,11 @@ namespace CalamityMod.CalPlayer
                 if (sCalDeathCount < 51)
                     sCalDeathCount++;
             }
+            #endregion
+
+            // Leon Death Noise RE4
+            if (Main.zenithWorld)
+                SoundEngine.PlaySound(LeonDeathNoiseRE4_ForGFB, Player.Center);
 
             return true;
         }
@@ -502,7 +460,7 @@ namespace CalamityMod.CalPlayer
                 for (int index = 0; index < target.buffType.Length; index++)
                 {
                     int type = target.buffType[index];
-                    var debuffData = BuffDatasets.DebuffDataset[type];
+                    var debuffData = CalamityBuffSets.DebuffDataset[type];
                     if (debuffData != null)
                         numOfDebuffs++;
                 }
@@ -727,70 +685,10 @@ namespace CalamityMod.CalPlayer
             if (npc.Calamity().antlionCloudDebuffTimer > 0)
                 modifiers.SourceDamage *= AntlionSkewer.CloudDamageDebuffMult;
 
-            // Enemies deal less contact damage while sick, due to being weakened.
-            if (npc.poisoned)
-            {
-                float damageReductionFromPoison = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromPoison *= 2f;
-                    else
-                        damageReductionFromPoison /= 2f;
-                }
-                damageReductionFromPoison = 1f - damageReductionFromPoison;
-
-                modifiers.SourceDamage *= damageReductionFromPoison;
-            }
-
-            if (npc.venom)
-            {
-                float damageReductionFromVenom = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromVenom *= 2f;
-                    else
-                        damageReductionFromVenom /= 2f;
-                }
-                damageReductionFromVenom = 1f - damageReductionFromVenom;
-
-                modifiers.SourceDamage *= damageReductionFromVenom;
-            }
-
-            if (npc.Calamity().astralInfection)
-            {
-                float damageReductionFromAstralInfection = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromAstralInfection *= 2f;
-                    else
-                        damageReductionFromAstralInfection /= 2f;
-                }
-                damageReductionFromAstralInfection = 1f - damageReductionFromAstralInfection;
-
-                modifiers.SourceDamage *= damageReductionFromAstralInfection;
-            }
-
-            if (npc.Calamity().plague)
-            {
-                float damageReductionFromPlague = (float)((npc.Calamity().irradiated? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
-                if (npc.Calamity().VulnerableToSickness.HasValue)
-                {
-                    if (npc.Calamity().VulnerableToSickness.Value)
-                        damageReductionFromPlague *= 2f;
-                    else
-                        damageReductionFromPlague /= 2f;
-                }
-                damageReductionFromPlague = 1f - damageReductionFromPlague;
-
-                modifiers.SourceDamage *= damageReductionFromPlague;
-            }
-
+            // Whispering Death makes enemies deal less damage
             if (npc.Calamity().whisperingDeath)
             {
-                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.1f);
+                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * WhisperingDeath.EnemyDamageReduction);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -1223,8 +1121,6 @@ namespace CalamityMod.CalPlayer
                 {
                     if (sulphurSet)
                         Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
-                    if (ilSpark)
-                        Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
                 }   
             }
 
@@ -1732,23 +1628,6 @@ namespace CalamityMod.CalPlayer
                     FlameLickedShell.handleParry(Player);
                 }
             }
-            else if (shieldOfTheOceanParry >= 12)
-            {
-                if (!Player.HasCooldown(ParryCooldown.ID))
-                {
-                    // Shield of the Ocean is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
-                    int shieldParryIFrames = Player.ComputeParryIFrames();
-                    Player.GiveUniversalIFrames(shieldParryIFrames, true);
-
-                    shieldOfTheOceanEmpoweredParry = true;
-                    modifiers.FinalDamage *= 0.4f; // 60% DR
-                    modifiers.DisableSound();
-                }
-
-                SoundEngine.PlaySound(ShieldoftheOcean.ParrySound, Player.Center);
-                Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
-                ShieldoftheOcean.ActivateParry(Player);
-            }
 
             if (Player.Calamity().scionsCurio)
                 scionsCurioGotHit = true;
@@ -2202,12 +2081,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
-                {
-                    int healAmt = (int)(hurtInfo.Damage * VictideHeadBarrier.BarrierDamageAbsorptionPercent);
-                    victideBarrierHeal += healAmt;
-                }
-
                 if (daedalusAbsorb && Main.rand.NextBool(DaedalusHeadMagic.AbsorptionChanceDenominator))
                 {
                     int healAmt = (int)(hurtInfo.Damage * DaedalusHeadMagic.DamageAbsorptionPercent);
@@ -2511,19 +2384,38 @@ namespace CalamityMod.CalPlayer
                 }
                 if (ilSpark)
                 {
-                    SoundEngine.PlaySound(SoundID.Item93, Player.Center);
-
-                    // Only visual effects are done here
-                    // The actual spark spawning is now handled with the shocked variable in CalamityGlobalNPC
-
-                    SeaFoamParticle boom = new(Player.Center, Vector2.Zero, new Color(89, 239, 247), new Color(56, 158, 209), 1f, 200f, Main.rand.NextBool() ? -1f : 1f);
-                    GeneralParticleHandler.SpawnParticle(boom);
-
-                    for (int e = 0; e < 6; e++)
+                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<HideofAstrumDeus>()));
+                    if (hurtInfo.Damage > 0)
                     {
-                        Vector2 dustVel = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(4.5f, 5.25f);
-                        Dust electric = Dust.NewDustPerfect(Player.Center, DustID.Electric, dustVel, Scale: 0.75f);
-                        electric.noGravity = true;
+                        SoundEngine.PlaySound(SoundID.Item93, Player.Center);
+                        float spread = 45f * 0.0174f;
+                        double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
+                        double deltaAngle = spread / 8f;
+                        double offsetAngle;
+
+                        // Start with base damage, then apply the best damage class you can
+                        int sDamage = 6;
+                        if (transformer)
+                            sDamage += 42;
+                        sDamage = (int)Player.GetBestClassDamage().ApplyTo(sDamage);
+
+                        if (Player.whoAmI == Main.myPlayer)
+                        {
+                            for (int i = 0; i < 4; i++)
+                            {
+                                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
+                                int spark1 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<GenericElectricSpark>(), sDamage, 1.25f, Player.whoAmI, 0f, 1);
+                                int spark2 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<GenericElectricSpark>(), sDamage, 1.25f, Player.whoAmI, 0f, 1);
+                                if (spark1.WithinBounds(Main.maxProjectiles))
+                                {
+                                    Main.projectile[spark1].timeLeft = 120;
+                                }
+                                if (spark2.WithinBounds(Main.maxProjectiles))
+                                {
+                                    Main.projectile[spark2].timeLeft = 120;
+                                }
+                            }
+                        }
                     }
                 }
                 if (rBrain)

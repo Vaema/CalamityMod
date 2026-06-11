@@ -104,6 +104,11 @@ AmbrosialAmpoule: {
 		'''
 }
 
+AmidiasPendant: {
+	DisplayName: Amidias' Pendant
+	Tooltip: Periodically rains down prism shards that can briefly stun enemies
+}
+
 AncientFossil: {
 	DisplayName: Ancient Fossil
 	Tooltip:
@@ -233,7 +238,7 @@ AsgardianAegis: {
 		'''
 		{$Common.KnockbackImmunity}
 		Allows the ability to ram dash, empowered by a cosmic inferno
-		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/GodSlayerInferno]
+		This dash can ram through enemies without taking damage
 		'''
 }
 
@@ -325,8 +330,8 @@ BloodPact: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
-		Grants immunity to Bleeding, Burning Blood and Heavy Bleeding
 		Healing Potions are 33% more effective
+		Grants immunity to [cbuffplr:Bleeding], [cbuffplr:CalamityMod/BurningBlood] and [cbuffplr:CalamityMod/HeavyBleeding]
 		'''
 }
 
@@ -350,7 +355,7 @@ BloomStone: {
 	Tooltip:
 		'''
 		Healing Potions are 50% more effective, but provide their healing over time
-		Grappling hooks retract and pull the player 50% faster, and grow a flower at hookpoints
+		Grappling hooks retract and pull the player 30 mph faster, and grow a flower at hookpoints
 		Touching a flower makes it burst into pollen which gives a temporary boost to potion healing over time
 		Potion healing slows drastically when at full health
 		'One of the ancient relics'
@@ -390,12 +395,12 @@ ChaliceOfTheBloodGod: {
 	Tooltip:
 		'''
 		Increases max HP by 25%
-		Grants immunity to Bleeding, Burning Blood, Heavy Bleeding and Laceration
 		+2 HP/s life regen and reduces the cooldown of healing potions by 25%
 		Taking more than 5 damage converts the hit into a damage over time bleed effect
 		This bleeding does not interfere with life regeneration
 		Drinking a healing potion removes some of the remaining bleed, up to 50% of its heal value
 		Unequipping this accessory while bleeding inflicts the remaining damage instantly
+		Grants immunity to [cbuffplr:Bleeding], [cbuffplr:CalamityMod/BurningBlood], [cbuffplr:CalamityMod/HeavyBleeding], and [cbuffplr:CalamityMod/Laceration]
 		'All that for a drop of blood...'
 		'''
 }
@@ -705,7 +710,7 @@ ElysianAegis: {
 		'''
 		{$Common.KnockbackImmunity}
 		Allows the ability to dash, empowered by holy fire
-		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/HolyFlames]
+		This dash can ram through enemies without taking damage
 		'Blessed by the Profaned Flame'
 		'''
 }
@@ -764,7 +769,8 @@ FeatherCrown: {
 		Each [c/81B7F7:Skyline Feather] increases magic damage by 2% and decreases mana cost by 1%
 		With 5 feathers, increases magic critical strike chance by 5% and all magic attacks inflict [cbuff:CalamityMod/StaticDischarge]
 		Running out of mana or drinking a mana potion sheds all feathers
-		Upon shedding a feather, no new feathers can be gained for 5 seconds	      
+		Upon shedding a feather, no new feathers can be gained for 5 seconds
+		Feathers are transparent and silent if visibility is disabled
 		'''
 	HoldShiftTooltip:
 		'''
@@ -800,6 +806,11 @@ FishStocks: {
 		+0.55 luck
 		1.5x coin drops
 		'''
+	SalesPitch:
+		'''
+		'Fishing is hard, but you know what's easy? Economy! With this little gadget made by my partner Hoggart, you can make the process just as easy!'
+		'Pull the line when it's up, don't when it's down! It's as simple as that!'
+		'''
 }
 
 FlameLickedShell: {
@@ -820,11 +831,12 @@ FleshTotem: {
 	Tooltip:
 		'''
 		5% increased magic critical strike chance
-		+20 max mana
+		Increases maximum mana by 20
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
 		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
 		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
+		The effigy is transparent and silent if visibility is disabled
 		'''
 }
 
@@ -833,7 +845,7 @@ FrostBarrier: {
 	Tooltip:
 		'''
 		You will freeze nearby enemies when you are struck
-		Grants immunity to Chilled and Frostburn
+		Grants immunity to [cbuffplr:Chilled] and [cbuffplr:Frostburn]
 		'''
 }
 
@@ -842,10 +854,9 @@ FrostFlare: {
 	Tooltip:
 		'''
 		All attacks and projectiles inflict [cbuff:Frostburn2]
-		Grants immunity to Frostburn, Chilled and Frozen
 		Being above {0}% life grants {1}% increased damage
 		Being below {0}% life grants {2} defense and {3}% increased max movement speed and acceleration
-		Grants resistance against cold attacks
+		Grants resistance against cold attacks, [cbuffplr:Frostburn], [cbuffplr:Chilled] and [cbuffplr:Frozen]
 		'''
 }
 
@@ -866,6 +877,7 @@ FungalSymbiote: {
 		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 5 defense and +1 HP/s life regen
 		10% increased damage while you have [cbuffplr:CalamityMod/Mushy]
 		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 GiantPearl: {
@@ -873,8 +885,7 @@ GiantPearl: {
 	Tooltip:
 		'''
 		You have a light aura around you
-		Enemies within the aura are afflicted with [cbuff:CalamityMod/PearlAura] and slowed down
-		Enemies that remain within the aura are bombarded by homing prism shards
+		Enemies within the aura are slowed down
 		{$Common.AbyssGlow}
 		'''
 }
@@ -905,6 +916,7 @@ GladiatorsLocket: {
 		Enemies drop a healing orb on kill
 		Gain an increase to your damage and movement speed the lower your health is, up to 20% at 50% life or below
 		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 GloveOfPrecision: {
@@ -959,6 +971,11 @@ HarpyRing: {
 HeartofDarkness: {
 	DisplayName: Heart of Darkness
 	Tooltip: You constantly gain rage over time, and rage does not fade away when out of combat
+	SalesPitch:
+		'''
+		'Some people enjoy simple truths in life: good and evil, health and sickness.'
+		'I'm not sure how healthy they are, but these edgy gadgets are bound to get your blood pumping! Help me give them simple labels and I'll give you a heart-stopping discount!'
+		'''
 }
 
 HeartoftheElements: {
@@ -997,12 +1014,7 @@ HowlsHeart: {
 
 IlmerisSpark: {
 	DisplayName: Ilmeris' Spark
-	Tooltip:
-		'''
-		Attacks inflict [cbuff:CalamityMod/StaticDischarge] while underwater
-		Taking damage causes the enemy to be shocked
-		Shocked enemies constantly release sparks
-		'''
+	Tooltip: Taking damage releases a blast of sparks
 }
 
 InfectedJewel: {
@@ -1073,7 +1085,7 @@ JellyChargedBattery: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1, and summon damage by 7%
-		Minion attacks create orbs of [cbuff:CalamityMod/StaticDischarge]
+		Minion attacks create charged orbs
 		'''
 }
 
@@ -1096,7 +1108,7 @@ LeviathanAmbergris: {
 	Tooltip:
 		'''
 		100% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
-		Your dashes are empowered by water, knocking back and damaging enemies with vicious currents that inflict [cbuff:CalamityMod/RiptideDebuff]
+		Your dashes are empowered by water, knocking back and damaging enemies with vicious currents
 		Visual effects are reduced if visibility is disabled
 		'''
 }
@@ -1124,18 +1136,19 @@ LuxorsGift: {
 		Held item class is not updated when holding a tool
 		When not in use, the scarab will condense itself into a small orb of light
 		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 ManaPolarizer: {
 	DisplayName: Mana Polarizer
 	Tooltip:
 		'''
-		Increases max mana by 40
+		Increases maximum mana by 40
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
 		These scale from -2 to +2 HP/s, and 15% to 5% damage
 		The provided regeneration is halved when under Mana Sickness
-		Magic projectiles steal enemy life while holding a magic weapon
+		Magic projectiles steal enemy life
 		'''
 }
 
@@ -1162,13 +1175,14 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		+40 max mana
+		Increases maximum mana by 40
 		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
 		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
 		With 5 sigils, increases mana regeneration by +5 MP/s
 		With 10 sigils, increases magic critical strike chance by 10% and all magic attacks inflict [cbuff:CalamityMod/Nightwither]
 		Running out of mana or using a mana potion shatters all sigils
-		Upon shattering a sigil, no new sigils can appear for 5 seconds 
+		Upon shattering a sigil, no new sigils can appear for 5 seconds
+		Sigils are transparent and silent if visibility is disabled
 		'''
 	HoldShiftTooltip:
 		'''
@@ -1296,7 +1310,7 @@ OrnateShield: {
 	Tooltip:
 		'''
 		Allows the ability to dash
-		This dash can ram through enemies without taking damage, inflicting [cbuff:Frostburn2]
+		This dash can ram through enemies without taking damage
 		'''
 }
 
@@ -1343,7 +1357,7 @@ PlaguedFuelPack: {
 		8% increased rogue damage and 15% increased rogue projectile velocity
 		Stealth generates 10% faster
 		Press [KEY] to consume 25% of your maximum stealth to perform a swift upwards diagonal dash
-		This dash leaves a trail of plagued clouds
+		The dash leaves a lingering trail of [cbuff:CalamityMod/Plague] clouds
 		This effect has a 1 second cooldown before it can be used again
 		'''
 }
@@ -1481,7 +1495,7 @@ ReaperToothNecklace: {
 	Tooltip:
 		'''
 		20% increased damage
-		Increases armor penetration by 15
+		Increases armor penetration by 30
 		'A grisly trophy from the ultimate predator'
 		'''
 }
@@ -1646,12 +1660,8 @@ ShieldoftheOcean: {
 	DisplayName: Shield of the Ocean
 	Tooltip:
 		'''
-		Pressing [KEY] will activate a parry, encasing you in a bubble
-		Being hit shortly after encasement will pop the bubble, granting 60% DR for that hit
-		Upon popping, nearby enemies are violently launched away from you, and will be damaged if they collide with tiles
-		Enemies which cannot be launched instead directly take large damage
-		After popping, the damage reducing effect goes on a 20 second cooldown
-		Damage parried whilst on cooldown will not be reduced, and will not deal collision damage to launched enemies
+		Increased defense by 5 when submerged in liquid
+		10% increased movement speed and +1 HP/s life regen while wearing Victide armor
 		'''
 }
 
@@ -1725,7 +1735,7 @@ StarbusterCore: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Summons release an [cbuff:CalamityMod/AstralInfectionDebuff] explosion on enemy hits
+		Summons release an astral explosion on enemy hits
 		'''
 }
 
@@ -1870,6 +1880,11 @@ StressPills: {
 		Adrenaline charges 20% faster
 		Increases your max movement speed and acceleration by 5%
 		'''
+	SalesPitch:
+		'''
+		'Some people enjoy simple truths in life: good and evil, health and sickness.'
+		'I'm not sure how healthy they are, but these edgy gadgets are bound to get your blood pumping! Help me give them simple labels and I'll give you a heart-stopping discount!'
+		'''
 }
 
 SupremeBaitTackleBoxFishingStation: {
@@ -1910,7 +1925,7 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		All attacks inflict a variety of debuffs, 300% increased elemental debuff damage
+		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
@@ -2046,6 +2061,7 @@ TrinketofChi: {
 		This buff expires on hit
 		+{2} HP/s life regen for you and your teammates
 		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 UnholyTonic: {
@@ -2064,6 +2080,7 @@ UnstableGraniteCore: {
 		Gain an energy field that periodically zaps enemies with arcing energy
 		The arcing energy ignores a substantial amount of enemy defense
 		'''
+	SalesPitch: "{$CommonItemTooltip.SalesmanShrinePitch}"
 }
 
 V8Engine: {
@@ -2293,6 +2310,7 @@ FrozenCube: {
 		[DAMAGELINE]
 		[c/7497ED:'What I wanna know is, where's the mammoth?']
 		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 	EquippedDebuff: Current Cold Debuff boost: +{0}%
 	EquippedElumphant: Current Elumphant Power: +{0}%
 	Unequipped: Equip this accessory to view its statistics

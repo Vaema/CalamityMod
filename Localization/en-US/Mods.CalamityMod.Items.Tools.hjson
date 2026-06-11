@@ -23,6 +23,11 @@ AggressiveVoucher: {
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
+	SalesPitch:
+		'''
+		'That goblin over there, he's just scamming you for your money, you know? But don't worry, me and Hoggart have a solution for that!'
+		'Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It'll be like a new item!”
+		'''
 }
 
 AntiCystOintment: {
@@ -51,7 +56,7 @@ AridArtifact: {
 		'''
 		Summons a sandstorm
 		The sandstorm will happen shortly after the item is used
-		If used during a sandstorm, the sandstorm will stop some time afterward.
+		If used during a sandstorm, the sandstorm will stop some time afterward
 		'''
 }
 
@@ -160,6 +165,11 @@ CombatVoucher: {
 		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
 		This effect only applies when reforging weapons
 		'''
+	SalesPitch:
+		'''
+		'That goblin over there, he's just scamming you for your money, you know? But don't worry, me and Hoggart have a solution for that!'
+		'Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It'll be like a new item!”
+		'''
 }
 
 Cosmolight: {
@@ -187,7 +197,7 @@ DisgustingMeat: {
 	Tooltip:
 		'''
 		<left> will remove health and mana upgrades, use with no Calamity upgrades to remove vanilla upgrades
-		<right> will remove rage and adrenaline upgrades, plus other miscellaneous boosters
+		<right> will remove Rage and Adrenaline upgrades, plus other miscellaneous boosters such as Demon Heart
 		Removed boosters will be vomited out of you as items
 		'''
 }
@@ -235,6 +245,11 @@ HurriedVoucher: {
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+	SalesPitch:
+		'''
+		'That goblin over there, he's just scamming you for your money, you know? But don't worry, me and Hoggart have a solution for that!'
+		'Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It'll be like a new item!”
 		'''
 }
 
@@ -311,6 +326,11 @@ OddVoucher: {
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
+	SalesPitch:
+		'''
+		'That goblin over there, he's just scamming you for your money, you know? But don't worry, me and Hoggart have a solution for that!'
+		'Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It'll be like a new item!”
+		'''
 }
 
 ReefclawHamaxe: {
@@ -339,7 +359,7 @@ RelicOfResilience: {
 		Holding this item creates orbiting rock shards around you and nearby allies
 		After 5 seconds, the relic will retain orbiting rocks even when not holding the item
 		Continuing to hold the item will steadily increase the number of rocks and defenses until reaching max power
-		While they orbit you, your minimum defense is set to 150 and minimum damage reduction to 10%
+		While they orbit you, your minimum defense is set to 200 and minimum damage reduction to 10%
 		Taking a hit or pressing <right> while holding this item will pull in the shards, then blast them outward, crippling hit enemies
 		This effect has a 10 second cooldown after taking a hit, but recharges faster if holding the item
 		Holding out the shield heavily reduces the damage of all summons
@@ -409,10 +429,14 @@ TheGift: {
 	DisplayName: The Gift
 	Tooltip:
 		'''
-		Drop this fine gift on one of your Town NPCs as a token of appreciation
+		Drop this gift on one of your Town NPCs as a token of appreciation
 		May make them either love you or hate you, you'll never know until they open it!
 		Effect will last for 24 hours
-		[c/F54278:'There's no return policy, better be responsible']
+		'''
+	SalesPitch:
+		'''
+		'Buying gifts for people is hard, and you gotta make sure your people are happy, so how about we kill two birds with one stone?'
+		'Hand this nifty box to someone and it'll suddenly contain the perfect gift for the person you handed it to!' 
 		'''
 }
 
@@ -435,6 +459,11 @@ UnbreakableVoucher: {
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+	SalesPitch:
+		'''
+		'That goblin over there, he's just scamming you for your money, you know? But don't worry, me and Hoggart have a solution for that!'
+		'Just give him this and watch as he hammers your gear like he was struck with divine inspiration! It'll be like a new item!”
 		'''
 }
 

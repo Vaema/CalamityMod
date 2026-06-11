@@ -1,17 +1,9 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Enemy;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+using CalamityMod.Items.Placeables.Banners;
 using Terraria;
-using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,61 +12,13 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class Clam : ModNPC
     {
-        public enum PersonalityTypes
-        {
-            Reefs = 0,
-            Burrows = 1,
-            Den = 2
-        }
-
-        public enum PhaseType
-        {
-            Idle = 0,
-            Attacking = 1,
-            Squirt = 2,
-            Pod = 3
-        }
-
-        public Player Target => Main.player[NPC.target];
-
-        public ref float CurrentPhase => ref NPC.ai[0];
-
-        public ref float Timer => ref NPC.ai[1];
-
-        public ref float Personality => ref NPC.ai[3];
-
-        public ref float ShellRotation => ref NPC.localAI[0];
-
-        public int originalDamage;
-
-        #region Textures
-
-        public static Asset<Texture2D> bottomJawTex;
-
-        public static Asset<Texture2D> bottomJawTexAlgae;
-
-        public static Asset<Texture2D> bottomJawTexCoral;
-
-        public static Asset<Texture2D> algaeTex;
-
-        public static Asset<Texture2D> coralTex;
-
-        public static Asset<Texture2D> backTex;
-        #endregion
-
-        public override void Load()
-        {
-            backTex = ModContent.Request<Texture2D>(Texture + "Back");
-            bottomJawTex = ModContent.Request<Texture2D>(Texture + "Bottom");
-            bottomJawTexAlgae = ModContent.Request<Texture2D>(Texture + "BottomAlgae");
-            bottomJawTexCoral = ModContent.Request<Texture2D>(Texture + "BottomCoral");
-            algaeTex = ModContent.Request<Texture2D>(Texture + "Algae");
-            coralTex = ModContent.Request<Texture2D>(Texture + "Coral");
-        }
+        private int hitAmount = 0;
+        private bool hasBeenHit = false;
+        private bool statChange = false;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 5;
+            Main.npcFrameCount[NPC.type] = 5;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -84,9 +28,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
-            originalDamage = NPC.damage = Main.hardMode ? 60 : 30;
-            NPC.width = 50;
-            NPC.height = 30;
+            NPC.damage = Main.hardMode ? 60 : 30;
+            NPC.width = 56;
+            NPC.height = 38;
             NPC.defense = 9999;
             NPC.lifeMax = Main.hardMode ? 300 : 150;
             if (Main.expertMode)
@@ -95,17 +39,16 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(silver: 5) : Item.buyPrice(silver: 1);
+            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 5, 0) : Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit4;
-            NPC.knockBackResist = 0;
+            NPC.knockBackResist = 0.05f;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<ClamBanner>();
-            NPC.GravityIgnoresLiquid = true;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[3] { ModContent.GetInstance<RadiantReefsBiome>().Type, ModContent.GetInstance<GleamingBurrowsBiome>().Type, ModContent.GetInstance<ClamDenBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -118,272 +61,122 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(NPC.localAI[0]);
-            writer.Write(NPC.localAI[1]);
-            writer.Write(NPC.localAI[2]);
+            writer.Write(hitAmount);
+            writer.Write(NPC.chaseable);
+            writer.Write(hasBeenHit);
+            writer.Write(statChange);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            NPC.localAI[0] = reader.ReadSingle();
-            NPC.localAI[1] = reader.ReadSingle();
-            NPC.localAI[2] = reader.ReadSingle();
-        }
-
-        public override void OnSpawn(IEntitySource source)
-        {
-            NPC.TargetClosest();
-
-            NPC.direction = Main.rand.NextBool().ToDirectionInt();
-            NPC.localAI[1] = Main.rand.Next(0, 4);
-
-            if (Target.Calamity().ZoneClamDen)
-                Personality = (int)PersonalityTypes.Den;
-            else if (Target.Calamity().ZoneGleamingBurrows)
-                Personality = (int)PersonalityTypes.Burrows;
-            else
-                Personality = (int)PersonalityTypes.Reefs;
+            hitAmount = reader.ReadInt32();
+            NPC.chaseable = reader.ReadBoolean();
+            hasBeenHit = reader.ReadBoolean();
+            statChange = reader.ReadBoolean();
         }
 
         public override void AI()
         {
-            // Rotation at its peak
-            float maxRotation = MathHelper.ToRadians(60);
-            NPC.TargetClosest(false);
-            // Always be mad during Clamity
+            NPC.TargetClosest(true);
             if (Main.player[NPC.target].Calamity().clamity)
             {
-                Personality = (int)PersonalityTypes.Burrows;
+                hitAmount = 3;
+                hasBeenHit = true;
             }
-            switch (CurrentPhase)
+            if (NPC.justHit && hitAmount < 3)
             {
-                case (int)PhaseType.Idle:
-                    {
-                        NPC.damage = 0;
-                        NPC.chaseable = false;
-                        NPC.velocity.X *= 0.9f;
-                        if (ShellRotation > 0)
-                        {
-                            ShellRotation -= 0.2f;
-                            if (ShellRotation < 0)
-                                ShellRotation = 0;
-                        }
-                        else if (ShellRotation < 0)
-                        {
-                            ShellRotation += 0.03f;
-                            if (ShellRotation > 0)
-                            {
-                                ShellRotation = 0;
-                            }
-                        }
-                        switch (Personality)
-                        {
-                            // Aggro immediately
-                            case (int)PersonalityTypes.Den:
-                                {
-                                    ChangePhase((int)PhaseType.Attacking);
-                                }
-                                break;
-                            // Aggro if the player is near
-                            case (int)PersonalityTypes.Burrows:
-                                {
-                                    if (Target.Distance(NPC.Center) < 600 && NPC.HasSight(Target.Center))
-                                    {
-                                        ChangePhase((int)PhaseType.Attacking);
-                                    }
-                                }
-                                break;
-                            // Aggro if hurt
-                            default:
-                                {
-                                    if (NPC.life < (NPC.lifeMax - 2))
-                                    {
-                                        ChangePhase((int)PhaseType.Attacking);
-                                    }
-                                }
-                                break;
-                        }
-                    }
-                    break;
-                case (int)PhaseType.Attacking:
-                    {
-                        NPC.damage = 0;
-                        NPC.knockBackResist = 0.05f;
-                        NPC.defense = Main.hardMode ? 15 : 6;
-                        NPC.chaseable = true;
-                        Timer++;
-                        if (NPC.velocity.Y == 0)
-                        {
-                            NPC.direction = NPC.DirectionTo(Target.Center).X.DirectionalSign();
-                            NPC.velocity.X = 0;
-                            NPC.ai[2]++;
-                            if (NPC.ai[2] > Main.rand.Next(30, 60))
-                            {
-                                NPC.velocity.Y = -4;
-                                NPC.velocity.X = NPC.direction * 6;
-                                NPC.ai[2] = 0;
-                            }
-                        }
-                        else
-                        {
-                            NPC.damage = originalDamage;
-
-                            if (NPC.velocity.Y < 0)
-                            {
-                                ShellRotation += 0.065f;
-                                if (ShellRotation > maxRotation)
-                                    ShellRotation = maxRotation;
-                            }
-                            NPC.velocity.X *= 0.99f;
-                        }
-
-                        if (NPC.position.Distance(NPC.oldPosition) < 8 && NPC.velocity.Y >= 0)
-                        {
-                            ShellRotation -= 0.065f;
-                            if (ShellRotation < 0)
-                                ShellRotation = 0;
-                        }
-
-                        // Squirt
-                        if (Timer > Main.rand.Next(220, 260) && NPC.HasSight(Target.Center) && ShellRotation == 0)
-                        {
-                            ChangePhase((int)PhaseType.Squirt);
-                            NPC.direction = NPC.DirectionTo(Target.Center).X.DirectionalSign();
-                        }
-                        NPC.StepUpBlocks();
-                    }
-                    break;
-                case (int)PhaseType.Squirt:
-                    {
-                        NPC.damage = 0;
-                        NPC.chaseable = true;
-                        // Slow down. Once the clam is rested, start incrementing Timer
-                        if (NPC.velocity.Y == 0)
-                        {
-                            NPC.velocity.X *= 0.8f;
-                            // Set ai[2] to 1
-                            NPC.ai[2] = 1;
-                        }
-
-                        // Increment Timer is ai[2] is 1
-                        if (NPC.ai[2] == 1)
-                        {
-                            Timer++;
-                        }
-
-                        // When to start opening
-                        float startOpen = 30;
-                        // When to end opening
-                        float endOpen = startOpen + 30;
-                        // When to start closing
-                        float startClose = endOpen + 20;
-                        // When to stop closing
-                        float endClose = startClose + 5;
-                        // When to go to the next attack
-                        float reset = endClose + 60;
-
-                        // Direction the player is relative to the clam
-                        int playerPosition = NPC.DirectionTo(Target.Center).X.DirectionalSign();
-
-                        // Shell animation
-                        if (Timer >= startOpen && Timer <= endOpen)
-                        {
-                            ShellRotation = (float)Utils.AngleLerp(0, maxRotation, CalamityUtils.SineOutEasing(Utils.GetLerpValue(startOpen, endOpen, Timer, true), 0));
-                        }
-                        else if (Timer >= startClose && Timer <= endClose)
-                        {
-                            ShellRotation = (float)Utils.AngleLerp(maxRotation, 0, CalamityUtils.SineOutEasing(Utils.GetLerpValue(startClose, endClose, Timer, true), 0));
-                        }
-
-                        // Fire the projectile
-                        if (Timer == (endClose - 5))
-                        {
-                            NPC.damage = originalDamage;
-                            Vector2 velocity = NPC.SafeDirectionTo(Target.Center, Vector2.UnitY) * 5;
-
-                            // If the player is on the other side of the clam, flip the jet so that it doesn't fire backwards
-                            if (playerPosition != NPC.direction)
-                                velocity.X *= -1;
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), Main.hardMode ? 30 : 15, 1);
-                            }
-                            for (int i = 0; i < 9; i++)
-                            {
-                                GenericBubbleParticle waterFlavored = new GenericBubbleParticle(NPC.Center, Main.rand.NextFloat(16, 22) * velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-45, 45))), Main.rand.NextFloat(0.3f, 0.5f), Main.rand.NextFloat(-4, 4), 5);
-                                waterFlavored.AffectedByLight = true;
-                                GeneralParticleHandler.SpawnParticle(waterFlavored);
-                            }
-
-                            SoundEngine.PlaySound((Main.rand.NextBool(2) ? SoundID.Item85 : SoundID.Item86).WithPitchOffset(-0.5f), NPC.Center);
-                            SoundEngine.PlaySound(SoundID.NPCDeath14.WithPitchOffset(1f), NPC.Center);
-                        }
-
-                        // Go back to melee
-                        if (Timer >= reset)
-                        {
-                            ChangePhase((int)PhaseType.Attacking);
-                        }
-                    }
-                break;
-                case (int)PhaseType.Pod:
-                    {
-                        NPC.damage = 0;
-
-                        NPC.chaseable = true;
-                        NPC pod = Main.npc[(int)NPC.localAI[2] - 1];
-                        // If the Pearlpod is invalid, go back to idling
-                        if (pod == null || !pod.active || pod.life < 0 || pod.ModNPC == null || pod.ModNPC is not Pearlpod)
-                        {
-                            NPC.localAI[2] = 0;
-                            ChangePhase((int)PhaseType.Idle);
-                        }
-                        else
-                        {
-                            // Face towards the Pearlpod while it's still out
-                            if (pod.Opacity == 1)
-                                NPC.direction = NPC.DirectionTo(pod.Center).X.DirectionalSign();
-                            // Start closing when the Pearlpod is nearby
-                            if (pod.Distance(NPC.Center) > 30)
-                            {
-                                ShellRotation += 0.05f;
-                                if (ShellRotation > maxRotation)
-                                    ShellRotation = maxRotation;
-                            }
-                            // Otherwise open up!
-                            else
-                            {
-                                ShellRotation -= 0.2f;
-                                if (ShellRotation < -0.2f)
-                                    ShellRotation = -0.2f;
-                            }
-                        }
-                    }
-                break;
+                ++hitAmount;
+                hasBeenHit = true;
             }
-            NPC.spriteDirection = NPC.direction;
-        }
-
-        public void ChangePhase(int phaseNum, bool resetai2 = true)
-        {
-            CurrentPhase = phaseNum;
-            Timer = 0;
-            if (resetai2)
-                NPC.ai[2] = 0;
-            NPC.netUpdate = true;
-        }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            return CurrentPhase > 0;
+            NPC.chaseable = hasBeenHit;
+            if (hitAmount == 3)
+            {
+                if (!statChange)
+                {
+                    NPC.defense = Main.hardMode ? 15 : 6;
+                    NPC.damage = NPC.defDamage;
+                    statChange = true;
+                }
+                if (NPC.ai[0] == 0f)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        if (NPC.velocity.X != 0f || NPC.velocity.Y < 0f || (double)NPC.velocity.Y > 0.9)
+                        {
+                            NPC.ai[0] = 1f;
+                            NPC.netUpdate = true;
+                            return;
+                        }
+                        NPC.ai[0] = 1f;
+                        NPC.netUpdate = true;
+                        return;
+                    }
+                }
+                else if (NPC.velocity.Y == 0f)
+                {
+                    NPC.ai[2] += 1f;
+                    int decelerationTimer = 20;
+                    if (NPC.ai[1] == 0f)
+                    {
+                        decelerationTimer = 12;
+                    }
+                    if (NPC.ai[2] < (float)decelerationTimer)
+                    {
+                        NPC.velocity.X *= 0.9f;
+                        return;
+                    }
+                    NPC.ai[2] = 0f;
+                    NPC.TargetClosest(true);
+                    if (NPC.direction == 0)
+                    {
+                        NPC.direction = -1;
+                    }
+                    NPC.spriteDirection = -NPC.direction;
+                    NPC.ai[1] += 1f;
+                    NPC.ai[3] += 1f;
+                    if (NPC.ai[3] >= 4f)
+                    {
+                        NPC.ai[3] = 0f;
+                        if (NPC.ai[1] == 2f)
+                        {
+                            float multiplierX = (float)Main.rand.Next(3, 7);
+                            NPC.velocity.X = (float)NPC.direction * multiplierX;
+                            NPC.velocity.Y = -8f;
+                            NPC.ai[1] = 0f;
+                        }
+                        else
+                        {
+                            float multiplierX = (float)Main.rand.Next(5, 9);
+                            NPC.velocity.X = (float)NPC.direction * multiplierX;
+                            NPC.velocity.Y = -4f;
+                        }
+                    }
+                    NPC.netUpdate = true;
+                    return;
+                }
+                else
+                {
+                    if (NPC.direction == 1 && NPC.velocity.X < 1f)
+                    {
+                        NPC.velocity.X = NPC.velocity.X + 0.1f;
+                        return;
+                    }
+                    if (NPC.direction == -1 && NPC.velocity.X > -1f)
+                    {
+                        NPC.velocity.X = NPC.velocity.X - 0.1f;
+                        return;
+                    }
+                }
+            }
+            else
+                NPC.damage = 0;
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
             if (projectile.minion && !projectile.Calamity().overridesMinionDamagePrevention)
             {
-                return CurrentPhase > 0;
+                return hasBeenHit;
             }
             return null;
         }
@@ -396,7 +189,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.frameCounter = 0.0;
                 NPC.frame.Y = NPC.frame.Y + frameHeight;
             }
-            if (CurrentPhase == 0)
+            if (hitAmount < 3)
             {
                 NPC.frame.Y = frameHeight * 4;
             }
@@ -411,16 +204,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Water)
+            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water)
             {
-                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
-                    return SpawnCondition.CaveJellyfish.Chance * 0.8f;
-
-                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
-                    return SpawnCondition.CaveJellyfish.Chance * 1f;
-
-                if (spawnInfo.Player.Calamity().ZoneClamDen)
-                    return SpawnCondition.CaveJellyfish.Chance * 1.2f;
+                return SpawnCondition.CaveJellyfish.Chance * 1.2f;
             }
             return 0f;
         }
@@ -437,14 +223,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                string name = NPC.localAI[1] switch
+                if (Main.netMode != NetmodeID.Server)
                 {
-                    1 => "ClamAlgae",
-                    2 => "ClamCoral",
-                    _ => "Clam"
-                };
-
-                CalamityUtils.SpawnGores(NPC, name, 2);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam1").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam2").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam3").Type, 1f);
+                }
             }
         }
 
@@ -455,43 +239,6 @@ namespace CalamityMod.NPCs.SunkenSea
             npcLoot.Add(ItemID.BlackPearl, 16);
             npcLoot.Add(ItemID.PinkPearl, 40);
             npcLoot.AddIf(() => Main.hardMode, ModContent.ItemType<MolluskHusk>(), 2);
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            Texture2D tex = TextureAssets.Npc[NPC.type].Value;
-            Texture2D jaw = bottomJawTex.Value;
-
-            switch (NPC.localAI[1])
-            {
-                case 1:
-                    {
-                        tex = algaeTex.Value;
-                        jaw = bottomJawTexAlgae.Value;
-                    }
-                    break;
-                case 2:
-                    {
-                        tex = coralTex.Value;
-                        jaw = bottomJawTexCoral.Value;
-                    }
-                    break;
-            }
-
-            Vector2 drawOffset = Vector2.UnitY * 8;
-            Vector2 topDrawOffset = drawOffset + new Vector2(NPC.spriteDirection * -22, -3);
-            bool facingRight = NPC.spriteDirection == 1;
-            if (facingRight)
-            {
-                topDrawOffset.X += 6;
-            }
-            Vector2 backOffset = topDrawOffset;
-            float trueShellRotation = ShellRotation * -NPC.spriteDirection;
-            if (ShellRotation == 0)
-                spriteBatch.Draw(backTex.Value, NPC.Center - screenPos + backOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(facingRight ? 0 : tex.Width, tex.Height), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-            spriteBatch.Draw(tex, NPC.Center - screenPos + topDrawOffset, null, NPC.GetAlpha(drawColor), trueShellRotation, new Vector2(facingRight ? 0 : tex.Width, tex.Height), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-            spriteBatch.Draw(jaw, NPC.Center - screenPos + drawOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, tex.Size() / 2, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0f);
-            return false;
         }
     }
 }

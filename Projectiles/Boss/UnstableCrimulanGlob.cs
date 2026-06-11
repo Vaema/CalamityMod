@@ -11,7 +11,6 @@ namespace CalamityMod.Projectiles.Boss
     public class UnstableCrimulanGlob : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
-
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -28,9 +27,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            Vector3 light = new Vector3(0.5f, 0.1f, 0.1f) * Projectile.Opacity;
-            Lighting.AddLight(Projectile.Center, light.X, light.Y, light.Z);
-
             // Fly up and then fall down
             if (Projectile.ai[0] == 1f)
             {
@@ -62,7 +58,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Color dustColor = Color.Crimson;
                 dustColor.A = 150;
-                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TintableDust, 0f, 0f, 0, dustColor);
+                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TintableDust, 0f, 0f, Projectile.alpha, dustColor);
                 Main.dust[dust].noGravity = true;
             }
 
@@ -75,7 +71,10 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            lightColor.R = (byte)(255 * Projectile.Opacity);
+            lightColor.G = (byte)(255 * Projectile.Opacity);
+            lightColor.B = (byte)(255 * Projectile.Opacity);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
     }

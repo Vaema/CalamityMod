@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.UI;
 
 namespace CalamityMod.Items.Accessories
@@ -79,6 +81,34 @@ namespace CalamityMod.Items.Accessories
         public override void Unload()
         {
             On_ItemSlot.OverrideLeftClick -= IvDripAlcoholEquip;
+        }
+
+        public override void SaveData(TagCompound tag)
+        {
+            tag["ContainedAlcoholID"] = containedAlcoholID;
+            tag["CurrentAlcoholType"] = (int)currentAlcoholType;
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            containedAlcoholID = tag.GetInt("ContainedAlcoholID");
+
+            if (tag.ContainsKey("CurrentAlcoholType"))
+                currentAlcoholType = (AlcoholType)tag.GetInt("CurrentAlcoholType");
+            else
+                currentAlcoholType = AlcoholType.None;
+        }
+
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(containedAlcoholID);
+            writer.Write((int)currentAlcoholType);
+        }
+
+        public override void NetReceive(BinaryReader reader)
+        {
+            containedAlcoholID = reader.ReadInt32();
+            currentAlcoholType = (AlcoholType)reader.ReadInt32();
         }
 
         private bool IvDripAlcoholEquip(On_ItemSlot.orig_OverrideLeftClick orig, Item[] inv, int context, int slot)

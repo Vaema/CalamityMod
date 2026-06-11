@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Typeless;
@@ -21,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<GodSlayerInferno>()];
         }
         public override void SetDefaults()
         {

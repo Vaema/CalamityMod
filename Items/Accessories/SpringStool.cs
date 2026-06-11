@@ -72,7 +72,8 @@ namespace CalamityMod.Items.Accessories
 
         public override void PostUpdateEquips()
         {
-            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active && hasGroundedSinceJump)
+            // Ensures the special jump initiates only works when unmounted, not grappled to a surface, and the ability is off cooldown
+            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active && hasGroundedSinceJump && !(Player.grappling[0] >= 0))
             {
                 springStoolTimer = 12;
 
@@ -96,8 +97,9 @@ namespace CalamityMod.Items.Accessories
             {
                 bool holdingUp = Player.controlUp;
                 bool standingStill = Player.velocity.Y == 0 && Math.Abs(Player.velocity.X) < 0.1f;
+                bool highEnoughCeiling = !Collision.SolidCollision(new Vector2(Player.position.X, Player.position.Y - 64), Player.width, 64);
 
-                if (holdingUp && standingStill && !Player.mount.Active)
+                if (holdingUp && standingStill && highEnoughCeiling && !Player.mount.Active && !(Player.grappling[0] >= 0))
                 {
                     int boost = 61;
                     if (IsVanillaStoolEquipped(Player))

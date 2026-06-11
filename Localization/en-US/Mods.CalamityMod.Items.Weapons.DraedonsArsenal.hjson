@@ -41,7 +41,7 @@ CountermeasureMitt: {
 		'''
 		A precision welding glove with laser emitters in each fingertip
 		<right> to focus all emitters into a short range palm blast that always critically strikes
-		Palm blasts have a cooldown which is significantly shorter if they miss
+		Palm blasts restore a large amount of mana on hit and have a cooldown which is significantly shorter if they miss
 		[c/1FFBFF:'Most battalions prefer to either spread attacks widely, or focus on a singular target.]
 		[c/1FFBFF:This glove caters to both, though it will never bridge the gap between their strategies.']
 		'''

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;
@@ -50,12 +48,29 @@ namespace CalamityMod.Tiles
             player.cursorItemIconID = availableOres[(int)((Main.GlobalTimeWrappedHourly * 2) % availableOres.Count)];
         }
 
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            if (TileEntity.TryGet<GreedPotTE>(new(i, j), out var greedPotTE) && greedPotTE.Activated && Main.LocalPlayer.miscCounter % 5 == 0)
+            {
+                Tile tile = Main.tile[i, j];
+
+                int left = i - tile.TileFrameX % (3 * 18) / 18;
+                if (left != i)
+                    return;
+                int top = j - tile.TileFrameY % (3 * 18) / 18;
+                if (top != j)
+                    return;
+
+                Point position = new(left, top);
+                HeavySmokeParticle p = new(position.ToWorldCoordinates(24 + Main.rand.Next(-10, 11), 2), Vector2.UnitY * -2, Color.Crimson, 90, Main.rand.NextFloat(0.2f, 0.3f), 0.75f, Main.rand.NextFloat(-0.05f, 0.05f), true);
+                GeneralParticleHandler.SpawnParticle(p);
+            }
+        }
+
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
             if (TileEntity.TryGet<GreedPotTE>(new(i, j), out var greedPotTE))
-            {
                 frameXOffset = 18 * 3 * greedPotTE.MyFrame;
-            }
         }
     }
 
@@ -75,9 +90,15 @@ namespace CalamityMod.Tiles
         {
             Tile tile = Main.tile[x, y];
 
+            if (!tile.HasTile || tile.TileType != ModContent.TileType<GreedPotTile>())
+                return false;
+
             int style = 0, alt = 0;
             TileObjectData.GetTileInfo(tile, ref style, ref alt);
             TileObjectData data = TileObjectData.GetTileData(tile.TileType, style, alt);
+
+            if (data == null)
+                return false;
 
             int sheetSquare = 16 + data.CoordinatePadding;
             int FrameX = tile.TileFrameX / sheetSquare % data.Width;
@@ -99,14 +120,14 @@ namespace CalamityMod.Tiles
 
         public override void OnNetPlace() => NetMessage.SendData(MessageID.TileEntitySharing, -1, -1, null, ID, Position.X, Position.Y);
 
-        public override void Update()
+        public void UpdateOnAllClients()
         {
-            if(Activated)
+            if (Activated)
             {
-                if(CurrentFrame != 3)
+                if (CurrentFrame != 3)
                 {
                     FrameTime++;
-                    if(FrameTime % FrameRate == 0)
+                    if (FrameTime % FrameRate == 0)
                     {
                         FrameTime = 0;
                         CurrentFrame = (byte)((CurrentFrame + 1) % FrameTotal);
@@ -119,12 +140,6 @@ namespace CalamityMod.Tiles
                     TimeSinceActivation = 0;
                     return;
                 }
-
-                if(TimeSinceActivation % 5 == 0)
-                {
-                    HeavySmokeParticle p = new(Position.ToWorldCoordinates(24 + Main.rand.Next(-10, 11), 2), Vector2.UnitY * -2, Color.Crimson, 90, Main.rand.NextFloat(0.2f, 0.3f), 0.75f, Main.rand.NextFloat(-0.05f, 0.05f), true);
-                    GeneralParticleHandler.SpawnParticle(p);
-                }    
 
                 TimeSinceActivation++;
             }
@@ -158,6 +173,21 @@ namespace CalamityMod.Tiles
         }
     }
 
+    //Mod Tile Entity's Update functions don't get called on multiplayer clients
+    public class GreedPotTEUpdateSystem : ModSystem
+    {
+        public override void PostUpdateProjectiles()
+        {
+            foreach (TileEntity te in TileEntity.ByID.Values)
+            {
+                if (te is not GreedPotTE greedTE)
+                    continue;
+
+                greedTE.UpdateOnAllClients();
+            }
+        }
+    }
+    
     public class GreedTransmutation : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
@@ -210,6 +240,8 @@ namespace CalamityMod.Tiles
         BezierCurve path = null;
         private bool Success = false;
 
+        private int random = -1;
+
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -230,10 +262,20 @@ namespace CalamityMod.Tiles
             Projectile.netUpdate = true;
         }
 
+        public override bool PreAI()
+        {
+            if (Projectile.timeLeft == 120)
+            {
+                GreedPotTE te = TileEntity.ByID[(int)Projectile.ai[2]] as GreedPotTE;
+                te.Activated = true;
+                te.TimeSinceActivation = 0;
+            }
+            return true;
+        }
 
         public override void AI()
         {
-            if(path == null)
+            if (path == null)
             {
                 Vector2 startPoint = StartPosition;
                 Vector2 endPoint = PotPosition - Vector2.UnitY * 64;
@@ -253,31 +295,36 @@ namespace CalamityMod.Tiles
             float lerp = 1 - MathHelper.Clamp(((Projectile.timeLeft - 60) / 60f), 0f, 1f);
 
             Projectile.Center = path.Evaluate(CalamityUtils.CircOutEasing(lerp, 1));
+        }
 
-            if (Projectile.timeLeft == 1)
+        public override void OnKill(int timeLeft)
+        {
+            if (Main.myPlayer == Projectile.owner)
             {
                 int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, Success ? SuccessOutputItemType : ItemID.StoneBlock);
-                Main.item[i].GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot = true;
+                if (i >= 0)
+                {
+                    Main.item[i].GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot = true;
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, i);
+                }
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            //Anim Plan
-            //Moving to Pos: 0 -> 60
-            //Darken: 70 -> 80
-            //Transform: 90 -> 100
-            //Undarken: 110 -> 120
-
             int animTime = 120 - Projectile.timeLeft;
             bool beforeDarken = animTime < 50;
             bool darken = animTime < 90;
             bool transform = animTime < 110;
 
-            if(beforeDarken)
+            if (random == -1)
+                random = Main.rand.Next(120);
+
+            if (beforeDarken)
             {
                 Texture2D tex = TextureAssets.Item[InputItemType].Value;
-                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, lightColor, Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, lightColor, Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
             }
             else if (darken)
             {
@@ -290,7 +337,7 @@ namespace CalamityMod.Tiles
                 glowLerp = CalamityUtils.SineInEasing(glowLerp, 1);
 
                 Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
-                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson * glowLerp, Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, glowLerp), 0, 0);
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Crimson * glowLerp, Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, glowLerp), 0, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(snap);
@@ -299,7 +346,7 @@ namespace CalamityMod.Tiles
                 darkenLerp = CalamityUtils.CircInEasing(darkenLerp, 1);
 
                 Texture2D tex = TextureAssets.Item[InputItemType].Value;
-                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Lerp(lightColor, Color.Black, darkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Lerp(lightColor, Color.Black, darkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
             }
             else if(transform)
             {
@@ -309,7 +356,7 @@ namespace CalamityMod.Tiles
                 Main.spriteBatch.Begin(newSnap);
 
                 Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
-                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson, Projectile.rotation, glow.Size() * 0.5f, 0.15f, 0, 0);
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Crimson, Projectile.rotation, glow.Size() * 0.5f, 0.15f, 0, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(snap);
@@ -319,8 +366,8 @@ namespace CalamityMod.Tiles
                 float transformLerp = MathHelper.Clamp((animTime - 90) / 10f, 0f, 1f);
                 //transformLerp = CalamityUtils.SineInOutEasing(transformLerp, 1);
 
-                Main.spriteBatch.Draw(inputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, 1 - transformLerp, 0, 0);
-                Main.spriteBatch.Draw(outputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, transformLerp, 0, 0);
+                Main.spriteBatch.Draw(inputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, 1 - transformLerp, 0, 0);
+                Main.spriteBatch.Draw(outputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, transformLerp, 0, 0);
             }
             else
             {
@@ -333,15 +380,29 @@ namespace CalamityMod.Tiles
                 Main.spriteBatch.Begin(newSnap);
 
                 Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
-                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson * (1 - undarkenLerp), Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, (1 - undarkenLerp)), 0, 0);
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Crimson * (1 - undarkenLerp), Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, (1 - undarkenLerp)), 0, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(snap);
 
                 Texture2D tex = TextureAssets.Item[Success ? SuccessOutputItemType : ItemID.StoneBlock].Value;
-                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Lerp(Color.Black, lightColor, undarkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + random) * 8), null, Color.Lerp(Color.Black, lightColor, undarkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
             }
             return false;
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(StartPosition);
+            writer.WriteVector2(PotPosition);
+            writer.Write(Success);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            StartPosition = reader.ReadVector2();
+            PotPosition = reader.ReadVector2();
+            Success = reader.ReadBoolean();
         }
     }
 
@@ -353,9 +414,6 @@ namespace CalamityMod.Tiles
 
         public override bool? UseItem(Item item, Player player)
         {
-            if (Main.LocalPlayer.whoAmI != player.whoAmI)
-                return null;
-
             if (!GreedTransmutation.GreedChain.TryGetValue(item.type, out var transmutation))
                 return null;
 
@@ -371,17 +429,28 @@ namespace CalamityMod.Tiles
             if (!player.IsInTileInteractionRange(mouseTile.X, mouseTile.Y, TileReachCheckSettings.Simple))
                 return null;
 
-            Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), Main.LocalPlayer.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, Main.LocalPlayer.whoAmI, item.type, transmutation.Result, Main.rand.Next(120));
+            if (Main.myPlayer == player.whoAmI)
+                Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), player.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, player.whoAmI, item.type, transmutation.Result, greedPotTE.ID);
+
             greedPotTE.Activated = true;
             greedPotTE.TimeSinceActivation = 0;
             player.ApplyItemTime(item, 0.5f, false);
-
             return false;
         }
 
         public override bool CanStackInWorld(Item destination, Item source)
         {
-            return !destination.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot || !source.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot;
+            return !destination.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot && !source.GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot;
+        }
+
+        public override void NetSend(Item item, BinaryWriter writer)
+        {
+            writer.Write(FromGreedPot);
+        }
+
+        public override void NetReceive(Item item, BinaryReader reader)
+        {
+            FromGreedPot = reader.ReadBoolean();
         }
     }
 }

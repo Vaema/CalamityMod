@@ -140,14 +140,16 @@ namespace CalamityMod.Buffs
         {
             // Globally remove summon tag debuff stacking, unless allowed in the SummonTag
             // Other mods need to add to this list because otherwise we can't tell which IsATag buff is actually for whips
-            if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
+            var tag1 = CalamityBuffSets.SummonTagDebuff[type];
+            if (tag1 is not null && !tag1.AllowsWhipStacking && buffIndex > 0)
             {
                 for (int i = buffIndex; i >= 0; i--)
                 {
                     if (npc.buffTime[i] > 0)
                     {
                         int buffID = npc.buffType[i];
-                        if (CalamityBuffSets.SummonTagDebuff.TryGetValue(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
+                        var tag2 = CalamityBuffSets.SummonTagDebuff[buffID];
+                        if (tag2 is not null && !tag2.AllowsWhipStacking && buffID != type)
                         {
                             npc.DelBuff(i);
                             break;

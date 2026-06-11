@@ -1,12 +1,37 @@
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Projectiles.Summon;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class SeaSnailBuff : BaseSummonBuff
+    public class SeaSnailBuff : ModBuff
     {
-        protected override int MinionProjectileType => ModContent.ProjectileType<VictideSeaSnail>();
+        public override void SetStaticDefaults()
+        {
+            Main.buffNoTimeDisplay[Type] = true;
+            Main.buffNoSave[Type] = true;
+        }
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.victideSnail;
+        public override void Update(Player player, ref int buffIndex)
+        {
+            CalamityPlayer modPlayer = player.Calamity();
+
+
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSeaSnail>()] > 0)
+            {
+                modPlayer.victideSnail = true;
+            }
+
+            if (!modPlayer.victideSnail)
+            {
+                player.DelBuff(buffIndex);
+                buffIndex--;
+            }
+            else
+            {
+                player.buffTime[buffIndex] = 18000;
+            }
+        }
     }
 }

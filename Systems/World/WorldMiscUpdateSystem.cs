@@ -111,7 +111,7 @@ namespace CalamityMod.Systems
                     continue;
 
                 CalamityGlobalNPC.AttemptToSpawnLabCritters(p);
-                CalamityGlobalNPC.AttemptToSpawnLavaNPCs(p);
+                //CalamityGlobalNPC.AttemptToSpawnLavaNPCs(p);
             }
 
             // Spawn the Old Man if Skeletron hasn't been defeated and there is no Old Man, it takes too fucking long otherwise.

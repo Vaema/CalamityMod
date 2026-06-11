@@ -125,7 +125,8 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(pulse);
 
                     // Play a sound with volume scaling with charge percent
-                    SoundEngine.PlaySound(SoundID.Item62 with { Volume = SoundID.Item62.Volume * ChargePercent }, Owner.MountedCenter);
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/TitaniumRailgunShoot");
+                    SoundEngine.PlaySound(fire with { Volume = ChargePercent }, Owner.MountedCenter);
 
                     // Set the initial recoil, mark the projectile as fired, and set the target recoil
                     Owner.itemRotation = initialRecoil;
