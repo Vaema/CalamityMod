@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
@@ -32,6 +33,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 
@@ -104,6 +106,22 @@ namespace CalamityMod.NPCs
             myClone.AffectedByTheMonument = AffectedByTheMonument;
 
             return myClone;
+        }
+
+        // TODO: [The Gift] Move out of this godforsaken class
+        public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+        {
+            bitWriter.WriteBit(TheGiftStatus.HasValue);
+            if (TheGiftStatus.HasValue)
+                bitWriter.WriteBit(TheGiftStatus.Value);
+
+            binaryWriter.Write(TheGiftReset);
+        }
+
+        public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+        {
+            TheGiftStatus = bitReader.ReadBit() ? bitReader.ReadBit() : null;
+            TheGiftReset = binaryReader.ReadDouble();
         }
 
         #region Town NPC Patreon Name Sets

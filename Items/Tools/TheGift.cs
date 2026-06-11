@@ -1,10 +1,12 @@
 ﻿using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.NPCs;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -15,6 +17,65 @@ namespace CalamityMod.Items.Tools
     {
         public new string LocalizationCategory => "Items.Tools";
         public static readonly SoundStyle BadBuzzer = new SoundStyle("CalamityMod/Sounds/Custom/BadGiftBuzzer") with { Volume = 0.85f };
+
+        public static bool CanApplyToNPC(NPC npc)
+        {
+            return npc.isLikeATownNPC && !NPCID.Sets.NoTownNPCHappiness[npc.type] && !NPCID.Sets.IsTownPet[npc.type] && !npc.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus.HasValue;
+        }
+
+        public static void ApplyGiftEffects(NPC npc, bool positive)
+        {
+            Color color = positive ? Color.Green : Color.Red;
+            SoundEngine.PlaySound(positive ? SoundID.ResearchComplete : BadBuzzer, npc.Center);
+
+            // nothing ever happens....
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 spawnPos = npc.Center + Main.rand.NextVector2Circular(30f, 30f);
+                HealingPlus sparkle = new(spawnPos, 0.5f, (spawnPos - npc.Center).SafeNormalize(Vector2.Zero) * 0.65f, color, color * 0.2f, 25)
+                {
+                    Rotation = positive ? 0f : MathHelper.PiOver4
+                };
+                GeneralParticleHandler.SpawnParticle(sparkle);
+            }
+
+            for (int j = 0; j < 4; j++)
+            {
+                Vector2 spawnPos = npc.Center + Main.rand.NextVector2Circular(50f, 50f);
+                Vector2 arrowVelocity = -Vector2.UnitY * 0.6f * positive.ToDirectionInt();
+                StatChangeArrow arrow = new(spawnPos, arrowVelocity, -MathHelper.PiOver2 * positive.ToDirectionInt(), color, color * 0.1f, 0.7f, 40);
+                GeneralParticleHandler.SpawnParticle(arrow);
+            }
+        }
+
+        public static bool TryApplyGift(Item item, NPC npc, bool? forcedOutcome = null)
+        {
+            if (!item.active || item.type != ModContent.ItemType<TheGift>() || Main.remixWorld || !CanApplyToNPC(npc))
+                return false;
+
+            bool positive = forcedOutcome ?? Main.rand.NextBool();
+            var townNPC = npc.GetGlobalNPC<CalamityGlobalTownNPC>();
+            townNPC.TheGiftStatus = positive;
+            townNPC.TheGiftReset = 0.0;
+            ApplyGiftEffects(npc, positive);
+
+            item.stack--;
+            if (item.stack <= 0)
+            {
+                item.active = false;
+                item.type = ItemID.None;
+            }
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                npc.netUpdate = true;
+                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item.whoAmI);
+                TheGiftEffectsPacket.Send(npc, positive);
+            }
+
+            return true;
+        }
+
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -39,46 +100,21 @@ namespace CalamityMod.Items.Tools
         {
             // Controls actually applying the effect to an NPC
             // None of this should work in Remix because Remix disables happiness
-            if (Item.noGrabDelay <= 0 && !Main.remixWorld)
+            bool localGiftCollisionCheck = Main.netMode == NetmodeID.SinglePlayer || Item.playerIndexTheItemIsReservedFor == Main.myPlayer;
+            if (Item.noGrabDelay <= 0 && !Main.remixWorld && localGiftCollisionCheck)
             {
                 foreach (NPC n in Main.ActiveNPCs)
                 {
-                    // Don't run this code for NPCs that aren't affected by happiness
-                    // Also don't run this if The Gift has already been used on this NPC; they all will hold grudges against you :)
-                    if (!n.isLikeATownNPC || NPCID.Sets.NoTownNPCHappiness[n.type] || NPCID.Sets.IsTownPet[n.type] || n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus.HasValue)
+                    if (!CanApplyToNPC(n))
                         continue;
 
                     if (Item.Hitbox.Intersects(n.Hitbox))
                     {
-                        bool positive = Main.rand.NextBool();
-                        Color c = positive ? Color.Green : Color.Red;
-                        SoundEngine.PlaySound(positive ? SoundID.ResearchComplete : BadBuzzer, n.Center);
-                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus = positive;
-                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftReset = 0.0;
+                        if (Main.netMode == NetmodeID.SinglePlayer)
+                            TryApplyGift(Item, n);
+                        else if (Main.netMode == NetmodeID.MultiplayerClient)
+                            RequestApplyTheGiftPacket.Send(Item, n);
 
-                        // Visual effect to demonstrate that something happened
-                        for (int i = 0; i < 6; i++)
-                        {
-                            Vector2 spawnPos = n.Center + Main.rand.NextVector2Circular(30f, 30f);
-                            HealingPlus s = new(spawnPos, 0.5f, (spawnPos - n.Center).SafeNormalize(Vector2.Zero) * 0.65f, c, c * 0.2f, 25)
-                            {
-                                Rotation = positive ? 0f : MathHelper.PiOver4
-                            };
-                            GeneralParticleHandler.SpawnParticle(s);
-                        }
-                        for (int j = 0; j < 4; j++)
-                        {
-                            Vector2 spawnPos = n.Center + Main.rand.NextVector2Circular(50f, 50f);
-                            Vector2 arrVel = -Vector2.UnitY * 0.6f * positive.ToDirectionInt();
-                            StatChangeArrow arr = new(spawnPos, arrVel, -MathHelper.PiOver2 * positive.ToDirectionInt(), c, c * 0.1f, 0.7f, 40);
-                            GeneralParticleHandler.SpawnParticle(arr);
-                        }
-
-                        Item.active = false;
-                        Item.type = ItemID.None;
-                        Item.stack = 0;
-                        if (Main.dedServ)
-                            NetMessage.SendData(MessageID.SyncItem, -1, -1, null, Item.whoAmI);
                         // Make sure it can't apply to multiple NPCs at once
                         break;
                     }

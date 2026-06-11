@@ -232,7 +232,7 @@ namespace CalamityMod.Tiles.Furniture
                 }
             }
 
-            if (Projectile.timeLeft == 1)
+            if (Projectile.timeLeft == 1 && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Item dummy = new Item();
                 dummy.SetDefaults(ItemType);
