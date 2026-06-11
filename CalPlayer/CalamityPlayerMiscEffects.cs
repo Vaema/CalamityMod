@@ -326,7 +326,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // First Frame dash effects
-            bool dashStart = (Player.Calamity().DashID == DefaultDash.ID && Player.timeSinceLastDashStarted == 1 && Player.dashDelay != 0 ) || (Player.dashDelay == -1 && ((!HasCustomDash && IsFirstDashFrame) || (HasCustomDash && UsedDash.DashTimeAdjustedForStartup == 1)));
+            bool dashStart = Player.dashDelay == -1 && ((!HasCustomDash && IsFirstDashFrame) || (HasCustomDash && UsedDash.DashTimeAdjustedForStartup == 1));
             int dir = MathF.Sign(Player.velocity.X);
 
             if (dashStart)
@@ -340,7 +340,9 @@ namespace CalamityMod.CalPlayer
             }
 
             // Tabi/Master Ninja Gear dash change
-            if (lastDashWasTabi)
+            if (Player.dashDelay != -1)
+                lastDashWasTabi = false;
+            else if (lastDashWasTabi)
             {
                 Player.dashType = 1;
             }
