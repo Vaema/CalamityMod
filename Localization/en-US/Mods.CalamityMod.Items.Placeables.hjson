@@ -911,6 +911,11 @@ PiggyCage: {
 	Tooltip: ""
 }
 
+PiggyCageGold: {
+	DisplayName: Gold Piggy Cage
+	Tooltip: ""
+}
+
 RefractivePrismTorch: {
 	DisplayName: Refractive Prism Torch
 	Tooltip: Can be placed in water
