@@ -875,6 +875,11 @@ FungalSymbiote: {
 		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 5 defense and +1 HP/s life regen
 		10% increased damage while you have [cbuffplr:CalamityMod/Mushy]
 		'''
+	SalesPitch:
+		'''
+		‘You know that neat treasure you found when I was definitely not following you?’
+		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
+		'''
 }
 
 GiantPearl: {
@@ -912,6 +917,11 @@ GladiatorsLocket: {
 		'''
 		Enemies drop a healing orb on kill
 		Gain an increase to your damage and movement speed the lower your health is, up to 20% at 50% life or below
+		'''
+	SalesPitch:
+		'''
+		‘You know that neat treasure you found when I was definitely not following you?’
+		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
 		'''
 }
 
@@ -967,6 +977,11 @@ HarpyRing: {
 HeartofDarkness: {
 	DisplayName: Heart of Darkness
 	Tooltip: You constantly gain rage over time, and rage does not fade away when out of combat
+	SalesPitch:
+		'''
+		‘Some people enjoy simple truths in life: good and evil, health and sickness.’
+		‘I’m not sure how healthy they are, but these edgy gadgets are bound to get your blood pumping! Help me give them simple labels and I’ll give you a heart-stopping discount!’
+		'''
 }
 
 HeartoftheElements: {
@@ -1126,6 +1141,11 @@ LuxorsGift: {
 		The scarab fires different projectiles at enemies depending on what class the held weapon belongs to
 		Held item class is not updated when holding a tool
 		When not in use, the scarab will condense itself into a small orb of light
+		'''
+	SalesPitch:
+		'''
+		‘You know that neat treasure you found when I was definitely not following you?’
+		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
 		'''
 }
 
@@ -1869,6 +1889,11 @@ StressPills: {
 		Adrenaline charges 20% faster
 		Increases your max movement speed and acceleration by 5%
 		'''
+	SalesPitch:
+		'''
+		‘Some people enjoy simple truths in life: good and evil, health and sickness.’
+		‘I’m not sure how healthy they are, but these edgy gadgets are bound to get your blood pumping! Help me give them simple labels and I’ll give you a heart-stopping discount!’
+		'''
 }
 
 SupremeBaitTackleBoxFishingStation: {
@@ -2045,6 +2070,11 @@ TrinketofChi: {
 		This buff expires on hit
 		+{2} HP/s life regen for you and your teammates
 		'''
+	SalesPitch:
+		'''
+		‘You know that neat treasure you found when I was definitely not following you?’
+		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
+		'''
 }
 
 UnholyTonic: {
@@ -2062,6 +2092,11 @@ UnstableGraniteCore: {
 		'''
 		Gain an energy field that periodically zaps enemies with arcing energy
 		The arcing energy ignores a substantial amount of enemy defense
+		'''
+	SalesPitch:
+		'''
+		‘You know that neat treasure you found when I was definitely not following you?’
+		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
 		'''
 }
 
@@ -2291,6 +2326,11 @@ FrozenCube: {
 		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
 		[DAMAGELINE]
 		[c/7497ED:'What I wanna know is, where's the mammoth?']
+		'''
+	SalesPitch:
+		'''
+		‘You know that neat treasure you found when I was definitely not following you?’
+		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
 		'''
 	EquippedDebuff: Current Cold Debuff boost: +{0}%
 	EquippedElumphant: Current Elumphant Power: +{0}%

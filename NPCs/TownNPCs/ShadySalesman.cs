@@ -30,7 +30,6 @@ using Terraria.Chat;
 using Terraria.GameContent.Bestiary;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
@@ -289,6 +288,9 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<GreedPot>()
                 .Add<FishStocks>()
                 .Add<TheGift>()
+                .Add<TheMonument>(Condition.Hardmode)
+                .Add<TheHousingContract>(Condition.Hardmode)
+                .Add<OmniGun>(Condition.DownedGolem)
                 .Add<GladiatorsLocket>(new Condition(CalamityUtils.GetText("Condition.HasFoundGladiatorsLocket"), () => RecipeUnlockHandler.HasFoundGladiatorsLocket && Main.moonPhase == 0))
                 .Add<LuxorsGift>(new Condition(CalamityUtils.GetText("Condition.HasFoundLuxorsGift"), () => RecipeUnlockHandler.HasFoundLuxorsGift && Main.moonPhase == 1))
                 .Add<CrimsonEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCrimsonEffigy"), () => RecipeUnlockHandler.HasFoundCrimsonEffigy && Main.moonPhase == 2))
@@ -297,9 +299,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<FrozenCube>(new Condition(CalamityUtils.GetText("Condition.HasFoundFrozenCube"), () => RecipeUnlockHandler.HasFoundFrozenCube && Main.moonPhase == 5))
                 .Add<CorruptionEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCorruptionEffigy"), () => RecipeUnlockHandler.HasFoundCorruptionEffigy && Main.moonPhase == 6))
                 .Add<TrinketofChi>(new Condition(CalamityUtils.GetText("Condition.HasFoundTrinketOfChi"), () => RecipeUnlockHandler.HasFoundTrinketOfChi && Main.moonPhase == 7))
-                .Add<TheMonument>(Condition.Hardmode)
-                .Add<TheHousingContract>(Condition.Hardmode)
-                .Add<OmniGun>(Condition.DownedGolem)
+                .Add<HeartofDarkness>(Condition.DownedSkeletron, Condition.MoonPhasesEven, CalamityConditions.InRevengeanceMode)
+                .Add<StressPills>(Condition.DownedSkeletron, Condition.MoonPhasesOdd, CalamityConditions.InRevengeanceMode)
 
                 .Register();
         }

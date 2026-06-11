@@ -7,6 +7,7 @@ using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Potions.Food;
+using CalamityMod.Items.SummonItems.TownPets;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
@@ -166,6 +167,7 @@ namespace CalamityMod.Systems.Collections
         public static bool[] HasSalesmanText = Factory.CreateNamedSet("HasSalesmanText")
             .Description("Labels this item as having Shady Salesman flavor text, making it draw at the top of the tooltip and the actual tooltip being drawn small below it.")
             .RegisterBoolSet(ItemType<FishStocks>(), ItemType<TrustyOldRod>(), ItemType<RageBait>(), ItemType<GluttonyBlender>(), ItemType<TheMonument>(), ItemType<GreedPot>(), ItemType<BaconOil>(), ItemType<TheSandwich>(), ItemType<TheConcoction>(), ItemType<TheElixir>(), ItemType<TheGift>(), ItemType<OmniGun>(),
-            ItemType<CombatVoucher>(), ItemType<AggressiveVoucher>(), ItemType<OddVoucher>(), ItemType<UnbreakableVoucher>(), ItemType<HurriedVoucher>());
+            ItemType<CombatVoucher>(), ItemType<AggressiveVoucher>(), ItemType<OddVoucher>(), ItemType<UnbreakableVoucher>(), ItemType<HurriedVoucher>(), ItemType<TheHousingContract>(), ItemType<CorruptionEffigy>(), ItemType<CrimsonEffigy>(), ItemType<TrinketofChi>(), ItemType<FrozenCube>(), ItemType<LuxorsGift>(),
+            ItemType<FungalSymbiote>(), ItemType<GladiatorsLocket>(), ItemType<UnstableGraniteCore>(), ItemType<HeartofDarkness>(), ItemType<StressPills>());
     }
 }

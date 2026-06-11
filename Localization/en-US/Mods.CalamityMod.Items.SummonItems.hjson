@@ -292,6 +292,11 @@ Terminus: {
 TheHousingContract: {
 	DisplayName: The Housing Contract
 	Tooltip: Use to adopt a piggy for your town
+	SalesPitch:
+		'''
+		‘Have you ever wanted to take care of a piggy? As part of our campaign to stop piggy abuse, you can get one here and now!’
+		‘Just sign here and we’ll deliver you one posthaste!’
+		'''
 }
 
 YharonEgg: {
