@@ -3781,19 +3781,6 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            //For the vanilla Monk/Shinobi armor critting with Lightning Auras. In vanilla it doesn't stack additively but frankly I do not care. It's not like aura is that good anyway.
-            if (proj.type == ProjectileID.DD2LightningAuraT1 || proj.type == ProjectileID.DD2LightningAuraT2 || proj.type == ProjectileID.DD2LightningAuraT3)
-            {
-                if (player.setMonkT3)
-                {
-                    critChance += 0.25f; // 1/4 chance to crit with Shinobi
-                }
-                else if (player.setMonkT2)
-                {
-                    critChance += 0.166f; // 1/6 chance to crit with Monk
-                }
-            }
-
             // Used to convert all multiplicative tag into crit chance and vice-versa. If both force tag crit and multiplicative are applied, chooses one at random.
             if (modPlayer.forceSummonTagCrit && !(modPlayer.forceSummonTagMultiplicative && Main.rand.NextBool()))
             {
@@ -3810,8 +3797,6 @@ namespace CalamityMod.NPCs
             // Currently doesn't support more than 100% crit chance, todo if something does more than +100% tag damage
             if (Main.rand.NextFloat() < critChance)
                 modifiers.SetCrit();
-            else
-                modifiers.DisableCrit(); // This is to prevent Morning Star and Kalei from critting with their vanilla tag effect. If you want a minion/sentry to crit, you *must* make sure to change critChance in this function.
         }
 
         // This is for whip tag effects that run on hit and don't modify the damage of the hit.
