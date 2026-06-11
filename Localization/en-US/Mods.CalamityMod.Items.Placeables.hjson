@@ -677,11 +677,7 @@ CorruptionEffigy: {
 		However, this comes at a cost of {1}% damage reduction
 		This cannot be stacked with Crimson Effigy
 		'''
-	SalesPitch:
-		'''
-		‘You know that neat treasure you found when I was definitely not following you?’
-		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
-		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 AltarOfTheAccursedItem: {
@@ -742,11 +738,7 @@ CrimsonEffigy: {
 		However, this comes at a cost of {2}% maximum health
 		This cannot be stacked with Corruption Effigy
 		'''
-	SalesPitch:
-		'''
-		‘You know that neat treasure you found when I was definitely not following you?’
-		‘Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?’
-		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 EffigyOfDecay: {

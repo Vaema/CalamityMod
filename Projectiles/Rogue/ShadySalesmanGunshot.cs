@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Fishing;
-using CalamityMod.Items.Fishing.FishingRods;
-using CalamityMod.NPCs.TownNPCs;
+﻿using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,7 +11,7 @@ namespace CalamityMod.Projectiles.Typeless
     public class ShadySalesmanGunshot : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public new string LocalizationCategory => "Projectiles.Typeless";
+        public new string LocalizationCategory => "Projectiles.Rogue";
 
         public override void SetDefaults()
         {
@@ -26,6 +21,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.hostile = false;
             Projectile.penetrate = 3;
             Projectile.timeLeft = 600;
+            Projectile.npcProj = true;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.extraUpdates = 10;
