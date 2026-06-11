@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.extraUpdates = 10;
-            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.localNPCHitCooldown = -1;
             Projectile.usesLocalNPCImmunity = true;
 
