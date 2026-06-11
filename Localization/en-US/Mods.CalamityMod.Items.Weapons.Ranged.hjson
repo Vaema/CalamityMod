@@ -1440,7 +1440,7 @@ TyrannysEnd: {
 	Tooltip:
 		'''
 		Converts musket balls into .70 caliber sniper rounds that deal devastating damage
-		Causes enemies to become [cbuff:CalamityMod/MarkedforDeath] on enemy hits and bypasses defense
+		Causes enemies to become [cbuff:CalamityMod/MarkedforDeath] and bypasses defense
 		Critical hits summon a swarm of 6 additional bullets
 		'Pierce the heart of even the most heavily-armored foe'
 		'''

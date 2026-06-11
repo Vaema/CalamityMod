@@ -102,7 +102,7 @@ HolyFireBullet: {
 	DisplayName: Holy Fire Bullet
 	Tooltip:
 		'''
-		Profaned bullets that deal 1.15x damage and explode on impact, inflicting [cbuff:CalamityMod/HolyFlames]
+		Profaned bullets that deal 1.15x damage and explode on impact
 		The explosion is larger and the bullet deals increased damage if impact occurs immediately after firing
 		The extra damage bonus caps at 1.15x
 		'''
@@ -171,7 +171,7 @@ VanquisherArrow: {
 	DisplayName: Vanquisher Arrow
 	Tooltip:
 		'''
-		Pierces through tiles and homes in on enemies, inflicting [cbuff:CalamityMod/GodSlayerInferno]
+		Pierces through tiles and homes in on enemies
 		Tears a rift in space on enemy hits
 		'''
 }
