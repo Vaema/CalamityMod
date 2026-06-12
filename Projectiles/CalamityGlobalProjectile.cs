@@ -227,7 +227,7 @@ namespace CalamityMod.Projectiles
         public int defExtraUpdates = -1;
 
         /// <summary>
-        /// Set this to a value higher than one to have a projectile automatically have their extraUpdates field synced across all clients on a server when spawned. <br></br>
+        /// Set this to a value higher than zero to have a projectile automatically have their extraUpdates field synced across all clients on a server when spawned. <br></br>
         /// Please ensure <c>SyncProjectile</c> (or simply <see cref="Projectile.netUpdate"/> is called after setting this.
         /// </summary>
         public int extraUpdatesToSync = 0;
