@@ -893,6 +893,8 @@ namespace CalamityMod.NPCs
 
         public bool SearchForTheMonument(NPC npc)
         {
+            var monumentTileType = TileType<TheMonumentTile>();
+
             Point tileCenter = npc.Center.ToTileCoordinates();
             Rectangle searchArea = new((int)(tileCenter.X - Main.buffScanAreaWidth / 2), (int)(tileCenter.Y - Main.buffScanAreaHeight / 2), Main.buffScanAreaWidth, Main.buffScanAreaHeight);
             searchArea = WorldUtils.ClampToWorld(searchArea);
@@ -909,7 +911,7 @@ namespace CalamityMod.NPCs
                     if (!tile.HasTile)
                         continue;
 
-                    if (tile.TileType == TileType<TheMonumentTile>())
+                    if (tile.TileType == monumentTileType)
                     {
                         AffectedByTheMonument = true;
                         return true;
