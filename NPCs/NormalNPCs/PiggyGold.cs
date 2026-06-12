@@ -24,6 +24,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetDefaults()
         {
             base.SetDefaults();
+            NPC.rarity = 3;
             NPC.catchItem = (short)ModContent.ItemType<PiggyGoldItem>();
             Banner = 0;
         }
