@@ -296,10 +296,13 @@ public static partial class RevengeanceAndDeathAI
 
                                     if (canSpawnProj)
                                     {
-                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), (float)(spiritProjSpawnX * 16 + 8), (float)(spiritProjSpawnY * 16 + 8), 0f, 0f, ProjectileID.DesertDjinnCurse, 0, 1f, Main.myPlayer, (float)NPC.target, 0f);
+                                        int proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), new Vector2((float)(spiritProjSpawnX * 16 + 8), (float)(spiritProjSpawnY * 16 + 8)), Vector2.Zero, ProjectileID.DesertDjinnCurse, 0, 1f, Main.myPlayer, (float)NPC.target, 0f).identity;
                                         if (CalamityWorld.death)
-                                            Main.projectile[proj].extraUpdates += 1;
-
+                                        {
+                                            Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
+                                            if (Main.dedServ)
+                                                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                        }
                                         break;
                                     }
                                 }

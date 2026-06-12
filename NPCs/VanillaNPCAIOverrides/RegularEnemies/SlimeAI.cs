@@ -188,9 +188,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                                 spikeShootVelocity *= Main.rand.NextVector2Square(0.75f, 1.25f);
                                 spikeShootVelocity.Normalize();
                                 spikeShootVelocity *= Main.rand.NextFloat(3.5f, 4.5f) * projectileShootSpeedFactor;
-                                int proj = Projectile.NewProjectile(source, NPC.Center, spikeShootVelocity, projectileShootType, 9, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectileDirect(source, NPC.Center, spikeShootVelocity, projectileShootType, 9, 0f, Main.myPlayer).identity;
                                 if (CalamityWorld.death)
-                                    Main.projectile[proj].extraUpdates += 1;
+                                {
+                                    Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
+                                    if (Main.dedServ)
+                                        NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                }
 
                                 projectileShootCountdown = 30f;
                             }
@@ -198,11 +202,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                         else
                         {
                             Vector2 velocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center - Vector2.UnitY * 100f) * projectileShootSpeedFactor * (CalamityWorld.death ? 3.25f : CalamityWorld.revenge ? 5.5f : 4.5f);
-                            int proj = Projectile.NewProjectile(source, NPC.Center, velocity, projectileShootType, 9, 0f, Main.myPlayer);
+                            int proj = Projectile.NewProjectileDirect(source, NPC.Center, velocity, projectileShootType, 9, 0f, Main.myPlayer).identity;
                             if (CalamityWorld.death)
                             {
-                                Main.projectile[proj].extraUpdates += 1;
+                                Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[proj].timeLeft = 1200;
+                                if (Main.dedServ)
+                                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
                             }
 
                             projectileShootCountdown = 50f;

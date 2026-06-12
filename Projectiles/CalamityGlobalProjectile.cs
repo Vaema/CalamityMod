@@ -93,6 +93,7 @@ namespace CalamityMod.Projectiles
         /// <br/>* Reducing projectile damage for Hardmode enemies and in Master Mode.
         /// <br/>* Adding armor penetration to rogue projectiles spawned while wearing Filthy Glove or its upgrades.
         /// <br/>* Increasing the damage of projectiles from the post-Moon Lord Dungeon, and from the post-DoG Pumpkin Moon, Frost Moon, and Solar Eclipse.
+        /// <br/>* Manually setting the extraUpdates fields of projectiles who use <see cref="extraUpdatesToSync"/>.
         /// </summary>
         private bool frameOneHacksExecuted = false;
 
@@ -224,6 +225,12 @@ namespace CalamityMod.Projectiles
         /// This is NOT set automatically, and must be set whenever it is needed.
         /// </summary>
         public int defExtraUpdates = -1;
+
+        /// <summary>
+        /// Set this to a value higher than one to have a projectile automatically have their extraUpdates field synced across all clients on a server when spawned. <br></br>
+        /// Please ensure <c>SyncProjectile</c> (or simply <see cref="Projectile.netUpdate"/> is called after setting this.
+        /// </summary>
+        public int extraUpdatesToSync = 0;
 
         /// <summary>
         /// How many times this projectile has pierced an enemy which applies pierce resist.<br/>
@@ -437,10 +444,12 @@ namespace CalamityMod.Projectiles
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter)
         {
             binaryWriter.Write(ParentNPCIndex);
+            binaryWriter.Write(extraUpdatesToSync);
         }
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader)
         {
             ParentNPCIndex = binaryReader.ReadInt32();
+            extraUpdatesToSync = binaryReader.ReadInt32();
         }
         #endregion On Spawn
 
@@ -3795,6 +3804,9 @@ namespace CalamityMod.Projectiles
 
             if (!frameOneHacksExecuted)
             {
+                if (extraUpdatesToSync > 0)
+                    projectile.extraUpdates = extraUpdatesToSync;
+
                 if (projectile.hostile)
                 {
                     // Reduce Nail damage from Nailheads because they're stupid

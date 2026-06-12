@@ -2922,22 +2922,26 @@ PrepareToShoot:
                                 }
                                 else if (npcType == NPCID.StardustSoldier)
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition.X, spawnPosition.Y, distX, distY, projectileType, damage, 0f, Main.myPlayer, 0f, (float)NPC.whoAmI);
+                                    int proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition, new Vector2(distX, distY), projectileType, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI).identity;
                                     if (CalamityWorld.death)
                                     {
-                                        Main.projectile[proj].extraUpdates += 1;
+                                        Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                         Main.projectile[proj].timeLeft = 480;
+                                        if (Main.dedServ)
+                                            NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
                                     }
                                 }
                                 else if (npcType == NPCID.NebulaSoldier)
                                 {
                                     for (int i = 0; i < 4; i++)
                                     {
-                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X - (float)(NPC.spriteDirection * 4), NPC.Center.Y + 6f, (float)(-3 + 2 * i) * 0.15f, (float)(-(float)Main.rand.Next(0, 3)) * 0.2f - 0.1f, projectileType, damage, 0f, Main.myPlayer, 0f, (float)NPC.whoAmI);
+                                        int proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), new Vector2(NPC.Center.X - (float)(NPC.spriteDirection * 4), NPC.Center.Y + 6f), new Vector2((float)(-3 + 2 * i) * 0.15f, (float)(-(float)Main.rand.Next(0, 3)) * 0.2f - 0.1f), projectileType, damage, 0f, Main.myPlayer, 0f, (float)NPC.whoAmI).identity;
                                         if (CalamityWorld.death)
                                         {
-                                            Main.projectile[proj].extraUpdates += 1;
+                                            Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                             Main.projectile[proj].timeLeft = 1200;
+                                            if (Main.dedServ)
+                                                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
                                         }
                                     }
                                 }
@@ -2948,11 +2952,13 @@ PrepareToShoot:
                                 }
                                 else
                                 {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition.X, spawnPosition.Y, distX, distY, projectileType, damage, 0f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition, new Vector2(distX, distY), projectileType, damage, 0f, Main.myPlayer).identity;
                                     if (CalamityWorld.death)
                                     {
-                                        Main.projectile[proj].extraUpdates += 1;
+                                        Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                         Main.projectile[proj].timeLeft = 1200;
+                                        if (Main.dedServ)
+                                            NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
                                     }
                                 }
                             }
@@ -3192,12 +3198,14 @@ PrepareToShoot:
                     {
                         int velocityX = 3 * NPC.direction;
                         int velocityY = -5;
-                        int clownBomb = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition.X, spawnPosition.Y, velocityX, velocityY, ProjectileID.HappyBomb, 0, 0f, Main.myPlayer, 0f, 0f);
+                        int clownBomb = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition, new Vector2(velocityX, velocityY), ProjectileID.HappyBomb, 0, 0f, Main.myPlayer, 0f, 0f).identity;
                         Main.projectile[clownBomb].timeLeft = 300;
                         if (CalamityWorld.death)
                         {
-                            Main.projectile[clownBomb].extraUpdates += 1;
+                            Main.projectile[clownBomb].Calamity().extraUpdatesToSync = 1;
                             Main.projectile[clownBomb].timeLeft = 600;
+                            if (Main.dedServ)
+                                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, clownBomb);
                         }
                         NPC.ai[2] = 0f;
                     }
