@@ -90,7 +90,7 @@ namespace CalamityMod.Tiles.Furniture
         {
             base.LoadWorldData(tag);
 
-            hasPortedTheMonument = tag.TryGet<bool>(nameof(hasPortedTheMonument), out var value) ? value : false;
+            hasPortedTheMonument = tag.GetBool(nameof(hasPortedTheMonument));
         }
 
         // tModLoader only calls this on servers and single player clients,
