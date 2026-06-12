@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<GreedPotTile>());
-            Item.rare = ItemRarityID.Pink;
+            Item.rare = ItemRarityID.Orange;
             Item.value = Item.buyPrice(gold: 5); // Sold by Shady Salesman
         }
     }
