@@ -133,7 +133,7 @@ namespace CalamityMod.Items.Tools
 
             var gtnpc = npc.GetGlobalNPC<CalamityGlobalTownNPC>();
             // The Monument lowers happiness by a fixed amount. This is not applied to the Tax Collector.
-            if (npc.type != NPCID.TaxCollector && gtnpc.SearchForTheMonument(npc))
+            if (npc.type != NPCID.TaxCollector && gtnpc.AffectedByTheMonument)
             {
                 float oldHappiness = self._currentPriceAdjustment;
                 self._currentPriceAdjustment += TheMonument.MonumentHappinessReduction;
