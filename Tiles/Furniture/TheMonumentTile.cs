@@ -5,6 +5,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Furniture
@@ -20,15 +21,15 @@ namespace CalamityMod.Tiles.Furniture
 
     public class TheMonumentTile : ModTile
     {
-        private const int tile_width = 7;
-        private const int tile_height = 8;
+        internal static int TileWidth => 7;
+        internal static int TileHeight => 8;
 
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
-            TileObjectData.newTile.Width = tile_width;
-            TileObjectData.newTile.Height = tile_height;
+            TileObjectData.newTile.Width = TileWidth;
+            TileObjectData.newTile.Height = TileHeight;
             TileObjectData.newTile.Origin = new Point16(3, 7);
             TileObjectData.newTile.CoordinateHeights = new[] { 16, 16, 16, 16, 16, 16, 16, 16 };
             TileObjectData.newTile.DrawYOffset = 2;
@@ -45,6 +46,67 @@ namespace CalamityMod.Tiles.Furniture
         {
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Gold);
             return false;
+        }
+    }
+
+    internal sealed class TheMonumentTileEntityPorter : ModSystem
+    {
+        private bool hasPortedTheMonument;
+
+        public override void SaveWorldData(TagCompound tag)
+        {
+            base.SaveWorldData(tag);
+
+            // tag[nameof(hasPortedTheMonument)] = hasPortedTheMonument;
+        }
+
+        public override void LoadWorldData(TagCompound tag)
+        {
+            base.LoadWorldData(tag);
+
+            hasPortedTheMonument = tag.TryGet<bool>(nameof(hasPortedTheMonument), out var value) ? value : false;
+        }
+
+        // tModLoader only calls this on servers and single player clients,
+        // so we don't need to do it ourselves.
+        public override void PostWorldLoad()
+        {
+            base.PostWorldLoad();
+
+            if (hasPortedTheMonument)
+            {
+                return;
+            }
+
+            var cachedType = ModContent.TileType<TheMonumentTile>();
+            for (var x = 0; x < Main.maxTilesX; x += TheMonumentTile.TileWidth)
+            {
+                for (var y = 0; y < Main.maxTilesY; y += TheMonumentTile.TileHeight)
+                {
+                    var tile = Framing.GetTileSafely(x, y);
+                    if (!tile.HasTile || tile.TileType != cachedType)
+                    {
+                        continue;
+                    }
+
+                    AddTheMonumentTileEntityIfItsThereYo(tile, x, y);
+                }
+            }
+        }
+
+        private void AddTheMonumentTileEntityIfItsThereYo(Tile tile, int x, int y)
+        {
+            x -= tile.TileFrameX / 16 % TheMonumentTile.TileWidth;
+            y -= tile.TileFrameY / 16 % TheMonumentTile.TileHeight;
+
+            // Shouldn't ever happen, but better safe than sorry.
+            if (!ModContent.GetInstance<TheMonumentTileEntity>().IsTileValidForEntity(x, y))
+            {
+                Mod.Logger.Warn($"Failed to place TheMonument tile entity near the coordinates: {x}, {y}");
+                return;
+            }
+        
+            ModContent.GetInstance<TheMonumentTileEntity>().Place(x, y);
         }
     }
 }
