@@ -53,7 +53,10 @@ public static partial class RevengeanceAndDeathAI
                 int proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, projDirection, ProjectileID.StardustJellyfishSmall, 60, 0f, Main.myPlayer, 0f, NPC.whoAmI).identity;
                 Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                 if (Main.dedServ)
+                {
+                    Main.projectile[proj].netSpam = 0;
                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                }
             }
 
             return false;

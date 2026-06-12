@@ -193,7 +193,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                                 {
                                     Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                     if (Main.dedServ)
+                                    {
+                                        Main.projectile[proj].netSpam = 0;
                                         NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                    }
                                 }
 
                                 projectileShootCountdown = 30f;
@@ -208,7 +211,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                                 Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[proj].timeLeft = 1200;
                                 if (Main.dedServ)
+                                {
+                                    Main.projectile[proj].netSpam = 0;
                                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                }
                             }
 
                             projectileShootCountdown = 50f;

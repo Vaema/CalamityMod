@@ -291,7 +291,10 @@ public static partial class RevengeanceAndDeathAI
                                 Main.projectile[feather].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[feather].timeLeft = 600;
                                 if (Main.dedServ)
+                                {
+                                    Main.projectile[feather].netSpam = 0;
                                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, feather);
+                                }
                             }
                         }
                     }
@@ -325,7 +328,10 @@ public static partial class RevengeanceAndDeathAI
                                 Main.projectile[sickle].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[sickle].timeLeft = 600;
                                 if (Main.dedServ)
+                                {
+                                    Main.projectile[sickle].netSpam = 0;
                                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, sickle);
+                                }
                             }
                         }
                     }
@@ -363,7 +369,10 @@ public static partial class RevengeanceAndDeathAI
                                 Main.projectile[trident].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[trident].timeLeft = 600;
                                 if (Main.dedServ)
+                                {
+                                    Main.projectile[trident].netSpam = 0;
                                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, trident);
+                                }
                             }
                         }
                     }

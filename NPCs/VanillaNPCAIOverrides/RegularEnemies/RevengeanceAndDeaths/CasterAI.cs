@@ -301,7 +301,10 @@ public static partial class RevengeanceAndDeathAI
                                         {
                                             Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                             if (Main.dedServ)
+                                            {
+                                                Main.projectile[proj].netSpam = 0;
                                                 NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                            }
                                         }
                                         break;
                                     }

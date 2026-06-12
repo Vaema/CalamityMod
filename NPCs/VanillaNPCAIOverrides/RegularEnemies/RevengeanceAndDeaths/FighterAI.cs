@@ -2928,7 +2928,10 @@ PrepareToShoot:
                                         Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                         Main.projectile[proj].timeLeft = 480;
                                         if (Main.dedServ)
+                                        {
+                                            Main.projectile[proj].netSpam = 0;
                                             NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                        }
                                     }
                                 }
                                 else if (npcType == NPCID.NebulaSoldier)
@@ -2941,7 +2944,10 @@ PrepareToShoot:
                                             Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                             Main.projectile[proj].timeLeft = 1200;
                                             if (Main.dedServ)
+                                            {
+                                                Main.projectile[proj].netSpam = 0;
                                                 NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                            }
                                         }
                                     }
                                 }
@@ -2958,7 +2964,10 @@ PrepareToShoot:
                                         Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                         Main.projectile[proj].timeLeft = 1200;
                                         if (Main.dedServ)
+                                        {
+                                            Main.projectile[proj].netSpam = 0;
                                             NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                        }
                                     }
                                 }
                             }
@@ -3205,7 +3214,10 @@ PrepareToShoot:
                             Main.projectile[clownBomb].Calamity().extraUpdatesToSync = 1;
                             Main.projectile[clownBomb].timeLeft = 600;
                             if (Main.dedServ)
+                            {
+                                Main.projectile[clownBomb].netSpam = 0;
                                 NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, clownBomb);
+                            }
                         }
                         NPC.ai[2] = 0f;
                     }

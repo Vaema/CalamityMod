@@ -602,7 +602,10 @@ public static partial class RevengeanceAndDeathAI
                                 Main.projectile[stingerSpawn].timeLeft = (CalamityWorld.death || Main.hardMode) ? 600 : 300;
                                 Main.projectile[stingerSpawn].Calamity().extraUpdatesToSync = (CalamityWorld.death || Main.hardMode) ? 1 : 0;
                                 if (Main.dedServ)
+                                {
+                                    Main.projectile[stingerSpawn].netSpam = 0;
                                     NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, stingerSpawn);
+                                }
                                 NPC.ai[1] = 301f;
                                 NPC.netUpdate = true;
                             }
@@ -681,7 +684,10 @@ public static partial class RevengeanceAndDeathAI
                                     Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                     Main.projectile[proj].timeLeft = 1200;
                                     if (Main.dedServ)
+                                    {
+                                        Main.projectile[proj].netSpam = 0;
                                         NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                    }
                                 }
                             }
                             else
