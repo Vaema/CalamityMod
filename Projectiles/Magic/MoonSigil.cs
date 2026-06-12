@@ -18,6 +18,8 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public Player Owner => Main.player[Projectile.owner];
         public bool visuals => Owner.Calamity().mageCrownVisibility; // Enables/disables visuals and sounds based on accessory visibility
+        public ref float SigilIndex => ref Projectile.ai[1];
+
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -60,27 +62,15 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.Kill();
                 return;
             }
-            int sigils = 0;
-            int sigilAmt = 0;
-            for (int i = 0; i < Main.maxProjectiles; i++)
-            {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Projectile.owner && Main.projectile[i].type == Projectile.type)
-                {
-                    if (Main.projectile[i] == Projectile)
-                    {
-                        sigils = sigilAmt;
-                    }
-                    sigilAmt++;
-                }
-            }
-            float f = ((float)sigils / (float)sigilAmt + player.miscCounterNormalized * 2f) * ((float)Math.PI * 2f);
-            float num = 24f + (float)sigilAmt * 4.5f;
+
+            float f = ((float)SigilIndex / (float)Owner.ownedProjectileCounts[Type] + player.miscCounterNormalized * 2f) * ((float)Math.PI * 2f);
+            float num = 24f + (float)Owner.ownedProjectileCounts[Type] * 4.5f;
             Vector2 vector = player.position - player.oldPosition;
-            base.Projectile.Center += vector;
+            Projectile.Center += vector;
             Vector2 vector2 = f.ToRotationVector2();
             Projectile.localAI[0] = vector2.Y;
             Vector2 value = (player.Center + new Vector2(0f, 5f)) + vector2 * new Vector2(1f, 0.05f) * num;
-            base.Projectile.Center = value;
+            Projectile.Center = value;
 
             if (!Projectile.FinalExtraUpdate())
                 return;
