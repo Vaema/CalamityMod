@@ -39,7 +39,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
 
             Item heldItem = Main.player[owner].HeldItem;
-            int totalDamage = (int)Main.player[owner].GetTotalDamage<SummonDamageClass>().ApplyTo(debuffData.EnemyLostRegen);
+            int totalDamage = (int)npc.Calamity().ActiveTypelessDebuffMultiplier.ApplyTo(Main.player[owner].GetTotalDamage<SummonDamageClass>().ApplyTo(debuffData.EnemyLostRegen));
 
             if (CalamityUtils.ShouldTriggerSummonPenalty(Main.player[owner], heldItem))
                 totalDamage = (int)(totalDamage * BalancingConstants.SummonerCrossClassNerf);
