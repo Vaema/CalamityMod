@@ -28,6 +28,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -893,26 +894,15 @@ namespace CalamityMod.NPCs
 
         public bool SearchForTheMonument(NPC npc)
         {
-            var monumentTileType = TileType<TheMonumentTile>();
-
             Point tileCenter = npc.Center.ToTileCoordinates();
             Rectangle searchArea = new((int)(tileCenter.X - Main.buffScanAreaWidth / 2), (int)(tileCenter.Y - Main.buffScanAreaHeight / 2), Main.buffScanAreaWidth, Main.buffScanAreaHeight);
-            searchArea = WorldUtils.ClampToWorld(searchArea);
-            for (int i = searchArea.Left; i < searchArea.Right; i++)
-            {
-                for (int j = searchArea.Top; j < searchArea.Bottom; j++)
-                {
-                    Tile tile = Main.tile[i, j];
-                    if (!tile.HasTile)
-                        continue;
 
-                    if (tile.TileType == monumentTileType)
-                    {
-                        AffectedByTheMonument = true;
-                        return true;
-                    }
-                }
+            if (TheMonumentTileEntity.IsInArea(searchArea))
+            {
+                AffectedByTheMonument = true;
+                return true;
             }
+
             return false;
         }
         #endregion

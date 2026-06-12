@@ -17,6 +17,25 @@ namespace CalamityMod.Tiles.Furniture
             var tile = Main.tile[x, y];
             return tile.HasTile && tile.TileType == ModContent.TileType<TheMonumentTile>() && tile.TileFrameX == 0 && tile.TileFrameY == 0;
         }
+
+        public static bool IsInArea(Rectangle tileArea)
+        {
+            foreach (var (pos, tileEntity) in ByPosition)
+            {
+                if (tileEntity is not TheMonumentTileEntity)
+                {
+                    continue;
+                }
+
+                var monumentArea = new Rectangle(pos.X, pos.Y, TheMonumentTile.TileWidth, TheMonumentTile.TileHeight);
+                if (monumentArea.Intersects(tileArea))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     public class TheMonumentTile : ModTile
@@ -57,7 +76,7 @@ namespace CalamityMod.Tiles.Furniture
         {
             base.SaveWorldData(tag);
 
-            // tag[nameof(hasPortedTheMonument)] = hasPortedTheMonument;
+            tag[nameof(hasPortedTheMonument)] = hasPortedTheMonument;
         }
 
         public override void LoadWorldData(TagCompound tag)
@@ -92,6 +111,8 @@ namespace CalamityMod.Tiles.Furniture
                     AddTheMonumentTileEntityIfItsThereYo(tile, x, y);
                 }
             }
+
+            hasPortedTheMonument = true;
         }
 
         private void AddTheMonumentTileEntityIfItsThereYo(Tile tile, int x, int y)
