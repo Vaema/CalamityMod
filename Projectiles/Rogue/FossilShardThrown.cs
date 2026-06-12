@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.friendly = true;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.aiStyle = ProjAIStyleID.GroundProjectile;
             Projectile.timeLeft = 600;
             AIType = ProjectileID.SpikyBall;
