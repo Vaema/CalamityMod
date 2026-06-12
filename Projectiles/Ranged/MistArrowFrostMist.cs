@@ -67,6 +67,6 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 45);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<WindChilled>(), 60);
     }
 }
