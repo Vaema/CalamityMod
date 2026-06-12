@@ -9,20 +9,33 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Furniture
 {
+    public class TheMonumentTileEntity : ModTileEntity
+    {
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            var tile = Main.tile[x, y];
+            return tile.HasTile && tile.TileType == ModContent.TileType<TheMonumentTile>() && tile.TileFrameX == 0 && tile.TileFrameY == 0;
+        }
+    }
+
     public class TheMonumentTile : ModTile
     {
+        private const int tile_width = 7;
+        private const int tile_height = 8;
+
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
-            TileObjectData.newTile.Width = 7;
-            TileObjectData.newTile.Height = 8;
+            TileObjectData.newTile.Width = tile_width;
+            TileObjectData.newTile.Height = tile_height;
             TileObjectData.newTile.Origin = new Point16(3, 7);
             TileObjectData.newTile.CoordinateHeights = new[] { 16, 16, 16, 16, 16, 16, 16, 16 };
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, TileObjectData.newTile.Width, 0);
+            TileObjectData.newTile.HookPostPlaceMyPlayer = ModContent.GetInstance<TheMonumentTileEntity>().Generic_HookPostPlaceMyPlayer;
 
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(239, 205, 54), CalamityUtils.GetItemName<TheMonument>());
