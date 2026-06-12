@@ -903,8 +903,6 @@ namespace CalamityMod.NPCs
                 for (int j = searchArea.Top; j < searchArea.Bottom; j++)
                 {
                     Tile tile = Main.tile[i, j];
-                    if (tile == null)
-                        continue;
                     if (!tile.HasTile)
                         continue;
 
