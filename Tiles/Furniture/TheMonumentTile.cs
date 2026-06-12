@@ -94,7 +94,7 @@ namespace CalamityMod.Tiles.Furniture
         }
 
         // tModLoader only calls this on servers and single player clients,
-        // so we don't need to do it ourselves.
+        // so we don't need to check it ourselves.
         public override void PostWorldLoad()
         {
             base.PostWorldLoad();
