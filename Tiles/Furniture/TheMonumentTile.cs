@@ -61,6 +61,13 @@ namespace CalamityMod.Tiles.Furniture
             AddMapEntry(new Color(239, 205, 54), CalamityUtils.GetItemName<TheMonument>());
         }
 
+        public override void KillMultiTile(int i, int j, int frameX, int frameY)
+        {
+            base.KillMultiTile(i, j, frameX, frameY);
+
+            ModContent.GetInstance<TheMonumentTileEntity>().Kill(i, j);
+        }
+
         public override bool CreateDust(int i, int j, ref int type)
         {
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Gold);
