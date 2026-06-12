@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Placeables.Furniture
                 new Color(175, 87, 190)
             ];
             ItemID.Sets.IsFood[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Ambrosia;
         }
 
         public override void SetDefaults()
