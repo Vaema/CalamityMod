@@ -314,13 +314,15 @@ namespace CalamityMod.Projectiles
         /// <summary>
         /// Custom update priority.<br/>
         /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
-        /// Examples include Void Eater Marionette segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// Examples include Rancor's laser beam being offset from the magic circle.
         /// </summary>
         public float UpdatePriority = 0f;
 
         public int BloodstoneOrbValue = 0;
 
         public int HomingTarget = -1;
+
+        public int storedYoyoDamage = 0;
 
         /// <summary>
         /// Flag used during Rev+ Brain of Cthulhu to denote projectiles that were spawned prior to its Illusion Trick attack starting.
@@ -516,16 +518,16 @@ namespace CalamityMod.Projectiles
             if (Main.player[projectile.owner].yoyoGlove && projectile.aiStyle == ProjAIStyleID.Yoyo)
             {
                 // Store damage on first frame
-                if (projectile.localAI[2] == 0f)
-                    projectile.localAI[2] = projectile.damage;
+                if (storedYoyoDamage == 0f)
+                    storedYoyoDamage = projectile.damage;
 
                 var MainYoyo = Main.projectile.First(x => x.active && x.type == projectile.type && x.owner == projectile.owner).whoAmI;
 
                 // Halve damage if not the main yoyo
                 if (projectile.whoAmI != MainYoyo)
-                    projectile.damage = (int)(projectile.localAI[2] * 0.5f);
+                    projectile.damage = (int)(storedYoyoDamage * 0.5f);
                 else
-                    projectile.damage = (int)projectile.localAI[2];
+                    projectile.damage = storedYoyoDamage;
             }
 
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
