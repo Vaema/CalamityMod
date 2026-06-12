@@ -328,7 +328,7 @@ namespace CalamityMod.CalPlayer
             {
                 bool validattempt = Player.HasItemInInventoryOrOpenVoidBag(ModContent.ItemType<Spadefish>()) ? attempt.veryrare : attempt.rare;
                 int chance = Main.hardMode ? 10 : 4;
-                if (attempt.veryrare && Main.rand.NextBool(chance))
+                if (validattempt && Main.rand.NextBool(chance))
                 {
                     itemDrop = ModContent.ItemType<Spadefish>();
                 }
