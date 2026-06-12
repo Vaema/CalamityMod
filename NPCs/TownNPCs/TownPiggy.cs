@@ -35,6 +35,9 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.TownNPCBestiaryPriority.Add(Type);
             NPCID.Sets.PlayerDistanceWhilePetting[Type] = 32;
             NPCID.Sets.IsPetSmallForPetting[Type] = true;
+            NPC.Calamity().VulnerableToHeat = true;
+            NPC.Calamity().VulnerableToCold = true;
+            NPC.Calamity().VulnerableToSickness = true;
 
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new()
             {
