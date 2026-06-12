@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Potions.Food
             Item.width = 56;
             Item.height = 50;
             Item.value = 0;
-            Item.rare = ModContent.RarityType<CalamityRed>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
             Item.maxStack = 1;
             Item.consumable = false;
             Item.useAnimation = 901;
