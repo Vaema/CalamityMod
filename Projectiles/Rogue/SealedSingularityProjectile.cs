@@ -342,7 +342,7 @@ namespace CalamityMod.Projectiles.Rogue
             switch (AIState)
             {
                 case 1:
-                    modifiers.SourceDamage /= Stealth ? 15 : 25;
+                    modifiers.SourceDamage /= Stealth ? 2 : 16;
                     modifiers.SourceDamage *= MathF.Pow(1 - SealedSingularity.FalloffPerTargetHitByAura, Projectile.numHits);
                     return;
                 case 2:
