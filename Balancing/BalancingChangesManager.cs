@@ -77,8 +77,8 @@ namespace CalamityMod.Balancing
             // 25% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(ResistTrueMelee(0.75f))));
 
-            // 40% resist to Lemon 'nade
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(new ProjectileResistBalancingRule(0.60f, ProjectileType<LemonNadeProjectile>()))));
+            // 60% resist to Lemon 'nade
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(new ProjectileResistBalancingRule(0.40f, ProjectileType<LemonNadeProjectile>()))));
             #endregion
 
             #region Brain of Cthulhu: Creepers
@@ -312,8 +312,6 @@ namespace CalamityMod.Balancing
             #endregion The Devourer of Gods
 
             #region Yharon
-            // 15% resist to The Old Reaper's stealth strike rain.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<RadiationRain>()))));
 
             // 15% resist to Time Bolt.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<TimeBoltKnife>()))));
