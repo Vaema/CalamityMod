@@ -123,20 +123,28 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public void SetStats()
         {
-            maxTargetingDistance = (float)(500 * GetPower(0.25f));
+            maxTargetingDistance = (float)(500 * GetPower(0.3f));
             attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed / (GetPower(0.5f)));
-            damageScaling = (float)GetPower(0.015f, 22 * (1 + frozenCubePower));
+            damageScaling = (float)GetPower(1.35f, (1 + frozenCubePower * 0.2f));
             cooldownTime = (int)(FrozenCube.baseAttackCooldown / GetPower(0.5f));
         }
         public void SetElumphantPower()
         {
             int usedDefense = Owner.Calamity().frozenCubeUsedDefense;
-            if (time == 0 && !Owner.Calamity().frozenCubeVanity) // Show the player how much defense is being used
-                CombatText.NewText(Projectile.Hitbox, color2, -usedDefense,false, true);
+            if (time == 0) // Show the player how much defense is being used
+                CombatText.NewText(Projectile.Hitbox, color2, -usedDefense, false, true);
+
+            // Defense investment softcaps at 110 (aka player has 330 defense)
+            float defenseCap = 110;
+            if (usedDefense > defenseCap)
+            {
+                float ratio = usedDefense / defenseCap;
+                usedDefense = (int)(defenseCap * MathF.Pow(ratio, 0.15f));
+            }
 
             frozenCubePower = usedDefense * 0.05f; // 1 point of defense = 5% effectiveness
             
-            float power = (float)(GetPower(0.0185f, 13f * (1 + frozenCubePower)) - 1);
+            float power = (float)(GetPower(0.8f, (1 + frozenCubePower * 0.2f)) - 1);
             Owner.Calamity().frozenCubeDebuffBoost = power;
             Owner.Calamity().frozenCubeElumphantBoost = damageScaling - 1;
             Owner.Calamity().ColdDebuffMultiplier += power; // Boost cold debuff damage
@@ -334,6 +342,9 @@ namespace CalamityMod.Projectiles.Typeless
 
             int attemptDir = Math.Sign((recoiling ? basePosition.X : targetPos.X) - Projectile.Center.X);
             SetDirection(attemptDir);
+
+            if (dashing && attackTimer >= attackTimeAdjusted + 5) // failsafe
+                AfterLanding(targeted);
 
             if (attackTimer <= (int)(Math.Max(attackTimeAdjusted, 2) / 2) && recoiling)
             {
@@ -598,11 +609,6 @@ namespace CalamityMod.Projectiles.Typeless
                 attackTimer = 0;
 
             attackTimer += recoiling ? -0.75f : 1 + 0.4f * Projectile.numHits;
-            if (Owner.Calamity().frozenCubeVanity)
-            {
-                fxFade = 0;
-                attackTimer = 0;
-            }
             time++;
             if (mammothOops)
                 hopTimer++;
@@ -616,7 +622,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             lastProjPos = Projectile.Center;
 
-            if (!Owner.Calamity().frozenCube && !Owner.Calamity().frozenCubeVanity)
+            if (!Owner.Calamity().frozenCube)
             {
                 if (SoundEngine.TryGetActiveSound(soundSlot, out var sound2) && sound2.IsPlaying)
                     sound2?.Stop();
@@ -680,9 +686,8 @@ namespace CalamityMod.Projectiles.Typeless
                 float attackMult = (float)(0.7f * GetPower(0.5f));
                 target.MoveNPC(Vector2.UnitY, 8, false, Owner);
 
-                hitNPCs.Add(target);
-                GetTarget(true, 1, true);
-                lastHitNPCPos = target.Center - Vector2.UnitY * (target.height / 2);
+                Projectile.numHits--;
+                AfterLanding(target);
 
                 bool lastHit = false;
                 if (targeted == null)
@@ -691,14 +696,12 @@ namespace CalamityMod.Projectiles.Typeless
                     if (vis)
                         Owner.SetScreenshake(3 * attackMult);
                     lastHit = true;
-                    recoiling = true;
                     modifiers.SourceDamage *= (float)(1.5f * damageScaling);
                 }
                 else
                 {
-                    attackTimer = (int)(attackTimeAdjusted / 2);
                     float minMult = 0.25f;
-                    int hitsToMinMult = 4;
+                    int hitsToMinMult = 10;
                     float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
                     modifiers.SourceDamage *= (float)(damageMult * damageScaling);
                 }
@@ -749,9 +752,20 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
         }
+        public void AfterLanding(NPC target)
+        {
+            Projectile.numHits++;
+            hitNPCs.Add(target);
+            GetTarget(true, 1, true);
+            lastHitNPCPos = target.Center - Vector2.UnitY * (target.height / 2);
+            if (targeted == null)
+                recoiling = true;
+            else
+                attackTimer = (int)(attackTimeAdjusted / 2);
+        }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            return CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * Projectile.scale, targetHitbox);
+            return CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * Projectile.scale * 20, targetHitbox);
         }
         public override bool? CanHitNPC(NPC target)
         {
