@@ -68,6 +68,9 @@ namespace CalamityMod.Balancing
             #endregion
 
             #region Eater of Worlds
+            // 55% resist to Lemon 'nade
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(new ProjectileResistBalancingRule(0.45f, ProjectileType<LemonNadeProjectile>()))));
+
             // 50% resist to Demon Scythe.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
 
@@ -76,9 +79,6 @@ namespace CalamityMod.Balancing
 
             // 25% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(ResistTrueMelee(0.75f))));
-
-            // 60% resist to Lemon 'nade
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.EaterOfWorlds, Do(new ProjectileResistBalancingRule(0.40f, ProjectileType<LemonNadeProjectile>()))));
             #endregion
 
             #region Brain of Cthulhu: Creepers
@@ -377,6 +377,9 @@ namespace CalamityMod.Balancing
 
             // 45% resist to Wrathwing's stealth strike fireballs.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<WrathwingCinder>()))));
+
+            // 40% resist to Eclipse's Fall
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<EclipsesFall_Javelin>()))));
 
             // 40% resist to Omicron's beam.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<OmicronBeam>()))));
