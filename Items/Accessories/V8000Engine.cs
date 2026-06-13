@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ModContent.ItemType<V8Engine>()).
                 AddIngredient(ModContent.ItemType<RuinousSoul>(), 5).
                 AddIngredient(ItemID.Nanites, 200).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
