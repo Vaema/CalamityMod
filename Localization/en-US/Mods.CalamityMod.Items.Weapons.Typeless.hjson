@@ -31,7 +31,7 @@ EyeofMagnus: {
 	Tooltip:
 		'''
 		Fires seeking cosmic masses that restore health and mana on hit
-		Explodes into a nebula cloud that cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
+		Explodes into a nebula cloud that causes enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		{$Common.AverageDamageInfo}
 		'''
 }

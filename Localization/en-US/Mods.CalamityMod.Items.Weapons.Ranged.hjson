@@ -132,7 +132,7 @@ Auralis: {
 	DisplayName: Auralis
 	Tooltip:
 		'''
-		Fires a high speed glowing bullet that cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
+		Fires a high speed glowing bullet that causes enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		Press <right> to zoom out
 		Standing still provides increasing damage bonuses up to 25%
 		Standing still for 5 or more seconds while using the scope ability will summon an aurora
