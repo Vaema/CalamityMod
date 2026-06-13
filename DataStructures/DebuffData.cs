@@ -359,8 +359,8 @@ namespace CalamityMod.DataStructures
         };
         public static DebuffData Shadowflame = new DebuffData()
         {
-            EnemyLostRegen = 60,
-            EnemyVanillaRegenToCancelOut = 60,
+            EnemyLostRegen = 40,
+            EnemyVanillaRegenToCancelOut = 30,
             HeatDebuffScaling = 1
         };
         public static DebuffData Daybroken = new DebuffData()
@@ -436,13 +436,12 @@ namespace CalamityMod.DataStructures
 
             if (debuffData == Oiled)
             {
-                bool hasVanillaOil = npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-                if (hasVanillaOil)
-                    npc.lifeRegen -= Oiled.EnemyVanillaRegenToCancelOut;
                 Oiled.NPCLifeRegenMethod(npc, BuffID.Oiled, ref index, ref dmg);
             }
-
-            debuffData.NPCLifeRegenMethod(npc, type, ref index, ref dmg);
+            else {
+                debuffData.NPCLifeRegenMethod(npc, type, ref index, ref dmg);
+                npc.lifeRegen -= debuffData.EnemyVanillaRegenToCancelOut; //ensure vanilla dmg values aren't counted
+            }
 
             int done = npc.lifeRegen;
             npc.lifeRegen = oldRegen;
