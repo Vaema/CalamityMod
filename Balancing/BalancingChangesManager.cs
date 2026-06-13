@@ -379,7 +379,7 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<WrathwingCinder>()))));
 
             // 40% resist to Eclipse's Fall
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<EclipsesFall_Javelin>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<EclipsesFall_Javelin>()))));
 
             // 40% resist to Omicron's beam.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<OmicronBeam>()))));
