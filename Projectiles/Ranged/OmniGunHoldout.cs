@@ -181,11 +181,11 @@ namespace CalamityMod.Projectiles.Ranged
                         }
                         for (int i = 0; i <= 13; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 0.4f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.SteampunkSteam, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 0.4f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                             dust.noGravity = false;
                             dust.color = Color.White;
 
-                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.1f, 0.5f));
+                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.1f, 0.5f));
                             dust2.noGravity = true;
                             dust2.scale = Main.rand.NextFloat(0.52f, 0.72f);
                             dust2.color = Color.Lerp(Color.Orange, Color.Gold, Main.rand.NextFloat(0f, 1f));
