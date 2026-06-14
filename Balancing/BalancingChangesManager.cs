@@ -289,11 +289,6 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
             #endregion
 
-            #region Old Duke
-            // 20% resist to Time Bolt.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<OldDuke>(), new ProjectileResistBalancingRule(0.8f, ProjectileType<TimeBoltKnife>())));
-            #endregion
-
             #region The Devourer of Gods
             // 65% resist to Wave Pounder.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<WavePounderBoom>()))));
@@ -306,16 +301,7 @@ namespace CalamityMod.Balancing
 
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<NuclearFuryProjectile>()))));
-
-            // 15% vulnerability to Time Bolt stealth strikes.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new StealthStrikeBalancingRule(1.15f, ProjectileType<TimeBoltKnife>()))));
             #endregion The Devourer of Gods
-
-            #region Yharon
-
-            // 15% resist to Time Bolt.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Yharon>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<TimeBoltKnife>()))));
-            #endregion
 
             #region Exo Mechs: Ares
             // 35% resist to Devil's Devastation's slash.
