@@ -1771,7 +1771,7 @@ Daybroken: {
 Shadowflame: {
 	DisplayName: Shadowflame
 	ItemTooltipPlayer: Heat - 15 DPS
-	ItemTooltipEnemy: Heat - 30 DPS
+	ItemTooltipEnemy: Heat - 20 DPS
 }
 
 ForbiddenStealthSummonTagBuff: {
