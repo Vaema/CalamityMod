@@ -289,10 +289,6 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
             #endregion
 
-            #region Old Duke
-
-            #endregion
-
             #region The Devourer of Gods
             // 65% resist to Wave Pounder.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<WavePounderBoom>()))));
@@ -306,10 +302,6 @@ namespace CalamityMod.Balancing
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<NuclearFuryProjectile>()))));
             #endregion The Devourer of Gods
-
-            #region Yharon
-
-            #endregion
 
             #region Exo Mechs: Ares
             // 35% resist to Devil's Devastation's slash.

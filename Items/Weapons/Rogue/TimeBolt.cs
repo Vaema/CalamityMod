@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -53,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient(ItemID.GoldWatch).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).
-                AddTile(TileID.MythrilAnvil).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }
