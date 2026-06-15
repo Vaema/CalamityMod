@@ -30,6 +30,7 @@ using Terraria.Chat;
 using Terraria.GameContent.Bestiary;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
+using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
@@ -290,6 +291,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<TheMonument>(Condition.Hardmode)
                 .Add<TheHousingContract>(Condition.Hardmode)
                 .Add<OmniGun>(Condition.DownedGolem)
+                .Add<TheWand>(CalamityConditions.DownedYharon)
                 .Add<GladiatorsLocket>(new Condition(CalamityUtils.GetText("Condition.HasFoundGladiatorsLocket"), () => RecipeUnlockHandler.HasFoundGladiatorsLocket && Main.moonPhase == 0))
                 .Add<LuxorsGift>(new Condition(CalamityUtils.GetText("Condition.HasFoundLuxorsGift"), () => RecipeUnlockHandler.HasFoundLuxorsGift && Main.moonPhase == 1))
                 .Add<CrimsonEffigy>(new Condition(CalamityUtils.GetText("Condition.HasFoundCrimsonEffigy"), () => RecipeUnlockHandler.HasFoundCrimsonEffigy && Main.moonPhase == 2))

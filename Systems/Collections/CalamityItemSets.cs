@@ -168,6 +168,6 @@ namespace CalamityMod.Systems.Collections
             .Description("Labels this item as having Shady Salesman flavor text, making it draw at the top of the tooltip and the actual tooltip being drawn small below it.")
             .RegisterBoolSet(ItemType<FishStocks>(), ItemType<TrustyOldRod>(), ItemType<RageBait>(), ItemType<GluttonyBlender>(), ItemType<TheMonument>(), ItemType<GreedPot>(), ItemType<BaconOil>(), ItemType<TheSandwich>(), ItemType<TheConcoction>(), ItemType<TheElixir>(), ItemType<TheGift>(), ItemType<OmniGun>(),
             ItemType<CombatVoucher>(), ItemType<AggressiveVoucher>(), ItemType<OddVoucher>(), ItemType<UnbreakableVoucher>(), ItemType<HurriedVoucher>(), ItemType<TheHousingContract>(), ItemType<CorruptionEffigy>(), ItemType<CrimsonEffigy>(), ItemType<TrinketofChi>(), ItemType<FrozenCube>(), ItemType<LuxorsGift>(),
-            ItemType<FungalSymbiote>(), ItemType<GladiatorsLocket>(), ItemType<UnstableGraniteCore>(), ItemType<HeartofDarkness>(), ItemType<StressPills>());
+            ItemType<FungalSymbiote>(), ItemType<GladiatorsLocket>(), ItemType<UnstableGraniteCore>(), ItemType<HeartofDarkness>(), ItemType<StressPills>(), ItemType<TheWand>());
     }
 }
