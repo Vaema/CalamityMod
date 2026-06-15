@@ -58,16 +58,16 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.OnFire3, 30);
+            target.AddBuff(BuffID.OnFire3, 60);
 
             if (MinionCount >= 2f)
-                target.AddBuff(BuffID.CursedInferno, 30);
+                target.AddBuff(BuffID.CursedInferno, 60);
             if (MinionCount >= 3f)
-                target.AddBuff(BuffID.Venom, 30);
+                target.AddBuff(BuffID.Venom, 60);
             if (MinionCount >= 4f)
             {
-                target.AddBuff(BuffID.Ichor, 30);
-                target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 30);
+                target.AddBuff(BuffID.Ichor, 60);
+                target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 60);
             }
         }
     }
