@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;

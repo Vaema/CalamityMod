@@ -2,7 +2,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Cooldowns
+namespace CalamityMod.Buffs.DamageOverTime
 {
     public class Withered : ModBuff
     {

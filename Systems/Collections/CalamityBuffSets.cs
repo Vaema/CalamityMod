@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs;
 using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
