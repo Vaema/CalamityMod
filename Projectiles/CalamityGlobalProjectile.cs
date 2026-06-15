@@ -5094,8 +5094,7 @@ namespace CalamityMod.Projectiles
                     return initialColor;
             }
 
-            if (projectile.type == ProjectileID.SeedPlantera || projectile.type == ProjectileID.PoisonSeedPlantera ||
-                projectile.type == ProjectileID.CultistBossFireBallClone || projectile.type == ProjectileID.AncientDoomProjectile)
+            if (projectile.type == ProjectileID.SeedPlantera || projectile.type == ProjectileID.PoisonSeedPlantera)
             {
                 if (projectile.timeLeft < 85)
                 {
