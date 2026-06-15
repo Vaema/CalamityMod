@@ -18,7 +18,6 @@ namespace CalamityMod.Buffs.Alcohol
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
             Main.persistentBuff[Type] = true;
-            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
             CalamityBuffSets.DebuffDataset[Type] = debuffData;
         }
 
