@@ -68,7 +68,7 @@ namespace CalamityMod.Items.Accessories
             int projectile = ProjectileType<Elumphant>();
             if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
             {
-                int damage = 0;
+                int damage = (int)player.GetTotalDamage<GenericDamageClass>().ApplyTo(slamBaseDamage);
                 Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
