@@ -56,7 +56,7 @@ namespace CalamityMod.Items.Accessories
             if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
             {
                 int damage = (int)player.GetTotalDamage<GenericDamageClass>().ApplyTo(slamBaseDamage);
-                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
         public override void UpdateVanity(Player player)
@@ -69,7 +69,7 @@ namespace CalamityMod.Items.Accessories
             if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
             {
                 int damage = 0;
-                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
 

@@ -482,15 +482,19 @@ namespace CalamityMod.Projectiles.Typeless
             if (vis && Projectile.Opacity < 1)
                 ScaleOpacity(1);
             Projectile.timeLeft++;
-            SetStats();
             GetColor();
-            SetElumphantPower();
             ManageSquash();
+
+            if (!Owner.Calamity().frozenCubeVanity)
+            {
+                SetStats();
+                SetElumphantPower();
+                if (targeted != null && (targeted.life <= 0 || !targeted.active || !targeted.CanBeChasedBy(Projectile)))
+                    GetTarget(false);
+            }
+
             if (SoundEngine.TryGetActiveSound(soundSlot, out var sound) && sound.IsPlaying)
                 sound.Position = Projectile.Center;
-
-            if (targeted != null && (targeted.life <= 0 || !targeted.active || !targeted.CanBeChasedBy(Projectile)))
-                GetTarget(false);
 
             float sine = MathF.Sin(time * 0.04f);
             float sine2 = MathF.Sin(time * 0.08f);
@@ -517,7 +521,7 @@ namespace CalamityMod.Projectiles.Typeless
             else
             {
                 Projectile.Center = goalPosition;
-                if (targeted == null)
+                if (targeted == null && !Owner.Calamity().frozenCubeVanity)
                     GetTarget(false);
 
                 if (attackTimer > cooldownTime && targeted != null) // Mist Attack
@@ -622,7 +626,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             lastProjPos = Projectile.Center;
 
-            if (!Owner.Calamity().frozenCube)
+            if (!Owner.Calamity().frozenCube && !Owner.Calamity().frozenCubeVanity)
             {
                 if (SoundEngine.TryGetActiveSound(soundSlot, out var sound2) && sound2.IsPlaying)
                     sound2?.Stop();
