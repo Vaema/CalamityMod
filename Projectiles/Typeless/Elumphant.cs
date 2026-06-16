@@ -521,7 +521,12 @@ namespace CalamityMod.Projectiles.Typeless
             else
             {
                 Projectile.Center = goalPosition;
-                if (targeted == null && !Owner.Calamity().frozenCubeVanity)
+                if (Owner.Calamity().frozenCubeVanity)
+                {
+                    targeted = null;
+                    attackTimer = 0;
+                }
+                else if (targeted == null)
                     GetTarget(false);
 
                 if (attackTimer > cooldownTime && targeted != null) // Mist Attack
