@@ -745,8 +745,6 @@ namespace CalamityMod.Systems
                 { Vanilla(ItemID.Leather), ChangeIngredientStack(ItemID.RottenChunk, 2) },
                 { Vanilla(ItemID.JestersArrow), JesterArrowRecipeEdit },
                 { Vanilla(ItemID.TeleportationPotion), TeleportationPotionRecipeEdit },
-                { Vanilla(ItemID.WormFood), WormFoodRecipeEdit },
-                { Vanilla(ItemID.BloodySpine), BloodySpineRecipeEdit },
                 { Vanilla(ItemID.GoblinBattleStandard), ChangeIngredientStack(ItemID.TatteredCloth, 5) },
                 { Vanilla(ItemID.Beenade), BeenadeRecipeEdit },
                 { Vanilla(ItemID.ChlorophyteBar), ChangeIngredientStack(ItemID.ChlorophyteOre, 4) },
@@ -842,18 +840,6 @@ namespace CalamityMod.Systems
             r.ChangeIngredientStack(ItemID.SoulofSight, intendedStack);
             r.ChangeIngredientStack(ItemID.SoulofMight, intendedStack);
             r.ChangeIngredientStack(ItemID.SoulofFright, intendedStack);
-        }
-
-        private static void WormFoodRecipeEdit(Recipe r)
-        {
-            r.ChangeIngredientStack(ItemID.VilePowder, 20);
-            r.ChangeIngredientStack(ItemID.RottenChunk, 10);
-        }
-
-        private static void BloodySpineRecipeEdit(Recipe r)
-        {
-            r.ChangeIngredientStack(ItemID.ViciousPowder, 20);
-            r.ChangeIngredientStack(ItemID.Vertebrae, 10);
         }
 
         private static void ZenithRecipeEdit(Recipe r)
