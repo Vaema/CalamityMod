@@ -1485,7 +1485,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.IceSkates);
             r.AddIngredient(ItemID.FlinxFur, 3);
             r.AddRecipeGroup("IronBar", 5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
 
             // Water Walking Boots
