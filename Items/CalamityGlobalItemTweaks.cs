@@ -220,7 +220,6 @@ namespace CalamityMod.Items
                 { ItemID.SkyFracture, Do(DamageExact(46)) }, // VANILLA: 38 DMG
                 { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) }, // VANILLA: 55 DMG
                 { ItemID.Smolstar, Do(DamageExact(9)) }, // Blade Staff. VANILLA: 6 DMG
-                { ItemID.SniperRifle, Do(DamageExact(200), UseExact(40)) }, // VANILLA: 185 DMG, 36 UT
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain. VANILLA: 35 DMG
                 { ItemID.SpaceGun, Do(DamageExact(23)) }, // VANILLA: 17 DMG
                 { ItemID.Spear, Do(TrueMelee, DamageExact(14)) }, // VANILLA: 8 DMG
