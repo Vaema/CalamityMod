@@ -153,6 +153,10 @@ namespace CalamityMod.Balancing
 
             // 25% resist to The Ballista's greatarrows.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<BallistaGreatArrow>()))));
+
+            // 15% resist to Dryad's Tears.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<DryadsTearMain>(), ProjectileType<DryadsTearBurst>()))));
+
             #endregion
 
             #region Duke Fishron
