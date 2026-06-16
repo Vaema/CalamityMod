@@ -55,14 +55,14 @@ namespace CalamityMod.Items.Potions.Food
         {
             CreateRecipe().
                 AddIngredient<AbyssGravel>(3).
-                AddIngredient<CoastalDemonfish>().
+                AddIngredient<CoastalDemonfish>(2).
                 AddIngredient(ItemID.Bowl).
                 AddTile(TileID.CookingPots).
                 Register();
 
             CreateRecipe().
                 AddIngredient<Voidstone>(3).
-                AddIngredient<CoastalDemonfish>().
+                AddIngredient<CoastalDemonfish>(2).
                 AddIngredient(ItemID.Bowl).
                 AddTile(TileID.CookingPots).
                 Register();
