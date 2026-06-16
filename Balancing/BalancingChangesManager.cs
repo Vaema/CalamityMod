@@ -270,9 +270,6 @@ namespace CalamityMod.Balancing
             // 50% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(ResistTrueMelee(0.5f))));
 
-            // 50% resist to Dazzling Stabber Staff.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DazzlingStabber>()))));
-
             // 50% resist to Last Prism.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.LastPrismLaser))));
 
@@ -287,6 +284,9 @@ namespace CalamityMod.Balancing
 
             // 35% resist to Event Horizon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<EventHorizonStar>(), ProjectileType<EventHorizonBlackhole>()))));
+
+            // 20% resist to Dazzling Stabber Staff.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.StormWeaver, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<DazzlingStabber>()))));
             #endregion
 
             #region The Devourer of Gods

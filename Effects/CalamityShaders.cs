@@ -129,10 +129,10 @@ namespace CalamityMod.Effects
         // Used by Devourer of Gods. Renders the portal that he escapes through at the end of phase 1.
         internal static Asset<Effect> DoGPortalShader;
 
-        // Used to render all-encompassing fog in the Floral Paradise biome.
+        // Unused, renders all-encompassing fog.
         internal static Asset<Effect> FogShader;
 
-        // Used to render background water features in the Floral Paradise biome.
+        // Unused, renders background water features.
         internal static Asset<Effect> WaterfallShader;
 
         // Metaballs. See the MetaballManager class for comments on how this system works.

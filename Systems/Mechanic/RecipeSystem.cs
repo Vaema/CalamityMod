@@ -745,8 +745,6 @@ namespace CalamityMod.Systems
                 { Vanilla(ItemID.Leather), ChangeIngredientStack(ItemID.RottenChunk, 2) },
                 { Vanilla(ItemID.JestersArrow), JesterArrowRecipeEdit },
                 { Vanilla(ItemID.TeleportationPotion), TeleportationPotionRecipeEdit },
-                { Vanilla(ItemID.WormFood), WormFoodRecipeEdit },
-                { Vanilla(ItemID.BloodySpine), BloodySpineRecipeEdit },
                 { Vanilla(ItemID.GoblinBattleStandard), ChangeIngredientStack(ItemID.TatteredCloth, 5) },
                 { Vanilla(ItemID.Beenade), BeenadeRecipeEdit },
                 { Vanilla(ItemID.ChlorophyteBar), ChangeIngredientStack(ItemID.ChlorophyteOre, 4) },
@@ -842,18 +840,6 @@ namespace CalamityMod.Systems
             r.ChangeIngredientStack(ItemID.SoulofSight, intendedStack);
             r.ChangeIngredientStack(ItemID.SoulofMight, intendedStack);
             r.ChangeIngredientStack(ItemID.SoulofFright, intendedStack);
-        }
-
-        private static void WormFoodRecipeEdit(Recipe r)
-        {
-            r.ChangeIngredientStack(ItemID.VilePowder, 20);
-            r.ChangeIngredientStack(ItemID.RottenChunk, 10);
-        }
-
-        private static void BloodySpineRecipeEdit(Recipe r)
-        {
-            r.ChangeIngredientStack(ItemID.ViciousPowder, 20);
-            r.ChangeIngredientStack(ItemID.Vertebrae, 10);
         }
 
         private static void ZenithRecipeEdit(Recipe r)
@@ -1229,7 +1215,6 @@ namespace CalamityMod.Systems
         #region Cooked Food
         private static void AddCookedFood()
         {
-            #region Alternative Recipes
             #region Cooked Fish
             Recipe r = Recipe.Create(ItemID.CookedFish);
             r.AddIngredient<TwinklingPollox>();
@@ -1338,19 +1323,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedShrimp);
-            r.DisableDecraft();
-            #endregion
-
-            r = Recipe.Create(ItemID.Bacon);
-            r.AddIngredient<PiggyItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.Bacon);
-            r.AddIngredient<PiggyGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
@@ -1513,7 +1485,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.IceSkates);
             r.AddIngredient(ItemID.FlinxFur, 3);
             r.AddRecipeGroup("IronBar", 5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
 
             // Water Walking Boots

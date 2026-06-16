@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Melee
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 5;
             ProjectileID.Sets.TrailingMode[Type] = 0;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -33,16 +34,19 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             if (Projectile.ai[0] < 0f)
-            {
                 Projectile.alpha = 0;
-            }
             if (Projectile.alpha > 0)
-            {
                 Projectile.alpha -= 50;
-            }
             if (Projectile.alpha < 0)
-            {
                 Projectile.alpha = 0;
+
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter >= 5)
+            {
+                Projectile.frameCounter = 0;
+                Projectile.frame++;
+                if (Projectile.frame >= Main.projFrames[Type])
+                    Projectile.frame = 0;
             }
 
             if (Projectile.ai[0] >= 0f && Projectile.ai[0] < 200f)
@@ -103,8 +107,6 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.Kill();
         }
-
-        public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Main.rand.Next(0, 128));
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -307,24 +307,24 @@ namespace CalamityMod.NPCs.Cryogen
             float chargeSlownDownPhaseGateValue = chargeGateValue + chargeSlowDownTime;
             bool chargePhase = NPC.ai[1] >= chargePhaseGateValue;
 
+            float iceBombDelay = phase5 ? 180f : 720f;
+            if (Main.getGoodWorld)
+                iceBombDelay *= 0.5f;
             if (expertMode && (NPC.ai[0] < 5f || !phase6) && !chargePhase)
             {
                 calamityGlobalNPC.newAI[3] += 1f;
-                if (calamityGlobalNPC.newAI[3] >= 900f)
+                if (calamityGlobalNPC.newAI[3] >= iceBombDelay)
                 {
                     calamityGlobalNPC.newAI[3] = 0f;
                     SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int totalProjectiles = 3;
+                        int totalProjectiles = phase5 ? 2 : 3;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = iceBomb;
                         float velocity = 2f + NPC.ai[0];
-                        double angleA = radians * 0.5;
-                        double angleB = MathHelper.ToRadians(90f) - angleA;
-                        float velocityX = (float)(velocity * Math.Sin(angleA) / Math.Sin(angleB));
-                        Vector2 spinningPoint = Main.rand.NextBool() ? new Vector2(0f, -velocity) : new Vector2(-velocityX, -velocity);
+                        Vector2 spinningPoint = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * -velocity;
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 projSpreadRotation = spinningPoint.RotatedBy(radians * k);
@@ -1064,7 +1064,7 @@ namespace CalamityMod.NPCs.Cryogen
                 calamityGlobalNPC.newAI[2] -= 1f;
 
                 float chargeStartDistance = 300f;
-                float chargeCooldown = 30f;
+                float chargeCooldown = 25f;
 
                 if (playerDistance < chargeStartDistance || calamityGlobalNPC.newAI[2] > 0f)
                 {
