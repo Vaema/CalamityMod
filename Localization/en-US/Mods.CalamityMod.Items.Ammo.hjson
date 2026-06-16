@@ -85,7 +85,7 @@ HailstormBullet: {
 	Tooltip:
 		'''
 		Once shot, bullets rapidly decelerate
-		Critical hits cause a flash freeze, dealing additional damage and freezing non-boss enemies
+		Critical hits cause a flash freeze, dealing additional damage based on your crit chance and freezing enemies
 		'''
 }
 
