@@ -92,6 +92,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<ArcNovaDiffuser>().
                 AddIngredient<NullificationPistol>().
+                AddIngredient(ItemID.IllegalGunParts).
                 AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
