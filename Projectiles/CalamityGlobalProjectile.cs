@@ -3934,6 +3934,12 @@ namespace CalamityMod.Projectiles
             if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
                 projectile.localAI[1]--;
 
+            if (projectile.type == ProjectileID.BoneArrowFromMerchant) // Bone arrow no gravity before hitting tile
+            {
+                if (projectile.ai[2] != 1)
+                    projectile.ai[0] = 0;
+            }
+
             // Hack to allow Desert Tiger minion to fall through platforms while attacking
             if (projectile.type >= ProjectileID.StormTigerTier1 && projectile.type <= ProjectileID.StormTigerTier3)
             {
@@ -4731,7 +4737,7 @@ namespace CalamityMod.Projectiles
             if (projectile.type == ProjectileID.HellfireArrow) // damage falloff
             {
                 if (projectile.numHits > 0)
-                    projectile.damage = (int)(projectile.damage * 0.6f);
+                    projectile.damage = (int)(projectile.damage * 0.8f);
                 if (projectile.damage < 1)
                     projectile.damage = 1;
             }
@@ -5025,6 +5031,26 @@ namespace CalamityMod.Projectiles
         #region TileCollide
         public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
         {
+            if (projectile.type == ProjectileID.BoneArrowFromMerchant) // Bone arrow bounce
+            {
+                if (projectile.velocity.X != oldVelocity.X)
+                {
+                    projectile.velocity.X = -oldVelocity.X;
+                }
+                if (projectile.velocity.Y != oldVelocity.Y)
+                {
+                    projectile.velocity.Y = -oldVelocity.Y;
+                }
+                projectile.timeLeft -= 120;
+                if (projectile.timeLeft < 1)
+                    projectile.timeLeft = 1;
+                
+                if (projectile.ai[2] != 1)
+                    SoundEngine.PlaySound(SoundID.NPCHit2 with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, 0.3f), MaxInstances = 10 }, projectile.Center);
+                projectile.ai[2] = 1;
+
+                return false;
+            }
             //Crystal Darts use -1 local that needs to reset whenever they bounce
             if (projectile.type == ProjectileID.CrystalDart)
             {
