@@ -4720,6 +4720,22 @@ namespace CalamityMod.Projectiles
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
+            if (projectile.type == ProjectileID.UnholyArrow) // damage falloff
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.75f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
+            if (projectile.type == ProjectileID.HellfireArrow) // damage falloff
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.6f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
             // Adamantite Throwing Axe's lightning has damage falloff
             if (projectile.type == ProjectileID.CultistBossLightningOrbArc && projectile.ai[2] == 1f)
             {
