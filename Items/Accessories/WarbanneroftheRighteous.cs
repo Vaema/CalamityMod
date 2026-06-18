@@ -2,7 +2,10 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.HiveMind;
+using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.Perforator;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -42,7 +45,7 @@ namespace CalamityMod.Items.Accessories
 
         private static bool IsBlacklistedNPC(NPC npc)
         {
-            return npc.type == NPCID.CultistArcherBlue || npc.type == NPCID.CultistDevote;
+            return npc.type == NPCID.CultistArcherBlue || npc.type == NPCID.CultistDevote || npc.type == ModContent.NPCType<PerforatorCyst>() || npc.type == ModContent.NPCType<HiveTumor>() || npc.type == ModContent.NPCType<LeviathanStart>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
