@@ -26,15 +26,7 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.elementalHeart)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().allElementals;
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {

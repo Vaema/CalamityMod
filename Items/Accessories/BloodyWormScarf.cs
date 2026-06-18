@@ -22,8 +22,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.bloodyWormTooth = true;
+            player.GetDamage<MeleeDamageClass>() += 0.1f;
             player.endurance += 0.1f;
         }
 

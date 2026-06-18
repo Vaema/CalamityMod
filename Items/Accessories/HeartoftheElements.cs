@@ -51,7 +51,6 @@ namespace CalamityMod.Items.Accessories
 
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.allElementals = true;
-            modPlayer.elementalHeart = true;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
             int siren = ProjectileType<WaterElementalMinion>();
@@ -115,7 +114,6 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.allElementalsVanity = true;
-            // modPlayer.elementalHeart = true;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
             int siren = ProjectileType<WaterElementalMinion>();

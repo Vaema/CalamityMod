@@ -1131,30 +1131,6 @@ namespace CalamityMod.Items
 
             // The Frog Leg line is prevented from stacking.
             // Additionally, Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
-            //
-            // 21MAY2024: Ozzatron: Disabled this code. Frog Leg is allowed to stack. Amphibian Boots specific nerf is applied below.
-            /*
-            switch (item.type)
-            {
-                default:
-                    break;
-                case ItemID.AmphibianBoots:
-                    if (modPlayer.alreadyHasFrogLeg)
-                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
-                    else
-                        player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
-                    modPlayer.alreadyHasFrogLeg = true;
-                    break;
-                case ItemID.FrogLeg:
-                case ItemID.FrogFlipper:
-                case ItemID.FrogGear:
-                case ItemID.FrogWebbing:
-                    if (modPlayer.alreadyHasFrogLeg)
-                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
-                    modPlayer.alreadyHasFrogLeg = true;
-                    break;
-            }
-            */
             if (item.type == ItemID.AmphibianBoots)
                 player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
 

@@ -40,7 +40,6 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         {
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), SetBonusSubmergedSummonDamageBoost.ToPercent(), SetBonusSubmergedDefenseBoost, SetBonusSubmergedRegenBoost.ToRegenPerSecond());
             var modPlayer = player.Calamity();
-            modPlayer.fathomSwarmer = true;
             player.spikedBoots = 2;
             player.maxMinions += SetBonusMinionSlotBoost;
             player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;

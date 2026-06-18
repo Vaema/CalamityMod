@@ -1457,7 +1457,6 @@ namespace CalamityMod.CalPlayer
             }
 
             // Death Mode effects
-            caveDarkness = 0f;
             if (CalamityWorld.death || Main.getGoodWorld)
             {
                 if (Player.whoAmI == Main.myPlayer)
@@ -2241,7 +2240,7 @@ namespace CalamityMod.CalPlayer
                 // First Shadowflame is +1, Statis' Blessing is +2, Statis' Curse inherits both for +3
                 if (shadowMinions)
                     Player.maxMinions++;
-                if (holyMinions)
+                if (statisMinions)
                     Player.maxMinions += 2;
 
                 if (starTaintedGenerator)
@@ -2358,8 +2357,6 @@ namespace CalamityMod.CalPlayer
                 phantomicHeartRegen--;
             if (phantomicBulwarkCooldown > 0)
                 phantomicBulwarkCooldown--;
-            if (galileoCooldown > 0)
-                galileoCooldown--;
             if (gladiatorTimer > 0)
                 gladiatorTimer--;
             if (dragonRageCooldown > 0)
@@ -2372,8 +2369,6 @@ namespace CalamityMod.CalPlayer
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
                 astralStarRainCooldown--;
-            if (VoidCooldown > 0)
-                VoidCooldown--;
             if (ursaSergeantCooldown > 0)
                 ursaSergeantCooldown--;
             if (generalBandCooldown > 0)
@@ -2445,8 +2440,6 @@ namespace CalamityMod.CalPlayer
                 ataxiaDmg = 0f;
             if (hydroHealTimer > 0f)
                 hydroHealTimer -= 0.05f;
-            if (ataxiaDmg < 0f)
-                ataxiaDmg = 0f;
             if (xerocDmg > 0f)
                 xerocDmg -= 2f;
             if (xerocDmg < 0f)
@@ -2582,8 +2575,6 @@ namespace CalamityMod.CalPlayer
             }
             else
                 adamantiteSetDefenseBoostInterpolant = 0f;
-            if (ChlorophyteHealDelay > 0)
-                ChlorophyteHealDelay--;
             if (monolithAccursedShader > 0)
                 monolithAccursedShader--;
             if (monolithBossRushShader > 0)
@@ -3179,11 +3170,7 @@ namespace CalamityMod.CalPlayer
 
                     // Nebula Headcrab darkness effect
                     if (!Player.headcovered)
-                    {
-                        float screenObstructionAmt = MathHelper.Clamp(caveDarkness, 0f, 0.95f);
-                        float targetValue = MathHelper.Clamp(screenObstructionAmt * 0.7f, 0.1f, 0.3f);
-                        ScreenObstruction.screenObstruction = MathHelper.Lerp(ScreenObstruction.screenObstruction, screenObstructionAmt, targetValue);
-                    }
+                        ScreenObstruction.screenObstruction = MathHelper.Lerp(ScreenObstruction.screenObstruction, 0f, 0.1f);
 
                     // Breath lost while at zero breath
                     double breathLoss = Main.remixWorld ? (point.Y < abyssLevel1 ? 1D : 0D) : (point.Y > abyssLevel1 ? 1D : 0D);
@@ -3310,14 +3297,10 @@ namespace CalamityMod.CalPlayer
                         {
                             if (Vector2.Distance(Main.LocalPlayer.Center, Main.npc[CalamityGlobalNPC.signus].Center) <= 5200f)
                             {
-                                float darkRatio = MathHelper.Clamp(caveDarkness, 0f, 1f);
                                 float signusLifeRatio = 1f - (Main.npc[CalamityGlobalNPC.signus].life / Main.npc[CalamityGlobalNPC.signus].lifeMax);
 
                                 // Reduce the power of Signus darkness based on your light level.
-                                float multiplier = 1f;
-
-                                float signusDarkness = signusLifeRatio * multiplier;
-                                darkRatio = MathHelper.Clamp(signusDarkness, 0f, 1f);
+                                float darkRatio = MathHelper.Clamp(signusLifeRatio, 0f, 1f);
                                 ScreenObstruction.screenObstruction = MathHelper.Lerp(ScreenObstruction.screenObstruction, LightingEffectsSystem.MaxGFBSignusDarkness * -darkRatio, 0.3f);
                             }
                         }
@@ -3902,11 +3885,6 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<MagicDamageClass>() += MathHelper.Lerp(0.05f, 0.15f, manaRatio);
             }
 
-            if (bloodyWormTooth)
-            {
-                Player.GetDamage<MeleeDamageClass>() += 0.1f;
-            }
-
             // While making the rogue update verify if we should allow these to stack again - Shade
             if (filthyGlove)
             {
@@ -4389,12 +4367,6 @@ namespace CalamityMod.CalPlayer
             {
                 float beeBoost = Player.endurance / 2f;
                 Player.GetDamage<GenericDamageClass>() += beeBoost;
-            }
-
-            if (badgeOfBravery)
-            {
-                Player.GetDamage<MeleeDamageClass>() += 0.1f;
-                Player.GetCritChance<MeleeDamageClass>() += 10;
             }
 
             // Amalgam boosts

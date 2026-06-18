@@ -73,9 +73,9 @@ namespace CalamityMod.CalPlayer
 
                 if (Player.electrified)
                 {
-                    totalVanillaDoT += eleResist ? 4 : 8;
+                    totalVanillaDoT += 8;
                     if (Player.controlLeft || Player.controlRight)
-                        totalVanillaDoT += eleResist ? 16 : 32;
+                        totalVanillaDoT += 32;
                 }
 
                 // Tally up total current vanilla DoT so it can be added as extra DoT from Death Mode
@@ -109,7 +109,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(burningBlood, 8);
             ApplyDoTDebuff(brainRot, 8);
             ApplyDoTDebuff(vaporfied, 8);
-            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
+            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3);
             ApplyDoTDebuff(staticDischarge, staticDoT);
             ApplyDoTDebuff(heavybleeding, 16);
             ApplyDoTDebuff(crushDepth, 18);
@@ -130,7 +130,7 @@ namespace CalamityMod.CalPlayer
 
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(godSlayerInferno, profanedCrystalBuffs ? 50 : 40);
-            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
+            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
             ApplyDoTDebuff(elementalMix, 50); // Never inflicted on the player
             ApplyDoTDebuff(trueVHex, 50);
@@ -138,7 +138,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(dragonFire, dragonfireDoT);
             ApplyDoTDebuff(miracleBlight, 60);
             ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
-            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16) / (eleResist ? 2 : 1);
+            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.

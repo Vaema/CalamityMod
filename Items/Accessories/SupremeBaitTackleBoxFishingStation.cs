@@ -23,7 +23,6 @@ namespace CalamityMod.Items.Accessories
             player.accFishingLine = true;
             player.accTackleBox = true;
             player.accLavaFishing = true;
-            player.Calamity().fishingStation = true;
         }
 
         public override void AddRecipes()

@@ -2484,7 +2484,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-                else if (godSlayerDamage) //god slayer melee helm
+                else if (godSlayerMelee) //god slayer melee helm
                 {
                     var source = Player.GetSource_OnHurt(hurtInfo.DamageSource);
                     if (hurtInfo.Damage > GodSlayerHeadMelee.SetBonusHurtDamageThreshold)
@@ -2506,7 +2506,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-                else if (dsSetBonus)
+                else if (demonshadeSet)
                 {
                     if (Player.whoAmI == Main.myPlayer)
                     {

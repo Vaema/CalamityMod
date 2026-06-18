@@ -39,7 +39,6 @@ namespace CalamityMod.Items.Armor.Statigel
         {
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusSummonDamageBoost.ToPercent(), StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
-            modPlayer.statigelSet = true;
             modPlayer.slimeGod = true;
             player.GetJumpState<StatigelJump>().Enable();
             Player.jumpHeight += (int)(StatigelArmor.SetBonusJumpHeightPercentBoost * 15);

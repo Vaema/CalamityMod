@@ -121,7 +121,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 modPlayer.angelTreads = true;
             }
             modPlayer.tracersDust = !hideVisual && toggleEnabled;
-            modPlayer.moonWalkers = true;
         }
 
         public override void AddRecipes()

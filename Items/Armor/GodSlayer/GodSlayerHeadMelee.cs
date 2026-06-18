@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
         {
             var modPlayer = player.Calamity();
             modPlayer.godSlayer = true;
-            modPlayer.godSlayerDamage = true;
+            modPlayer.godSlayerMelee = true;
             var hotkey = CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString();
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusHurtDamageThreshold, hotkey, GodSlayerChestplate.DashCooldown.FramesToSeconds());
             player.aggro += SetBonusAggroBoost;
