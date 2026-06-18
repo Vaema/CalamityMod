@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -8,7 +9,6 @@ namespace CalamityMod.Projectiles.Rogue
     public class DuststormInABottleProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/DuststormInABottle";
 
         int lifetime => AIState == 1 ? 300 : 150;
         public override void SetStaticDefaults()
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Rogue
             Timer++;
             gravTimer++;
 
-            Projectile.rotation += 0.175f * Projectile.direction * Projectile.velocity.Length();
+            Projectile.rotation += 0.075f * Projectile.direction * Projectile.velocity.Length();
             if (gravTimer > 20)
             {
                 Projectile.velocity.Y += 0.22f;
@@ -71,7 +71,9 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
+            Vector2 origin = TextureAssets.Projectile[Type].Size() * new Vector2(Projectile.velocity.X < 0f ? 0.4f : 0.6f, 0.5f);
+            SpriteEffects sp = Projectile.velocity.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, origin, Projectile.scale, sp);
             return false;
         }
 
