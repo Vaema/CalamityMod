@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         // This math is handled in its holdout projectile, ValkyrieRayStaff.
         public const int ChargeFrames = 24;
         public const int CooldownFrames = 12;
-        public const float GemDistance = 18f;
+        public const float GemDistance = 27f;
         public static readonly Color LightColor = new Color(235, 40, 121);
 
         public override void SetStaticDefaults()
