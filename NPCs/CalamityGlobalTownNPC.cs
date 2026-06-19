@@ -145,6 +145,7 @@ namespace CalamityMod.NPCs
             "The Cooler Arthur", // <@!568263512523014154> (gokuartillery)
             "Shark", // <@!874464051697172492> (congratsistrash)
             "Sagi", // <@!508233115781693441> (sagittariod)
+            "Jongler", // <@!373778045317808129> (madnard)
         ];
         private static readonly string[] ClothierNames =
         [
