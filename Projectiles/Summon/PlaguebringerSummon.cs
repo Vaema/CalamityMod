@@ -80,7 +80,8 @@ namespace CalamityMod.Projectiles.Summon
                         bee.usesLocalNPCImmunity = true;
                         bee.localNPCHitCooldown = 10;
                         bee.penetrate = 2;
-                        bee.DamageType = DamageClass.Generic;
+                        bee.DamageType = DamageClass.Summon;
+                        bee.CritChance = 0;
                     }
                 }
             }
