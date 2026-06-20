@@ -810,9 +810,6 @@ namespace CalamityMod.NPCs.Providence
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon || AIState == (int)Phase.Laser || spawnAnimation;
 
-            // Providence fires predictive holy/molten blasts if she is ahead of her target's movement
-            bool predictiveShots = false;
-
             // Movement
             if (getFuckedAI || (AIState != (int)Phase.FlameCocoon && AIState != (int)Phase.SpearCocoon))
             {
@@ -867,11 +864,6 @@ namespace CalamityMod.NPCs.Providence
                             NPC.netUpdate = true;
                         }
                     }
-
-
-                    // Predictive shot checks
-                    if ((NPC.velocity.X > 0f && (NPC.Center.X - player.Center.X) > 0f && player.velocity.X > 0f) || (NPC.velocity.X < 0f && (NPC.Center.X - player.Center.X) < 0f && player.velocity.X < 0f))
-                        predictiveShots = true;
 
                     // Velocity and acceleration
                     float speedIncreaseTimer = fullPowerAI ? 75f : death ? 120f : 150f;
@@ -1179,10 +1171,8 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 predictionAmount = player.velocity * 100f;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? predictionAmount : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
-                            Vector2 explodePosition = predictiveShots ? (player.position + predictionAmount) : player.position;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), HolyBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, explodePosition.X, explodePosition.Y);
+                            Vector2 projectileVelocity = (player.Center - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), HolyBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
@@ -1454,10 +1444,8 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 predictionAmount = player.velocity * 100f;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? predictionAmount : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
-                            Vector2 explodePosition = predictiveShots ? (player.position + predictionAmount) : player.position;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), MoltenBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, explodePosition.X, explodePosition.Y);
+                            Vector2 projectileVelocity = (player.Center - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), MoltenBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
