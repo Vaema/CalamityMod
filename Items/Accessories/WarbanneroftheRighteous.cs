@@ -7,6 +7,7 @@ using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -41,11 +42,6 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
             Item.expert = true;
-        }
-
-        private static bool IsBlacklistedNPC(NPC npc)
-        {
-            return npc.type == NPCID.CultistArcherBlue || npc.type == NPCID.CultistDevote || npc.type == ModContent.NPCType<PerforatorCyst>() || npc.type == ModContent.NPCType<HiveTumor>() || npc.type == ModContent.NPCType<LeviathanStart>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -83,7 +79,7 @@ namespace CalamityMod.Items.Accessories
                 float generousHitboxWidth = Math.Max(nPC.Hitbox.Width / 2f, nPC.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
                 float intensity = Utils.Remap(Utils.Distance(player.Center, nPC.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 1, 3, true); // We have to have this seperate from bonus, otherwise all effected enemies take damage based on the closest enemy
 
-                if (Utils.Distance(nPC.Center, player.Center) < MaxDistance + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && !nPC.dontTakeDamage && !IsBlacklistedNPC(nPC))
+                if (Utils.Distance(nPC.Center, player.Center) < MaxDistance + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && !nPC.dontTakeDamage && !CalamityItemSets.ProtectedHostileNPC[nPC.type])
                 {
                     float minDamageMult = 0.10f;
                     int maxTargets = 7;

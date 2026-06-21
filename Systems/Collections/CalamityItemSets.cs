@@ -14,6 +14,9 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs.HiveMind;
+using CalamityMod.NPCs.Leviathan;
+using CalamityMod.NPCs.Perforator;
 using ReLogic.Reflection;
 using Terraria;
 using Terraria.ID;
@@ -62,6 +65,15 @@ namespace CalamityMod.Systems.Collections
         public static bool[] DisablesVeneratedLocketEffect = Factory.CreateNamedSet("DisablesVeneratedLocketEffect")
             .Description("Prevents this item from triggering Venerated Locket's clone projectiles.")
             .RegisterBoolSet(ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an NPC type, this NPC will not be targeted by various sources of 'unpredicatable' damage.<br/>
+        /// Primarily used for NPCs which summon bosses when killed.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] ProtectedHostileNPC = Factory.CreateNamedSet("ProtectedHostileNPC")
+            .Description("Prevents this NPC from being targeted by various sources of 'unpredictable' damage.")
+            .RegisterBoolSet(NPCID.CultistArcherBlue, NPCID.CultistDevote, NPCType<PerforatorCyst>(), NPCType<HiveTumor>(), NPCType<LeviathanStart>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a magic gun.<br/>

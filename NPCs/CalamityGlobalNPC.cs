@@ -3550,7 +3550,7 @@ namespace CalamityMod.NPCs
                 modifiers.HideCombatText();
 
             // Block natural falling stars from killing boss spawners randomly
-            if (projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000 && (npc.type == NPCType<PerforatorCyst>() || npc.type == NPCType<HiveTumor>() || npc.type == NPCType<LeviathanStart>()))
+            if (projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000 && (CalamityItemSets.ProtectedHostileNPC[npc.type]))
                 modifiers.SourceDamage *= 0f;
 
             // Supercrits
