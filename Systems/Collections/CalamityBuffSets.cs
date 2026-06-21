@@ -107,8 +107,12 @@ namespace CalamityMod.Systems.Collections
         );
 
         private static DebuffData Alch(int level) => new DebuffData() { AlcoholLevel = level };
+        /// <summary>
+        /// Associates a buff type with its unique DebuffData class. This class is used to store information about the buff such as DoT, elemental affliation, and whether or not it is an alcohol.<br/>
+        /// Defaults to null, or having no assigned DebuffData.
+        /// </summary>
         public static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
-            .Description("Stores DebuffData for a particular debuff")
+            .Description("Associates a buff with its DebuffData, which stores information about that buff.")
             .RegisterCustomSet<DebuffData>(null,
                 BuffID.OnFire, DebuffData.OnFire,
                 BuffID.OnFire3, DebuffData.Hellfire,
