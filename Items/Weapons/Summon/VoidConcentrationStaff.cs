@@ -157,11 +157,11 @@ namespace CalamityMod.Projectiles.Summon
     }
     public class VoidConcentrationDarkEnergy : ModProjectile, ILocalizedModType
     {
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public new string LocalizationCategory => "Projectiles.Summon";
         private double minDistance => 10;
         private double distance { get; set; } = 10;
         private double maxDistance => 400;
+        public override string GlowTexture => "CalamityMod/Projectiles/Summon/VoidConcentrationDarkEnergyGlow";
 
         public override void SetStaticDefaults()
         {
@@ -172,7 +172,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetDefaults()
         {
             Projectile.width = 32;
-            Projectile.height = 32;
+            Projectile.height = 34;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -184,17 +184,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 10;
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
-            texture = TextureAssets.Npc[ModContent.NPCType<DarkEnergy>()].Value;
-            var gt = DarkEnergy.GlowTexture.Value;
-            Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            var frame = texture.Frame(1, 8, 0, Projectile.frame);
-            Main.EntitySpriteDraw(texture, drawPos, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale * 0.5f, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(gt, drawPos, frame, Color.White, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale * 0.5f, SpriteEffects.None, 0);
-            return false;
         }
 
         public override void AI()
