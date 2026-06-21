@@ -227,7 +227,8 @@ namespace CalamityMod.Systems.Collections
                 NPCType<EidolonWyrmHead>(), NPCType<NuclearTerror>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<SupremeCataclysm>(), NPCType<SupremeCatastrophe>(), NPCType<SoulSeekerSupreme>());
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, <see cref="ModNPC.CheckDead"/> or <see cref="GlobalNPC.CheckDead(NPC)"/> will be called on this NPC even if <see cref="NPC.realLife"/> is set.
+        /// If <see langword="true"/> for an NPC type, <see cref="ModNPC.CheckDead"/> or <see cref="GlobalNPC.CheckDead(NPC)"/> will be called on this NPC, even if <see cref="NPC.realLife"/> is set.<br/>
+        /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateNamedSet("DoCheckDeadRegardlessRealLife")
             .Description("Makes this NPC always call CheckDead, even if it sets realLife.")
@@ -242,10 +243,12 @@ namespace CalamityMod.Systems.Collections
             .RegisterBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
 
         /// <summary>
-        /// The intended kill times of Calamity bosses, in frames
+        /// Associates an NPC type with its intended boss kill time, in frames.<br/>
+        /// Used for calculating enraged Providence's RDR and Yharon's bullet hell self-damage, as well as controlling making an NPC apply Boss Effects.<br/>
+        /// Defaults to 0, meaning the NPC has no defined kill time.
         /// </summary>
         public static int[] BossKillTimes = Factory.CreateNamedSet("BossKillTimes")
-            .Description("The intended kill times of Calamity bosses, in frames")
+            .Description("Defines this NPC's intended boss kill time, in frames.")
             .RegisterIntSet(0,
                 NPCID.KingSlime, 5400, // 1:30 (90 seconds)
                 NPCID.EyeofCthulhu, 5400, // 1:30 (90 seconds)
