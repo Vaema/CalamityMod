@@ -1129,8 +1129,7 @@ namespace CalamityMod.Items
                 modPlayer.magmaStoneVisuals = !hideVisual; // hides the fire dust when hiding the accessory
             }
 
-            // The Frog Leg line is prevented from stacking.
-            // Additionally, Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
+            // Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
             if (item.type == ItemID.AmphibianBoots)
                 player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
 
