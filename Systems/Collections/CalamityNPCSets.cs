@@ -79,6 +79,15 @@ namespace CalamityMod.Systems.Collections
             .RegisterBoolSet(NPCID.BoundGoblin, NPCID.BoundWizard, NPCID.BoundMechanic, NPCID.SleepingAngler, NPCID.BartenderUnconscious, NPCID.WebbedStylist, NPCID.GolferRescue);
 
         /// <summary>
+        /// If <see langword="true"/> for an NPC type, this NPC will not be targeted by various sources of 'unpredicatable' damage.<br/>
+        /// Primarily used for NPCs which summon bosses when killed.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] ProtectedHostileNPC = Factory.CreateNamedSet("ProtectedHostileNPC")
+            .Description("Prevents this NPC from being targeted by various sources of 'unpredictable' damage.")
+            .RegisterBoolSet(NPCID.CultistArcherBlue, NPCID.CultistDevote, NPCType<PerforatorCyst>(), NPCType<HiveTumor>(), NPCType<LeviathanStart>());
+
+        /// <summary>
         /// If <see langword="true"/> for an NPC type, then that NPC will not provide increased Rage generation despite being considered a boss.<br/>
         /// Primarily used by worm boss body and tail segments to prevent Rage being extraordinarily easy to get.<br/>
         /// Defaults to <see langword="false"/>.
