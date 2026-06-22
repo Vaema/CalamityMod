@@ -79,7 +79,7 @@ namespace CalamityMod.Items.Accessories
                 float generousHitboxWidth = Math.Max(nPC.Hitbox.Width / 2f, nPC.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
                 float intensity = Utils.Remap(Utils.Distance(player.Center, nPC.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 1, 3, true); // We have to have this seperate from bonus, otherwise all effected enemies take damage based on the closest enemy
 
-                if (Utils.Distance(nPC.Center, player.Center) < MaxDistance + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && !nPC.dontTakeDamage && !CalamityItemSets.ProtectedHostileNPC[nPC.type])
+                if (Utils.Distance(nPC.Center, player.Center) < MaxDistance + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && !nPC.dontTakeDamage && !CalamityNPCSets.ProtectedHostileNPC[nPC.type])
                 {
                     float minDamageMult = 0.10f;
                     int maxTargets = 7;
