@@ -184,6 +184,7 @@ namespace CalamityMod.NPCs.TownNPCs
             this.GetLocalizedValue("Name.Techno"), // Technoblade
             this.GetLocalizedValue("Name.JohnPork"), // John Pork
             this.GetLocalizedValue("Name.Piglet"), // Winnie-the-Pooh
+            this.GetLocalizedValue("Name.Poogie"), // Monster Hunter
             
             // Dedicated names
         };
