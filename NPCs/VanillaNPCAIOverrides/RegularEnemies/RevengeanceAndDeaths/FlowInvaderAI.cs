@@ -50,8 +50,13 @@ public static partial class RevengeanceAndDeathAI
                 while (Math.Abs(projDirection.X) < 1.5f)
                     projDirection = Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * new Vector2(5f, 3f);
 
-                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projDirection, ProjectileID.StardustJellyfishSmall, 60, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                Main.projectile[proj].extraUpdates += 1;
+                int proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, projDirection, ProjectileID.StardustJellyfishSmall, 60, 0f, Main.myPlayer, 0f, NPC.whoAmI).identity;
+                Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
+                if (Main.dedServ)
+                {
+                    Main.projectile[proj].netSpam = 0;
+                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                }
             }
 
             return false;

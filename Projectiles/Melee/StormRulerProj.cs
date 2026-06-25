@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -49,7 +50,15 @@ namespace CalamityMod.Projectiles.Melee
             }
             Projectile.rotation = Projectile.velocity.ToRotation();
         }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+        }
 
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+        }
         public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
