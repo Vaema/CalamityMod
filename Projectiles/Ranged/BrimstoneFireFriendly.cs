@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,7 +16,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/FireProj";
 
         public static int Lifetime => 60;
-        public static int Fadetime => 50;
+        public static int Fadetime => 100;
         public ref float Time => ref Projectile.ai[0];
         public int MistType = -1;
 
@@ -54,6 +55,14 @@ namespace CalamityMod.Projectiles.Ranged
                 MistType = Main.rand.Next(3);
 
             Lighting.AddLight(Projectile.Center, 0.75f, 0.15f, 0.15f);
+            if (Projectile.timeLeft > Lifetime - 10)
+                return;
+            float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);
+            float fireSize = Utils.Remap(timeRatio, 0.2f, 0.5f, 0.25f, 1f);
+            var p = CataclysmMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, Terraria.GameContent.TextureAssets.Projectile[Type].Width() * fireSize);
+            p.rotation = Main.rand.NextFloat(MathHelper.TwoPi);
+            p.TextureToUse = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            p.SizeScaling = 0.6f;
         }
 
         // Keeping the flames in place when hitting a block
@@ -87,68 +96,18 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 1200);
 
             // Gas up the enemy
-            int smokeCount = 3 + (int)MathHelper.Clamp(target.width * 0.1f, 0f, 20f);
+            int smokeCount = 4 + (int)MathHelper.Clamp(target.width * 0.1f, 0f, 20f);
             for (int i = 0; i < smokeCount; i++)
             {
-                bool Smoketype = Main.rand.NextBool();
                 Vector2 smokePos = target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f);
-                Vector2 smokeVel = Vector2.UnitY * (Smoketype ? Main.rand.NextFloat(-0.8f, -2f) : Main.rand.NextFloat(-1.2f, -0.2f)) * MathHelper.Clamp(target.height * 0.1f, 1f, 10f);
-                Particle smoke = new MediumMistParticle(smokePos, smokeVel, new Color(255, 50, 50), Color.DimGray, Smoketype ? Main.rand.NextFloat(0.4f, 0.75f) : Main.rand.NextFloat(1.5f, 2f), 220 - Main.rand.Next(50), 0.1f);
+                Vector2 smokeVel = Vector2.UnitY * Main.rand.NextFloat(-2.4f, -0.8f) * MathHelper.Clamp(target.height * 0.1f, 1f, 10f);
+                Particle smoke = new MediumMistParticle(smokePos, smokeVel, Color.MediumVioletRed, Color.Purple, Main.rand.NextFloat(1f, 2f), 245 - Main.rand.Next(50), 0.1f);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
-
-            // The conga line of colors to sift through
-            Color color1 = new Color(255, 110, 100, 200);
-            Color color2 = new Color(255, 50, 50, 70);
-            Color color3 = new Color(255, 100, 100, 100);
-            Color color4 = new Color(200, 35, 30, 100);
-            float length = ((Time > Fadetime - 10f) ? 0.1f : 0.15f);
-            float vOffset = Math.Min(Time, 20f);
-            float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);
-            float fireSize = Utils.Remap(timeRatio, 0.2f, 0.5f, 0.25f, 1f);
-
-            if (timeRatio >= 1f)
-                return false;
-
-            for (float j = 1f; j >= 0f; j -= length)
-            {
-                // Color
-                Color fireColor = ((timeRatio < 0.1f) ? Color.Lerp(Color.Transparent, color1, Utils.GetLerpValue(0f, 0.1f, timeRatio)) :
-                ((timeRatio < 0.2f) ? Color.Lerp(color1, color2, Utils.GetLerpValue(0.1f, 0.2f, timeRatio)) :
-                ((timeRatio < 0.35f) ? color2 :
-                ((timeRatio < 0.7f) ? Color.Lerp(color2, color3, Utils.GetLerpValue(0.35f, 0.7f, timeRatio)) :
-                ((timeRatio < 0.85f) ? Color.Lerp(color3, color4, Utils.GetLerpValue(0.7f, 0.85f, timeRatio)) :
-                Color.Lerp(color4, Color.Transparent, Utils.GetLerpValue(0.85f, 1f, timeRatio)))))));
-                fireColor *= (1f - j) * Utils.GetLerpValue(0f, 0.2f, timeRatio, true);
-                Color innerColor = Color.Lerp(fireColor, Color.Black, 0.3f);
-
-                // Positions and rotations
-                Vector2 firePos = Projectile.Center - Main.screenPosition - Projectile.velocity * vOffset * j;
-                float mainRot = -j * MathHelper.PiOver2 - Main.GlobalTimeWrappedHourly * (j + 1f) * 2f / length;
-                float trailRot = MathHelper.PiOver4 - mainRot;
-
-                // Draw one backtrail
-                Vector2 trailOffset = Projectile.velocity * vOffset * length * 0.5f;
-                Main.EntitySpriteDraw(fire, firePos - trailOffset, null, innerColor * 0.25f, trailRot, fire.Size() * 0.5f, fireSize, SpriteEffects.None);
-
-                // Draw the main fire
-                Main.EntitySpriteDraw(fire, firePos, null, innerColor, mainRot, fire.Size() * 0.5f, fireSize, SpriteEffects.None);
-
-                // Draw the masking smoke
-                if (MistType > 2 || MistType < 0)
-                    return false;
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
-                Rectangle frame = mist.Frame(1, 3, 0, MistType);
-                Main.EntitySpriteDraw(mist, firePos, frame, Color.Lerp(fireColor, Color.White, 0.3f), mainRot, frame.Size() * 0.5f, fireSize, SpriteEffects.None);
-                Main.EntitySpriteDraw(mist, firePos, frame, fireColor, mainRot, frame.Size() * 0.5f, fireSize * 3f, SpriteEffects.None);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
-            }
             return false;
         }
     }
