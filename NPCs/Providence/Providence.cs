@@ -1981,12 +1981,6 @@ namespace CalamityMod.NPCs.Providence
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.hasBeenGivenFullPower;
-            }, ModContent.ItemType<ProfanedMoonlightDye>(), 1, 4, 4, desc: DropHelper.ProvidenceEnragedText);
-
-            npcLoot.AddIf(info =>
-            {
-                Providence prov = info.npc.ModNPC<Providence>();
-                return prov.hasBeenGivenFullPower;
             }, ModContent.ItemType<DivineGeode>(), 1, 75, 90);
 
             // Normal drops: Everything that would otherwise be in the bag
