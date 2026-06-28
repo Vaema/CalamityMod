@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.MaxUpdates = 4;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.noEnchantmentVisuals = true;
         }
 
         public override void AI()
