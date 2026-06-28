@@ -13,12 +13,12 @@ namespace CalamityMod.Systems
         public override int NPCType => ModContent.NPCType<Providence>();
         public static int ProvidenceTrack => (int)CalamityMod.Instance.GetMusicFromMusicMod("Providence");
         public static int SilenceTrack => MusicLoader.GetMusicSlot(CalamityMod.Instance, "Sounds/Music/Silence");
-        public override int? MusicModMusic => ProvidenceSpawnState() < 180f && ProvUtils.StandardAI() ? SilenceTrack : ProvidenceTrack;
+        public override int? MusicModMusic => ProvidenceSpawnState() < 180f ? SilenceTrack : ProvidenceTrack;
         public override int VanillaMusic => MusicID.LunarBoss;
         public override int OtherworldMusic => MusicID.OtherworldlyLunarBoss;
         public override void SpecialVisuals(Player player, bool isActive)
         {
-            if (ProvidenceSpawnState() == 180f && ProvUtils.StandardAI())
+            if (ProvidenceSpawnState() == 180f)
                 Main.musicFade[ProvidenceTrack] = 1f;
         }
         public static float ProvidenceSpawnState()

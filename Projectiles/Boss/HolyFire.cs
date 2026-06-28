@@ -90,12 +90,12 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.owner == Main.myPlayer)
                 {
                     Vector2 velocity = new Vector2(0.01f, 0f);
-                    if (Main.getGoodWorld)
+                    if (!ProvUtils.StandardAI())
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
-                    if (Main.getGoodWorld)
+                    if (!ProvUtils.StandardAI())
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
@@ -106,12 +106,12 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.owner == Main.myPlayer)
                 {
                     Vector2 velocity = new Vector2(0.05f, 0f);
-                    if (Main.getGoodWorld)
+                    if (!ProvUtils.StandardAI())
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
-                    if (Main.getGoodWorld)
+                    if (!ProvUtils.StandardAI())
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
