@@ -2333,6 +2333,8 @@ namespace CalamityMod.CalPlayer
                 arsenalCooldown--;
             if (killModeCooldown > 0)
                 killModeCooldown--;
+            if (oblivionCooldown > 0)
+                oblivionCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
                 ascendantInsigniaCooldown--;
             if (transformerCooldown > 0)

@@ -918,8 +918,13 @@ Oblivion: {
 	DisplayName: Oblivion
 	Tooltip:
 		'''
-		{$Common.YoyoStatsInfinite}
-		Fires brimstone darts when enemies are near
+		{$Common.YoyoStats}
+		An unstable yoyo that slowly releases homing brimstone hellblasts
+		Striking an enemy with the yoyo charges power, increasing the fire rate of the hellblasts
+		At maximum power, the yoyo bursts into brimstone darts and resets its duration
+		Striking an enemy at max power will overload the yoyo, causing it to release all stored up power and shatter
+		Shattering the yoyo deals immense damage but leaves it unable to be used for several seconds
+		[c/C61B40:'I have memories from eyes that are not my own']
 		'''
 }
 
