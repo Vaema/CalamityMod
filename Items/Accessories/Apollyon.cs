@@ -28,7 +28,8 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<Abaddon>().
-                AddIngredient<ScoriaBar>(3).
+                AddIngredient(ItemID.EyeoftheGolem).
+                AddIngredient<UnholyCore>(4).
                 AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
