@@ -109,7 +109,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 {
                     //Constantly keep the yoyo out, even if the player lets go of the mouse
                     Projectile.ai[0] = 0f;
-                    //TODO: Make this follow yoyo range limits & tilecollide
                     Projectile.Center = player.Calamity().mouseWorld;
                     //Charge up visuals
                     power += 0.01f;
