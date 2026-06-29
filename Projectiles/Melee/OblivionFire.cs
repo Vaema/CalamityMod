@@ -14,6 +14,11 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public ref float Time => ref Projectile.ai[0];
 
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -31,14 +36,14 @@ namespace CalamityMod.Projectiles.Melee
         {
             Time++;
             if (Time >= 100f)
-                CalamityUtils.HomeInOnNPC(Projectile, false, 300, 2.5f, 10f, true);
+                CalamityUtils.HomeInOnNPC(Projectile, false, 300, 2.5f, 20f, true);
             CalamitasMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(2, 2), 16f);
         }
 
         public override bool? CanDamage() => Time >= 45f;
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
     }
 }

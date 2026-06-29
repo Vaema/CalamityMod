@@ -59,7 +59,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override void AI()
         {
             var player = Main.player[Projectile.owner];
-            //Yoyo glove is stupid and dumb and smells bad
             //Using yoyo glove or yoyo bag makes yoyos run out of air time 2-4x faster (randomized) when the second yoyo is out
             //Therefore, we set the flight to infinite, but manually set it to recall after 15 seconds and update it across both yoyos
             if (time >= 1800)
@@ -226,6 +225,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
             //Only applies to the main yoyo
             if (!cloneYoyo)
             {
@@ -243,9 +243,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 if (hitCounter == hitCountMax)
                 {
                     //Refresh duration on both yoyos
-                    if(!cloneYoyo)
-                    {
-                        for (int i = 0; i < Main.maxProjectiles; i++)
+                    for (int i = 0; i < Main.maxProjectiles; i++)
                         {
                             Projectile p = Main.projectile[i];
                             if (p.active && p.type == Type && p.owner == Projectile.owner)
@@ -256,7 +254,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                                 }
                             }
                         }
-                    }
                     //Start a 1.5 second grace period where the yoyo cannot damage enemies. This is to avoid instant shattering after reaching max power
                     graceTimer = 90;
                     //Small burst and a ring of darts
@@ -306,25 +303,26 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 //If the yoyo hits while at maximum, reset the duration of both yoyos and trigger shattering
                 if (hitCounter > hitCountMax && !shatter)
                 {
+                    Player Owner = Main.player[Projectile.owner];
                     SoundEngine.PlaySound(SoundID.DD2_EtherianPortalDryadTouch with { Volume = 4f }, Projectile.Center);
+                    Owner.SetScreenshake(3f);
                     shatter = true;
-                    if (!cloneYoyo)
+                    for (int i = 0; i < Main.maxProjectiles; i++)
                     {
-                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        Projectile p = Main.projectile[i];
+                        if (p.active && p.type == Type && p.owner == Projectile.owner)
                         {
-                            Projectile p = Main.projectile[i];
-                            if (p.active && p.type == Type && p.owner == Projectile.owner)
+                            if (p.ModProjectile is OblivionYoyo oblivion)
                             {
-                                if (p.ModProjectile is OblivionYoyo oblivion)
-                                {
-                                    oblivion.time = 0;
-                                }
+                                oblivion.time = 0;
                             }
                         }
                     }
                 }
             }
         }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
 
         //During the grace period after reaching max power, the yoyo cannot hit enemies for 1.5s to avoid unfair shattering
         public override bool? CanDamage() => graceTimer == 0;
