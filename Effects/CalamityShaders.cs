@@ -266,6 +266,9 @@ namespace CalamityMod.Effects
 
         // The swirling aura effect seen around Horrible Hog while its idling.
         internal static Asset<Effect> HorribleHogAuraShader;
+
+        // The shader effect for the primitive trails drawn for Providence's HolyBurnOrb/HolyLight projectiles.
+        internal static Asset<Effect> ProvidenceHolyOrbTrailShader;
         #endregion
 
         #region Big E's Shaders
@@ -537,6 +540,9 @@ namespace CalamityMod.Effects
 
             HorribleHogAuraShader = LoadShader("HorribleHogAuraShader");
             RegisterMiscShader(HorribleHogAuraShader, "ScaryAuraPass", "HorribleHogAura");
+
+            ProvidenceHolyOrbTrailShader = LoadShader("ProvidenceHolyOrbTrailShader");
+            RegisterMiscShader(ProvidenceHolyOrbTrailShader, "TrailPass", "ProvidenceHolyOrbTrail");
             #endregion
 
             #region Loading Big E's Shaders
