@@ -52,8 +52,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static float TesselationDamageRatio = 0.25f;
         public static float TesselationKnockback = 1.5f;
 
-        public override float StealthDamageMultiplier => 1.0f;
-
         public override void SetDefaults()
         {
             Item.width = 78;

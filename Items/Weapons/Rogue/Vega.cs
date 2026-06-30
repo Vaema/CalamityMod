@@ -37,7 +37,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 1f;
         public override void HoldItem(Player player)
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
