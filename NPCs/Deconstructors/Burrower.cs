@@ -110,8 +110,6 @@ namespace CalamityMod.NPCs.Deconstructors
         }
         public override void SetDefaults()
         {
-
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 0;
             NPC.width = 38;
             NPC.height = 38;
