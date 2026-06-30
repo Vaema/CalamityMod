@@ -61,7 +61,6 @@ namespace CalamityMod.Items
                 { ItemID.Blowgun, Do(DamageExact(40), ShootSpeedExact(15f)) }, // VANILLA: 27 DMG, 13 VEL
                 { ItemID.BluePhaseblade, phaseblade },
                 { ItemID.BluePhasesaber, phasesaber },
-                { ItemID.BoneArrow, Do(DamageExact(9)) }, // VANILLA: 8 DMG
                 { ItemID.BoneSword, Do(UseTurn, DamageExact(25)) }, // VANILLA: 19 DMG
                 { ItemID.BookofSkulls, Do(ShootSpeedExact(5.5f)) }, // VANILLA: 3.5 VEL
                 { ItemID.Boomstick, Do(DamageExact(11)) }, // VANILLA: 14 DMG
@@ -87,7 +86,6 @@ namespace CalamityMod.Items
                 { ItemID.CrystalDart, Do(DamageExact(20)) }, // VANILLA: 14 DMG
                 { ItemID.CrystalStorm, Do(DamageExact(40)) }, // VANILLA: 32 DMG
                 { ItemID.CrystalVileShard, Do(DamageExact(35)) }, // VANILLA: 25 DMG
-                { ItemID.CursedArrow, Do(DamageExact(14)) }, // VANILLA: 17 DMG
                 { ItemID.CursedDart, Do(DamageExact(25)) }, // VANILLA: 9 DMG
                 { ItemID.Cutlass, Do(DamageExact(90), UseExact(11)) }, // VANILLA: 53 DMG, 16 UT
                 { ItemID.DaedalusStormbow, Do(DamageExact(30)) }, // VANILLA: 38 DMG
@@ -134,7 +132,6 @@ namespace CalamityMod.Items
                 { ItemID.IceBoomerang, Do(ShootSpeedExact(9), UseExact(25)) }, // VANILLA: 20 UT, 11.5 VEL
                 { ItemID.IceRod, Do(ShootSpeedExact(20), UseExact(6)) }, // VANILLA: 9 UT, 12 VEL
                 { ItemID.IceSickle, Do(UseMeleeSpeed, DamageExact(75), ShootSpeedExact(20f)) }, // VANILLA: 50 DMG, 12 VEL
-                { ItemID.IchorArrow, Do(DamageExact(13)) }, // VANILLA: 16 DMG
                 { ItemID.IchorBullet, Do(DamageExact(11)) }, // VANILLA: 13 DMG
                 { ItemID.ImpStaff, Do(DamageExact(25)) }, // VANILLA: 17 DMG
                 { ItemID.InfernoFork, Do(DamageExact(83), ShootSpeedExact(11)) }, // VANILLA: 70 DMG, 8 VEL
@@ -257,7 +254,6 @@ namespace CalamityMod.Items
                 { ItemID.Tsunami, Do(DamageExact(45)) }, // VANILLA: 53 DMG
                 { ItemID.TungstenBullet, Do(DamageExact(8)) }, // VANILLA: 9 DMG
                 { ItemID.TungstenShortsword, Do(TrueMelee, DamageExact(15)) }, // VANILLA: 10 DMG
-                { ItemID.UnholyArrow, Do(DamageExact(11)) }, // VANILLA: 12 DMG
                 { ItemID.UnholyTrident, Do(DamageRatio(0.91f)) }, // VANILLA: 88 DMG. Uses ratios due to remix seed
                 { ItemID.Uzi, Do(UseExact(8)) }, // VANILLA: 9 UT
                 { ItemID.ValkyrieYoyo, Do(DamageExact(48)) }, // VANILLA: 70 DMG. Has the same stats as Red's Throw
