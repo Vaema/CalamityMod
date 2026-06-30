@@ -20,9 +20,9 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class HolyBurnOrb : ModProjectile, ILocalizedModType
     {
-        public static Asset<Texture2D> TrailNoiseTexture { get; private set; }
-        public static Asset<Texture2D> TrailDistortionTexture { get; private set; }
-        public static Asset<Texture2D> GlowOrbTexture { get; private set; }
+        private static Asset<Texture2D> TrailNoiseTexture;
+        private static Asset<Texture2D> TrailDistortionTexture;
+        private static Asset<Texture2D> GlowOrbTexture;
 
         bool started = false;
 
@@ -161,6 +161,38 @@ namespace CalamityMod.Projectiles.Boss
             return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
         }
 
+        public void DrawTrail()
+        {
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -200f, 200f);
+            Vector2 basePosition = Projectile.Center - Main.screenPosition;
+            Rectangle screenBounds = new Rectangle(-40, -40, Main.screenWidth + 40, Main.screenHeight + 40);
+            if (screenBounds.Contains(basePosition.ToPoint()))
+            {
+                List<Vector3> path = [];
+                for (var i = 0; i < Projectile.oldPos.Length; i++)
+                {
+                    Vector2 trailDrawPosition = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
+                    path.Add(new Vector3(trailDrawPosition.X, trailDrawPosition.Y, 0f));
+                }
+
+                if (path.Count > 2 && Projectile.ai[0] > 6)
+                {
+                    Effect shader = CalamityShaders.ProvidenceHolyOrbTrailShader.Value;
+                    shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                    shader.Parameters["glowPower"].SetValue(1.48f);
+
+                    Main.graphics.GraphicsDevice.Textures[0] = TrailNoiseTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+                    Main.graphics.GraphicsDevice.Textures[1] = TrailDistortionTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+
+                    using var shaderScope = SanePrimitiveRenderer.BeginShaderScope(shader, Matrix.Identity, Matrix.Identity, projection);
+                    using var trailMesh = TriangleStripBuilder.BuildStripPooled(path, progress => FireWidthFunction(progress), progress => FireColorFunction(progress), PrimitiveMeshCache.Shared, textured: true);
+                    shaderScope.Draw(trailMesh.View);
+                }
+            }
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             // Trail drawn by the HolyBurnOrbDrawer system.
@@ -220,7 +252,10 @@ namespace CalamityMod.Projectiles.Boss
         public override void Load()
         {
             GeneralDrawLayerSystem.OnBeforeProjectiles += DrawOrbTrails;
-            Main.QueueMainThreadAction(() => TrailPixelationLease = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ( w / 2, h / 2)));
+            if (!Main.dedServ)
+            {
+                Main.QueueMainThreadAction(() => TrailPixelationLease = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2)));
+            }
         }
 
         public override void PostUpdateProjectiles()
@@ -247,10 +282,10 @@ namespace CalamityMod.Projectiles.Boss
                     using (TrailPixelationLease.Scope(clearColor: Color.Transparent))
                     {
                         foreach (var item in HolyBurnOrbs)
-                            DrawBurnOrbTrail(item);
+                            item.ModProjectile<HolyBurnOrb>().DrawTrail();
 
                         foreach (var item in HolyLights)
-                            DrawHealOrbTrail(item);
+                            item.ModProjectile<HolyLight>().DrawTrail();
                     }
 
                     Main.spriteBatch.End();
@@ -260,78 +295,6 @@ namespace CalamityMod.Projectiles.Boss
                     Main.spriteBatch.Draw(TrailPixelationLease.Target, Vector2.Zero, null, Color.White with { A = 0 }, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
 
                     Main.spriteBatch.End();
-                }
-            }
-        }
-
-        private static void DrawBurnOrbTrail(Projectile Projectile)
-        {
-            if (Projectile.ModProjectile is HolyBurnOrb orb)
-            {
-                Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -200f, 200f);
-                Vector2 basePosition = Projectile.Center - Main.screenPosition;
-                Rectangle screenBounds = new Rectangle(-40, -40, Main.screenWidth + 40, Main.screenHeight + 40);
-                if (screenBounds.Contains(basePosition.ToPoint()))
-                {
-                    List<Vector3> path = [];
-                    for (var i = 0; i < Projectile.oldPos.Length; i++)
-                    {
-                        Vector2 trailDrawPosition = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
-                        path.Add(new Vector3(trailDrawPosition.X, trailDrawPosition.Y, 0f));
-                    }
-
-                    if (path.Count > 2 && Projectile.ai[0] > 6)
-                    {
-                        Effect shader = CalamityShaders.ProvidenceHolyOrbTrailShader.Value;
-                        shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-                        shader.Parameters["glowPower"].SetValue(1.48f);
-                        shader.Parameters["pixelationFactor"].SetValue(Main.ScreenSize.ToVector2() * 0.25f);
-
-                        Main.graphics.GraphicsDevice.Textures[0] = HolyBurnOrb.TrailNoiseTexture.Value;
-                        Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
-                        Main.graphics.GraphicsDevice.Textures[1] = HolyBurnOrb.TrailDistortionTexture.Value;
-                        Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
-
-                        using var shaderScope = SanePrimitiveRenderer.BeginShaderScope(shader, Matrix.Identity, Matrix.Identity, projection);
-                        using var trailMesh = TriangleStripBuilder.BuildStripPooled(path, progress => orb.FireWidthFunction(progress), progress => orb.FireColorFunction(progress), PrimitiveMeshCache.Shared, textured: true);
-                        shaderScope.Draw(trailMesh.View);
-                    }
-                }
-            }
-        }
-
-        private static void DrawHealOrbTrail(Projectile Projectile)
-        {
-            if (Projectile.ModProjectile is HolyLight light)
-            {
-                Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -200f, 200f);
-                Vector2 basePosition = Projectile.Center - Main.screenPosition;
-                Rectangle screenBounds = new Rectangle(-40, -40, Main.screenWidth + 40, Main.screenHeight + 40);
-                if (screenBounds.Contains(basePosition.ToPoint()))
-                {
-                    List<Vector3> path = [];
-                    for (var i = 0; i < Projectile.oldPos.Length; i++)
-                    {
-                        Vector2 trailDrawPosition = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
-                        path.Add(new Vector3(trailDrawPosition.X, trailDrawPosition.Y, 0f));
-                    }
-
-                    if (path.Count > 2 && Projectile.ai[0] > 6)
-                    {
-                        Effect shader = CalamityShaders.ProvidenceHolyOrbTrailShader.Value;
-                        shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-                        shader.Parameters["glowPower"].SetValue(1.22f);
-                        shader.Parameters["pixelationFactor"].SetValue(Main.ScreenSize.ToVector2() * 0.25f);
-
-                        Main.graphics.GraphicsDevice.Textures[0] = HolyLight.TrailNoiseTexture.Value;
-                        Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
-                        Main.graphics.GraphicsDevice.Textures[1] = HolyLight.TrailDistortionTexture.Value;
-                        Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
-
-                        using var shaderScope = SanePrimitiveRenderer.BeginShaderScope(shader, Matrix.Identity, Matrix.Identity, projection);
-                        using var trailMesh = TriangleStripBuilder.BuildStripPooled(path, progress => light.FireWidthFunction(progress), progress => light.FireColorFunction(progress), PrimitiveMeshCache.Shared, textured: true);
-                        shaderScope.Draw(trailMesh.View);
-                    }
                 }
             }
         }

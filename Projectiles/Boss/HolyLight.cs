@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.Effects;
 using CalamityMod.Enums;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,8 +18,9 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class HolyLight : ModProjectile, ILocalizedModType
     {
-        public static Asset<Texture2D> TrailNoiseTexture { get; private set; }
-        public static Asset<Texture2D> TrailDistortionTexture { get; private set; }
+        private static Asset<Texture2D> TrailNoiseTexture;
+        private static Asset<Texture2D> TrailDistortionTexture;
+        private static Asset<Texture2D> GlowOrbTexture;
 
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/StarProj";
@@ -27,6 +31,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 TrailNoiseTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak");
                 TrailDistortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
+                GlowOrbTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle");
             }
         }
 
@@ -145,6 +150,38 @@ namespace CalamityMod.Projectiles.Boss
             return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
         }
 
+        public void DrawTrail()
+        {
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -200f, 200f);
+            Vector2 basePosition = Projectile.Center - Main.screenPosition;
+            Rectangle screenBounds = new Rectangle(-40, -40, Main.screenWidth + 40, Main.screenHeight + 40);
+            if (screenBounds.Contains(basePosition.ToPoint()))
+            {
+                List<Vector3> path = [];
+                for (var i = 0; i < Projectile.oldPos.Length; i++)
+                {
+                    Vector2 trailDrawPosition = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
+                    path.Add(new Vector3(trailDrawPosition.X, trailDrawPosition.Y, 0f));
+                }
+
+                if (path.Count > 2 && Projectile.ai[0] > 6)
+                {
+                    Effect shader = CalamityShaders.ProvidenceHolyOrbTrailShader.Value;
+                    shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                    shader.Parameters["glowPower"].SetValue(1.48f);
+
+                    Main.graphics.GraphicsDevice.Textures[0] = TrailNoiseTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+                    Main.graphics.GraphicsDevice.Textures[1] = TrailDistortionTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+
+                    using var shaderScope = SanePrimitiveRenderer.BeginShaderScope(shader, Matrix.Identity, Matrix.Identity, projection);
+                    using var trailMesh = TriangleStripBuilder.BuildStripPooled(path, progress => FireWidthFunction(progress), progress => FireColorFunction(progress), PrimitiveMeshCache.Shared, textured: true);
+                    shaderScope.Draw(trailMesh.View);
+                }
+            }
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             // Trail drawn by the HolyBurnOrbDrawer system.
@@ -178,20 +215,19 @@ namespace CalamityMod.Projectiles.Boss
 
             Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
             Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 + Vector2.UnitX * 60f, null, halfBrightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 + Vector2.UnitX * 60f, null, halfBrightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
 
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitX * 60f, null, brightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitX * 60f, null, brightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitY * 60f, null, halfBrightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitY * 60f, null, halfBrightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
         }
 
         private void DrawHealOrbAdditive()
         {
-            Texture2D texture = HolyBurnOrb.GlowOrbTexture.Value;
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(54, 209, 54) with { A = 0 }, 0, texture.Size() * 0.5f, 1f, 0, 0f);
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 }, 0, texture.Size() * 0.5f, 0.5f, 0, 0f);
+            Main.spriteBatch.Draw(GlowOrbTexture.Value, Projectile.Center - Main.screenPosition, null, new Color(54, 209, 54) with { A = 0 }, 0, GlowOrbTexture.Size() * 0.5f, 1f, 0, 0f);
+            Main.spriteBatch.Draw(GlowOrbTexture.Value, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 }, 0, GlowOrbTexture.Size() * 0.5f, 0.5f, 0, 0f);
         }
     }
 }
