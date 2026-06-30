@@ -196,7 +196,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
                     NPC.frame.Y = 1;
                 }
             }
-            // Suprise!
+            // Surprise!
             else if (NPC.ai[0] == 1)
             {
                 if (NPC.frame.Y < frameHeight * 5)

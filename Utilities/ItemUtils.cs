@@ -11,6 +11,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod
 {
@@ -160,17 +161,17 @@ namespace CalamityMod
             // Color debuffs based on their element type in the vulnerability and resistance system
             // If a debuff has multiple types, the colors are mixed
             // If a debuff is typeless, is gets the typeless color
-            else if (BuffDatasets.DebuffDataset[debuffId] is not null)
+            else if (CalamityBuffSets.DebuffDataset[debuffId] is not null)
             {
                 if (!debuffColorWeightsCache.TryGetValue(debuffId, out var weights))
                 {
                     weights =
                     [
-                        (SicknessDebuffColor, BuffDatasets.DebuffDataset[debuffId].SicknessDebuffScaling),
-                        (FireDebuffColor, BuffDatasets.DebuffDataset[debuffId].HeatDebuffScaling),
-                        (WaterDebuffColor, BuffDatasets.DebuffDataset[debuffId].WaterDebuffScaling),
-                        (ElectricDebuffColor, BuffDatasets.DebuffDataset[debuffId].ElectricDebuffScaling),
-                        (ColdDebuffColor, BuffDatasets.DebuffDataset[debuffId].ColdDebuffScaling),
+                        (SicknessDebuffColor, CalamityBuffSets.DebuffDataset[debuffId].SicknessDebuffScaling),
+                        (FireDebuffColor, CalamityBuffSets.DebuffDataset[debuffId].HeatDebuffScaling),
+                        (WaterDebuffColor, CalamityBuffSets.DebuffDataset[debuffId].WaterDebuffScaling),
+                        (ElectricDebuffColor, CalamityBuffSets.DebuffDataset[debuffId].ElectricDebuffScaling),
+                        (ColdDebuffColor, CalamityBuffSets.DebuffDataset[debuffId].ColdDebuffScaling),
                     ];
                 }
 

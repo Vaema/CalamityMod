@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,12 +12,16 @@ namespace CalamityMod.Items.Weapons.Melee
     public class BlightedCleaver : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3, BuffID.Venom];
+        }
 
         public override void SetDefaults()
         {
             Item.width = 88;
             Item.height = 88;
-            Item.damage = 90;
+            Item.damage = 65;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 28;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -34,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float adjustedItemScale = player.GetAdjustedItemScale(Item);
-            Projectile.NewProjectile(source, player.MountedCenter, velocity, type, (int)(damage * 0.75), knockback * 0.5f, player.whoAmI, (float)player.direction * player.gravDir, 32f, adjustedItemScale);
+            Projectile.NewProjectile(source, player.MountedCenter, velocity, type, damage, knockback * 0.5f, player.whoAmI, (float)player.direction * player.gravDir, 32f, adjustedItemScale);
             NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, player.whoAmI);
             return false;
         }

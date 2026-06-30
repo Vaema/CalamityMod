@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.DataStructures;
@@ -12,9 +13,7 @@ using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Items.Potions.Food;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
@@ -74,9 +73,9 @@ namespace CalamityMod.CalPlayer
 
                 if (Player.electrified)
                 {
-                    totalVanillaDoT += eleResist ? 4 : 8;
+                    totalVanillaDoT += 8;
                     if (Player.controlLeft || Player.controlRight)
-                        totalVanillaDoT += eleResist ? 16 : 32;
+                        totalVanillaDoT += 32;
                 }
 
                 // Tally up total current vanilla DoT so it can be added as extra DoT from Death Mode
@@ -102,6 +101,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(whisperingDeath, 0, laudanum);
 
             ApplyDoTDebuff(irradiated, 4);
+            ApplyDoTDebuff(windChilled, 4);
             int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0) - (corrosiveSpine ? 2 : 0);
             ApplyDoTDebuff(sulphurPoison, sulphurDoT);
             ApplyDoTDebuff(riptide, 6);
@@ -109,7 +109,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(burningBlood, 8);
             ApplyDoTDebuff(brainRot, 8);
             ApplyDoTDebuff(vaporfied, 8);
-            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
+            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3);
             ApplyDoTDebuff(staticDischarge, staticDoT);
             ApplyDoTDebuff(heavybleeding, 16);
             ApplyDoTDebuff(crushDepth, 18);
@@ -130,7 +130,7 @@ namespace CalamityMod.CalPlayer
 
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(godSlayerInferno, profanedCrystalBuffs ? 50 : 40);
-            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
+            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
             ApplyDoTDebuff(elementalMix, 50); // Never inflicted on the player
             ApplyDoTDebuff(trueVHex, 50);
@@ -138,7 +138,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(dragonFire, dragonfireDoT);
             ApplyDoTDebuff(miracleBlight, 60);
             ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
-            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16) / (eleResist ? 2 : 1);
+            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
@@ -191,17 +191,34 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Alcohol
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
+
             for (int l = 0; l < Player.MaxBuffs; l++)
             {
                 int buff = Player.buffType[l];
-                if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
-                    alcoholPoisonLevel += level;
+                if (buff <= 0) continue;
+
+                var data = CalamityBuffSets.DebuffDataset[buff];
+                if (data?.AlcoholLevel > 0)
+                    alcoholPoisonLevel += data.AlcoholLevel;
             }
-            if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
-                alcoholPoisonLevel++;
+
+            if (dripPlayer.ivDripEquipped && dripPlayer.currentAlcohol != AlcoholType.None)
+            {
+                int ivBuffID = CalamityBuffSets.GetBuffIDFromAlcoholType(dripPlayer.currentAlcohol);
+
+                if (ivBuffID != -1)
+                {
+                    var ivData = CalamityBuffSets.DebuffDataset[ivBuffID];
+                    if (ivData?.AlcoholLevel > 0)
+                        alcoholPoisonLevel += ivData.AlcoholLevel;
+                }
+            }
+
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear))
+                totalNegativeLifeRegen += Everclear.RegenLoss;
             // Blanket effect for all alcohols
             if (alcoholPoisonLevel > 0)
             {
@@ -213,14 +230,13 @@ namespace CalamityMod.CalPlayer
                     Player.fishingSkill += 5;
 
             }
-            if (alcoholPoisonLevel > 3)
+            if (alcoholPoisonLevel > alcoholPoisonMax)
             {
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
 
-                // This has to last over 60 frames for the nurse to count the debuff, so...
                 if (Player.whoAmI == Main.myPlayer)
-                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 61, false);
+                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 2, false);
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;
@@ -269,7 +285,10 @@ namespace CalamityMod.CalPlayer
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
                 totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
+
             if (tequilaSunrise)
+                totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.TequilaSunrise))
                 totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
@@ -319,7 +338,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l] is not null && BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
+            if (permafrostsConcoction && Player.buffType.Any(l => CalamityBuffSets.DebuffDataset[l] is not null && CalamityBuffSets.DebuffDataset[l].HeatDebuffScaling > 0))
                 Player.lifeRegen += 6;
 
             if (grandDadHealTimer == 0 && grandDadHealPool >= 7)
@@ -342,7 +361,17 @@ namespace CalamityMod.CalPlayer
 
                 if (tequilaSunrise)
                     Player.lifeRegenTime += 1800;
+
             }
+
+            if (dripPlayer.HasAlcohol(AlcoholType.TequilaSunrise))
+            {
+                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
+                {
+                    Player.lifeRegenTime += 1800;
+                }
+            }
+
 
             #endregion
 
@@ -464,9 +493,6 @@ namespace CalamityMod.CalPlayer
             if (sRegen)
                 Player.lifeRegen += SpiritGlyph.RegenBoost;
 
-            if (fortunesFavor)
-                Player.lifeRegen += FortunesFavor.FortunesFavorRegenBoost;
-
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;
 
@@ -559,14 +585,8 @@ namespace CalamityMod.CalPlayer
             if (community)
             {
                 int regenBoost = 1 + (int)(TheCommunity.CalculatePower() * TheCommunity.RegenMultiplier);
-                bool lesserEffect = false;
-                for (int l = 0; l < Player.MaxBuffs; l++)
-                {
-                    int hasBuff = Player.buffType[l];
-                    lesserEffect = CalamityBuffSets.AlcoholStrength.TryGetValue(hasBuff, out var a);
-                }
                 if (Player.lifeRegen < 0)
-                    Player.lifeRegen += lesserEffect ? 1 : regenBoost;
+                    Player.lifeRegen += regenBoost;
             }
 
             if (manaOverloader)
@@ -674,6 +694,10 @@ namespace CalamityMod.CalPlayer
 
         public override void NaturalLifeRegen(ref float regen)
         {
+
+            if (Player.HasBuff<SmashedEvil>())
+                regen *= 1.5f;
+
             // Honey Dew and its upgrades make natural regen more powerful
             if (purity)
                 regen *= Radiance.NaturalRegenPower;
@@ -683,7 +707,6 @@ namespace CalamityMod.CalPlayer
                 regen *= LivingDew.NaturalRegenPower;
             else if (honeyDew)
                 regen *= HoneyDew.NaturalRegenPower;
-
             // The Camper counteracts the regen loss while moving horizontally
             if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
             {

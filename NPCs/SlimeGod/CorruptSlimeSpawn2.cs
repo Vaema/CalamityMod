@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -29,6 +30,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.lifeMax = BossRushEvent.BossRushActive ? 5000 : 90;
             NPC.knockBackResist = 0.9f;
             AnimationType = NPCID.CorruptSlime;
+            NPC.Opacity = 0.8f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -40,9 +42,6 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override void AI()
         {
-            Vector3 light = new Vector3(0.5f, 0.1f, 0.5f);
-            Lighting.AddLight(NPC.Center, light.X, light.Y, light.Z);
-
             NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
         }
 
@@ -50,14 +49,16 @@ namespace CalamityMod.NPCs.SlimeGod
         {
             Color dustColor = Color.Lavender;
             dustColor.A = 150;
-
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
-
+            {
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
+            }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
+                {
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
+                }
             }
         }
 

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,13 +16,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WindChilled>(), BuffID.Frozen];
         }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
-            Item.damage = 19;
+            Item.damage = 16;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 14;
             Item.useAnimation = Item.useTime = 36;

@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Typeless
                         for (int index = 0; index < npc.buffType.Length; index++)
                         {
                             int type = npc.buffType[index];
-                            var debuffData = BuffDatasets.DebuffDataset[type];
+                            var debuffData = CalamityBuffSets.DebuffDataset[type];
 
                             // Calculate the Bane damage to see if the debuffs can be transfered
                             int bDamage = Math.Max((int)(Bane.debuffData.EnemyLostRegen * bestDamage), (int)Bane.debuffData.EnemyLostRegen);

@@ -1,4 +1,4 @@
-﻿// Quest fish tooltips
+// Quest fish tooltips
 CaughtInAstral: Caught in the Astral Infection
 CaughtInBrimstoneCrag: Caught in the Brimstone Crag
 CaughtInSnow: Caught in Tundra
@@ -168,6 +168,11 @@ PrismCrate: {
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
 }
 
+PrismaticGuppy: {
+	DisplayName: Prismatic Guppy
+	Tooltip: Throwing these in an aquarium would be insanity
+}
+
 RustedJingleBell: {
 	DisplayName: Rusted Jingle Bell
 	Tooltip:
@@ -190,31 +195,10 @@ Serpentuna: {
 
 SparklingEmpress: {
 	DisplayName: Sparkling Empress
-	Tooltip: "[GFB]"
-	TooltipNormal:
+	Tooltip:
 		'''
-		Fires a stream of erratic magic
-		After firing for long enough, the fish will shine
-		Ceasing use of the fish while it shines will restore some of your mana
-		'An beautiful fish that seems to feed on mana'
-		'''
-	TooltipGFB:
-		'''
-		Fires a stream of erratic magic
-		After firing for long enough, the fish will shine
-		Ceasing use of the fish while it shines will restore some of your mana
-		'Hello there, you seem to be an unfamiliar face around here.
-		Perhaps you are surprised a fish like me is able to speak?
-		No need for worry, I have no intention of any foul play.
-		I only hope to find a delectable meal of pure mana on this fine day!
-		You have a supply of mana, yes?
-		Would you perchance be so kind as to share a bit with this small fish?
-		If it is not to your liking do not worry, for I have a compromise to make you.
-		It should be simple enough, you provide me, the fish, with your mana.
-		But, in turn I shall provide you plentiful offensive power through my art of fish magic.
-		Is this an applicable compromise?
-		Good!
-		Then let us set out and see the world beyond as I enjoy a fine feast!'
+		Fires a concentrated laser to annihilate your foes
+		Defeated enemies explode into prism shards
 		'''
 }
 
@@ -281,9 +265,14 @@ Spadefish: {
 	DisplayName: Spadefish
 	Tooltip:
 		'''
+		Throws a spadefish at enemies
+		Stealth Strikes cause you to spin the spade before throwing, damaging nearby enemies
+		[c/aaaaaa:Shift-<right> this item in your inventory to [TOGGLE] breaking tiles]
 		'How can a fish be used to dig through the ground?
 		Some questions are best left unanswered...'
 		'''
+	TextWhileEnabled: disable
+	TextWhileDisabled: enable
 }
 
 StuffedFish: {
@@ -344,8 +333,8 @@ RiftReeler: {
 	DisplayName: Rift Reeler
 	Tooltip:
 		'''
-		Fires four lines at once
-		Can fish in lava
+		Fires four lines at once. Bobbers deal damage upon contact with enemies
+		Allows fishing in lava
 		'The battlefield is a scene of constant chaos.
 		The winner will be the one who controls that chaos, both the pole and the fish.'
 		'''
@@ -355,7 +344,7 @@ SlurperPole: {
 	DisplayName: Slurper Pole
 	Tooltip:
 		'''
-		Can fish in lava
+		Allows fishing in lava
 		'It is the burning lava of the soul that has a furnace within--a very volcano of grief and sorrow.'
 		'''
 }
@@ -364,11 +353,21 @@ TheDevourerofCods: {
 	DisplayName: The Devourer of Cods
 	Tooltip:
 		'''
-		Fires ten lines at once. Line never snaps and can fish from lava
+		Fires ten lines at once. Line never breaks and allows fishing in lava
 		Hooked items stay hooked forever
 		Common fish are automatically consumed while fishing
 		Consuming fish allows a bobber to hook a new item and feeds the user
 		'The devourer was once just an Eater of Shoals'
+		'''
+}
+
+TrustyOldRod: {
+	DisplayName: Trusty Old Rod
+	Tooltip: Allows for especially..."exotic" hauls
+	SalesPitch:
+		'''
+		'Me and Hoggart have worked together with the best fishermen in the world to bring you the most effective rod on the market!'
+		'With state-of-the-art technology, you can fish anything! Don't let a single creature elude your hook anymore!'
 		'''
 }
 
@@ -391,35 +390,27 @@ WulfrumRod: {
 }
 
 // Bait
+RageBait: {
+	DisplayName: Rage Bait
+	Tooltip:
+		'''
+		Detects hooked fish
+		Profoundly unreliable
+		'''
+	SalesPitch:
+		'''
+		'Do you want to know a secret? Fishing takes so long because the fish are dumb! They'll always swim right by your hook!'
+		'But with this bait right here? No longer! It'll make your hook the only thing they can think of. You'll be swimming in fishes in the blink of an eye!' 
+		'''
+}
+
 GrandMarquisBait: {
 	DisplayName: Grand Marquis Bait
 	Tooltip: ""
 }
 
 // Bobbers
-ScrapBobber: {
-	DisplayName: Wulfrum Bobber
-	Tooltip:
-		'''
-		Provides a fishing minigame
-		Hold movement inputs in the indicated directions while fishing to catch items
-		The rod empowers the longer you go without a mistake, speeding it up
-		'There's supposed to be a fish finder installed, but it only beeps when you point it at yourself...'
-		'''
-}
-
-NavystoneBobber: {
-	DisplayName: Sunken Sinker
-	Tooltip:
-		'''
-		{$ItemTooltip.FishingBobber}
-		Provides a fishing minigame
-		The bobber will float at your height underwater, allowing underwater fishing
-		Move in the indicated direction while fishing to catch items
-		'''
-}
-
-SkylineBobber: {
+AcrobaticBobber: {
 	DisplayName: Acrobatic Bobber
 	Tooltip:
 		'''
@@ -432,7 +423,7 @@ SkylineBobber: {
 		'''
 }
 
-PerennialBobber: {
+FeralBobber: {
 	DisplayName: Feral Bobber
 	Tooltip:
 		'''
@@ -444,7 +435,18 @@ PerennialBobber: {
 		'''
 }
 
-ScoriaBobber: {
+SunkenSinker: {
+	DisplayName: Sunken Sinker
+	Tooltip:
+		'''
+		{$ItemTooltip.FishingBobber}
+		Provides a fishing minigame
+		The bobber will float at your height underwater, allowing underwater fishing
+		Move in the indicated direction while fishing to catch items
+		'''
+}
+
+VolcanicSinker: {
 	DisplayName: Volcanic Sinker
 	Tooltip:
 		'''
@@ -454,5 +456,16 @@ ScoriaBobber: {
 		Moving while fishing instead moves your bobbers
 		Rifts appear over time in liquids, containing an item
 		When bobbers touch a rift, they automatically reel in the item within
+		'''
+}
+
+WulfrumBobber: {
+	DisplayName: Wulfrum Bobber
+	Tooltip:
+		'''
+		Provides a fishing minigame
+		Hold movement inputs in the indicated directions while fishing to catch items
+		The rod empowers the longer you go without a mistake, speeding it up
+		'There's supposed to be a fish finder installed, but it only beeps when you point it at yourself...'
 		'''
 }

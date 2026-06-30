@@ -9,7 +9,7 @@ namespace CalamityMod.BiomeManagers
 {
     public class RadiantReefsBiome : ModBiome
     {
-        public override ModWaterStyle WaterStyle => SunkenSeaReefsWater.Instance;
+        public override ModWaterStyle WaterStyle => SunkenSeaBurrowsWater.Instance;
         public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle => ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/SunkenSeaBGStyle");
         public override int BiomeTorchItemType => ModContent.ItemType<NavyPrismTorch>();
         public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("SunkenSea") ?? MusicID.OceanNight;

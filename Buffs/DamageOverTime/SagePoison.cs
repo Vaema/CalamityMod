@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ModLoader;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {
@@ -58,7 +59,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
-            BuffDatasets.DebuffDataset[Type] = debuffData;
+            CalamityBuffSets.DebuffDataset[Type] = debuffData;
         }
         public override void Update(NPC npc, ref int buffIndex)
         {

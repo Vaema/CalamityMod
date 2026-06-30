@@ -4,6 +4,7 @@ using System;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using CalamityMod.Systems;
+using Terraria.ID;
 
 namespace CalamityMod.BiomeManagers
 {
@@ -11,7 +12,7 @@ namespace CalamityMod.BiomeManagers
     public class SunkenSeaBiome : ModBiome
     {
         public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
-
+        public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("SunkenSea") ?? MusicID.OceanNight;
         public override void Load()
         {
             //apply the drawblack edits here since all sunken sea biomes will have custom backgrounds
@@ -63,8 +64,8 @@ namespace CalamityMod.BiomeManagers
 
         public override bool IsBiomeActive(Player player)
         {
-            return BiomeTileCounterSystem.SunkenSeaBurrowsTiles > 1000 || BiomeTileCounterSystem.SunkenSeaPolypTiles > 1000 ||
-            BiomeTileCounterSystem.SunkenSeaReefsTiles > 1000 || BiomeTileCounterSystem.SunkenSeaShoresTiles > 1000;
+            return BiomeTileCounterSystem.SunkenSeaBurrowsTiles > 200 || BiomeTileCounterSystem.SunkenSeaPolypTiles > 200 ||
+            BiomeTileCounterSystem.SunkenSeaReefsTiles > 200 || BiomeTileCounterSystem.SunkenSeaShoresTiles > 200;
         }
     }
 }

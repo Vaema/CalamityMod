@@ -19,6 +19,7 @@ BabyCannonballJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerNa
 BabyFlakCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 BabyGhostBellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 BelchingCoralBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BlindedAnglerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 BloatfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 BloomSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 BobbitWormBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -26,7 +27,6 @@ BohldohrBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 BoxJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 CalamityEyeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 CannonballJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-CarrionSwallowerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ChaoticPufferBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 CladCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ClamBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -55,22 +55,15 @@ FusionFeederBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GammaSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GhostBellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GiantSquidBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-GildedAxolotlBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GnasherBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GulperEelBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 HadarianBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-HauntedChumBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 HeatSpiritBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 IceClasperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ImpiousImmolatorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 InfernalCongealmentBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 IrradiatedSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-JellyghoulBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-KelpieSeadragonBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 LaserfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-LazarusLampfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-LeerslugBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-LostShoalBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 LuminousCorvinaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 MantisBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 MantisShrimpBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -82,7 +75,6 @@ NuclearToadBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 OarfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 OrthoceraBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 OverloadedSoldierBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-PearlpodBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PerennialSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PestilentSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PhantomSpiritBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -90,11 +82,7 @@ PiggyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PlaguebringerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PlagueChargerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PlagueshellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-PodobooKoiBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-PolyperilBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PrismBackBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-PrismaticGuppyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-ProbesnoutBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ProfanedEnergyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RadiatorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ReaperSharkBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -103,28 +91,21 @@ RepairUnitBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RimehoundBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RotdogBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RubyCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-SandProwlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SeaSerpentBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SapphireCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-ScavengerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ScornEaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ScryllarBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SeaFloatyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SeaMinnowBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-SearslugBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-SharkoonBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ShockstormShuttleBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-ShoreskipperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ShroombleBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SightseerColliderBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SightseerSpitterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SkyfinBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SlabCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-SlugbunBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SoulSlurperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-SteampodBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 StellarCulexBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 StormlionBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-StormlionSentryBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SulflounderBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SulphurousSkaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SunskaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -696,6 +677,7 @@ CorruptionEffigy: {
 		However, this comes at a cost of {1}% damage reduction
 		This cannot be stacked with Crimson Effigy
 		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 AltarOfTheAccursedItem: {
@@ -756,6 +738,7 @@ CrimsonEffigy: {
 		However, this comes at a cost of {2}% maximum health
 		This cannot be stacked with Corruption Effigy
 		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
 }
 
 EffigyOfDecay: {
@@ -798,6 +781,20 @@ GloomTorch: {
 	Tooltip: ""
 }
 
+GluttonyBlender: {
+	DisplayName: Gluttony Blender
+	Tooltip:
+		'''
+		A strange industrial contraption which appears to process food
+		Has the potential to turn food into something more nutritious... maybe
+		'''
+	SalesPitch:
+		'''
+		'A state of the art machine, created by my partner Hoggart! You can put anything in it, and it'll make a nutritious delicacy for you to snack on!'
+		'I myself can attest for its quality, I use it to make my breakfast, lunch and dinner!'
+		'''
+}
+
 LanternCenter: {
 	DisplayName: Lantern Center
 	Tooltip: Lights up the night sky with celebratory lanterns
@@ -838,16 +835,6 @@ ExoObelisk: {
 	Tooltip: "'Energize the atmosphere with exo energy.'"
 }
 
-ForgottenNobleStatue: {
-	DisplayName: Forgotten Noble Statue
-	Tooltip: ""
-}
-
-ForgottenScholarStatue: {
-	DisplayName: Forgotten Scholar Statue
-	Tooltip: ""
-}
-
 FrigidMonolith: {
 	DisplayName: Frigid Monolith
 	Tooltip: "'Enchant the sky with frosty auroras.'"
@@ -876,15 +863,6 @@ PurpleDistortedMonolith: {
 NavyPrismTorch: {
 	DisplayName: Navy Prism Torch
 	Tooltip: Can be placed in water
-}
-
-AmidiasPainting: {
-	DisplayName: Sea King's Release
-	Tooltip:
-		'''
-		'O. Rios'
-		'September-October!'
-		'''
 }
 
 CalamityCanvas2023: {
@@ -924,12 +902,17 @@ ThankYouPainting: {
 		'''
 		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
 		The confines of this painting is not enough to fit the entire team
-		Hold Shift to see a list of past and current developers
+		Hold Shift to see a list of developers and press Shift to switch between current and past developers
 		'''
 }
 
 PiggyCage: {
 	DisplayName: Piggy Cage
+	Tooltip: ""
+}
+
+PiggyCageGold: {
+	DisplayName: Gold Piggy Cage
 	Tooltip: ""
 }
 
@@ -964,6 +947,11 @@ SeaMinnowJar: {
 	Tooltip: ""
 }
 
+ShroombleCage: {
+	DisplayName: Shroomble Cage
+	Tooltip: ""
+}
+
 SpitefulCandle: {
 	DisplayName: Spiteful Candle
 	Tooltip:
@@ -980,14 +968,23 @@ SulphurousTorch: {
 	Tooltip: Can be placed in water
 }
 
-SunkenIdol: {
-	DisplayName: Sunken Idol
-	Tooltip: ""
-}
-
 ThaumaticChair: {
 	DisplayName: Thaumatic Chair
 	Tooltip: One of Chloe's finest creations
+}
+
+TheMonument: {
+	DisplayName: The Monument
+	Tooltip:
+		'''
+		A monument celebrating the accomplishments of capitalism
+		Funded by the taxes of nearby Town NPCs, though they may not be too happy about that
+		'''
+	SalesPitch:
+		'''
+		'Don't you think your town is a bit too boring? Don't you wish you could get more money out of your troubles? Well, I've got you the perfect two-in-one deal!'
+		'This statue I made myself is so marvelous that it'll singlehandedly raise the price of housing around here! Just sit back, and enjoy the sight and the money!'
+		'''
 }
 
 ThermalTorch: {
@@ -4693,5 +4690,27 @@ UnsafeNavystoneWall: {
 
 MossyStone: {
 	DisplayName: Mossy Stone
+	Tooltip: ""
+}
+
+GreedPot: {
+	DisplayName: Urn of Avarice
+	Tooltip: Offer your treasures to the Urn, and your avarice may at last be satiated
+	SalesPitch:
+		'''
+		'Say, you use all kinds of ores for your stuff, but finding precious minerals isn't easy, is it? Well, I got the solution for you!'
+		'Just throw any ore you got in this urn and they'll turn into even rarer ones! No more looking for tungsten for hours on end!'
+		'''
+}
+
+HorribleHogBanner.DisplayName: Horrible Hog Banner
+
+EutrophicSandWall: {
+	DisplayName: Unsafe Eutrophic Sand Wall
+	Tooltip: ""
+}
+
+EutrophicSandWallSafe: {
+	DisplayName: Eutrophic Sand Wall
 	Tooltip: ""
 }

@@ -147,7 +147,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         /// <param name="n">The NPC to evaluate.</param>
         /// <returns><see langword="true"/> if the NPC is a valid target; otherwise, <see langword="false"/>.</returns>
-        protected virtual bool NPCSearchFilter(NPC n) => NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 72900f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type)) && !(n.type == ModContent.NPCType<PrismaticGuppy>() && n.alpha > 0);
+        protected virtual bool NPCSearchFilter(NPC n) => NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 72900f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
 
         /// <summary>
         /// Updates the current targets of this creature, including prey, predators, and players, based on detection logic.

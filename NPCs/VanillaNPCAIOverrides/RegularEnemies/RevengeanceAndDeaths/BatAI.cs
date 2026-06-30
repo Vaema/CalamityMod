@@ -284,12 +284,17 @@ public static partial class RevengeanceAndDeathAI
                             int type = ProjectileID.HarpyFeather;
                             Vector2 featherVelocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (CalamityWorld.death ? 4f : 6f);
 
-                            int feather = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, featherVelocity, type, damage, 0f, Main.myPlayer);
+                            int feather = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, featherVelocity, type, damage, 0f, Main.myPlayer).identity;
                             Main.projectile[feather].timeLeft = 300;
                             if (CalamityWorld.death)
                             {
-                                Main.projectile[feather].extraUpdates += 1;
+                                Main.projectile[feather].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[feather].timeLeft = 600;
+                                if (Main.dedServ)
+                                {
+                                    Main.projectile[feather].netSpam = 0;
+                                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, feather);
+                                }
                             }
                         }
                     }
@@ -316,12 +321,17 @@ public static partial class RevengeanceAndDeathAI
                             int type = ProjectileID.DemonSickle;
                             Vector2 sickleVelocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (CalamityWorld.death ? 0.15f : 0.2f);
 
-                            int sickle = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, sickleVelocity, type, damage, 0f, Main.myPlayer);
+                            int sickle = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, sickleVelocity, type, damage, 0f, Main.myPlayer).identity;
                             Main.projectile[sickle].timeLeft = 300;
                             if (CalamityWorld.death)
                             {
-                                Main.projectile[sickle].extraUpdates += 1;
+                                Main.projectile[sickle].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[sickle].timeLeft = 600;
+                                if (Main.dedServ)
+                                {
+                                    Main.projectile[sickle].netSpam = 0;
+                                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, sickle);
+                                }
                             }
                         }
                     }
@@ -352,12 +362,17 @@ public static partial class RevengeanceAndDeathAI
 
                             int damage = 80;
                             int type = ProjectileID.UnholyTridentHostile;
-                            int trident = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition + tridentVelocity * 100f, tridentVelocity, type, damage, 3f, Main.myPlayer);
+                            int trident = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), spawnPosition + tridentVelocity * 100f, tridentVelocity, type, damage, 3f, Main.myPlayer).identity;
                             Main.projectile[trident].timeLeft = 300;
                             if (CalamityWorld.death)
                             {
-                                Main.projectile[trident].extraUpdates += 1;
+                                Main.projectile[trident].Calamity().extraUpdatesToSync = 1;
                                 Main.projectile[trident].timeLeft = 600;
+                                if (Main.dedServ)
+                                {
+                                    Main.projectile[trident].netSpam = 0;
+                                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, trident);
+                                }
                             }
                         }
                     }

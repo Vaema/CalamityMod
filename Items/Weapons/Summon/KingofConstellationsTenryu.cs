@@ -1,8 +1,10 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -15,14 +17,18 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Shadowflame>(), BuffID.Frostburn2];
+        }
 
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 62;
             Item.mana = 10;
-            Item.damage = 187;
+            Item.damage = 175;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.buffType = ModContent.BuffType<KingofConstellationsBuff>();
             Item.shoot = ModContent.ProjectileType<BlackDragonHead>();

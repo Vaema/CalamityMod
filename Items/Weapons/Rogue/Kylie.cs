@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 12;
             Item.DamageType = RogueDamageClass.Instance;
             Item.crit = 16;
-            Item.knockBack = 12;
+            Item.knockBack = 9;
 
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;

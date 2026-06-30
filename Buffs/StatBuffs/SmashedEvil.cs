@@ -1,8 +1,7 @@
 ﻿using System;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Accessories;
+using CalamityMod.Systems.Collections;
 using Terraria;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
@@ -11,7 +10,7 @@ namespace CalamityMod.Buffs.StatBuffs
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 40,
+            EnemyLostRegen = 160,
             SicknessDebuffScaling = 1,
             HeatDebuffScaling = 1,
             ColdDebuffScaling = 1,
@@ -38,7 +37,14 @@ namespace CalamityMod.Buffs.StatBuffs
                     .CombineWith(DebuffData.ForceModifierPositiveWithScaling(cnpc.ActiveWaterDebuffMultiplier, debuffData.WaterDebuffScaling)
                     .CombineWith(DebuffData.ForceModifierPositiveWithScaling(cnpc.ActiveElectricDebuffMultiplier, debuffData.ElectricDebuffScaling)
                  ))));
-            totalDPS = totalScaling.ApplyTo(totalDPS);
+
+            //Smashed Evil ignores Mult boosters for now to ignore weakness/resist. Once those systems are changed, return to using totalScaling instead of this mess.
+            StatModifier finalScaling = new();
+            finalScaling += totalScaling.Additive - 1;
+            finalScaling.Base = totalScaling.Base;
+            finalScaling.Flat = totalScaling.Flat;
+
+            totalDPS = finalScaling.ApplyTo(totalDPS);
             var totalDPSAdjusted = totalDPS - debuffData.EnemyVanillaRegenToCancelOut;
             npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(totalDPS * debuffData.MultiplierDamageTickSize, debuffData.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
@@ -47,14 +53,13 @@ namespace CalamityMod.Buffs.StatBuffs
             Main.debuff[Type] = false;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
-            BuffDatasets.DebuffDataset[Type] = debuffData;
+            CalamityBuffSets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.lifeRegenTime += 2;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            player.moveSpeed += 0.2f;
+            player.lifeRegenTime += 4;
+            player.GetDamage<GenericDamageClass>() += 0.20f;
         }
 
         public override void Update(NPC npc, ref int buffIndex)

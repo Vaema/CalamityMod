@@ -36,7 +36,6 @@ namespace CalamityMod.Items.Armor.Statigel
         {
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
-            modPlayer.statigelSet = true;
             player.GetJumpState<StatigelJump>().Enable();
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;

@@ -14,15 +14,10 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public const int RiftLifeTime = 600;
-
-        public const float OrbitalScytheDamageMult = 0.4f;
-
+        public const float OrbitalScytheDamageMult = 0.3f;
         public const float RiftScytheDamageMult = 0.125f;
-
         public const int RiftOrbitalAmount = 4;
-
         public const int ScytheShotAmount = 4;
-
 
         public override void SetStaticDefaults()
         {
@@ -33,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 70;
             Item.height = 70;
-            Item.damage = 700;
+            Item.damage = 500;
             Item.knockBack = 9f;
             Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Melee;
@@ -96,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 {
                     float SpeedX = velocity.X + Main.rand.NextFloat(-spreadfactor, spreadfactor + 1);
                     float SpeedY = velocity.Y + Main.rand.NextFloat(-spreadfactor, spreadfactor + 1);
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.125f), knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.2f), knockback, player.whoAmI);
                 }
 
                 // Tell the rift(s) to shoot

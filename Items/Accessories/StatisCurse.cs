@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.shadowMinions = true;
-            modPlayer.holyMinions = true;
+            modPlayer.statisMinions = true;
             player.GetKnockback<SummonDamageClass>() += 2.75f;
             player.GetDamage<SummonDamageClass>() += 0.12f;
             player.buffImmune[ModContent.BuffType<Shadowflame>()] = true;

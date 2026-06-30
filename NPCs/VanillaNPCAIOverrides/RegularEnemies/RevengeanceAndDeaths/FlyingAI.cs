@@ -598,9 +598,14 @@ public static partial class RevengeanceAndDeathAI
                                     projDamage = (int)(30f * NPC.scale);
 
                                 int stingerType = ProjectileID.Stinger;
-                                int stingerSpawn = Projectile.NewProjectile(NPC.GetSource_FromAI(), projSpawnPosition.X, projSpawnPosition.Y, projTargetXDist, projTargetYDist, stingerType, projDamage, 0f, Main.myPlayer);
+                                int stingerSpawn = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), projSpawnPosition, new Vector2(projTargetXDist, projTargetYDist), stingerType, projDamage, 0f, Main.myPlayer).identity;
                                 Main.projectile[stingerSpawn].timeLeft = (CalamityWorld.death || Main.hardMode) ? 600 : 300;
-                                Main.projectile[stingerSpawn].extraUpdates += (CalamityWorld.death || Main.hardMode) ? 1 : 0;
+                                Main.projectile[stingerSpawn].Calamity().extraUpdatesToSync = (CalamityWorld.death || Main.hardMode) ? 1 : 0;
+                                if (Main.dedServ)
+                                {
+                                    Main.projectile[stingerSpawn].netSpam = 0;
+                                    NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, stingerSpawn);
+                                }
                                 NPC.ai[1] = 301f;
                                 NPC.netUpdate = true;
                             }
@@ -673,11 +678,16 @@ public static partial class RevengeanceAndDeathAI
                                 NPC.netUpdate = true;
                                 NPC.localAI[0] = 0f;
                                 bloodShotPosition = NPC.DirectionTo(new Vector2(targetData.Center.X, targetData.Position.Y));
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bloodShotPosition * (CalamityWorld.death ? 6f : 10f), ProjectileID.BloodShot, 50, 1f, Main.myPlayer);
+                                int proj = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), NPC.Center, bloodShotPosition * (CalamityWorld.death ? 6f : 10f), ProjectileID.BloodShot, 50, 1f, Main.myPlayer).identity;
                                 if (CalamityWorld.death)
                                 {
-                                    Main.projectile[proj].extraUpdates += 1;
+                                    Main.projectile[proj].Calamity().extraUpdatesToSync = 1;
                                     Main.projectile[proj].timeLeft = 1200;
+                                    if (Main.dedServ)
+                                    {
+                                        Main.projectile[proj].netSpam = 0;
+                                        NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, proj);
+                                    }
                                 }
                             }
                             else

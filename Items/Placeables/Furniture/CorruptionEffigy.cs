@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.CustomRecipes;
+using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -17,8 +18,17 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CorruptionEffigy>());
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.buyPrice(gold: 10); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Orange;
+        }
+
+        public override void UpdateInventory(Player player)
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient && !RecipeUnlockHandler.HasFoundCorruptionEffigy)
+            {
+                RecipeUnlockHandler.HasFoundCorruptionEffigy = true;
+                CalamityNetcode.SyncWorld();
+            }
         }
 
         public override void AddRecipes()

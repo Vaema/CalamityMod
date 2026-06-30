@@ -52,9 +52,8 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareMelee = true;
             modPlayer.godSlayer = true;
-            modPlayer.godSlayerDamage = true;
+            modPlayer.godSlayerMelee = true;
             modPlayer.auricSet = true;
-            modPlayer.auricSetMelee = true;
             player.aggro += SetBonusAggroBoost;
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))

@@ -42,9 +42,9 @@ namespace CalamityMod.Projectiles.Summon
                 count += 1f;
             }
             Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 4f)
+            if (Projectile.localAI[0] > 4f && Projectile.localAI[0] % 2 == 0f)
             {
-                Particle beam = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/SmallBloom", false, 8, 0.085f, Color.Lerp(Color.OrangeRed, Color.Goldenrod, Utils.GetLerpValue(270, 230, Projectile.timeLeft)), new Vector2(1f, (1 + 0.8f * velPower)), true, false, 0, false, false, 0.5f * velPower);
+                Particle beam = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/SmallBloom", false, 8, 0.085f, Color.Lerp(Color.OrangeRed, Color.Goldenrod, Utils.GetLerpValue(270, 230, Projectile.timeLeft)), new Vector2(1f, 1 + 0.8f * velPower), true, false, 0, false, false, 0.5f * velPower);
                 GeneralParticleHandler.SpawnParticle(beam);
             }
             

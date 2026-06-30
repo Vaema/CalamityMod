@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Armor.Demonshade
         {
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), CalamityUtils.GetArmorSetBonusKey(), EnrageDuration.FramesToSeconds(), (1f + MultDamageBoost).Round(), (1D + MultDamageTakenBoost).Round());
             var modPlayer = player.Calamity();
-            modPlayer.dsSetBonus = true;
+            modPlayer.demonshadeSet = true;
             modPlayer.wearingRogueArmor = true;
             modPlayer.WearingPostMLSummonerSet = true;
             player.maxMinions += SetBonusMinionSlotBoost;

@@ -16,7 +16,7 @@ SetBonus: {
 			{0}% increased max speed and acceleration
 			You gain a damage and critical strike chance boost relative to your current movement speed, up to {0}%
 			'''
-		Melee: 10% increased melee damage
+		Melee: 10% increased melee speed
 	}
 
 	Copper: Increases all damage by {0}
@@ -28,7 +28,7 @@ SetBonus: {
 		'''
 	Eskimo:
 		'''
-		25% increased Cold debuff damage
+		50% increased Cold debuff damage
 		Provides immunity to the Chilled, Frozen, and Frostburn debuffs
 		'''
 	Rain:

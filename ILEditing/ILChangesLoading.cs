@@ -83,7 +83,6 @@ namespace CalamityMod.ILEditing
             On_Player.Teleport += TPOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
-            On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
             On_Projectile.AI_007_GrapplingHooks += AllowHooksToGrabArenabox;
             On_Collision.SolidCollision_Vector2_int_int += ArenaCollision_Vector2_int_int;
@@ -104,8 +103,12 @@ namespace CalamityMod.ILEditing
             // Damage and health balance
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
+            IL_Projectile.Damage += PreventVanillaWhipTagCrits;
             IL_Projectile.Damage += VanillaBossResistChanges;
+            IL_Projectile.AI_026 += PygmyAggroOnClosestPointInHitbox;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
+            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
+            IL_Projectile.AI_015_Flails += IncreaseFlowerPowRetSpeed;
             IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
             On_Player.ConsumeSolarFlare += SolarWingsDashChange;
             On_Projectile.IsDamageDodgable += GFBNurseMeteorUndodgeable;
@@ -150,9 +153,6 @@ namespace CalamityMod.ILEditing
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
-            On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
-            IL_Projectile.AI_061_FishingBobber += WhitelistVictideBobber;
-            On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;

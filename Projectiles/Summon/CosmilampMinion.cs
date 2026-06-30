@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
-            Projectile.minionSlots = Cosmilamp.LanternSummonCost;
+            Projectile.minionSlots = 1f;
             Projectile.timeLeft = 90000;
             Projectile.penetrate = -1;
             Projectile.minion = true;

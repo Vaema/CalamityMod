@@ -129,10 +129,10 @@ namespace CalamityMod.Effects
         // Used by Devourer of Gods. Renders the portal that he escapes through at the end of phase 1.
         internal static Asset<Effect> DoGPortalShader;
 
-        // Used to render all-encompassing fog in the Floral Paradise biome.
+        // Unused, renders all-encompassing fog.
         internal static Asset<Effect> FogShader;
 
-        // Used to render background water features in the Floral Paradise biome.
+        // Unused, renders background water features.
         internal static Asset<Effect> WaterfallShader;
 
         // Metaballs. See the MetaballManager class for comments on how this system works.
@@ -254,6 +254,18 @@ namespace CalamityMod.Effects
 
         // The distorted circular effect seen emanating from the distortion rift during DoG's fight.
         internal static Asset<Effect> DoGRiftAuraShader;
+
+        // The shader effect used for Voidragon's Abyssal Fire laser projectile.
+        internal static Asset<Effect> AbyssalFireShader;
+
+        // A simple chromatic abberation effect shader with support for custom abberation colors.
+        internal static Asset<Effect> ChromaticAbberationShader;
+
+        // Distorts a texture using a sine wave of specified amplitude and frequency either vertically or horizontally.
+        internal static Asset<Effect> SineWaveDistortionShader;
+
+        // The swirling aura effect seen around Horrible Hog while its idling.
+        internal static Asset<Effect> HorribleHogAuraShader;
         #endregion
 
         #region Big E's Shaders
@@ -514,6 +526,18 @@ namespace CalamityMod.Effects
 
             DoGRiftAuraShader = LoadShader("DoGRiftAuraShader");
             RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
+
+            AbyssalFireShader = LoadShader("AbyssalFireShader");
+            RegisterMiscShader(AbyssalFireShader, "LaserPass", "AbyssalFire");
+
+            ChromaticAbberationShader = LoadShader("ChromaticAbberationShader");
+            RegisterMiscShader(ChromaticAbberationShader, "ChormaAbberationPass", "ChromaticAbberation");
+
+            SineWaveDistortionShader = LoadShader("SineWaveDistortionShader");
+            RegisterMiscShader(SineWaveDistortionShader, "SinePass", "SineWaveDistortion");
+
+            HorribleHogAuraShader = LoadShader("HorribleHogAuraShader");
+            RegisterMiscShader(HorribleHogAuraShader, "ScaryAuraPass", "HorribleHogAura");
             #endregion
 
             #region Loading Big E's Shaders

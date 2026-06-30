@@ -58,6 +58,15 @@ namespace CalamityMod.Projectiles.Magic
                 return;
             }
 
+            if ((shootingTimer >= 10 && revFrames < 150) || (revFrames >= 150 && !isOnCooldown))
+            {
+                if (!Owner.CheckMana(Owner.HeldItem, -1, true))
+                {
+                    Projectile.Kill();
+                    return;
+                }
+            }
+
             revSpeed = Utils.Remap(revFrames, 0, 150, 1, 3, true);
             if (shootingTimer >= 10 && revFrames < 150)
             {

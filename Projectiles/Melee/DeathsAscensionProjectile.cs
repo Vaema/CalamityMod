@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             // Player scythes just home
             if (Projectile.ai[2] <= 0)
             {
-                CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 18f, 20f);
+                CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 21f, 20f);
                 Projectile.velocity *= 0.96f;
             }
             // Rift scythes have orbital motion

@@ -86,11 +86,11 @@ namespace CalamityMod.CalPlayer
 
             target.Calamity().IncreasedColdEffects_EskimoSet = eskimoSet;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
+            target.Calamity().IncreasedColdEffects_FrozenCube = frozenCube;
 
             target.Calamity().IncreasedElectricityEffects_Unused = false;
 
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
-            target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             target.Calamity().IncreasedHeatEffects_FireBoots = bootLevel;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
@@ -109,15 +109,6 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.Electrified, 300);
                     break;
 
-                case ItemID.BeeKeeper:
-                case ItemID.BladeofGrass:
-                    target.AddBuff(BuffID.Poisoned, 240);
-                    break;
-
-                case ItemID.FieryGreatsword:
-                    target.AddBuff(BuffID.OnFire3, 90);
-                    break;
-
                 case ItemID.IceSickle:
                 case ItemID.Frostbrand:
                     target.AddBuff(BuffID.Frostburn2, 300);
@@ -125,11 +116,6 @@ namespace CalamityMod.CalPlayer
 
                 case ItemID.IceBlade:
                     target.AddBuff(BuffID.Frostburn, 120);
-                    break;
-
-                case (>= ItemID.BluePhaseblade and <= ItemID.YellowPhaseblade) or ItemID.OrangePhaseblade:
-                case (>= ItemID.BluePhasesaber and <= ItemID.YellowPhasesaber) or ItemID.OrangePhasesaber:
-                    // TODO: find an EPIC lightsaber sound
                     break;
             }
 
@@ -167,7 +153,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < BlackGlassBand.cooldown)
                         cooldown = BlackGlassBand.cooldown;
                 }
-                if (protolithBangle && item.DamageType == DamageClass.Ranged)
+                if (protolithBangle && item.DamageType.CountsAsClass(DamageClass.Ranged))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -175,7 +161,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < ProtolithBangle.cooldown)
                         cooldown = ProtolithBangle.cooldown;
                 }
-                if (batholithBangle && item.DamageType == DamageClass.Magic)
+                if (batholithBangle && item.DamageType.CountsAsClass(DamageClass.Magic))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -226,6 +212,22 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            // Don't activate for non-friendly projectiles (obviously).
+            // Override CanHitNPC if you want a hostile projectile that can also damage enemies.
+            if (!proj.friendly)
+                return;
+
+            //Undo raider crit after hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance -= Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance -= VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance -= RaidersTalisman.RaiderBonus;
+            }
+
             // Apply this to player equippable sources ie. Orichalcum set bonus petal spawns
             // Do not apply if this effect is an extension of a weapon ie. Pearl God round effect as it will mess up Old Fashioned
             var source = Player.GetSource_OnHit(target);
@@ -243,7 +245,10 @@ namespace CalamityMod.CalPlayer
             if (proj.type != ProjectileType<MythrilFlare>())
                 MythrilArmorSetChange.OnHitEffects(target, damageDone, Player);
 
-            if (moscowMule)
+            var ivDripPlayer = Player.GetModPlayer<IVDripPlayer>();
+
+            // "Heavy" Knockback effect
+            if (moscowMule || ivDripPlayer.HasAlcohol(AlcoholType.MoscowMule))
             {
                 var center = Player.Center;
                 if (proj.IsMinionOrSentryRelated)
@@ -258,10 +263,16 @@ namespace CalamityMod.CalPlayer
                 {
                     proj.damage = (int)(proj.damage * (moscowMule ? 0.8f : 1f) * (bloodyMary ? 0.75f : 1f));
                 }
-
+            }
+            if (ivDripPlayer.HasAlcohol(AlcoholType.MoscowMule) || ivDripPlayer.HasAlcohol(AlcoholType.BloodyMary))
+            {
+                if (!(PierceResistNPC.exemptProjectiles.Contains(proj.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(proj.type) && PierceResistNPC.singleHitboxExemptProjectiles[proj.type])))
+                {
+                    proj.damage = (int)(proj.damage * (ivDripPlayer.HasAlcohol(AlcoholType.MoscowMule) ? 0.8f : 1f) * (ivDripPlayer.HasAlcohol(AlcoholType.BloodyMary) ? 0.75f : 1f));
+                }
             }
 
-                if (witheringWeaponEnchant)
+            if (witheringWeaponEnchant)
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
             cgn.TypelessDebuffMultiplier = TypelessDebuffMultiplier;
             cgn.HeatDebuffMultiplier = HeatDebuffMultiplier;
@@ -272,11 +283,11 @@ namespace CalamityMod.CalPlayer
 
             switch (proj.type)
             {
+                // Remove this in 1.4.5 port
                 case ProjectileID.ObsidianSwordfish:
                     target.AddBuff(BuffID.OnFire3, 180);
                     break;
 
-                case ProjectileID.InfluxWaver:
                 case ProjectileID.UFOLaser:
                 case ProjectileID.Electrosphere:
                     target.AddBuff(BuffID.Electrified, 180);
@@ -288,11 +299,12 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<StaticDischarge>(), 90);
                     break;
 
+                // Replace with Broken Armor in 1.4.5 port
                 case ProjectileID.GolemFist:
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
                     break;
 
-                case ProjectileID.ButchersChainsaw:
+                // Remove this in 1.4.5 port
                 case ProjectileID.MechanicalPiranha:
                     target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
@@ -301,19 +313,8 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<Nightwither>(), 180);
                     break;
 
-                case ProjectileID.Cascade:
                 case ProjectileID.FlamingMace:
                     target.AddBuff(BuffID.OnFire, 60);
-                    break;
-
-                case ProjectileID.Bee:
-                case ProjectileID.GiantBee:
-                case ProjectileID.BladeOfGrass:
-                    target.AddBuff(BuffID.Poisoned, 120);
-                    break;
-
-                case ProjectileID.Wasp:
-                    target.AddBuff(BuffID.Venom, 60);
                     break;
 
                 case ProjectileID.NorthPoleWeapon:
@@ -367,7 +368,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < BlackGlassBand.cooldown)
                         cooldown = BlackGlassBand.cooldown;
                 }
-                if (protolithBangle && proj.DamageType == DamageClass.Ranged)
+                if (protolithBangle && proj.DamageType.CountsAsClass(DamageClass.Ranged))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -375,7 +376,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < ProtolithBangle.cooldown)
                         cooldown = ProtolithBangle.cooldown;
                 }
-                if (batholithBangle && proj.DamageType == DamageClass.Magic)
+                if (batholithBangle && proj.DamageType.CountsAsClass(DamageClass.Magic))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -458,6 +459,15 @@ namespace CalamityMod.CalPlayer
                     // Music easter egg in GFB
                     if (Main.zenithWorld)
                         GungeonMusicSystem.GUN();
+                }
+
+                // Used by Megalodon, Seadragon & Voidragon, allows bullets to track their damage scaling
+                if (cgp.sharkBullets)
+                {
+                    if (proj.numHits == 0)
+                    {
+                        sharkGunDamageScaling++;
+                    }
                 }
 
                 if (cgp.fireBullet)
@@ -608,7 +618,7 @@ namespace CalamityMod.CalPlayer
 
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
                 ProjOnHit(proj, target, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
-                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit, true, proj.noEnchantments);
+                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>() && /*This is for Pigion to not count as a whip*/!(proj.type == ModContent.ProjectileType<BasicBurst>() && proj.minion), hit.Crit, true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
                 if (targetIsDummy)
@@ -899,7 +909,7 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Player.ownedProjectileCounts[ProjectileType<PhantomicDagger>()] < 3 && Main.rand.NextBool(4))
                         {
-                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(100);
+                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(PhantomicArtifact.DaggerDamage);
                             Projectile.NewProjectile(source, Player.Center, new Vector2(Player.velocity.X,Player.velocity.Y-10).RotatedByRandom(0.3f), ProjectileType<PhantomicDagger>(), damage, 1f, Player.whoAmI);
                         }
                     }
@@ -1015,7 +1025,7 @@ namespace CalamityMod.CalPlayer
 
             if (xerocSet && xerocDmg <= 0 && Player.ownedProjectileCounts[ProjectileType<EmpyreanEmber>()] < 3 && Player.ownedProjectileCounts[ProjectileType<EmpyreanBlast>()] < 3)
             {
-                switch (Main.rand.Next(5))
+                switch (Main.rand.Next(4))
                 {
                     case 0:
                         // Exodus Rogue Stars: 80%
@@ -1041,13 +1051,6 @@ namespace CalamityMod.CalPlayer
                         // Exodus Rogue Blast: 20%
                         int blastDamage = (int)(proj.damage * 0.2f);
                         Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<EmpyreanBlast>(), blastDamage, 0f, proj.owner, 0f, 0f);
-                        break;
-
-                    case 4:
-                        // Exodus Rogue Bubble: 60%
-                        int bubbleDamage = (int)(proj.damage * 0.6f);
-                        CalamityUtils.SpawnOrb(proj, bubbleDamage, ProjectileType<EmpyreanGlob>(), 800f, 15f);
-                        xerocDmg += (int)(bubbleDamage * 0.5);
                         break;
 
                     default:
@@ -1088,8 +1091,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
-                // TO DO: Add nanotech here
-                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
+                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, nanotech ? "Nanotech" : vampiricTalisman ? "Vampiric" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
@@ -1100,12 +1102,12 @@ namespace CalamityMod.CalPlayer
             if (npcCheck)
             {
                 // Umbraphile cannot trigger off of itself. It is guaranteed on stealth strikes and 20% chance otherwise.
-                if (umbraphileSet && ((modProj.stealthStrike && modProj.stealthStrikeHitCount < 3) || Main.rand.NextBool(5)))
+                if (umbraphileSet && ((modProj.stealthStrike && modProj.stealthStrikeHitCount < 3) || Main.rand.NextBool(5)) && !modProj.CannotProc)
                 {
                     int umbraBlastDamage = CalamityUtils.DamageSoftCap(proj.damage * UmbraphileHood.ExplosionDamageRatio, UmbraphileHood.ExplosionDamageSoftcap);
                     Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<UmbraphileBoom>(), umbraBlastDamage, 0f, Player.whoAmI);
                 }
-                if (electricianGlove && modProj.stealthStrike && modProj.stealthStrikeHitCount < 3)
+                if (electricianGlove && modProj.stealthStrike && modProj.stealthStrikeHitCount < 3 && !modProj.CannotProc)
                 {
                     for (int s = 0; s < 3; s++)
                     {
@@ -1238,11 +1240,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
-            if (ilSpark && Player.Calamity().countsAsAnyWet)
-            {
-                int duration = 60;
-                target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
             if (corrosiveSpine)
             {
                 target.AddBuff(BuffType<Irradiated>(), 120);
@@ -1297,11 +1294,11 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, (raiderCritLifespan > 0 && !proj.Calamity().stealthStrike) ? 1.2f : 1.5f);
                 }
 
-                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike && proj.numHits < 1)
+                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && (modProj.stealthStrike || (nanotech && raiderCritLifespan > 0)) && proj.numHits < 1)
                     //Nanotech has the same heal as Electrician's glove
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, electricianGlove ? 2f : 3f);
 
-                if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
+                if (proj.CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {

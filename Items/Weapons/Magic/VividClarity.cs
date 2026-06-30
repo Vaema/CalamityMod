@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,15 +23,16 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<MiracleBlight>()];
         }
 
         public override void SetDefaults()
         {
             Item.width = 140;
             Item.height = 140;
-            Item.damage = 133;
+            Item.damage = 162;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 42;
+            Item.mana = 54;
             Item.useTime = 4;
             Item.useAnimation = 20;
             Item.reuseDelay = Item.useAnimation;

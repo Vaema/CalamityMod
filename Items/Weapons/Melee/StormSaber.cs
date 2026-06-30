@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -10,11 +12,15 @@ namespace CalamityMod.Items.Weapons.Melee
     public class StormSaber : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WindChilled>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 58;
             Item.height = 64;
-            Item.damage = 50;
+            Item.damage = 43;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = Item.useAnimation = 23;
             Item.useTurn = true;

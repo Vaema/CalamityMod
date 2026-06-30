@@ -48,12 +48,6 @@ namespace CalamityMod
                 Main.QueueMainThreadAction(() => Main.OnPreDraw += PrepareRenderTargets);
             }
         }
-
-        public override void PostSetupContent()
-        {
-            // Force open certain ModMenus for various reasons and the added flair of "Hey! Something big has happened! Check it out!"
-            CalamityMainMenu_Sunken.ForceMenuStyle();
-        }
         #endregion
 
         #region Unload

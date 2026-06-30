@@ -40,14 +40,7 @@ namespace CalamityMod.CalPlayer
                 PlayerDrawLayers.Shoes.Hide();
             }
 
-            if (drawInfo.drawPlayer.ownedProjectileCounts[ModContent.ProjectileType<VictideSpirit>()] > 0)
-            {
-                foreach (var layer in PlayerDrawLayerLoader.Layers)
-                {
-                    layer.Hide();
-                }
-            }
-            else if (drawInfo.drawPlayer.Calamity().andromedaState != AndromedaPlayerState.Inactive)
+            if (drawInfo.drawPlayer.Calamity().andromedaState != AndromedaPlayerState.Inactive)
             {
                 foreach (var layer in PlayerDrawLayerLoader.Layers)
                 {
@@ -438,7 +431,7 @@ namespace CalamityMod.CalPlayer
 
             #region Armor Visuals
             // Demonshade Armor
-            if (calamityPlayer.dsSetBonus && drawInfo.shadow == 0f)
+            if (calamityPlayer.demonshadeSet && drawInfo.shadow == 0f)
             {
                 if (Player != null && !Player.dead)
                 {
@@ -584,18 +577,11 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.vHex && drawInfo.shadow == 0f)
                 VulnerabilityHex.DrawEffects(drawInfo);
+
+            if (calamityPlayer.windChilled && drawInfo.shadow == 0f)
+                WindChilled.DrawEffects(drawInfo);
             #endregion
 
-            if (calamityPlayer.fortunesFavor && drawInfo.shadow == 0f)
-            {
-                if (Main.rand.NextBool(12))
-                {
-                    Vector2 plusPos = new Vector2(Player.position.X + Main.rand.NextFloat(-8f, 20f), Player.position.Y + Main.rand.NextFloat(-14f, 36f));
-
-                    Particle Plus = new HealingPlus(plusPos, Main.rand.NextFloat(0.33f, 0.66f), new Vector2(0, Main.rand.NextFloat(-2f, -3.5f)) + Player.velocity, Color.Gold, Color.Goldenrod, Main.rand.Next(9, 13));
-                    GeneralParticleHandler.SpawnParticle(Plus);
-                }
-            }
             if (calamityPlayer.PinkJellyRegen && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(24))

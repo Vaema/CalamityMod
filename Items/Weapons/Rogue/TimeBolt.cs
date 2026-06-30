@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -15,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 24;
             Item.height = 46;
-            Item.damage = 432;
+            Item.damage = 303;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 20;
@@ -25,14 +26,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<TimeBoltKnife>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 0.7f;
+        public override float StealthDamageMultiplier => 1.0f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -48,11 +49,12 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CosmicKunai>().
-                AddIngredient(ItemID.FastClock).
-                AddIngredient<RuinousSoul>(5).
-                AddIngredient<Necroplasm>(20).
-                AddTile(TileID.MythrilAnvil).
+                AddIngredient<LunarKunai>().
+                AddIngredient<StellarKnife>().
+                AddIngredient(ItemID.GoldWatch).
+                AddIngredient<CosmiliteBar>(8).
+                AddIngredient<EndothermicEnergy>(20).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

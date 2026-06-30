@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 12;
             Item.height = 15;
-            Item.defense = 3;
+            Item.defense = 2;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
@@ -21,8 +21,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.bloodyWormTooth = true;
+            player.GetDamage<MeleeDamageClass>() += 0.1f;
         }
 
         public override void AddRecipes()

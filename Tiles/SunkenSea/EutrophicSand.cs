@@ -32,10 +32,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
             TileID.Sets.Suffocate[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
-            TileID.Sets.Conversion.Sand[Type] = true;
             TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
-            TileID.Sets.Falling[Type] = true;
-            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<EutrophicSandBallFalling>(), 5);
 
             this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
             this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
