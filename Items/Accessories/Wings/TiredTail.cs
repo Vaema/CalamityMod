@@ -165,10 +165,10 @@ namespace CalamityMod.Items.Accessories.Wings
                     }
                     var rotation = destinationOffset.ToRotation();
 
-                    var center = nextCent - destinationOffset.SafeNormalize(Vector2.Zero) * (12 * 1);
+                    var center = nextCent - destinationOffset.SafeNormalize(Vector2.Zero) * (14 * 1);
                     if (i == tailPos.Count - 1)
                     {
-                        center = nextCent - destinationOffset.SafeNormalize(Vector2.Zero) * (22 * 1);
+                        center = nextCent - destinationOffset.SafeNormalize(Vector2.Zero) * (21 * 1);
                     }
                     tailPos[i] = new(center, rotation);
                 }
@@ -296,64 +296,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
         protected override void Draw(ref PlayerDrawSet drawInfo)
         {
-            ArmorPallettes =
-                [
-                    //silva 
-                    ([ItemType<SilvaHeadMagic>(),ItemType<SilvaHeadSummon>()],
-                    [ItemType<SilvaArmor>()],
-                    [ItemType<SilvaLeggings>()],
-                    ColorPallettes[2]),
-                    //god slayer
-                    ([ItemType<GodSlayerHeadMelee>(),ItemType<GodSlayerHeadRanged>(),ItemType<GodSlayerHeadRogue>()],
-                    [ItemType<GodSlayerChestplate>()],
-                    [ItemType<GodSlayerLeggings>()],
-                    ColorPallettes[3]),
-                    //hydro
-                    ([ItemType<HydrothermicHeadMelee>(),ItemType<HydrothermicHeadRanged>(),ItemType<HydrothermicHeadMagic>(),ItemType<HydrothermicHeadSummon>(),ItemType<HydrothermicHeadRogue>()],
-                    [ItemType<HydrothermicArmor>()],
-                    [ItemType<HydrothermicSubligar>()],
-                    ColorPallettes[4]),
-                    //auric
-                    ([ItemType<AuricTeslaHeadMelee>(),ItemType<AuricTeslaHeadRanged>(),ItemType<AuricTeslaHeadMagic>(),ItemType<AuricTeslaHeadSummon>(),ItemType<AuricTeslaHeadRogue>()],
-                    [ItemType<AuricTeslaBodyArmor>()],
-                    [ItemType<AuricTeslaCuisses>()],
-                    ColorPallettes[5]),
-                    //fearmonger
-                    ([ItemType<FearmongerGreathelm>()],
-                    [ItemType<FearmongerPlateMail>()],
-                    [ItemType<FearmongerGreaves>()],
-                    ColorPallettes[6]),
-                    //Bloodlfare
-                    ([ItemType<BloodflareHeadMelee>(),ItemType<BloodflareHeadRanged>(),ItemType<BloodflareHeadMagic>(),ItemType<BloodflareHeadSummon>(),ItemType<BloodflareHeadRogue>()],
-                    [ItemType<BloodflareBodyArmor>()],
-                    [ItemType<BloodflareCuisses>()],
-                    ColorPallettes[7]),
-                    //Tarragon
-                    ([ItemType<TarragonHeadMelee>(),ItemType<TarragonHeadRanged>(),ItemType<TarragonHeadMagic>(),ItemType<TarragonHeadSummon>(),ItemType<TarragonHeadRogue>()],
-                    [ItemType<TarragonBreastplate>()],
-                    [ItemType<TarragonLeggings>()],
-                    ColorPallettes[8]),
-                    //Omega Blue
-                    ([ItemType<OmegaBlueHelmet>()],
-                    [ItemType<OmegaBlueChestplate>()],
-                    [ItemType<OmegaBlueTentacles>()],
-                    ColorPallettes[9]),
-                    //Gem Tech
-                    ([ItemType<GemTechHeadgear>()],
-                    [ItemType<GemTechBodyArmor>()],
-                    [ItemType<GemTechSchynbaulds>()],
-                    ColorPallettes[10]),
-                    //Demonshade
-                    ([ItemType<DemonshadeHelm>()],
-                    [ItemType<DemonshadeBreastplate>()],
-                    [ItemType<DemonshadeGreaves>()],
-                    ColorPallettes[11]),
-                    //Prismatic
-                    ([ItemType<PrismaticHelmet>()],
-                    [ItemType<PrismaticRegalia>()],
-                    [ItemType<PrismaticGreaves>()],
-                    ColorPallettes[12])
-                ];
             var player = drawInfo.drawPlayer;
             var modplayer = drawInfo.drawPlayer.GetModPlayer<TiredTailPlayer>();
             var tex1 = Request<Texture2D>("CalamityMod/Items/Accessories/Wings/TiredTailSegment").Value;
