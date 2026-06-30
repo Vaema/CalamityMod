@@ -36,7 +36,6 @@ namespace CalamityMod.Items.Accessories.Wings
     [AutoloadEquip(EquipType.Wings)]
     public class TiredTail : BaseWings
     {
-        //Same stats as Starboard, but with 4 seconds flight instead of 3
         public override float BonusAscentWhileFalling => 0.95f;
         public override float BonusAscentWhileRising => 0.15f;
         public override float RisingSpeedThreshold => 1f;
@@ -47,9 +46,7 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void SetStaticDefaults()
         {
-            //Same stats as Starboard, but with 4 seconds flight instead of 3
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings];
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot].FlyTime = CalamityUtils.SecondsToFrames(4);
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(210, 9f, 3.25f, true, 16, 10f);
         }
 
         public override void SetDefaults()
@@ -68,13 +65,11 @@ namespace CalamityMod.Items.Accessories.Wings
                 player.GetModPlayer<TiredTailPlayer>().tiredTailDraw = true;
             if (player.velocity.Y != 0)
             {
-
-                if (player.dashDelay != -1)
+                if (player.dashDelay != -1) //This differs from Starboard - Starboard checks for 1 full second passing after a dash begun, while this happens as soon as the dash ends
                     player.runSlowdown *= 6;
             }
 
 
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(210, 9f, 3.25f, true, 16, 10f);
         }
 
         public override void UpdateVanity(Player player)
@@ -312,6 +307,11 @@ namespace CalamityMod.Items.Accessories.Wings
                         TargetPallette = item.pallette;
                         break;
                     }
+                }
+                //manual override for Empyrean's transform to work
+                if (player.Calamity().meldTransformationPower || player.Calamity().meldTransformationForce)
+                {
+                    TargetPallette = ArmorPallettes.First(x => x.heads.Contains(ItemType<EmpyreanMask>())).pallette;
                 }
                 using var SegmentLease = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, tex1.Width, tex1.Height);
                 using var TailLease = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, tex2.Width, tex2.Height);
