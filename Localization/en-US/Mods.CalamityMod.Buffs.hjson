@@ -1809,7 +1809,7 @@ SmashedEvil: {
 		'''
 	ItemTooltipPlayer:
 		'''
-		+2 HP/s life regen, natural regeneration is much stronger and returns much quicker
+		Natural regeneration is much stronger and returns much quicker
 		20% increased damage
 		Increased acceleration and deceleration
 		5mph increased top speed
