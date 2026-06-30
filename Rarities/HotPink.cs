@@ -14,7 +14,8 @@ namespace CalamityMod.Rarities
 {
     public class HotPink : ModRarity
     {
-        // Hot Pink is used for developer items. Has a system built in for custom rarity effects.
+        // Hot Pink is used for developer items. It Has a system built in for custom rarity effects.
+        // It is a unique rarity and does not have its items rarity change on reforge.
         public override Color RarityColor => TextColor;
         public static Color TextColor => new Color(255, 0, 255);
 
@@ -57,14 +58,6 @@ namespace CalamityMod.Rarities
         {
             Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
         }
-
-        #region Custom Draw Effects
-
-        #region Doze's Effect
-
-        #endregion
-
-        #endregion
 
     }
 }
