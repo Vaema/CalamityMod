@@ -16,7 +16,6 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/FireProj";
 
         public static int Lifetime => 60;
-        public static int Fadetime => 100;
         public ref float Time => ref Projectile.ai[0];
         public int MistType = -1;
 
@@ -36,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Time++;
-            if (Time < Fadetime && Main.rand.NextBool(6))
+            if (Main.rand.NextBool(6))
             {
                 Vector2 cinderPos = Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Lifetime, 0.5f, 1f);
                 float cinderSize = Utils.GetLerpValue(6f, 12f, Time, true);
@@ -48,14 +47,14 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 cinder.noGravity = true;
                 cinder.scale *= cinderSize * 1.2f;
-                cinder.velocity += Projectile.velocity * Utils.Remap(Time, 0f, Fadetime * 0.75f, 1f, 0.1f) * Utils.Remap(Time, 0f, Fadetime * 0.1f, 0.1f, 1f);
+                cinder.velocity += Projectile.velocity * Utils.Remap(Time, 0f, Lifetime * 0.75f, 1f, 0.1f) * Utils.Remap(Time, 0f, Lifetime * 0.1f, 0.1f, 1f);
             }
 
             if (MistType == -1)
                 MistType = Main.rand.Next(3);
 
             Lighting.AddLight(Projectile.Center, 0.75f, 0.15f, 0.15f);
-            if (Projectile.timeLeft > Lifetime - 10)
+            if (Projectile.timeLeft > Lifetime - 8)
                 return;
             float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);
             float fireSize = Utils.Remap(timeRatio, 0.2f, 0.5f, 0.25f, 1f);
@@ -78,11 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
         // Expanding hitbox
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
-            int size = (int)Utils.Remap(Time, 0f, Fadetime, 10f, 40f);
-
-            // Shrinks again after fading
-            if (Time > Fadetime)
-                size = (int)Utils.Remap(Time, Fadetime, Lifetime, 40f, 0f);
+            int size = (int)Utils.Remap(Time, 0f, Lifetime, 10f, 40f);
             hitbox.Inflate(size, size);
         }
 
