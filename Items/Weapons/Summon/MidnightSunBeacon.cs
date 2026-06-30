@@ -51,8 +51,8 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.XenoStaff).
-                AddIngredient(ItemID.MoonlordTurretStaff).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<DarksunFragment>(15).
                 AddTile<CosmicAnvil>().
                 Register();
         }
