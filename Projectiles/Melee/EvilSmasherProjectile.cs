@@ -41,6 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             RotateInStartup = 0;
             Projectile.width = 64;
             Projectile.height = 66;
+            Projectile.DamageType = AllClassDamageClass.Instance;
         }
 
         public override void Spawn()
@@ -61,7 +62,7 @@ namespace CalamityMod.Projectiles.Melee
             if (inStartup)
             {
                 CurrentChargeMult = timer / (float)(StartupTime-1);
-                Owner.velocity.X *= 0.97f;
+                Owner.velocity.X *= CurrentChargeMult < 1 ? 0.98f : 0.995f;
             }
             if (inStartup && !Owner.channel && timer > 30)
             {
@@ -99,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
 
                     Owner.velocity *= 0.15f;
-                    Owner.velocity -= adjustedAngle.RotatedBy(MathHelper.PiOver2) * angle.X * MathHelper.Lerp(7.5f,16f, CurrentChargeMult);
+                    Owner.velocity -= adjustedAngle.RotatedBy(MathHelper.PiOver2) * angle.X * MathHelper.Lerp(7.5f,16f, CurrentChargeMult) * (Projectile.scale / 1.25f);
                     float ringRot = SwingCompletion < 0.5f ? 0 : MathHelper.PiOver2;
                     GeneralParticleHandler.SpawnParticle(new CustomPulse(HammerFrontPos, Vector2.Zero, Color.Red, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloatDirection(), 0.03f, 0.04f * (2 + CurrentChargeMult), 15));
                     GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(HammerFrontPos, Vector2.Zero, Color.Purple, new Vector2(0.2f, 1f), ringRot, 0.2f, 0.75f * (2 + CurrentChargeMult), 30));
@@ -124,6 +125,8 @@ namespace CalamityMod.Projectiles.Melee
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact);
                 }
             }
+            if (CooldownTimer == 1)
+                Owner.Calamity().ConsumeStealthByAttacking();
             Owner.heldProj = Projectile.whoAmI;
         }
 
@@ -186,8 +189,8 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item69 with { Volume = 1f, LimitsArePerVariant = false, MaxInstances = 1 });
             }
 
-            target.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, CurrentChargeMult));
-            Owner.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, CurrentChargeMult));
+            target.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 1200, CurrentChargeMult));
+            Owner.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 1200, CurrentChargeMult));
         }
 
         public override bool PreDraw(ref Color lightColor)

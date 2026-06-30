@@ -1849,7 +1849,7 @@ namespace CalamityMod.CalPlayer
                 int numOfPigs = Player.ownedProjectileCounts[ModContent.ProjectileType<Pigion>()];
                 if (numOfPigs < Player.Calamity().friendlyMinions)
                 {
-                    int pigDamage = 7;
+                    int pigDamage = 12;
                     Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(0, -16).RotatedByRandom(MathHelper.Pi), ModContent.ProjectileType<Pigion>(), pigDamage, 0f, Player.whoAmI, 0, numOfPigs + 1);
                 }
             }
@@ -3644,7 +3644,7 @@ namespace CalamityMod.CalPlayer
             if (purpleHazeStealthTimer > 0)
             {
                 //this is so janky looking but it's the only way I could get it to work properly
-                if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType == RogueDamageClass.Instance))
+                if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType.CountsAsClass(RogueDamageClass.Instance)))
                     Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.DamageBoost : 0);
                 else 
                     stealthDamage -= PurpleHaze.StealthDamageLoss + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.StealthDamageLoss : 0);

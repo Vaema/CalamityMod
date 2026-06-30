@@ -3560,7 +3560,7 @@ namespace CalamityMod.CalPlayer
                 for (int projIndex = 0; projIndex < Main.maxProjectiles; projIndex++)
                 {
                     Projectile proj = Main.projectile[projIndex];
-                    if (proj.minionSlots <= 0f || !proj.CountsAsClass<SummonDamageClass>())
+                    if ((proj.minionSlots <= 0f && proj.type != ModContent.ProjectileType<Pigion>()) || !proj.CountsAsClass<SummonDamageClass>())
                         continue;
 
                     if (proj.active && proj.owner == Player.whoAmI)
@@ -5427,7 +5427,6 @@ namespace CalamityMod.CalPlayer
                     (statisVoidSash ? 0.85f : 0f) +
                     (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
-                    //(exaltedKillMode ? 7f : devilsDevastationKillMode ? 11f : 0) +
                     (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
@@ -5441,7 +5440,6 @@ namespace CalamityMod.CalPlayer
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
-                    //(exaltedKillMode ? 0.4f : devilsDevastationKillMode ? 0.7f : 0) +
                     (hasteLevel * 0.05f);
 
                 if ((Player.slippy || Player.slippy2) && Player.iceSkate)
@@ -5459,6 +5457,17 @@ namespace CalamityMod.CalPlayer
                 // If the timer has hit zero, or you aren't using Momentum Capacitor, you get nothing.
                 else
                     momentumCapacitorBoost = 0f;
+
+                if (Player.HasBuff<SmashedEvil>())
+                {
+                    runAccMult += 0.25f;
+                    Player.runSlowdown *= 1.5f;
+                    if (Player.accRunSpeed > 3)
+                        Player.accRunSpeed += 1.1f;
+                    if (Player.wingAccRunSpeed > 3)
+                        Player.wingAccRunSpeed += 1.1f;
+                    Player.maxRunSpeed += 1.1f;
+                }
 
                 Player.runAcceleration *= runAccMult;
                 Player.maxRunSpeed *= runSpeedMult;

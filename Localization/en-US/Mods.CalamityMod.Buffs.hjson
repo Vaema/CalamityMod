@@ -1803,14 +1803,16 @@ SmashedEvil: {
 	Description: Increased damage, movement speed, and regeneration
 	ItemTooltipEnemy:
 		'''
-		All types - 20 DPS
+		All types - 80 DPS
+		Ignores enemy weaknesses and resistances
 		+5 damage taken
 		'''
 	ItemTooltipPlayer:
 		'''
-		Regen returns to full strength 200% faster
-		10% increased damage
-		20% increased movement speed
+		+2 HP/s life regen, natural regeneration is much stronger and returns much quicker
+		20% increased damage
+		Increased acceleration and deceleration
+		5mph increased top speed
 		'''
 }
 

@@ -694,6 +694,10 @@ namespace CalamityMod.CalPlayer
 
         public override void NaturalLifeRegen(ref float regen)
         {
+
+            if (Player.HasBuff<SmashedEvil>())
+                regen *= 1.5f;
+
             // Honey Dew and its upgrades make natural regen more powerful
             if (purity)
                 regen *= Radiance.NaturalRegenPower;
@@ -703,7 +707,6 @@ namespace CalamityMod.CalPlayer
                 regen *= LivingDew.NaturalRegenPower;
             else if (honeyDew)
                 regen *= HoneyDew.NaturalRegenPower;
-
             // The Camper counteracts the regen loss while moving horizontally
             if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
             {
