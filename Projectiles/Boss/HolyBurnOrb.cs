@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         public static Asset<Texture2D> TrailNoiseTexture { get; private set; }
         public static Asset<Texture2D> TrailDistortionTexture { get; private set; }
+        public static Asset<Texture2D> GlowOrbTexture { get; private set; }
 
         bool started = false;
 
@@ -34,6 +35,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 TrailNoiseTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
                 TrailDistortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2");
+                GlowOrbTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle");
             }
         }
 
@@ -203,9 +205,8 @@ namespace CalamityMod.Projectiles.Boss
 
         private void DrawBurnOrbAdditive()
         {
-            var texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle").Value;
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, ProvUtils.GetProjectileColor(255) with { A = 0 }, 0, texture.Size() * 0.5f, 1f, 0, 0f);
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 }, 0, texture.Size() * 0.5f, 0.5f, 0, 0f);
+            Main.EntitySpriteDraw(GlowOrbTexture.Value, Projectile.Center - Main.screenPosition, null, ProvUtils.GetProjectileColor(255) with { A = 0 }, 0, GlowOrbTexture.Size() * 0.5f, 1f, 0, 0f);
+            Main.EntitySpriteDraw(GlowOrbTexture.Value, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 }, 0, GlowOrbTexture.Size() * 0.5f, 0.5f, 0, 0f);
         }
     }
 

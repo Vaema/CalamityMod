@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Boss
 
         private void DrawHealOrbAdditive()
         {
-            var texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle").Value;
+            Texture2D texture = HolyBurnOrb.GlowOrbTexture.Value;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(54, 209, 54) with { A = 0 }, 0, texture.Size() * 0.5f, 1f, 0, 0f);
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 }, 0, texture.Size() * 0.5f, 0.5f, 0, 0f);
         }
