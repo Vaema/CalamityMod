@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Buffs.Summon;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
@@ -28,6 +29,10 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> LuckIconVanilla;
         public static Asset<Texture2D> LuckIconLesser;
 
+        // Blighted Slime Buff icons
+        public static Asset<Texture2D> BlightedSlimeCorroIcon;
+        public static Asset<Texture2D> BlightedSlimeCrimIcon;
+
         // Particles
         public static Asset<Texture2D> CircularSmear;
         public static Asset<Texture2D> CircularSmearFire1;
@@ -51,6 +56,9 @@ namespace CalamityMod.ExtraTextures
             LuckIconGreater = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/LuckyGreater", AssetRequestMode.AsyncLoad);
             LuckIconVanilla = TextureAssets.Buff[BuffID.Lucky];
             LuckIconLesser = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBuffs/LuckyLesser", AssetRequestMode.AsyncLoad);
+
+            BlightedSlimeCorroIcon = ModContent.Request<Texture2D>("CalamityMod/Buffs/Summon/BlightedSlime");
+            BlightedSlimeCrimIcon = ModContent.Request<Texture2D>("CalamityMod/Buffs/Summon/BlightedSlimeCrimson");
 
             CircularSmear = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmear", AssetRequestMode.AsyncLoad);
             CircularSmearFire1 = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire1", AssetRequestMode.AsyncLoad);

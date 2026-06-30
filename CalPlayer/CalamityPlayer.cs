@@ -1514,10 +1514,8 @@ namespace CalamityMod.CalPlayer
         public bool CalamarisLament = false;
         /// <summary> Entropy's Vigil. </summary>
         public bool cEyes = false;
-        /// <summary> Corroslime Staff. </summary>
-        public bool cSlime = false;
-        /// <summary> Crimslime Staff. </summary>
-        public bool cSlime2 = false;
+        /// <summary> Blighted Slime Staff. </summary>
+        public bool blightedSlime = false;
         /// <summary> Abandoned Slime Staff. </summary>
         public bool aSlime = false;
         public bool brittleStar = false;
@@ -2772,8 +2770,7 @@ namespace CalamityMod.CalPlayer
             cosmicViper = false;
             CalamarisLament = false;
             cEyes = false;
-            cSlime = false;
-            cSlime2 = false;
+            blightedSlime = false;
             aSlime = false;
             brittleStar = false;
             aquaticStar = false;

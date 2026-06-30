@@ -652,8 +652,7 @@ IL_6899:
                     ModContent.ItemType<OverloadedBlaster>(),
                     ModContent.ItemType<AbyssalTome>(),
                     ModContent.ItemType<EldritchTome>(),
-                    ModContent.ItemType<CorroslimeStaff>(),
-                    ModContent.ItemType<CrimslimeStaff>()
+                    ModContent.ItemType<BlightedSlimeStaff>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 

@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Summon
     public class CrimsonSlimeGodMinion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/Projectiles/Summon/CrimslimeMinion";
+        public override string Texture => "CalamityMod/Projectiles/Summon/BlightedSlimeCrim";
         public float dust = 0f;
 
         public override void SetStaticDefaults()

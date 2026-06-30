@@ -35,11 +35,10 @@ BlackDragonHead.DisplayName: Black Celestial Dragon
 BlackDragonTail.DisplayName: Black Celestial Dragon
 BlackHawkBullet.DisplayName: Black Hawk Bullet
 BlackHawkSummon.DisplayName: Black Hawk
+BlightedSlimeMinion.DisplayName: Blighted Slime
 BloodBreath.DisplayName: Blood Dragon Fire
 BloodRain.DisplayName: Blood Rain
 BloodSpit.DisplayName: Blood Spit
-BoneMatter.DisplayName: Bone Matter
-BoneMatter2.DisplayName: Bone Matter
 BrimseekerAuraBall.DisplayName: Seeker
 BrimstoneDartMinion.DisplayName: Brimfire
 BrimstoneDartSummon.DisplayName: Brimstone Dart
@@ -64,7 +63,6 @@ CinderBlossom.DisplayName: Cinder Blossom
 CloudElementalMinion.DisplayName: Cloud Elemental
 CnidarianJellyfishOnTheString.DisplayName: Cnidarian
 CnidarianSpark.DisplayName: Cnidarian Spark
-CorroslimeMinion.DisplayName: Corroslime
 CorruptionSlimeGodMinion.DisplayName: Slime God
 CosmicBlast.DisplayName: Cosmic Blast
 CosmicBlastBig.DisplayName: Cosmic Blast
@@ -76,7 +74,6 @@ CosmicViperSplittingRocket.DisplayName: Splitting Rocket
 CosmicViperSummon.DisplayName: Cosmic Viper
 CosmilampBeam.DisplayName: Cosmic Beam
 CosmilampMinion.DisplayName: Cosmilamp
-CrimslimeMinion.DisplayName: Crimslime
 CrimsonSlimeGodMinion.DisplayName: Slime God
 DaedalusCrystal.DisplayName: Daedalus Crystal
 DaedalusCrystalShot.DisplayName: Crystal Shot

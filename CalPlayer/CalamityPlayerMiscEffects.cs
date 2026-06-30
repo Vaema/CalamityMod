@@ -1138,6 +1138,7 @@ namespace CalamityMod.CalPlayer
                 Asset<Texture2D> carpetAuric = ExtraTextureRefs.FlyingCarpetAuric;
                 Asset<Texture2D> carpetOriginal = ExtraTextureRefs.FlyingCarpetVanilla;
                 TextureAssets.FlyingCarpet = (auricSet ? carpetAuric : carpetOriginal);
+                TextureAssets.Buff[ModContent.BuffType<BlightedSlime>()] = WorldGen.crimson ? ExtraTextureRefs.BlightedSlimeCrimIcon : ExtraTextureRefs.BlightedSlimeCorroIcon;
 
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {

@@ -1294,6 +1294,11 @@ BlackHawkBuff: {
 	Description: The fighter jet will protect you
 }
 
+BlightedSlime: {
+	DisplayName: Blighted Slime
+	Description: The blighted slime will protect you
+}
+
 BrimseekerBuff: {
 	DisplayName: Brimseeker
 	Description: Does it want something from you?
@@ -1334,11 +1339,6 @@ CloudElemental: {
 	Description: The Cloud Elemental will protect you
 }
 
-Corroslime: {
-	DisplayName: Corroslime
-	Description: The corroslime will protect you
-}
-
 CorvidHarbringerBuff: {
 	DisplayName: Raven
 	Description: The powerful raven will protect you
@@ -1357,11 +1357,6 @@ CosmicViperEngineBuff: {
 CosmilampBuff: {
 	DisplayName: Cosmilamp
 	Description: The cosmilamp will protect you
-}
-
-Crimslime: {
-	DisplayName: Crimslime
-	Description: The crimslime will protect you
 }
 
 DaedalusCrystalBuff: {

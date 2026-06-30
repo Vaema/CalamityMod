@@ -8,14 +8,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class CorroslimeStaff : ModItem, ILocalizedModType
+    [LegacyName("CorroslimeStaff", "CrimslimeStaff")]
+    public class BlightedSlimeStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 54;
-            Item.damage = 24;
+            Item.damage = 20;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -25,8 +26,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
-            Item.buffType = ModContent.BuffType<Corroslime>();
-            Item.shoot = ModContent.ProjectileType<CorroslimeMinion>();
+            Item.buffType = ModContent.BuffType<BlightedSlime>();
+            Item.shoot = ModContent.ProjectileType<BlightedSlimeMinion>();
             Item.DamageType = DamageClass.Summon;
         }
 
