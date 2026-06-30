@@ -1804,13 +1804,13 @@ SmashedEvil: {
 	ItemTooltipEnemy:
 		'''
 		All types - 80 DPS
-		Ignores enemy weakness and resistances
+		Ignores enemy weaknesses and resistances
 		+5 damage taken
 		'''
 	ItemTooltipPlayer:
 		'''
-		Natural regeneration is much stronger and returns much quicker
-		15% increased damage
+		+2 HP/s life regen, natural regeneration is much stronger and returns much quicker
+		20% increased damage
 		Increased acceleration and deceleration
 		5mph increased top speed
 		'''
