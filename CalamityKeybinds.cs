@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Systems.Collections;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace CalamityMod
@@ -211,6 +213,15 @@ namespace CalamityMod
                 return null;
 
             return CalamityKeybinds.AccessoryKeybinds[keybindToUse];
+        }
+
+        public static bool HasBoundDynamicHotkey(this Item item)
+        {
+            var h = item.GetDynamicModHotkey();
+            if (h == null) return false;
+            if (h?.GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count() == 0)
+                return false;
+            return true;
         }
     }
 }

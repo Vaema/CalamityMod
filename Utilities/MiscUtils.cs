@@ -314,6 +314,8 @@ namespace CalamityMod
 
             try
             {
+                if (mode == InputMode.Mouse)
+                    mode = InputMode.Keyboard;
                 return keybind.GetAssignedKeys(mode);
             }
             catch
