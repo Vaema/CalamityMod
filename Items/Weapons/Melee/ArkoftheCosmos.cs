@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -68,9 +69,14 @@ namespace CalamityMod.Items.Weapons.Melee
             var blastTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[BLAST]") && x.Mod == "Terraria");
             if (blastTooltip != null)
             {
-                blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
+                var key = Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode);
+                if (key.Count > 0)
+                    blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfoKeybind"));
+                else
+                    blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
                 blastTooltip.OverrideColor = Color.Lerp(Color.HotPink, Color.Crimson, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.625f);
             }
+            tooltips.IntegrateDynamicHotkey(Item);
         }
 
         public override void SetDefaults()
@@ -108,6 +114,25 @@ namespace CalamityMod.Items.Weapons.Melee
 
             if (Combo == 4)
                 Item.channel = true;
+
+            if (Main.myPlayer == player.whoAmI && Item.CurrentlyPressingKeybind() && Charge > 0)
+            {
+                Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
+
+                if (blast == null)
+                {
+                    float speed = Item.shootSpeed;
+                    int dmg = (int)player.GetTotalDamage(Item.DamageType).ApplyTo(Item.damage);
+                    Vector2 pos = player.Center;
+                    int shoot = Item.shoot;
+                    float kb = Item.knockBack;
+                    var velocity = player.DirectionTo(Main.MouseWorld) * Item.shootSpeed;
+                    PlayerLoader.ModifyShootStats(player, Item, ref pos, ref velocity, ref shoot, ref dmg, ref kb);
+                    float angle = velocity.ToRotation();
+                    Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(dmg * BlastDamageMultiplier), 0, player.whoAmI, Charge);
+                    Charge = 0;
+                }
+            }
         }
 
         public override bool CanUseItem(Player player)
@@ -124,6 +149,8 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 // If it has been less than N frames since the last alt function use, this is a double right click.
                 bool rightMouseDoubleClick = rmbFrames > 0;
+                if (Item.HasBoundDynamicHotkey())
+                    rightMouseDoubleClick = Item.CurrentlyPressingKeybind();
 
                 // Check if a parry holdout or blast is already present.
                 Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);

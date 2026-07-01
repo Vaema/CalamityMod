@@ -87,6 +87,7 @@ ArkoftheCosmos: {
 		Parrying will empower the next 16 swings of the sword
 		'''
 	BlastInfo: Double <right> with charges available to cause a Big Rip in spacetime and consume all charges
+	BlastInfoKeybind: Press [KEY] with charges available to cause a Big Rip in spacetime and consume all charges
 }
 
 ArkoftheElements: {
