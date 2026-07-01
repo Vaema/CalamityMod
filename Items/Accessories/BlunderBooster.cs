@@ -18,12 +18,9 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        // TODO -- Check if its trying to replace the other rogue jetpack. If its the case, return true.
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().hasJetpack;
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().hasJetpack = true;
+            player.Calamity().rogueDashItem = Item;
             player.GetDamage<ThrowingDamageClass>() += 0.12f;
             player.Calamity().rogueVelocity += 0.15f;
             player.Calamity().blunderBooster = true;
@@ -32,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             player.Calamity().stealthGenMoving += 0.1f;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.BoosterDashHotKey);
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
 
         public override void AddRecipes()
         {

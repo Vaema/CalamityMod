@@ -27,11 +27,11 @@ namespace CalamityMod.Items.Accessories
             player.GetCritChance<RangedDamageClass>() += 7;
             player.magicQuiver = true;
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.deadshotBrooch = true;
+            modPlayer.ammoCycleItem = Item;
             modPlayer.ammoCost *= 0.8f;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateHotkey(CalamityKeybinds.AmmoCycleHotkey);
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateDynamicHotkey(Item);
 
         public override void AddRecipes()
         {
