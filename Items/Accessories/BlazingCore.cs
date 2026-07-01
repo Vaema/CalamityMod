@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.AccessoryParryHotKey);
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Main.LocalPlayer.Calamity().AccessoryParryItem != null ? Main.LocalPlayer.Calamity().AccessoryParryItem : Item);
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -43,6 +43,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().blazingCore = true;
+            player.Calamity().AccessoryParryItem = Item;
             player.noKnockback = true;
         }
 

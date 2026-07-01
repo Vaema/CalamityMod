@@ -110,6 +110,25 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// Shortcut for automatically placing one keybind within a tooltip. Requires the "[KEY]" string to be replaced.
+        /// </summary>
+        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
+        /// <param name="mhk">The ModKeybind to integrate into the tooltip.</param>
+        public static void IntegrateDynamicHotkey(this List<TooltipLine> tooltips, Item item)
+        {
+            if (Main.dedServ)
+                return;
+
+            var mhk = item.GetDynamicModHotkey();
+
+            string finalKey = GetText("Misc.HotkeyNotEquipped").Value;
+            if (mhk is not null)
+                finalKey = mhk.TooltipHotkeyString();
+
+            tooltips.FindAndReplace("[KEY]", finalKey);
+        }
+
+        /// <summary>
         /// Shortcut method for adding "You have already consumed this item" tooltip
         /// </summary>
         /// <param name="tooltips"></param>

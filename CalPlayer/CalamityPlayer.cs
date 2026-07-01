@@ -957,7 +957,7 @@ namespace CalamityMod.CalPlayer
         public bool procDodgeEffects = false;
         public bool nanotech = false;
         public int nanotechHitCooldown = 0;
-        public bool deadshotBrooch = false;
+        public Item ammoCycleItem = null;
         public bool shadowMinions = false;
         public bool statisMinions = false;
         public bool alchFlask = false;
@@ -1068,6 +1068,7 @@ namespace CalamityMod.CalPlayer
         public bool thiefsDime = false;
         public bool dynamoStemCells = false;
         public bool etherealExtorter = false;
+        public Item AccessoryParryItem = null;
         public bool blazingCore = false;
         public int blazingCoreParry = 0;
         public int blazingCoreSuccessfulParry = 0;
@@ -1111,7 +1112,7 @@ namespace CalamityMod.CalPlayer
         public bool spectralVeil = false;
         public int spectralVeilImmunity = 0;
         /// <summary> Check for if the player has Plagued Fuel Pack OR Blunder Booster equipped. </summary>
-        public bool hasJetpack = false;
+        public Item rogueDashItem = null;
         public bool hasEngineDash = false;
         public bool plaguedFuelPack = false;
         public bool blunderBooster = false;
@@ -2396,7 +2397,7 @@ namespace CalamityMod.CalPlayer
             v8000Engine = false;
             nanotech = false;
             nanotechHitCooldown = 0;
-            deadshotBrooch = false;
+            ammoCycleItem = null;
             tesla = false;
             teslaVisuals = true;
             ascendantInsignia = false;
@@ -2474,6 +2475,7 @@ namespace CalamityMod.CalPlayer
             thiefsDime = false;
             dynamoStemCells = false;
             etherealExtorter = false;
+            AccessoryParryItem = null;
             blazingCore = false;
             voltaicJelly = false;
             jellyChargedBattery = false;
@@ -2613,7 +2615,7 @@ namespace CalamityMod.CalPlayer
             filthyGlove = false;
             sandCloak = false;
             spectralVeil = false;
-            hasJetpack = false;
+            rogueDashItem = null;
             hasEngineDash = false;
             plaguedFuelPack = false;
             blunderBooster = false;
@@ -3468,7 +3470,7 @@ namespace CalamityMod.CalPlayer
             if (Player.dead)
                 return;
 
-            if (ascendantInsignia && Main.myPlayer == Player.whoAmI && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
+            if (ascendantInsignia && Main.myPlayer == Player.whoAmI && FindAccessory<AscendantInsignia>().JustPressedKeybind() && ascendantInsigniaCooldown <= 0)
             {
                 var source = Player.GetSource_Accessory(FindAccessory<AscendantInsignia>());
                 Projectile.NewProjectile(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
@@ -3478,7 +3480,7 @@ namespace CalamityMod.CalPlayer
             }
 
             int numOfBlobs = Player.ownedProjectileCounts[ProjectileType<TransformerBlob>()];
-            if (transformer && numOfBlobs > 0 && Main.myPlayer == Player.whoAmI && CalamityKeybinds.TransformerHotKey.JustPressed && transformerCooldown <= 0 && true) // Add check if projectiles are active
+            if (transformer && numOfBlobs > 0 && Main.myPlayer == Player.whoAmI && FindAccessory<TheTransformer>().JustPressedKeybind() && transformerCooldown <= 0 && true) // Add check if projectiles are active
             {
                 // Go fire all the blobs
                 int cooldownTime = 300;
@@ -3505,7 +3507,8 @@ namespace CalamityMod.CalPlayer
             }
 
             //Only increment the slam if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset slam time to zero
-            if (CalamityKeybinds.GravistarSabatonHotkey.JustPressed && gSabatonHotkeyFallWindup < 0)
+            
+            if (gSabaton && FindAccessory<InterstellarStompers>().JustPressedKeybind() && gSabatonHotkeyFallWindup < 0)
                 gSabatonHotkeyFallWindup = 0;
             if (gSabaton && gSabatonHotkeyFallWindup >= 0 && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != 0) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
             {
@@ -3551,7 +3554,7 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (CalamityKeybinds.AngelicAllianceHotKey.JustPressed && angelicAlliance && Main.myPlayer == Player.whoAmI && !divineBless && !Player.HasCooldown(Cooldowns.DivineBless.ID))
+            if (angelicAlliance && Main.myPlayer == Player.whoAmI && FindAccessory<AngelicAlliance>().JustPressedKeybind() && !divineBless && !Player.HasCooldown(Cooldowns.DivineBless.ID))
             {
                 Player.AddBuff(BuffType<Buffs.StatBuffs.DivineBless>(), AngelicAlliance.DivineBlessDuration, false);
                 SoundEngine.PlaySound(AngelicAlliance.ActivationSound, Player.Center);
@@ -3578,7 +3581,7 @@ namespace CalamityMod.CalPlayer
                     Player.HealPlayer(AngelicAlliance.HealPerAngelSpawned);
                 }
             }
-            if (CalamityKeybinds.SpectralVeilHotKey.JustPressed && spectralVeil && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.25f &&
+            if (spectralVeil && Main.myPlayer == Player.whoAmI && FindAccessory<SpectralVeil>().JustPressedKeybind() && rogueStealth >= rogueStealthMax * 0.25f &&
                 wearingRogueArmor && rogueStealthMax > 0)
             {
                 if (!Player.chaosState)
@@ -3624,7 +3627,7 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (CalamityKeybinds.BoosterDashHotKey.JustPressed && hasJetpack && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.25f &&
+            if (rogueDashItem != null && Main.myPlayer == Player.whoAmI && rogueDashItem.JustPressedKeybind() && rogueStealth >= rogueStealthMax * 0.25f &&
                 wearingRogueArmor && rogueStealthMax > 0 && !Player.HasCooldown(RogueBooster.ID) && !Player.mount.Active)
             {
                 jetPackDash = blunderBooster ? 15 : 10;
@@ -3635,7 +3638,7 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(SoundID.Item34, Player.Center);
             }
 
-            if (CalamityKeybinds.AmmoCycleHotkey.JustPressed && deadshotBrooch)
+            if (ammoCycleItem != null && ammoCycleItem.JustPressedKeybind())
             {
                 SoundEngine.PlaySound(SoundID.Item149, Player.Center);
 
@@ -3734,7 +3737,7 @@ namespace CalamityMod.CalPlayer
             else
                 ArmorSetBonusKeyHeldTimer = 0;
 
-            if (CalamityKeybinds.AccessoryParryHotKey.JustPressed)
+            if (AccessoryParryItem != null && AccessoryParryItem.JustPressedKeybind())
             {
                 if (blazingCore && blazingCoreParry == 0 && blazingCoreSuccessfulParry == 0)
                 {

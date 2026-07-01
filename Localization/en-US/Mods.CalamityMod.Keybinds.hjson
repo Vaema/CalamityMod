@@ -1,19 +1,17 @@
-ActivateAccessoryParry.DisplayName: Activate Accessory Parry
 AdrenalineMode.DisplayName: Adrenaline Mode
-AmmoCycle.DisplayName: Ammo Cycle Hotkey
-AngelicAllianceBlessing.DisplayName: Angelic Alliance Blessing
 ArmorSetBonus.DisplayName: Armor Set Bonus
-AscendantInsigniaHotKey.DisplayName: Ascendant Insignia Flight
-BoosterDash.DisplayName: Booster Dash
 DashDoubleTapOverride.DisplayName: Dash Double Tap Override
 ExoChairSlowDown.DisplayName: Exo Chair Slow Down
 GodSlayerDash.DisplayName: Dimensional Drive
-GravistarSabatonHotkey.DisplayName: Interstellar Stompers Slam
 NormalityRelocator.DisplayName: Normality Relocator
 RageMode.DisplayName: Rage Mode
-SpectralVeilTeleport.DisplayName: Spectral Veil Teleport
-TransformerHotKey.DisplayName: Transformer Hot Key
 GravitySwapOverride.DisplayName: Gravity Swap Override
 ExpandDebuffInfo.DisplayName: See Debuff Information
-ThePointerLock.DisplayName: The Pointer Lock On
-SpringStoolJumpHotKey.DisplayName: Spring Stool Jump Hotkey
+HeldItem.DisplayName: Held Item Ability
+Accessory1.DisplayName: Accessory Ability 1
+Accessory2.DisplayName: Accessory Ability 2
+Accessory3.DisplayName: Accessory Ability 3
+Accessory4.DisplayName: Accessory Ability 4
+Accessory5.DisplayName: Accessory Ability 5
+Accessory6.DisplayName: Accessory Ability 6
+Accessory7.DisplayName: Accessory Ability 7

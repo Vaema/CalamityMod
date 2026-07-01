@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Accessories
             Item.expert = true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.SpectralVeilHotKey);
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
