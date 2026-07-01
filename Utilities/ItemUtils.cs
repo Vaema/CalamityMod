@@ -12,6 +12,7 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Systems.Collections;
+using Terraria.GameInput;
 
 namespace CalamityMod
 {
@@ -54,7 +55,7 @@ namespace CalamityMod
             if (Main.dedServ || mhk is null)
                 return "";
 
-            List<string> keys = mhk.GetAssignedKeysOrEmpty();
+            List<string> keys = mhk.GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode);
             if (keys.Count == 0)
                 return GetText("Misc.HotkeyNotBound").Value;
             else
