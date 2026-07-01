@@ -2978,6 +2978,9 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Screen Position Movements
+
+        float HalleyScopeLerp = 0;
+        bool HalleyToggle = false;
         public override void ModifyScreenPosition()
         {
             // CIT 08FEB2025: Photosensitivity config also disables screenshake
@@ -2987,6 +2990,18 @@ namespace CalamityMod.CalPlayer
                 Main.screenPosition += Main.rand.NextVector2Circular(GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower, GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower);
 
             GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityClientConfig.Instance.ScreenshakePower);
+
+            if (Player.HeldItem.type != ModContent.ItemType<HalleysInferno>())
+                HalleyToggle = false;
+            else if (Player.HeldItem.JustPressedKeybind())
+                HalleyToggle = !HalleyToggle;
+            
+            HalleyScopeLerp = MathHelper.Clamp(HalleyScopeLerp + (HalleyToggle ? 0.05f : -0.05f), 0, 1);
+            if (HalleyScopeLerp > 0)
+            {
+                Vector2 center = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
+                Main.screenPosition -= (center - Main.MouseWorld) / Main.GameZoomTarget * 0.66f * MathHelper.SmoothStep(0,1,HalleyScopeLerp);
+            }
         }
         #endregion
 
