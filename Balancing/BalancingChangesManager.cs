@@ -97,9 +97,6 @@ namespace CalamityMod.Balancing
             #region Wall of Flesh
             // 50% resist to Staff of Necrosteocytes.
             NPCSpecificBalancingChanges.AddRange(Bundle(new List<int> { NPCID.WallofFlesh, NPCID.WallofFleshEye }, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<SmallSkeletonMinion>()))));
-
-            // 20% resist to Blighted Slime Staff.
-            NPCSpecificBalancingChanges.AddRange(Bundle(new List<int> { NPCID.WallofFlesh, NPCID.WallofFleshEye }, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<BlightedSlimeMinion>()))));
             #endregion
 
             #region Aquatic Scourge
