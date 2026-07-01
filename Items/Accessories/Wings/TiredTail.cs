@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Enums;
 using CalamityMod.Items.Armor.Auric;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Demonshade;
@@ -14,6 +13,7 @@ using CalamityMod.Items.Armor.OmegaBlue;
 using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
@@ -101,6 +101,16 @@ namespace CalamityMod.Items.Accessories.Wings
                 constantAscend *= BoostPower;
                 player.wingTime -= 1;
             }
+        }
+
+        public override void AddRecipes()
+        {
+
+            CreateRecipe().
+                AddIngredient<ArmoredShell>(3).
+                AddIngredient(ItemID.Sapphire).
+                AddTile(TileID.DemonAltar).
+                Register();
         }
     }
 
@@ -410,7 +420,7 @@ namespace CalamityMod.Items.Accessories.Wings
             }
             var textToDraw = new string(textarray);
 
-            size = FontAssets.MouseText.Value.MeasureString(textToDraw)*scale;
+            size = FontAssets.MouseText.Value.MeasureString(textToDraw) * scale;
 
             if (!justCheckingString && (color.R != 0 || color.G != 0 || color.B != 0))
             {
@@ -422,18 +432,18 @@ namespace CalamityMod.Items.Accessories.Wings
                 {
                     using (lease.Scope(clearColor: Color.Transparent))
                     {
-                        var max = FontAssets.MouseText.Value.MeasureString(text) * Math.Min(1f,expansionFactor);
+                        var max = FontAssets.MouseText.Value.MeasureString(text) * Math.Min(1f, expansionFactor);
                         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
 
                         foreach (var item in textarray)
                         {//new(92,83,117)
                             pos = position;
-                            pos.X += Math.Min(FontAssets.MouseText.Value.MeasureString(txt).X,max.X+9999);
+                            pos.X += Math.Min(FontAssets.MouseText.Value.MeasureString(txt).X, max.X + 9999);
                             float sin = (MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -1.5f) + 1) * 0.5f;
                             float sin2 = (MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -0.9f) + 1) * 0.5f;
                             float sin3 = MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -1.5f + MathHelper.PiOver2);
                             var c = new Color(171, 153, 204);
-                            if (txt.Length == 0 || txt.Length == text.Length-1)
+                            if (txt.Length == 0 || txt.Length == text.Length - 1)
                                 c = Color.Cyan;
                             else if (txt.Length % 4 == 3)
                             {
@@ -442,7 +452,7 @@ namespace CalamityMod.Items.Accessories.Wings
                             c = Color.Lerp(Colors.AlphaDarken(new Color(0, 255, 200)), c, MathHelper.Clamp(expansionFactor - 2, 0, 1));
                             float posMult = Math.Max(MathHelper.Clamp((expansionFactor - 10) * 0.5f, 0, 3), MathHelper.Clamp((expansionFactor - 2) * 0.5f, 0, 1));
                             var origin = FontAssets.MouseText.Value.MeasureString(item.ToString()) * 0.5f;
-                            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, item.ToString(), origin + pos + new Vector2(0, item == 'ɔ' ? -1 : 0) + new Vector2((-2f + 4*sin2) * posMult, (-2 + sin * 4) * posMult), c, sin3*posMult * 0.1f, origin, new Vector2(scale));
+                            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, item.ToString(), origin + pos + new Vector2(0, item == 'ɔ' ? -1 : 0) + new Vector2((-2f + 4 * sin2) * posMult, (-2 + sin * 4) * posMult), c, sin3 * posMult * 0.1f, origin, new Vector2(scale));
                             txt += item;
                         }
                         spriteBatch.End();
