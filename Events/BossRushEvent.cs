@@ -586,12 +586,14 @@ namespace CalamityMod.Events
                 // Cooldown and boss spawn.
                 if (BossRushSpawnCountdown <= 0 && BossRushStage < Bosses.Count)
                 {
-                    // Cooldown before next boss spawns.
+                    // Cooldown before next boss spawns. Defaults to 1 second.
                     BossRushSpawnCountdown = 60;
 
-                    // Increase cooldown post-Moon Lord.
+                    // Cooldown increases to 3 seconds in tier 4 and 4 seconds in tier 5.
                     if (BossRushStage >= Bosses.FindIndex(boss => boss.EntityID == NPCID.MoonLordCore))
-                        BossRushSpawnCountdown += 180;
+                        BossRushSpawnCountdown += 120;
+                    if (BossRushStage >= Bosses.FindIndex(boss => boss.EntityID == ModContent.NPCType<DevourerofGodsHead>()))
+                        BossRushSpawnCountdown += 60;
 
                     // Override the spawn countdown if specified.
                     if (BossRushStage < Bosses.Count - 1 && Bosses[BossRushStage + 1].SpecialSpawnCountdown != -1)
@@ -684,6 +686,18 @@ namespace CalamityMod.Events
             if (npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail)
             {
                 if (npc.boss)
+                {
+                    BossRushStage++;
+                    CalamityUtils.KillAllHostileProjectiles();
+                    HostileProjectileKillCounter = 3;
+                }
+            }
+
+            // Both Twins must be killed to progress.
+            else if (npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer)
+            {
+                int bossType = npc.type == NPCID.Spazmatism ? NPCID.Retinazer : NPCID.Spazmatism;
+                if (!NPC.AnyNPCs(bossType))
                 {
                     BossRushStage++;
                     CalamityUtils.KillAllHostileProjectiles();

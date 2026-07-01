@@ -306,10 +306,13 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void OnSpawn(IEntitySource source)
         {
+            // Don't display the dialogue in Boss Rush
+            if (BossRushEvent.BossRushActive)
+                return;
+
             string key = "Mods.CalamityMod.Status.Boss.DoGSpawn";
             Color messageColor = Color.Cyan;
             CalamityUtils.BroadcastLocalizedText(key, messageColor);
-
             DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 0, 120, false, new BossText());
         }
 
