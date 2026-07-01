@@ -1,7 +1,8 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Systems.Collections;
+using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -13,9 +14,10 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
+        public static float Lifetime => 15; //Technically has infinite lifetime, but manually sets 15 seconds. See projectile file for details
         public static float Reach = 512f;
         public static float Speed = 36f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed, Lifetime);
 
         public override void SetStaticDefaults()
         {
@@ -30,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 28;
             Item.height = 38;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 50;
+            Item.damage = 35;
             Item.knockBack = 4f;
             Item.useTime = 22;
             Item.useAnimation = 22;
@@ -47,6 +49,15 @@ namespace CalamityMod.Items.Weapons.Melee
 
             Item.rare = ItemRarityID.Lime;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            CalamityPlayer modPlayer = player.Calamity();
+            if (modPlayer.oblivionCooldown == 0)
+                return true;
+            else
+                return false;
         }
     }
 }
