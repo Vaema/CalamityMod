@@ -113,6 +113,8 @@ namespace CalamityMod
                 if (CalamityItemSets.HasAccessoryKeybind[Main.LocalPlayer.armor[i].type])
                     keybindToUse++;
             }
+            if (keybindToUse > 6)
+                return false;
             return CalamityKeybinds.AccessoryKeybinds[keybindToUse].JustPressed;
         }
 
@@ -142,6 +144,8 @@ namespace CalamityMod
                     keybindToUse++;
             }
 
+            if (keybindToUse > 6)
+                return false;
             return CalamityKeybinds.AccessoryKeybinds[keybindToUse].JustReleased;
         }
 
@@ -170,6 +174,8 @@ namespace CalamityMod
                 if (CalamityItemSets.HasAccessoryKeybind[Main.LocalPlayer.armor[i].type])
                     keybindToUse++;
             }
+            if (keybindToUse > 6)
+                return false;
 
             return CalamityKeybinds.AccessoryKeybinds[keybindToUse].Current;
         }
@@ -200,6 +206,9 @@ namespace CalamityMod
                 if (CalamityItemSets.HasAccessoryKeybind[Main.LocalPlayer.armor[i].type])
                     keybindToUse++;
             }
+
+            if (keybindToUse > 6)
+                return null;
 
             return CalamityKeybinds.AccessoryKeybinds[keybindToUse];
         }
