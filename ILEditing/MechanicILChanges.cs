@@ -252,7 +252,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count == 0)
+            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count == 0)
                 orig(self, out dir, out dashing, dashStartAction);
             else
             {
