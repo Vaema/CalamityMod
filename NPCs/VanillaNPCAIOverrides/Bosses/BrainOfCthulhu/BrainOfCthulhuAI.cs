@@ -68,6 +68,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     #region Health Gates
     internal static float DesperateOnslaughtCreeperHealthGate => 0.1f; //When the cumulative health % of all creepers falls below this value, BoC will begin its pre-stun attack upon entering its idle phase.
     internal static float Phase2HealthGate => 0.5f; //When BoC's health % falls below this value, it will begin entering Phase 2
+    internal static float ForcedIllusionHealthGate => 0.25f; //When BoC's health % falls below this value, the next attack is forced to be the Illusion Trick
     #endregion
 
     internal static float DespawnRangeSQ => 36000000f;
@@ -253,6 +254,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal float SpawnTime = 0;
     internal int SpawnDelay = 0;
     internal bool OnSecondCreeperPhase = false;
+    internal bool ForcedIllusionAttack = false;
 
     private bool isNegative = false;
     internal int AttackSign { get => isNegative ? -1 : 1; set => isNegative = value == -1; }
@@ -1741,26 +1743,35 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         NPC.rotation = 0;
                         ResetAttackValues();
 
-                        if (availableAttacks.Count == 0)
+                        if (!ForcedIllusionAttack && (NPC.life / (float)NPC.lifeMax) <= ForcedIllusionHealthGate)
                         {
-                            bool quickChoice = Main.rand.NextBool();
-                            availableAttacks = [
-                                BrainAIState.Bloodletting,
+                            ForcedIllusionAttack = true;
+                            AIState = BrainAIState.IllusionTrick;
+                            PreviousAttack = AIState;
+                        }
+                        else
+                        {
+                            if (availableAttacks.Count == 0)
+                            {
+                                bool quickChoice = Main.rand.NextBool();
+                                availableAttacks = [
+                                    BrainAIState.Bloodletting,
                                         quickChoice ? BrainAIState.SanguineScythes : BrainAIState.IllusionDash,
                                         Main.rand.NextBool() ? BrainAIState.Phase2Idle : BrainAIState.Bloodletting,
                                         quickChoice ? BrainAIState.IllusionDash : BrainAIState.SanguineScythes,
                                         BrainAIState.IllusionTrick
-                            ];
-                        }
+                                ];
+                            }
 
-                        AIState = availableAttacks[0];
-                        availableAttacks.RemoveAt(0);
-                        PreviousAttack = AIState;
+                            AIState = availableAttacks[0];
+                            availableAttacks.RemoveAt(0);
+                            PreviousAttack = AIState;
 
-                        if (AIState == BrainAIState.SanguineScythes)
-                        {
-                            Time = -31;
-                            BoCAfterImages = [];
+                            if (AIState == BrainAIState.SanguineScythes)
+                            {
+                                Time = -31;
+                                BoCAfterImages = [];
+                            }
                         }
 
                         NPC.netUpdate = true;
@@ -2855,7 +2866,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             binaryWriter.Write(SpawnDelay);
         }
 
-        binaryWriter.WriteFlags(OnSecondCreeperPhase, isNegative, AttackFlag);
+        binaryWriter.WriteFlags(OnSecondCreeperPhase, ForcedIllusionAttack, isNegative, AttackFlag);
 
         binaryWriter.Write(AttackRotation);
         binaryWriter.Write(AttackTime);
@@ -2887,7 +2898,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             SpawnDelay = binaryReader.ReadInt32();
         }
 
-        binaryReader.ReadFlags(out OnSecondCreeperPhase, out isNegative, out AttackFlag);
+        binaryReader.ReadFlags(out OnSecondCreeperPhase, out ForcedIllusionAttack, out isNegative, out AttackFlag);
 
         AttackRotation = binaryReader.ReadSingle();
         AttackTime = binaryReader.ReadSingle();
