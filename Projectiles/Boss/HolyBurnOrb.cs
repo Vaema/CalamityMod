@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Boss
                         Projectile.timeLeft = 160;
                 }
 
-                if (Main.getGoodWorld)
+                if (!ProvUtils.StandardAI())
                 {
                     if (Projectile.velocity.Length() < 12f && Projectile.ai[1] == 0f)
                     {
@@ -74,8 +74,8 @@ namespace CalamityMod.Projectiles.Boss
                     }
                     else
                     {
-                        Projectile.ai[1] += 0.05f;
-                        Projectile.velocity *= MathHelper.Lerp(0.95f, 1.05f, (float)Math.Abs(Math.Sin(Projectile.ai[1])));
+                        Projectile.ai[1] += 0.075f;
+                        Projectile.velocity *= MathHelper.Lerp(0.95f, 1.05f, MathF.Abs(MathF.Sin(Projectile.ai[1])));
                     }
                 }
                 else if (Projectile.velocity.Length() < 16f)

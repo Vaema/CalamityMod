@@ -290,7 +290,7 @@ namespace CalamityMod.NPCs.Providence
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
 
-            if (Main.getGoodWorld)
+            if (Main.zenithWorld)
                 NPC.scale *= 0.25f;
         }
 
@@ -400,8 +400,7 @@ namespace CalamityMod.NPCs.Providence
             Player player = Main.player[NPC.target];
 
             // Enraged bool and Color shifting
-            bool getFuckedAI = Main.zenithWorld;
-            if (getFuckedAI)
+            if (Main.zenithWorld)
                 NPC.localAI[1] = (float)BossMode.Rainbow;
             else if (hasBeenGivenFullPower) // Enraged behavior
                 NPC.localAI[1] = (float)BossMode.Enraged;
@@ -426,29 +425,15 @@ namespace CalamityMod.NPCs.Providence
             // Is in spawning animation
             float spawnAnimationTime = 180f;
             bool spawnAnimation = calamityGlobalNPC.newAI[3] < spawnAnimationTime;
-
             if (!spawnAnimation)
-            {
                 NPC.Opacity = 1f;
-            }
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            // Play enrage animation if she gets angy
-            if (!getFuckedAI && fullPowerAI && calamityGlobalNPC.newAI[3] == spawnAnimationTime)
+            // Sync "enrage" status in FTW
+            if (NPC.localAI[1] == (float)BossMode.Enraged && calamityGlobalNPC.newAI[3] == 0f)
             {
-                AIState = (int)Phase.HolyBlast;
-                NPC.ai[1] = 0f;
-                NPC.ai[2] = 0f;
-                NPC.ai[3] = 0f;
-                calamityGlobalNPC.newAI[1] = 0f;
-                calamityGlobalNPC.newAI[2] = 0f;
-                calamityGlobalNPC.newAI[3] = 0f;
-
-                // Despawn existing projectiles and summon the aura again
-                DespawnSpecificProjectiles(true);
-                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HolyAura>(), 0, 0f, -1);
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     ProvidenceDyeConditionSyncPacket.Send(this);
                 NPC.ForceNetUpdate(false);
@@ -811,7 +796,7 @@ namespace CalamityMod.NPCs.Providence
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon || AIState == (int)Phase.Laser || spawnAnimation;
 
             // Movement
-            if (getFuckedAI || (AIState != (int)Phase.FlameCocoon && AIState != (int)Phase.SpearCocoon))
+            if (Main.zenithWorld || (AIState != (int)Phase.FlameCocoon && AIState != (int)Phase.SpearCocoon))
             {
                 // Slowly drift down when spawning
                 if (spawnAnimation)
@@ -878,14 +863,8 @@ namespace CalamityMod.NPCs.Providence
                     }
                     if (laserPhaseSlow)
                     {
-                        acceleration *= getFuckedAI ? 0.6f : 0.2f;
-                        velocity *= getFuckedAI ? 0.6f : 0.2f;
-                    }
-
-                    if (Main.getGoodWorld)
-                    {
-                        velocity *= 1.2f;
-                        acceleration *= 1.2f;
+                        acceleration *= Main.zenithWorld ? 0.6f : 0.2f;
+                        velocity *= Main.zenithWorld ? 0.6f : 0.2f;
                     }
 
                     if (!targetDead)
@@ -898,14 +877,11 @@ namespace CalamityMod.NPCs.Providence
 
                         float moveUpThreshold = player.position.Y - (NPC.position.Y + NPC.height);
                         if (moveUpThreshold < (laserPhaseSlow ? 150f : 200f)) // 150
-                            NPC.velocity.Y -= Main.getGoodWorld ? 0.4f : 0.2f;
+                            NPC.velocity.Y -= fullPowerAI ? 0.4f : 0.2f;
                         if (moveUpThreshold > (laserPhaseSlow ? 200f : 250f)) // 200
-                            NPC.velocity.Y += Main.getGoodWorld ? 0.4f : 0.2f;
+                            NPC.velocity.Y += fullPowerAI ? 0.4f : 0.2f;
 
                         float speedCap = laserPhaseSlow ? 2f : 6f;
-                        if (Main.getGoodWorld)
-                            speedCap *= 1.5f;
-
                         if (NPC.velocity.Y > speedCap)
                             NPC.velocity.Y = speedCap;
                         if (NPC.velocity.Y < -speedCap)
@@ -1121,29 +1097,7 @@ namespace CalamityMod.NPCs.Providence
                             GeneralParticleHandler.SpawnParticle(new SparkParticle(startPos, startPos.DirectionTo(destination) * (startPos.Distance(destination) / 10), false, 10, Main.rand.NextFloat(0.2f, 0.5f) * (sc * 2), medColor));
                         }
 
-                        // Used to heal her back to full HP during enrage animation
-                        if (fullPowerAI && calamityGlobalNPC.newAI[3] % 9f == 0f)
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int healAmt = NPC.lifeMax / 400;
-                                if (healAmt > NPC.lifeMax - NPC.life)
-                                    healAmt = NPC.lifeMax - NPC.life;
-
-                                if (healAmt > 0)
-                                {
-                                    NPC.life += healAmt;
-                                    NPC.HealEffect(healAmt, true);
-                                    NPC.ForceNetUpdate(false);
-                                }
-                            }
-                        }
-
                         calamityGlobalNPC.newAI[3] += 1f;
-
-                        if (fullPowerAI && calamityGlobalNPC.newAI[3] >= spawnAnimationTime)
-                            calamityGlobalNPC.newAI[3] += 1f;
-
                         return;
                     }
 
@@ -1238,7 +1192,7 @@ namespace CalamityMod.NPCs.Providence
                     borderPosition ??= NPC.Center;
                     borderPosition = Vector2.Lerp(borderPosition.Value, NPC.Center, 0.02f);
                     Vector2 fireSparklesFrom = fireFrom + new Vector2(0, -30);
-                    if (!targetDead && !getFuckedAI)
+                    if (!targetDead && !Main.zenithWorld)
                     {
                         if (NPC.velocity.Length() <= 2f)
                             NPC.velocity = Vector2.Zero;
@@ -1509,7 +1463,7 @@ namespace CalamityMod.NPCs.Providence
                     borderPosition ??= NPC.Center;
                     borderPosition = Vector2.Lerp(borderPosition.Value, NPC.Center, 0.02f);
 
-                    if (!targetDead && !getFuckedAI)
+                    if (!targetDead && !Main.zenithWorld)
                     {
                         if (NPC.velocity.Length() <= 2f)
                             NPC.velocity = Vector2.Zero;
@@ -1554,9 +1508,6 @@ namespace CalamityMod.NPCs.Providence
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, vector2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer);
-
-                                    if (Main.getGoodWorld)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, -vector2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer);
                                 }
                             }
 
@@ -1581,9 +1532,6 @@ namespace CalamityMod.NPCs.Providence
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, velocity2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, 1f, 0f);
-
-                            if (Main.getGoodWorld)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, -velocity2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, 1f, 0f);
                         }
                     }
 
@@ -1601,7 +1549,7 @@ namespace CalamityMod.NPCs.Providence
 
                 case (int)Phase.Crystal:
 
-                    if (!targetDead && !getFuckedAI)
+                    if (!targetDead && !Main.zenithWorld)
                         NPC.velocity *= 0.9f;
 
                     NPC.ai[1] += 1f;
@@ -1673,7 +1621,7 @@ namespace CalamityMod.NPCs.Providence
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float timeLeft = fullPowerAI ? (float)(getFuckedAI ? gfbCrystalTime : enragedCrystalTime) : 0f;
+                                float timeLeft = fullPowerAI ? (float)(Main.zenithWorld ? gfbCrystalTime : enragedCrystalTime) : 0f;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), crystalSpawnPos, Vector2.Zero, ModContent.ProjectileType<ProvidenceCrystal>(), CrystalDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, lifeRatio, 0f, timeLeft);
                             }
                         }
@@ -2033,12 +1981,6 @@ namespace CalamityMod.NPCs.Providence
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.hasBeenGivenFullPower;
-            }, ModContent.ItemType<ProfanedMoonlightDye>(), 1, 4, 4, desc: DropHelper.ProvidenceEnragedText);
-
-            npcLoot.AddIf(info =>
-            {
-                Providence prov = info.npc.ModNPC<Providence>();
-                return prov.hasBeenGivenFullPower;
             }, ModContent.ItemType<DivineGeode>(), 1, 75, 90);
 
             // Normal drops: Everything that would otherwise be in the bag
@@ -2094,7 +2036,7 @@ namespace CalamityMod.NPCs.Providence
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            bool offColor = NPC.localAI[1] != (float)BossMode.Normal && (NPC.Calamity().newAI[3] >= 180f || Main.zenithWorld);
+            bool offColor = NPC.localAI[1] != (float)BossMode.Normal;
 
             Texture2D texture = offColor ? TextureNight.Value : TextureAssets.Npc[Type].Value;
             Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;

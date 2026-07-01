@@ -115,8 +115,6 @@ namespace CalamityMod
         public static string CataclysmKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CataclysmKilledLast");
         public static string CatastropheKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CatastropheKilledLast");
         public static string CynosureText = CalamityUtils.GetTextValue("Condition.Drops.Cynosure");
-
-        public static string ProvidenceEnragedText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceEnraged");
         public static string ProvidenceChallengeText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceChallenge");
 
         #endregion
