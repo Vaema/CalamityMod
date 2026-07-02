@@ -2105,7 +2105,10 @@ namespace CalamityMod
                 case "GetDebuffDamageFunction": //This exists because Calamity's Mod Call lookup is slow due to this string switch, and this method may be called hundreds of times per frame by some addons.
                     return (object)DebuffData.GetDebuffRegenValue;
                 default:
-                    return new ArgumentException("ERROR: Invalid method name.");
+                    {
+                        CalamityMod.Log.Warn($"{methodName} is an invalid method name for Calamity Mod. Are you calling a method which no longer exists?");
+                        return null;
+                    }
             }
         }
         #endregion
