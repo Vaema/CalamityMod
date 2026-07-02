@@ -877,90 +877,6 @@ namespace CalamityMod
         public static bool DisableAllDodges(bool disable) => Main.LocalPlayer.Calamity().disableAllDodges = disable;
         #endregion
 
-        #region Amalgam Potion Buff List
-        public static bool SetAmalgamBuffList(int type, bool shouldBeListed)
-        {
-            if (shouldBeListed && !CalamityBuffSets.BuffedByAmalgam[type])
-            {
-                CalamityBuffSets.BuffedByAmalgam[type] = true;
-                return true;
-            }
-            else if (!shouldBeListed)
-            {
-                CalamityBuffSets.BuffedByAmalgam[type] = false;
-                return false;
-            }
-
-            return false;
-        }
-        public static bool SetPersistentBuffList(int type, bool isPersistent)
-        {
-            if (isPersistent && !CalamityBuffSets.IsPersistentBuff[type])
-            {
-                CalamityBuffSets.IsPersistentBuff[type] = true;
-                return true;
-            }
-            else if (!isPersistent)
-            {
-                CalamityBuffSets.IsPersistentBuff[type] = false;
-                return false;
-            }
-
-            return false;
-        }
-
-        public static bool IsOnAmalgamBuffList(int type) => CalamityBuffSets.BuffedByAmalgam[type];
-        public static bool IsOnPersistentBuffList(int type) => CalamityBuffSets.IsPersistentBuff[type];
-        #endregion
-
-        #region Venerated Locket Bans
-        public static bool AddToVeneratedLocketBanlist(int type)
-        {
-            if (!CalamityItemSets.DisablesVeneratedLocketEffect[type])
-            {
-                CalamityItemSets.DisablesVeneratedLocketEffect[type] = true;
-                return true;
-            }
-            return false;
-        }
-        #endregion
-
-        #region Summoner Cross Class Nerf Disabling
-        public static bool SetSummonerNerfDisabledByMinion(int type, bool disableNerf)
-        {
-            if (disableNerf && !CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type])
-            {
-                CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type] = true;
-                return true;
-            }
-            else if (!disableNerf)
-            {
-                CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type] = false;
-                return false;
-            }
-
-            return false;
-        }
-        public static bool SetSummonerNerfDisabledByItem(int type, bool disableNerf)
-        {
-            if (disableNerf && !CalamityItemSets.ItemWhichDisablesSummonerNerf[type])
-            {
-                CalamityItemSets.ItemWhichDisablesSummonerNerf[type] = true;
-                return true;
-            }
-            else if (!disableNerf)
-            {
-                CalamityItemSets.ItemWhichDisablesSummonerNerf[type] = false;
-                return false;
-            }
-
-            return false;
-        }
-
-        public static bool GetSummonerNerfDisabledByMinion(int type) => CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type];
-        public static bool GetSummonerNerfDisabledByItem(int type) => CalamityItemSets.ItemWhichDisablesSummonerNerf[type];
-        #endregion
-
         #region Debuff Display support
         public static void RegisterDebuff(string texturePath, Predicate<NPC> debuffCheck)
         {
@@ -1035,19 +951,6 @@ namespace CalamityMod
 
                 case "CelestialOnion": player.Calamity().extraAccessoryML = value; break;
             }
-        }
-        #endregion
-
-        #region Adding minions to boss hp scaling config
-        //This is to add minions to the hp scaling config
-        public static bool AddToHPScaling(int type)
-        {
-            if (!CalamityNPCSets.ScalesHealthLikeBoss[type])
-            {
-                CalamityNPCSets.ScalesHealthLikeBoss[type] = true;
-                return true;
-            }
-            return false;
         }
         #endregion
 
@@ -2075,55 +1978,6 @@ namespace CalamityMod
                     CalamityMod.Log.Warn("This mod call is deprecated. Calamity automatically registers cooldowns.");
                     return null;
 
-                case "GetSummonerNerfDisabledByItem":
-                    if (args.Length != 2 || !isValidItemArg(args[1]))
-                        return new ArgumentException("ERROR: Must specify a valid item to check status of.");
-                    return GetSummonerNerfDisabledByItem(castItem(args[1]).type);
-
-                case "GetSummonerNerfDisabledByMinion":
-                    if (args.Length != 2 || !isValidProjectileArg(args[1]))
-                        return new ArgumentException("ERROR: Must specify a valid projectile to check status of.");
-                    return GetSummonerNerfDisabledByMinion(castProjectile(args[1]).type);
-
-                case "SetSummonerNerfDisabledByItem":
-                    if (args.Length < 2 || !isValidItemArg(args[1]))
-                        return new ArgumentException("ERROR: Must specify a valid item to set the status of.");
-                    if (args.Length != 3 || args[2] is not bool disableNerf)
-                        return new ArgumentException("ERROR: Must specify a bool that determines whether the summoner nerf is disabled.");
-                    return SetSummonerNerfDisabledByItem(castItem(args[1]).type, disableNerf);
-
-                case "SetSummonerNerfDisabledByMinion":
-                    if (args.Length < 2 || !isValidItemArg(args[1]))
-                        return new ArgumentException("ERROR: Must specify a valid projectile to set the status of.");
-                    if (args.Length != 3 || args[2] is not bool disableNerf2)
-                        return new ArgumentException("ERROR: Must specify a bool that determines whether the summoner nerf is disabled.");
-                    return SetSummonerNerfDisabledByItem(castItem(args[1]).type, disableNerf2);
-
-                case "IsOnAmalgamBuffList":
-                    if (args.Length != 2 || !castID(args[1], out int buffType))
-                        return new ArgumentException("ERROR: Must specify a valid buff ID to check status of.");
-                    return IsOnAmalgamBuffList(buffType);
-
-                case "IsOnPersistentBuffList":
-                case "IsPersistentBuff":
-                    if (args.Length != 2 || !castID(args[1], out int buffType2))
-                        return new ArgumentException("ERROR: Must specify a valid buff ID to check status of.");
-                    return IsOnPersistentBuffList(buffType2);
-
-                case "SetAmalgamBuffList":
-                    if (args.Length < 2 || !castID(args[1], out int buffType3))
-                        return new ArgumentException("ERROR: Must specify a valid buff ID to set the status of.");
-                    if (args.Length != 3 || args[2] is not bool shouldBeListed)
-                        return new ArgumentException("ERROR: Must specify a bool that determines whether the amalgam should enable extend the duration of this buff.");
-                    return SetAmalgamBuffList(buffType3, shouldBeListed);
-
-                case "SetPersistentBuffList":
-                    if (args.Length < 2 || !castID(args[1], out int buffType4))
-                        return new ArgumentException("ERROR: Must specify a valid buff ID to set the status of.");
-                    if (args.Length != 3 || args[2] is not bool isPersistent)
-                        return new ArgumentException("ERROR: Must specify a bool that determines whether the buff is persistent after death for the Amalgam to properly reset.");
-                    return SetPersistentBuffList(buffType4, isPersistent);
-
                 case "CreateCodebreakerDialogOption":
                     // NOTE: This is a legacy variant of this call. The variant with three arguments is the standard.
                     if (args.Length == 4)
@@ -2142,13 +1996,6 @@ namespace CalamityMod
                         throw new ArgumentException("ERROR: Must specify either two or three arguments.");
 
                     return null;
-
-                case "AddToVeneratedLocketBanlist":
-                    if (args.Length < 2)
-                        return new ArgumentException("ERROR: Not enough arguments!");
-                    if (args[1] is not int itemType)
-                        return new ArgumentException("ERROR: Must specify a valid item type as an int index of the item.");
-                    return AddToVeneratedLocketBanlist(itemType);
 
                 case "RegisterDebuff":
                 case "AddToDebuffDisplay":
@@ -2246,16 +2093,6 @@ namespace CalamityMod
 
                         AndroombaFriendly.customConversionTypes.Add((itemID, texturePath, NPCaction));
                         return null;
-                    }
-                case "AddMinibossToHPScalingConfig":
-                case "AddMinionToHPScalingConfig":
-                case "AddToBossHPScalingConfig":
-                    {
-                        if (args.Length < 2)
-                            return new ArgumentNullException("ERROR: Must specify an NPC id/type as an int or short ID. Example: NPCType<SomeBossMinion>()");
-                        if (!castID(args[1], out int npcType6))
-                            return new ArgumentException("ERROR: The first argument to \"AddToBossHPScalingConfig\" must be an int or short ID.");
-                        return AddToHPScaling(npcType6);
                     }
                 case "GetDebuffDamage":
                     {
