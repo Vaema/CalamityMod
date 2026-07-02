@@ -249,11 +249,7 @@ BloodflareHeadRogue: {
 		{$Common.RogueStealth}
 		{$BloodflareHeadRogue.SetBonusEffect@1}
 		'''
-	SetBonusEffect:
-		'''
-		Grants {0} defense when above {1}% life
-		{$BloodflareBodyArmor.CommonSetBonus}
-		'''
+	SetBonusEffect: "{$BloodflareBodyArmor.CommonSetBonus}"
 }
 
 BloodflareHeadSummon: {
@@ -705,7 +701,6 @@ TarragonHeadRogue: {
 		'''
 		After every {0} rogue critical hits you will gain {1} seconds of damage immunity
 		This effect has a cooldown of {2} seconds
-		While under the effects of a debuff you gain {3}% increased rogue damage
 		{$TarragonBreastplate.CommonSetBonus}
 		'''
 }

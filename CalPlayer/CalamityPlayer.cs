@@ -1225,7 +1225,6 @@ namespace CalamityMod.CalPlayer
         public bool bloodflareFrenzy = false;
         public int bloodflareMeleeHits = 0;
         public bool bloodflareRanged = false;
-        public bool bloodflareThrowing = false;
         public bool bloodflareMage = false;
         public int bloodflareMageCooldown = 0;
         public bool bloodflareSummon = false;
@@ -2587,7 +2586,6 @@ namespace CalamityMod.CalPlayer
             bloodflareMelee = false;
             bloodflareFrenzy = false;
             bloodflareRanged = false;
-            bloodflareThrowing = false;
             bloodflareMage = false;
             bloodflareSummon = false;
 
@@ -3369,7 +3367,6 @@ namespace CalamityMod.CalPlayer
             bloodflareFrenzy = false;
             bloodflareMeleeHits = 0;
             bloodflareRanged = false;
-            bloodflareThrowing = false;
             bloodflareMage = false;
             bloodflareSummon = false;
             bloodflareSummonTimer = 0;

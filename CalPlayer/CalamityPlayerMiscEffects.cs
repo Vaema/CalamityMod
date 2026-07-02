@@ -2763,9 +2763,6 @@ namespace CalamityMod.CalPlayer
                     if (Player.buffTime[l] <= 2 && buffID == ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>())
                         if (Player.whoAmI == Main.myPlayer)
                             Player.AddCooldown(Cooldowns.TarragonImmunity.ID, TarragonHeadRogue.ImmunityCooldown);
-
-                    if (CalamityBuffSets.IsDebuff[buffID])
-                        Player.GetDamage<RogueDamageClass>() += TarragonHeadRogue.RogueDamageBoostWhileDebuffed;
                 }
             }
 
@@ -3934,12 +3931,6 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.statLife <= (int)(Player.statLifeMax2 * HydrothermicArmor.InfernoHealthThreshold))
                     Player.AddBuff(BuffID.Inferno, 2);
-            }
-
-            if (bloodflareThrowing)
-            {
-                if (Player.statLife > (int)(Player.statLifeMax2 * BloodflareHeadRogue.DefenseBoostHealthThreshold))
-                    Player.statDefense += BloodflareHeadRogue.DefenseBoostAboveHealthThreshold;
             }
 
             if (bloodflareSummon)
