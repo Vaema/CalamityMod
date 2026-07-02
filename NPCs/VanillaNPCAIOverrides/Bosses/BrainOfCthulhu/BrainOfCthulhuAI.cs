@@ -1674,12 +1674,15 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             float angleChange = MathHelper.Lerp(MathHelper.Pi / 24f, 0f, MathHelper.Clamp(Time / (ChaseTime * 0.666f), 0f, 1f));
             NPC.velocity = NPC.velocity.RotateDirectionTowards(NPC.DirectionTo(Target.Center).ToRotation(), angleChange) * (MathHelper.Lerp(ChaseMinSpeed, ChaseMaxSpeed, Time / ChaseTime) * speedUp * slowDown);
 
+            // Teleport ahead of the player's movement
             if (Time == ChaseTime)
             {
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     SelectNewTarget();
-                Vector2 direction = Target.velocity.SafeNormalize(Vector2.UnitX * Target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
-                AttackPosition = Target.Center + (direction * DefaultTeleportDistance);
+                Vector2 direction = Target.velocity.RotatedByRandom(MathHelper.Pi * 0.1f);
+                if (direction.Length() < 3.5f)
+                    direction = direction.SafeNormalize(Vector2.UnitX * Target.direction) * 3.5f;
+                AttackPosition = Target.Center + (direction * IdleTeleportDuration * 1.8f);
                 BoCAfterImages = [];
                 NPC.damage = 0;
                 NPC.netUpdate = true;
