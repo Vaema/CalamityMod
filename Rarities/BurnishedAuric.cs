@@ -14,7 +14,8 @@ namespace CalamityMod.Rarities
 {
     public class BurnishedAuric : ModRarity
     {
-        // Burnished Auric is Rarity 15 (Once was known as Violet)
+        // Burnished Auric is the rarity for Post-Yharon gear
+        // It is a unique rarity and does not have its items rarity change on reforge.
         public override Color RarityColor => TextClr * 2f;
 
         public static float MaxY = 4.5f;

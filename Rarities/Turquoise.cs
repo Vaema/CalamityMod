@@ -14,7 +14,7 @@ namespace CalamityMod.Rarities
             -2 => ItemRarityID.Red,
             -1 => ItemRarityID.Purple,
             1 => ModContent.RarityType<PureGreen>(),
-            2 => ModContent.RarityType<PureGreen>(), // Cannot reach Cosmic Purple
+            2 => ModContent.RarityType<PureGreen>(), // All higher rarities are unique, and so it cannot go up past Pure Green
             _ => Type,
         };
     }
