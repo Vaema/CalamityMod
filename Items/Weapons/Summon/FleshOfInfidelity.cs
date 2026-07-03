@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 42;
             Item.height = 42;
-            Item.damage = 20;
+            Item.damage = 16;
             Item.DamageType = DamageClass.Summon;
             Item.buffType = ModContent.BuffType<FleshBallBuff>();
             Item.shoot = ModContent.ProjectileType<FleshBallMinion>();
