@@ -2158,7 +2158,7 @@ WarbanneroftheRighteous: {
 	Tooltip:
 		'''
 		Multiplies all damage based on how close you are to enemies
-		Maximum damage boost is 15%, minimum damage boost is -15%
+		Maximum damage boost is 1.15x, minimum damage boost is 0.85x
 		Emit a blazing aura that burns and repels nearby enemies with [cbuff:CalamityMod/HolyFlames]
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
