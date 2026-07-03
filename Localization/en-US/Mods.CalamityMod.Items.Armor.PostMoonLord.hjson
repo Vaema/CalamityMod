@@ -281,13 +281,13 @@ DemonshadeBreastplate: {
 		{$CommonItemTooltip.PercentIncreasedDamageCritChance@1}
 		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@2}
 		{$CommonItemTooltip.PercentChanceToSaveAmmo@3}
-		Standing still absorbs shadows to grant exponentially accelerating life regen
+		Standing still grants exponentially accelerating life regen
 		'''
 }
 
 DemonshadeGreaves: {
 	DisplayName: Demonshade Greaves
-	Tooltip: Shadow speed
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedMovementSpeed} and {1}% increased acceleration"
 }
 
 DemonshadeHelm: {
