@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 26;
             Item.height = 28;
             Item.mana = 10;
-            Item.damage = 15;
+            Item.damage = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.buffType = ModContent.BuffType<CausticStaffBuff>();
             Item.shoot = ModContent.ProjectileType<CausticStaffSummon>();
