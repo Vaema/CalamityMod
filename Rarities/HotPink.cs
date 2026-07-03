@@ -1,6 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.Tools;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -23,13 +31,45 @@ namespace CalamityMod.Rarities
         {
             { ModContent.ItemType<TiredTail>(), text => new TiredTailTextEffects(text) }
         };
+        public static Dictionary<int, Func<Color>> CustomColors = new()
+        {
+            { ModContent.ItemType<AngelicAlliance>(), AngelicAlliance.RarityColor },
+            { ModContent.ItemType<Contagion>(), Contagion.RarityColor },
+            { ModContent.ItemType<CrystylCrusher>(), CrystylCrusher.RarityColor },
+            { ModContent.ItemType<TheDanceofLight>(), TheDanceofLight.GetSyncedLightColor },
+            { ModContent.ItemType<DemonshadeHelm>(), DemonshadeHelm.DemonshadeRarityColor },
+            { ModContent.ItemType<DemonshadeBreastplate>(), DemonshadeHelm.DemonshadeRarityColor },
+            { ModContent.ItemType<DemonshadeGreaves>(), DemonshadeHelm.DemonshadeRarityColor },
+            { ModContent.ItemType<DraconicDestruction>(), DraconicDestruction.RarityColor },
+            { ModContent.ItemType<Earth>(), Earth.RarityColor },
+            { ModContent.ItemType<Endogenesis>(), Endogenesis.RarityColor },
+            { ModContent.ItemType<Eternity>(), Eternity.RarityColor },
+            { ModContent.ItemType<FlamsteedRing>(), FlamsteedRing.RarityColor },
+            { ModContent.ItemType<IllustriousKnives>(), IllustriousKnives.RarityColor },
+            { ModContent.ItemType<NanoblackReaper>(), NanoblackReaper.RarityColor },
+            { ModContent.ItemType<Ozzathoth>(), ShatteredCommunity.GetRarityColor }, // Yes, this reuses Shattered Community's color
+            { ModContent.ItemType<ProfanedSoulCrystal>(), ProfanedSoulCrystal.RarityColor },
+            { ModContent.ItemType<RedSun>(), RedSun.RarityColor },
+            { ModContent.ItemType<ScarletDevil>(), ScarletDevil.RarityColor },
+            { ModContent.ItemType<ShatteredCommunity>(), ShatteredCommunity.GetRarityColor },
+            { ModContent.ItemType<SomaPrime>(), SomaPrime.RarityColor },
+            { ModContent.ItemType<StaffofBlushie>(), StaffofBlushie.RarityColor },
+            { ModContent.ItemType<Svantechnical>(), Svantechnical.RarityColor },
+            { ModContent.ItemType<Sylvestaff>(), Sylvestaff.RarityColor },
+            { ModContent.ItemType<TemporalUmbrella>(), TemporalUmbrella.RarityColor },
+            { ModContent.ItemType<TriactisTruePaladinianMageHammerofMight>(), TriactisTruePaladinianMageHammerofMight.RarityColor }
+        };
+
         public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, Color textColor, Color lightColor, float rotation,
         Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font)
         {
+            if (CustomColors.TryGetValue(Item.type, out var color)) // For items which use a custom item color, give them that custom color.
+            {
+                textColor = color.Invoke();
+            }
             TextSnippet[] snippets = ChatManager.ParseMessage(text, textColor).ToArray();
 
-
-            if (CustomRarities.ContainsKey(Item.type)) //For items in the custom rarity table, give them custom rarity effects.
+            if (CustomRarities.ContainsKey(Item.type)) // For items in the custom rarity table, give them custom rarity effects.
             {
                 for (int i = 0; i < snippets.Length; i++)
                 {
@@ -45,7 +85,6 @@ namespace CalamityMod.Rarities
                 ChatManager.ConvertNormalSnippets(snippets);
 
             ChatManager.DrawColorCodedString(spriteBatch, font, snippets, new(X, Y), textColor, 0, Vector2.Zero, baseScale, out _, -1, true);
-
         }
 
         public static void Draw(Item Item, string text, int X, int Y, float rotation, Vector2 origin, Vector2 baseScale, Color? textColor = null, Color? lightColor = null, bool? renderTextSparkles = null)

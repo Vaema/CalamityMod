@@ -76,5 +76,14 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor()
+        {
+            List<Color> earthColors = [ Color.OrangeRed, Color.MediumTurquoise, Color.LimeGreen ];
+            int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 2 % earthColors.Count);
+            Color currentColor = earthColors[colorIndex];
+            Color nextColor = earthColors[(colorIndex + 1) % earthColors.Count];
+            return Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 2f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
+        }
     }
 }

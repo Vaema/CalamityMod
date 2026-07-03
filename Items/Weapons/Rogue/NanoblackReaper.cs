@@ -174,5 +174,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
     }
 }
