@@ -168,7 +168,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.velocity.X *= 0.9f;
             NPC.rotation = 0f;
-            if (!SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
+            if (Timer < 2 && !SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
                 NearbySoundSlot = SoundEngine.PlaySound(DivineSwine_SwineSpeakLoopingSound, NPC.Center, NearbySoundCallbackMethod);
 
             float lightSpawnDistance = MathHelper.Lerp(52f, 84f, Timer / 180f);
@@ -211,7 +211,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 GeneralParticleHandler.SpawnParticle(feather, manualDrawLayerOverride: Enums.GeneralDrawLayer.BeforeNPCs);
             }
 
-            if (Timer >= 180f && Main.netMode != NetmodeID.MultiplayerClient)
+            if (Timer >= 180f)
             {
                 CustomPulse lightRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 2f, 75);
                 GeneralParticleHandler.SpawnParticle(lightRing);
@@ -232,7 +232,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                     activeSound.Stop();
 
                 NPC.Transform(ModContent.NPCType<DivineSwine>());
-                NPC.netUpdate = true;
             }
         }
 
@@ -240,7 +239,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.velocity.X *= 0.9f;
             NPC.rotation = 0f;
-            if (!SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
+            if (Timer < 2 && !SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
                 NearbySoundSlot = SoundEngine.PlaySound(HorribleHog_DevilsTongueLoopingSound, NPC.Center, NearbySoundCallbackMethod);
 
             float smokeOpacity = Utils.GetLerpValue(0f, 45f, Timer, true);
@@ -264,11 +263,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (SoundEngine.TryGetActiveSound(NearbySoundSlot, out var activeSound))
                     activeSound.Stop();
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    NPC.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
-                    NPC.netUpdate = true;
-                }
+                NPC.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
             }
         }
 
