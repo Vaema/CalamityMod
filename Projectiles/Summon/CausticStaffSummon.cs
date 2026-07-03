@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Summon
                 homeInVector.Normalize();
                 if (targetDist > 200f)
                 {
-                    float velocity = 6f;
+                    float velocity = 10f;
                     Projectile.velocity = (Projectile.velocity * 40f + homeInVector * velocity) / 41f;
                 }
                 else
