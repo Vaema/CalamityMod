@@ -33,7 +33,7 @@ namespace CalamityMod.Systems.Collections
         public static bool[] WeaponWithToolPowerAffectedBySummonPenalty = Factory.CreateNamedSet("WeaponWithToolPowerAffectedBySummonPenalty")
             .Description("Makes items with tool power still trigger the summon damage penalty.")
             .RegisterBoolSet(ItemID.ButchersChainsaw, ItemID.LucyTheAxe, ItemID.Rockfish, ItemType<AxeofPurity>(), ItemType<HydraulicVoltCrasher>(), ItemType<InfernaCutter>(),
-                ItemType<PhotonRipper>(), ItemType<Respiteblock>());
+                ItemType<PhotonRipper>(), ItemType<Respiteblock>(), ItemType<Spadefish>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, manually disables Calamity's summon damage penalty mechanic while that item type is held.<br/>
