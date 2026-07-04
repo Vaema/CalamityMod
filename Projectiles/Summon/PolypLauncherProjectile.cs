@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
                 dust_splash += 1;
             }
             int split = 0;
-            int shardAmt = Main.rand.Next(1, 5);
+            int shardAmt = Main.rand.Next(2, 4);
             while (split < shardAmt)
             {
                 //Calculate the velocity of the projectile
