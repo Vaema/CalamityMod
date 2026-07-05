@@ -3,12 +3,17 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class SlickCane : RogueWeapon
+    [LegacyName("SlickCane")]
+    public class WalkingCane : RogueWeapon
     {
+        public static float MoveSpeedBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -22,9 +27,9 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.DD2_GhastlyGlaivePierce;
             Item.autoReuse = true;
-            Item.value = Item.buyPrice(gold: 35); // Sold by Bandit
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.shoot = ModContent.ProjectileType<SlickCaneProjectile>();
+            Item.shoot = ModContent.ProjectileType<WalkingCaneProjectile>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
         }

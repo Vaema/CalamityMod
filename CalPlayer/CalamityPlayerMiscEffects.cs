@@ -2828,6 +2828,10 @@ namespace CalamityMod.CalPlayer
             if (Player.ichor)
                 Player.statDefense += 5;
 
+            // Holding Walking Cane increases movement speed
+            if (Player.HeldItem.type == ModContent.ItemType<WalkingCane>())
+                Player.moveSpeed += WalkingCane.MoveSpeedBoost;
+
             // Fairy Boots bonus
             if (fairyBoots)
             {
@@ -3633,8 +3637,7 @@ namespace CalamityMod.CalPlayer
                 --bloodflareCoreRemainingHealOverTime;
             }
 
-
-            // Reduce how slow Chilled makes the player, because it's cancerous right now
+            // Reduce how slow Chilled makes the player
             // The moveSpeed multiplier for Chilled in vanilla is 0.75, so we just multiply by 1.166667 here to make it 0.875, effectively cutting the reduction in half
             if (Player.chilled)
                 Player.moveSpeed *= 1f + (1f / 6f);

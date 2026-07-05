@@ -1234,8 +1234,8 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.DoGDefeated");
                     else if (Main.rand.NextBool(5) && !DownedBossSystem.downedBrimstoneElemental)
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.PreBrimmy");
-                    else if (Main.rand.NextBool(10) && CalamityUtils.InventoryHas(Main.LocalPlayer, ItemType<SlickCane>()))
-                        chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.HasSlickCane");
+                    else if (Main.rand.NextBool(10) && CalamityUtils.InventoryHas(Main.LocalPlayer, ItemType<WalkingCane>()))
+                        chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.HasWalkingCane");
                     else if (Main.rand.NextBool(5) && platinumCoins >= 500)
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.Has500Plat");
                     else if (Main.rand.NextBool(5) && platinumCoins >= 100)
@@ -1314,14 +1314,6 @@ namespace CalamityMod.NPCs
                 damageMult += 0.6f;
                 defense += 20;
             }
-        }
-
-        public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
-        {
-            // Not an axe but close enough
-            if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
-                return true;
-            return base.CanBeHitByProjectile(npc, projectile);
         }
         #endregion
 

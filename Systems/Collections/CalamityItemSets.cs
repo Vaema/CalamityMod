@@ -60,7 +60,7 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] DisablesVeneratedLocketEffect = Factory.CreateNamedSet("DisablesVeneratedLocketEffect")
             .Description("Prevents this item from triggering Venerated Locket's clone projectiles.")
-            .RegisterBoolSet(ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
+            .RegisterBoolSet(ItemType<WalkingCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a magic gun.<br/>
