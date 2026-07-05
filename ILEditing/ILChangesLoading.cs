@@ -63,6 +63,7 @@ namespace CalamityMod.ILEditing
 
             // Mechanics / features
             On_NPC.ApplyTileCollision += AllowFusionFeederToDigThroughSand;
+            On_NPC.RerollVariation += AllowPatronNameRerollsOnLicenseUse;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
