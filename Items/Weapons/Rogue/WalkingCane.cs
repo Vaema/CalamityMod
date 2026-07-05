@@ -11,13 +11,13 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("SlickCane")]
     public class WalkingCane : RogueWeapon
     {
-        public static float MoveSpeedBoost = 0.15f;
+        public static float MoveSpeedBoost = 0.2f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent());
 
         public override void SetDefaults()
         {
-            Item.width = 42;
-            Item.height = 36;
+            Item.width = 48;
+            Item.height = 44;
             Item.damage = 50;
             Item.noMelee = true;
             Item.noUseGraphic = true;

@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.scale = 1.25f;
         }
         public override SpearType SpearAiType => SpearType.GhastlyGlaiveSpear;
-        public override float TravelSpeed => 12f;
+        public override float TravelSpeed => 12.5f;
 
         public override bool PreAI()
         {
@@ -70,15 +70,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            float spearLengthMult = 2.5f;
+            float spearLengthMult = 2.75f;
             float velocityMagnitude = 0f;
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(),
-                Main.player[Projectile.owner].Center, Main.player[Projectile.owner].Center + Projectile.velocity * spearLengthMult,
-                (TravelSpeed + 1f) * Projectile.scale, ref velocityMagnitude))
-            {
-                return true;
-            }
-            return false;
+            // For whatever fucking reason CheckAABBvLineCollision fails when you're completely inside a hitbox, so check for that too
+            return targetHitbox.Contains(Main.LocalPlayer.Center.ToPoint()) || Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(),
+                Main.player[Projectile.owner].Center, Main.player[Projectile.owner].Center + Projectile.velocity * spearLengthMult, (TravelSpeed + 1f) * Projectile.scale, ref velocityMagnitude);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
