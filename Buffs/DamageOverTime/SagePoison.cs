@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {
