@@ -327,6 +327,27 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Allow Patron Name Rerolls on License Use
+        private static bool AllowPatronNameRerollsOnLicenseUse(On_NPC.orig_RerollVariation orig, NPC self)
+        {
+            bool success = orig(self);
+            if (success)
+            {
+                if (self.type == NPCID.TownBunny)
+                    CalamityWorld.bunnyName = false;
+                if (self.type == NPCID.TownCat)
+                    CalamityWorld.catName = false;
+                if (self.type == NPCID.TownDog)
+                    CalamityWorld.dogName = false;
+
+                if (!self.TryGetGlobalNPC<CalamityGlobalTownNPC>(out var calGlobalTownNPC))
+                    return success;
+                calGlobalTownNPC.setNewName = true;
+            }
+            return success;
+        }
+        #endregion
+
         #region Prevent Diabolists from Dropping Stuff in GFB Before Plantera
         private static void PreventDiabolistLootLogic(On_NPC.orig_NPCLoot orig, NPC self)
         {

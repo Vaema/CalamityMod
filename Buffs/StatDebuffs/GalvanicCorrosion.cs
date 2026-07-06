@@ -1,10 +1,8 @@
 ﻿using CalamityMod.DataStructures;
-using CalamityMod.NPCs;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.Buffs.StatDebuffs
 {

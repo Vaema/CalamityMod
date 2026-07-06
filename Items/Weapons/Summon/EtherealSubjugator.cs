@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 66;
             Item.height = 70;
-            Item.damage = 175;
+            Item.damage = 160;
             Item.DamageType = DamageClass.Summon;
             Item.buffType = ModContent.BuffType<Phantom>();
             Item.shoot = ModContent.ProjectileType<PhantomGuy>();

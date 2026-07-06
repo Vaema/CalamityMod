@@ -20,8 +20,6 @@ namespace CalamityMod.Projectiles.Rogue
         public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
 
-        bool isChannelable = false;
-
         int explodeTimer = 0;
 
         public override void Defaults()
