@@ -1075,15 +1075,15 @@ namespace CalamityMod.CalPlayer
         public bool jellyChargedBattery = false;
         /// <summary> General cooldown for accessories which spawn projectiles on minion hits. </summary>
         public float summonProjCooldown;
-        public bool sandElemental = false;
+        public bool? sandElemental = null;
         public bool sandElementalVanity = false;
-        public bool oasisElemental = false;
+        public bool? oasisElemental = null;
         public bool oasisElementalVanity = false;
-        public bool cloudElemental = false;
+        public bool? cloudElemental = null;
         public bool cloudElementalVanity = false;
-        public bool brimElemental = false;
+        public bool? brimElemental = null;
         public bool brimElementalVanity = false;
-        public bool waterElemental = false;
+        public bool? waterElemental = null;
         public bool waterElementalVanity = false;
         public bool fungalClump = false;
         public bool fungalClumpVanity = false;
@@ -1545,7 +1545,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Enchanted Conch. </summary>
         public bool hCrab = false;
         /// <summary> Heart of the Elements. </summary>
-        public bool allElementals = false;
+        public bool? allElementals = null;
         /// <summary> Heart of the Elements; however, the minions will not attack. </summary>
         public bool allElementalsVanity = false;
         /// <summary> Silva armor's Silva Crystal. </summary>
@@ -2803,17 +2803,17 @@ namespace CalamityMod.CalPlayer
             cSpirit = false;
             dCrystal = false;
             MutatedTruffleBool = false;
-            sandElemental = false;
+            sandElemental = null;
             sandElementalVanity = false;
-            oasisElemental = false;
+            oasisElemental = null;
             oasisElementalVanity = false;
-            cloudElemental = false;
+            cloudElemental = null;
             cloudElementalVanity = false;
-            brimElemental = false;
+            brimElemental = null;
             brimElementalVanity = false;
-            waterElemental = false;
+            waterElemental = null;
             waterElementalVanity = false;
-            allElementals = false;
+            allElementals = null;
             allElementalsVanity = false;
             fungalClump = false;
             fungalClumpVanity = false;
