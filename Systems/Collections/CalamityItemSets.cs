@@ -172,7 +172,7 @@ namespace CalamityMod.Systems.Collections
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is an accessory which uses a keybind for an active ability.<br/>
         /// Used for assigning it one of the dedicated keybind slots based on slot order with other accessories that use keybinds.<br/>
-        /// Defaults to <see langword="false"/>. Note that an error will be thrown if attempting to give an accessory a keybind without assigning it to this set!
+        /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] HasAccessoryKeybind = Factory.CreateNamedSet("HasAccessoryKeybind")
             .Description("Counts this item as having an accessory keybind. Used for assigning which keybind goes to which accessory.")
