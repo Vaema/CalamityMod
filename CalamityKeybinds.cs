@@ -137,8 +137,8 @@ namespace CalamityMod
             if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
                 int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
-                CalamityKeybinds.AccessoryKeybinds.IndexInRange(index);
-                return CalamityKeybinds.AccessoryKeybinds[index].JustPressed;
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index].JustPressed;
             }
 
             return false;
@@ -163,8 +163,8 @@ namespace CalamityMod
             if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
                 int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
-                CalamityKeybinds.AccessoryKeybinds.IndexInRange(index);
-                return CalamityKeybinds.AccessoryKeybinds[index].JustReleased;
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index].JustReleased;
             }
 
             return false;
@@ -189,8 +189,8 @@ namespace CalamityMod
             if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
                 int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
-                CalamityKeybinds.AccessoryKeybinds.IndexInRange(index);
-                return CalamityKeybinds.AccessoryKeybinds[index].Current;
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index].Current;
             }
 
             return false;
@@ -213,8 +213,8 @@ namespace CalamityMod
             if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
                 int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
-                CalamityKeybinds.AccessoryKeybinds.IndexInRange(index);
-                return CalamityKeybinds.AccessoryKeybinds[index];
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index];
             }
             return null;
         }
