@@ -52,8 +52,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static float TesselationDamageRatio = 0.25f;
         public static float TesselationKnockback = 1.5f;
 
-        public override float StealthDamageMultiplier => 1.0f;
-
         public override void SetDefaults()
         {
             Item.width = 78;
@@ -176,5 +174,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
     }
 }

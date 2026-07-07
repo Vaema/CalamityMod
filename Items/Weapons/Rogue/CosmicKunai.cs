@@ -24,13 +24,13 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 26;
             Item.height = 48;
-            Item.damage = 92;
+            Item.damage = 110;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useTime = 2;
-            Item.useAnimation = 10;
+            Item.useTime = 3;
+            Item.useAnimation = 12;
             Item.reuseDelay = 1;
-            Item.useLimitPerAnimation = 5;
+            Item.useLimitPerAnimation = 4;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item109;
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 for (float i = 0; i < 9; i++)
                 {
                     float angle = MathHelper.TwoPi / 9f * i;
-                    Projectile.NewProjectile(source, player.Center, angle.ToRotationVector2() * 8f, ModContent.ProjectileType<CosmicScythe>(), damage * 3, knockback, player.whoAmI, angle);
+                    Projectile.NewProjectile(source, player.Center, angle.ToRotationVector2() * 8f, ModContent.ProjectileType<CosmicScythe>(), (int)(damage * 1.5f), knockback, player.whoAmI, angle);
                 }
             }
             else if (stealthSalvo)

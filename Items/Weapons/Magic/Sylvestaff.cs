@@ -111,5 +111,7 @@ namespace CalamityMod.Items.Weapons.Magic
             spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             return false;
         }
+
+        public static Color RarityColor() => new Color(249, 197, 255);
     }
 }

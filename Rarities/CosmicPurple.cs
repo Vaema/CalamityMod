@@ -14,7 +14,8 @@ namespace CalamityMod.Rarities
 {
     public class CosmicPurple : ModRarity
     {
-        // Cosmic Purple is Rarity 14 (once was known as Dark Blue)
+        // Cosmic Purple is the rarity for Post-DoG gear.
+        // It is a unique rarity and does not have its items rarity change on reforge.
         public override Color RarityColor => TextClr * 2f;
 
         public static float MaxY = 4.5f;

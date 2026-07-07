@@ -652,6 +652,7 @@ namespace CalamityMod.NPCs
             NPC.lifeMax = 10000;
             NPC.knockBackResist = 0;
             NPC.noTileCollide = true;
+            NPC.dontCountMe = true;
             NPC.aiStyle = -1;
         }
 

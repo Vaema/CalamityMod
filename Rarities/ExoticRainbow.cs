@@ -15,7 +15,8 @@ namespace CalamityMod.Rarities
 {
     public class ExoticRainbow : ModRarity
     {
-        // Exotic Rainbow is Rarity 17 (same as Calamity Red)
+        // Exotic Rainbow is the rarity for Post-SCal gear. It is considered the "same tier" as Calamity Red for matters of sell value.
+        // It is a custom rarity and does not have its items rarity change on reforge.
         public override Color RarityColor => TextClr * 2f;
 
         public static float MaxY = 4.5f;

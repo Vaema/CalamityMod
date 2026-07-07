@@ -6,7 +6,6 @@ using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -50,7 +49,6 @@ namespace CalamityMod.Projectiles.Melee
             var StarScale = 0.2f;
             Projectile.scale = 0.75f*MathF.Min(MathF.Pow((lifetime- Projectile.timeLeft)/ 20f,2f), 1f);
             Projectile.Opacity = MathF.Min(Projectile.timeLeft / 20f, 1f);
-            Vector2 ada = default;
             void SpawnStar(Vector2 offset, float intensity, int flashOffset = 0, int flashMod = 60)
             {
                 offset += new Vector2(5, 49.25f); //this centers the constellation

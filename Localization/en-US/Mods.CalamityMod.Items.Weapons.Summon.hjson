@@ -152,10 +152,10 @@ CausticStaff: {
 		'''
 	HoldShiftTooltip:
 		'''
-		Always inflicts [cbuff:OnFire3]
+		Always inflicts [cbuff:OnFire3] and [cbuff:Venom]
 		Inflicts [cbuff:CursedInferno] with 2 dragons summoned
-		Inflicts [cbuff:Venom] with 3 dragons summoned
-		Inflicts [cbuff:Ichor] and [cbuff:CalamityMod/MarkedforDeath] with 4 dragons summoned
+		Inflicts [cbuff:Ichor] with 3 dragons summoned
+		Inflicts [cbuff:CalamityMod/MarkedforDeath] with 4 dragons summoned
 		'''
 }
 

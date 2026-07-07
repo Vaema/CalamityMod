@@ -21,17 +21,14 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 7;
             Projectile.minionSlots = 0f;
             Projectile.extraUpdates = 1;
-            Projectile.timeLeft = 18000;
-            Projectile.penetrate = -1;
             Projectile.tileCollide = false;
-            Projectile.timeLeft *= 5;
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
+
+        public override bool? CanDamage() => false;
 
         public override void AI()
         {
@@ -50,6 +47,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
+            Projectile.timeLeft = 2;
             NPC target = Projectile.Center.MinionHoming(SkeletalDragonMother.DistanceToCheck * 0.666f, player);
 
             if (target != null)
