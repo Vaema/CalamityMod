@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -71,10 +72,12 @@ namespace CalamityMod.Projectiles.Ranged
                 // I hate metaballs >:(
                 Particle beam3 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.5f, 4f), "CalamityMod/Particles/SmallBloom", false, 4, ((37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)) * 0.005f, sparkColor, new Vector2(1f, 1 + Time * 0.1f), true, false);
                 GeneralParticleHandler.SpawnParticle(beam3);
+                beam3.DrawLayer = Enums.GeneralDrawLayer.BeforeProjectiles;
                 if (!photosens)
                 {
                     Particle beam32 = new CustomSpark(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.5f, 4f), "CalamityMod/Particles/SmallBloom", false, 4, ((37 - Time * (PhotoTimer == 0 ? 0.165f : 0.088f)) - PhotoTimer * 0.2f + (PhotoTimer == 1 ? 20 : 0)) * 0.003f, Color.Lerp(Color.Blue, sparkColor, 0.5f), new Vector2(1f, 1 + Time * 0.1f), true, false);
                     GeneralParticleHandler.SpawnParticle(beam32);
+                    beam32.DrawLayer = Enums.GeneralDrawLayer.BeforeProjectiles;
                 }
             }
             if (Main.rand.NextBool(35) && targetDist < 1400f && Time > 5)
