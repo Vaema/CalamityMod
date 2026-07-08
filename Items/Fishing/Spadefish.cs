@@ -290,8 +290,6 @@ namespace CalamityMod.Items.Fishing
 
         bool reset = false;
 
-        float oldSpin = 0;
-        int digDir = 0;
 
         float spinSin => MathF.Sin(spin);
         public override void SetDefaults()

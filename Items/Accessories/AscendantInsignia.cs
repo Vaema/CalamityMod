@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories
         public static int AbilityCooldown = CalamityUtils.SecondsToFrames(40);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoost.ToPercent(), MoveSpeedBoost.ToPercent(), (1f + AccelerationBoost).Round(), AbilityDuration.FramesToSeconds(), AbilityCooldown.FramesToSeconds());
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.AscendantInsigniaHotKey);
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
         public override void SetDefaults()
         {
             Item.width = 46;

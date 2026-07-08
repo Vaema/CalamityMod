@@ -52,22 +52,22 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.ai[0] -= 1f;
                 return;
             }
-            Projectile.ai[1] += Main.rand.Next(1, 3);
+            Projectile.ai[1]++;
 
-            NPC potentialTarget = Projectile.Center.MinionHoming(800f, player, false);
+            NPC potentialTarget = Projectile.Center.MinionHoming(400f, player, false);
 
             if (Projectile.owner == Main.myPlayer && potentialTarget != null)
             {
-                if (Projectile.ai[1] > 40f)
+                if (Projectile.ai[1] > 75f)
                 {
                     Vector2 spawnPosition = new Vector2(Projectile.oldPosition.X + (Projectile.width / 2), Projectile.oldPosition.Y + (Projectile.height / 2));
 
                     float shootSpeed = 16f;
                     float gravity = -PolypLauncherProjectile.Gravity;
                     float distance = Vector2.Distance(spawnPosition, potentialTarget.Center);
-                    float angle = 0.25f * (float)Math.Asin(MathHelper.Clamp(gravity * distance * 1.5f / (float)Math.Pow(shootSpeed, 2), -1f, 1f));
+                    float angle = 0.25f * MathF.Asin(MathHelper.Clamp(gravity * distance * 1.5f / MathF.Pow(shootSpeed, 2f), -1f, 1f));
 
-                    Vector2 velocity = new Vector2(0f, -shootSpeed).RotatedBy(angle).RotatedByRandom(0.1f);
+                    Vector2 velocity = new Vector2(0f, -shootSpeed).RotatedBy(angle).RotatedByRandom(0.05f);
                     velocity.X *= (potentialTarget.Center.X - Projectile.Center.X < 0).ToDirectionInt();
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, velocity, ModContent.ProjectileType<PolypLauncherProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner);

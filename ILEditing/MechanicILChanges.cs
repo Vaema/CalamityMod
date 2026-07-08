@@ -252,7 +252,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count == 0)
+            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count == 0)
                 orig(self, out dir, out dashing, dashStartAction);
             else
             {
@@ -324,6 +324,27 @@ namespace CalamityMod.ILEditing
                 return;
             }
             orig(self, fall, cPosition, cWidth, cHeight);
+        }
+        #endregion
+
+        #region Allow Patron Name Rerolls on License Use
+        private static bool AllowPatronNameRerollsOnLicenseUse(On_NPC.orig_RerollVariation orig, NPC self)
+        {
+            bool success = orig(self);
+            if (success)
+            {
+                if (self.type == NPCID.TownBunny)
+                    CalamityWorld.bunnyName = false;
+                if (self.type == NPCID.TownCat)
+                    CalamityWorld.catName = false;
+                if (self.type == NPCID.TownDog)
+                    CalamityWorld.dogName = false;
+
+                if (!self.TryGetGlobalNPC<CalamityGlobalTownNPC>(out var calGlobalTownNPC))
+                    return success;
+                calGlobalTownNPC.setNewName = true;
+            }
+            return success;
         }
         #endregion
 

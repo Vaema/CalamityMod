@@ -62,5 +62,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => CalamityUtils.ColorSwap(new Color(154, 255, 151), new Color(228, 151, 255), 4f);
     }
 }

@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int SlotCount = 4;
 
-        public const int PunchCooldownTime = 36;
+        public const int PunchCooldownTime = 30;
 
         public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
 

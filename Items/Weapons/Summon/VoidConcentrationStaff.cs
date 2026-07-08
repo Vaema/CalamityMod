@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public static SummonTag summonTag = new SummonTag()
         {
-            MultiplicativeTagDamage = 0.3f, //Percentage of damage dealt added by the void. This is doubled by summons. This was tested - 1.5x was too weak to be worth 4 slots.
+            MultiplicativeTagDamage = 0.25f, //Percentage of damage dealt added by the void. This is doubled by summons. This was tested - 1.5x was too weak to be worth 4 slots. <-- (nvm)
             AllowsWhipStacking = true,
             TagOnHit = tagOnHit,
             TagModifyHitEffects = SummonTag.BlankTagModifyHit,

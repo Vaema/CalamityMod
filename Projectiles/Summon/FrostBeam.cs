@@ -24,12 +24,15 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = 200;
             Projectile.coldDamage = true;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.penetrate = -1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 5f)
+            Projectile.localAI[0]++;
+            if (Projectile.localAI[0] > 2f && Projectile.ai[0] == 0f)
             {
                 for (int i = 0; i < 6; i++)
                 {
@@ -43,33 +46,32 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
-        public override void OnKill(int timeLeft)
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 70;
-            Projectile.position -= Projectile.Size * 0.5f;
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.damage /= 3;
-            Projectile.Damage();
-            int flowerPetalCount = Main.rand.Next(3, 5 + 1);
-            float thetaDelta = Projectile.velocity.ToRotation();
-            float weaveDistanceMin = 2f;
-            float weaveDistanceOutwardMax = 3f;
-            float weaveDistanceInner = 0.5f;
-            for (float theta = 0f; theta < MathHelper.TwoPi; theta += 0.05f)
+            if (Projectile.ai[0] == 0f)
             {
-                Vector2 velocity = theta.ToRotationVector2() *
+                Projectile.ai[0]++;
+                Projectile.ExpandHitboxBy(128);
+                Projectile.Damage();
+                int flowerPetalCount = Main.rand.Next(3, 5 + 1);
+                float thetaDelta = Projectile.velocity.ToRotation();
+                float weaveDistanceMin = 2f;
+                float weaveDistanceOutwardMax = 3f;
+                float weaveDistanceInner = 0.5f;
+                for (float theta = 0f; theta < MathHelper.TwoPi; theta += 0.05f)
+                {
+                    Vector2 velocity = theta.ToRotationVector2() *
                     (weaveDistanceMin +
                     // The 0.5 in here is to prevent the petal from looping back into itself. With a 0.5 addition, it is perfect, coming back to (0,0)
                     // instead of weaving backwards.
                     (float)(Math.Sin(thetaDelta + theta * flowerPetalCount) + 0.5f + weaveDistanceInner) *
                     weaveDistanceOutwardMax);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray, velocity);
-                dust.noGravity = true;
-                dust.scale = 1.35f;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray, velocity);
+                    dust.noGravity = true;
+                    dust.scale = 1.35f;
+                }
+                Projectile.Kill();
             }
         }
     }

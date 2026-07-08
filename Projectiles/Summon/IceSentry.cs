@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.frame = 9;
 
                 Projectile.localAI[1]++;
-                if (Projectile.localAI[1] > 2)
+                if (Projectile.localAI[1] > 3)
                 {
                     Projectile.localAI[1] = 0;
 
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
                     if (Projectile.ai[1] < 300f)
                         Projectile.ai[1]++;
 
-                    float delay = 60f - Projectile.ai[1] / 60f * 10f;
+                    float delay = 60f - Projectile.ai[1] / 60f * 9f;
                     if (Projectile.localAI[0] > delay)
                     {
                         Projectile.localAI[0] = 0f;

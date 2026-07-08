@@ -150,3 +150,13 @@ WingsofRebirth: {
 		'Resplendent to the very end'
 		'''
 }
+
+TiredTail: {
+	DisplayName: Tired Tail
+	Tooltip:
+		'''
+		{$CommonItemTooltip.FlightAndSlowfall}
+		{$CommonItemTooltip.PressDownToHover}
+		{$CommonItemTooltip.PressUpToBooster}
+		'''
+}
