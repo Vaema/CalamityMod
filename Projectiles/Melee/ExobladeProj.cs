@@ -530,23 +530,6 @@ namespace CalamityMod.Projectiles.Melee
 
                 Main.EntitySpriteDraw(texture, Owner.MountedCenter - Main.screenPosition, null, Color.White, BaseRotation, texture.Size() / 2f, SquishVector * 3f * Projectile.scale, direction, 0);
 
-                /*
-                if (PerformingPowerfulSlash)
-                {
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, swingFX, Main.GameViewMatrix.TransformationMatrix);
-
-                    float bouncyProgression = (float)Math.Sin(Progression * MathHelper.Pi);
-                    swingFX.Parameters["color"].SetValue(Color.MediumSpringGreen.ToVector4() with { W = bouncyProgression * 0.5f });
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        Vector2 offset = (i / 4f * MathHelper.TwoPi + SwingAngleShift + MathHelper.PiOver4).ToRotationVector2() * 2f * Projectile.scale;
-                        Main.EntitySpriteDraw(texture, Owner.MountedCenter - Main.screenPosition + offset, null, Color.White, BaseRotation, texture.Size() / 2f, SquishVector * 3f * Projectile.scale, direction, 0);
-                    }
-                }
-                */
-
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 

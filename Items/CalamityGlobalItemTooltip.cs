@@ -1669,14 +1669,6 @@ namespace CalamityMod.Items
 
                 return false;
             }
-
-            // Rainbow effect originally made for Orderbringer because it used to have a special rarity
-            // But why did it have one in the first place??
-            // Might be used for Miracle stuff later or something idk
-            /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
-            {
-                
-            }*/
             return true;
         }
         #endregion

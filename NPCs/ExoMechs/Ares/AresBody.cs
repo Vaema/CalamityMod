@@ -504,14 +504,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     draedonAlive = true;
             }
 
-            // Prevent mechs from being respawned
-            // CIT 08JUN2025: This code is pointless and makes me unable to work swapping the laser arm position. Commenting it out.
-            /*if (otherExoMechWasFirst)
-            {
-                if (NPC.ai[3] < 1f)
-                    NPC.ai[3] = 1f;
-            }*/
-
             // Phases
             bool spawnOtherExoMechs = lifeRatio < 0.7f && NPC.ai[3] == 0f;
             bool berserk = lifeRatio < 0.4f || (otherExoMechsAlive == 0 && lifeRatio < 0.7f);
