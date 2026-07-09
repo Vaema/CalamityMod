@@ -41,6 +41,15 @@ CalamityClientConfig: {
 			'''
 	}
 
+	BoCSpriteChange: {
+		Label: "[i:BrainOfConfusion] Remove Potentially Disturbing Imagery"
+		Tooltip:
+			'''
+			Replaces some boss sprites to remove potentially upsetting imagery that could trigger phobias.
+			Highly recommended if you are uncomfortable with body horror or have trypophobia.
+			'''
+	}
+
 	BossHealthBarExtraInfo: {
 		Label: "[i:CalamityMod/EncryptedSchematicPlanetoid] Boss Health Bar Extra Info"
 		Tooltip:
@@ -191,7 +200,7 @@ CalamityClientConfig: {
 		Label: "[i:Megaphone] Disable Potentially Triggering Audio"
 		Tooltip:
 			'''
-			Disables multiple repetitive sound effects.
+			Disables or alters multiple repetitive and potentially distressing sound effects.
 			Highly recommended for those with misophonia.
 			'''
 	}
@@ -214,15 +223,6 @@ CalamityClientConfig: {
 			Reduces or disables the brightness and/or flashiness of certain visual effects.
 			Also disables all screenshake effects.
 			Highly recommended if you are photosensitive.
-			'''
-	}
-
-	BoCSpriteChange: {
-		Label: "[i:BrainOfConfusion] Remove Potentially Disturbing Imagery"
-		Tooltip:
-			'''
-			Replaces some boss sprites to remove potentially upsetting imagery that could trigger phobias.
-			Highly recommended if you are uncomfortable with body horror or have trypophobia.
 			'''
 	}
 
