@@ -4144,9 +4144,9 @@ namespace CalamityMod.CalPlayer
                     Player.lavaImmune = true;
                     Player.fireWalk = true;
                     Player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+                    Player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
                     Player.buffImmune[BuffID.OnFire] = true;
                     Player.buffImmune[BuffID.Burning] = true;
-                    Player.buffImmune[BuffID.Daybreak] = true;
 
                     if (Player.wingTimeMax > 0)
                         Player.wingTimeMax = (int)(Player.wingTimeMax * 1.1D);
