@@ -69,7 +69,7 @@ namespace CalamityMod.Items.Potions.Food
                 player.AddBuff(ModContent.BuffType<VulnerabilityHex>(), time);
             }
 
-            if (SoundEngine.TryGetActiveSound(DrinkSoundSlot, out var drinkSound) && drinkSound.IsPlaying && !CalamityClientConfig.Instance.MisophoniaSupport)
+            if (SoundEngine.TryGetActiveSound(DrinkSoundSlot, out var drinkSound) && drinkSound.IsPlaying)
                 drinkSound.Position = player.Center;
         }
     }
