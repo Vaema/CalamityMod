@@ -156,7 +156,7 @@ namespace CalamityMod
         public bool FlightBar { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool MisophoniaSupport { get; set; }
         #endregion
 
