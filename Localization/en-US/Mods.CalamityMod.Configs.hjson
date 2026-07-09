@@ -6,7 +6,7 @@ CalamityClientConfig: {
 		Graphics: Graphics Changes
 		UI: UI Changes
 		MeterPositions: Meter Positions
-		MusicToggles: Music Toggles
+		AudioToggles: Audio Toggles
 	}
 
 	AbyssLayer3Alt: {
