@@ -187,6 +187,15 @@ CalamityClientConfig: {
 			'''
 	}
 
+	MisophoniaSupport: {
+		Label: "[i:Megaphone] Disable Potentially Triggering Audio"
+		Tooltip:
+			'''
+			Disables multiple repetitive sound effects.
+			Highly recommended for those with misophonia.
+			'''
+	}
+
 	ParticleLimit: {
 		Label: "[i:FragmentStardust] Max Particle Limit"
 		Tooltip:

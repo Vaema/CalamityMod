@@ -353,7 +353,10 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             if (NPC.soundDelay == 0f && Main.rand.NextBool(250))
             {
                 SetSquashVectors(squashVector: new Vector2(1.24f, 0.84f));
-                SoundEngine.PlaySound(IdleSound, NPC.Center);
+
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                    SoundEngine.PlaySound(IdleSound, NPC.Center);
+
                 NPC.soundDelay = Main.rand.Next(30, 45);
             }
 
