@@ -874,7 +874,7 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 5 defense and +1 HP/s life regen
+		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 3 defense and +1 HP/s life regen
 		10% increased damage while you have [cbuffplr:CalamityMod/Mushy]
 		'''
 	SalesPitch: "{$Common.SalesmanShrinePitch}"
