@@ -28,8 +28,8 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void SetDefaults()
         {
-            Projectile.width = 40;
-            Projectile.height = 36;
+            Projectile.width = 80;
+            Projectile.height = 80;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.timeLeft = 120;
             Projectile.friendly = true;
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.scale = 1.25f;
         }
         public override SpearType SpearAiType => SpearType.GhastlyGlaiveSpear;
-        public override float TravelSpeed => 12.5f;
+        public override float TravelSpeed => 35f;
 
         public override bool PreAI()
         {
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            float spearLengthMult = 2.75f;
+            float spearLengthMult = 3.2f;
             float velocityMagnitude = 0f;
             // For whatever fucking reason CheckAABBvLineCollision fails when you're completely inside a hitbox, so check for that too
             return targetHitbox.Contains(Main.LocalPlayer.Center.ToPoint()) || Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(),
@@ -86,9 +86,8 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Vector2 position = target.Center + Main.rand.NextVector2CircularEdge(100f, 100f);
                 Vector2 velocity = (target.Center - position).SafeNormalize(Vector2.Zero) * 6f;
-                float ai0 = Main.rand.NextBool() ? 300f : 0f;
-                float ai1 = Main.rand.NextBool() ? velocity.ToRotation() : 0f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, velocity, ProjectileID.InsanityShadowFriendly, Projectile.damage / 2, Projectile.knockBack, Projectile.owner, ai0, ai1);
+                // Friendly shadow hands normally have four different behaviors, but Walking Cane only spawns shadow hands that immediately lunge
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, velocity, ProjectileID.InsanityShadowFriendly, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
             }
         }
     }

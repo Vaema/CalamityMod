@@ -4886,7 +4886,7 @@ namespace CalamityMod.NPCs
                 GameShaders.Misc["CalamityMod:BasicTint"].Apply();
                 for (int i = 0; i < 4; i++)
                 {
-                    Vector2 offset = Vector2.UnitX.RotatedBy(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi * 2f + (MathHelper.TwoPi * i / 4f)) * 5f * fadeInAmt;
+                    Vector2 offset = Vector2.UnitX.RotatedBy(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi * 2f + (MathHelper.TwoPi * i / 4f)) * 6f * fadeInAmt;
                     Main.EntitySpriteDraw(tex, npc.Center - screenPos - Vector2.UnitY * (npc.gfxOffY) + offset, frame, Color.Violet, npc.rotation, origin, npc.scale, sp);
                 }
                 CalamityUtils.ExitShaderRegion(spriteBatch);

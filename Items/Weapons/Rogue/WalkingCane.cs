@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<WalkingCaneProjectile>();
-            Item.shootSpeed = 16f;
+            Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
@@ -38,8 +38,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float ai0 = Main.rand.NextFloat() * Item.shootSpeed * 1.5f * (float)player.direction;
-            int projectileIndex = Projectile.NewProjectile(source, position.X, position.Y+100, velocity.X*2f, velocity.Y*2f, type, damage, knockback, player.whoAmI, ai0, 0f);
+            float ai0 = Main.rand.NextFloat() * Item.shootSpeed * 1.5f * player.direction;
+            int projectileIndex = Projectile.NewProjectile(source, position + Vector2.UnitY * 100f, velocity * 2f, type, damage, knockback, player.whoAmI, ai0);
             if (projectileIndex.WithinBounds(Main.maxProjectiles))
                 Main.projectile[projectileIndex].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
             return false;
