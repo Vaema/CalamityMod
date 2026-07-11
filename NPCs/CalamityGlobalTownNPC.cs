@@ -498,6 +498,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSilverNames =
         [
             "Archie", // <@!303022375191183360> (jackshiz)
+            "Starkey", // <@!133327709236494337> (scraak)
         ];
         private static readonly string[] TownCatWhiteNames = null;
 
