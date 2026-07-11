@@ -139,6 +139,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void OnSpawn(IEntitySource source)
         {
+            // Fix weird case where NewNPC sets NPC.wet based on position regardless of noTileCollide
             NPC.wet = false;
         }
 
