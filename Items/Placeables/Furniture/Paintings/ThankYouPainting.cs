@@ -189,7 +189,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Runefield",
             "Sargassum",
             "sentri",
-            "Shade",
+            "ClockworkShade",
             "SharZz",
             "Shucks",
             "Silver-Lord of Ash",
