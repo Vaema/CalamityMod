@@ -59,7 +59,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     #region Health Gates
     internal static float DesperateOnslaughtCreeperHealthGate => 0.1f; //When the cumulative health % of all creepers falls below this value, BoC will begin its pre-stun attack upon entering its idle phase.
-    internal static float Phase2HealthGate => 0.5f; //When BoC's health % falls below this value, it will begin entering Phase 2
+    internal static float Phase2HealthGate => 0.7f; //When BoC's health % falls below this value, it will begin entering Phase 2
     internal static float ForcedIllusionHealthGate => 0.25f; //When BoC's health % falls below this value, the next attack is forced to be the Illusion Trick
     #endregion
 
@@ -76,7 +76,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal static int CreeperChargeWindUpTime => 22;
     #endregion
 
-    internal static int StunDuration => 480;
+    internal static int StunDuration => 360;
 
     #region Creeper Swipes
     internal static int SwipesStartupDuration => 120;
