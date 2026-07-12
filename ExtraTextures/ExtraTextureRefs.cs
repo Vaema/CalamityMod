@@ -16,8 +16,7 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> DestroyerBodyGlowmask;
         public static Asset<Texture2D> DestroyerTailGlowmask;
 
-        // WoF, These are not "exactly" the ExtraTextures. But 
-        public static Asset<Texture2D> WallOfFleshEyeGlowmask;
+        // WoF, These are not "exactly" the ExtraTextures
         public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
 
         // Flying Carpet Replacements
@@ -47,7 +46,6 @@ namespace CalamityMod.ExtraTextures
             DestroyerBodyGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
             DestroyerTailGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
 
-            WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
             WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);
 
             FlyingCarpetVanilla = TextureAssets.FlyingCarpet;
