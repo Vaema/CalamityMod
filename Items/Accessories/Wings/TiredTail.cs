@@ -189,6 +189,7 @@ namespace CalamityMod.Items.Accessories.Wings
         List<Vector4[]> ColorPallettes = new();
         public override void SetStaticDefaults()
         {
+            if (Main.netMode != NetmodeID.Server)
             Main.QueueMainThreadAction(() =>
             {
                 //Load palettes automatically
