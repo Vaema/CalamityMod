@@ -7,12 +7,12 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class FossilShard : ModProjectile, ILocalizedModType
+    public class BallistaShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Type] = 5;
+            Main.projFrames[Type] = 3;
         }
         public override void SetDefaults()
         {
@@ -29,13 +29,10 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             if (Projectile.timeLeft == 120)
-                Projectile.frame = Main.rand.Next(5);
+                Projectile.frame = Main.rand.Next(3);
 
-            if (Projectile.ai[1] != 1f)
-            {
-                if (Projectile.velocity.Y <= -2f)
-                    Projectile.velocity.Y = -2f;
-            }
+            if (Projectile.velocity.Y <= -2f)
+                Projectile.velocity.Y = -2f;
             Projectile.velocity.Y += 0.025f;
             Projectile.rotation += Projectile.velocity.Y;
         }
