@@ -201,11 +201,14 @@ namespace CalamityMod.NPCs.SlimeGod
                 // Make sure Opacity is set to 0.8f if it's below that when the vanish phase starts
                 if (NPC.ai[3] == 0f)
                 {
-                    if (!NPC.AnyNPCs(ModContent.NPCType<EbonianPaladin>()) && !NPC.AnyNPCs(ModContent.NPCType<CrimulanPaladin>()))
+                    if (!NPC.AnyNPCs(ModContent.NPCType<EbonianPaladin>()) && !NPC.AnyNPCs(ModContent.NPCType<CrimulanPaladin>()) &&
+                        !NPC.AnyNPCs(ModContent.NPCType<SplitEbonianPaladin>()) && !NPC.AnyNPCs(ModContent.NPCType<SplitCrimulanPaladin>()))
                     {
                         NPC.ai[3] = 1f;
                         NPC.Opacity = 0.8f;
                     }
+                    else
+                        NPC.Opacity = 0.01f; // This line ensures the core doesn't immediately explode into loot if it's currently possessing a paladin
                 }
 
                 // Emit dust
