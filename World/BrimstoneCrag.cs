@@ -6,6 +6,7 @@ using CalamityMod.Tiles.Crags.Lily;
 using CalamityMod.Tiles.Crags.Spike;
 using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.Ores;
+using CalamityMod.Tiles.Pylons;
 using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -265,6 +266,24 @@ namespace CalamityMod.World
             PlaceSquareForCragHouses(biomeEdge - 150 + house4Offset, Main.maxTilesY - 125);
             SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.CragRuinKey2,
             new Point(biomeEdge - 150 + house4Offset, Main.maxTilesY - 125), SchematicAnchor.BottomCenter, ref place);
+
+            //place the broken Crags Pylon
+            Point pylonPlace = new Point(GenVars.dungeonSide == 1 ? (biomeStart + biomeMiddle) / 2 : (biomeMiddle + biomeEdge) / 2, Main.maxTilesY - 150);
+            while (!Main.tile[pylonPlace].HasTile && pylonPlace.Y < Main.maxTilesY - 75)
+                pylonPlace.Y++;
+            //make sure there's space to place it
+            for (int i = pylonPlace.X - 1; i <= pylonPlace.X + 1; i++)
+            {
+                for (int j = pylonPlace.Y - 4; j <= pylonPlace.Y; j++)
+                {
+                    Tile t = Main.tile[i, j];
+                    if (j == pylonPlace.Y)
+                        t.ResetToType(Main.tile[pylonPlace].TileType);
+                    else
+                        WorldGen.KillTile(i, j);
+                }
+            }
+            WorldGen.PlaceObject(pylonPlace.X, pylonPlace.Y - 1, ModContent.TileType<CragsPylonBrokenTile>());
 
             //lava clean up again
             for (int x = biomeStart; x <= biomeEdge; x++)
