@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Tools
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.value = Item.sellPrice(gold: 10);
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.rare = ModContent.RarityType<Turquoise>();
