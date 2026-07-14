@@ -50,6 +50,7 @@ namespace CalamityMod.NPCs.SlimeGod
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.TrailCacheLength[Type] = 8;
             NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
@@ -63,7 +64,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 40; // 80
+            NPC.damage = 0;
             NPC.npcSlots = 10f;
             NPC.width = 44;
             NPC.height = 44;
@@ -195,9 +196,6 @@ namespace CalamityMod.NPCs.SlimeGod
             // Vanish phase
             if ((!purpleSlimeAlive && !redSlimeAlive) || calamityGlobalNPC.newAI[3] == 1f || NPC.ai[3] == 1f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Make sure Opacity is set to 0.8f if it's below that when the vanish phase starts
                 if (NPC.ai[3] == 0f)
                 {
@@ -351,9 +349,6 @@ namespace CalamityMod.NPCs.SlimeGod
             calamityGlobalNPC.newAI[2] += 1f;
             if (calamityGlobalNPC.newAI[2] >= hideInsideLargeSlimePhaseGateValue)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.rotation += NPC.direction * 0.3f;
 
                 if (buffedSlime == 0)
@@ -424,9 +419,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 return;
             }
 
-            // Avoid cheap bullshit
-            NPC.damage = 0;
-
             if (expertMode)
             {
                 float divisor = death ? 180f : revenge ? 240f : 300f;
@@ -479,9 +471,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.ai[0] -= 1f;
             if (distanceFromFlyDestination < 200f || NPC.ai[0] > 0f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
-
                 if (distanceFromFlyDestination < 200f)
                     NPC.ai[0] = 20f;
 
