@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<LemonNade>().
-                AddIngredient(ItemID.AncientCloth,5).
+                AddIngredient(ItemID.AncientCloth,2).
                 AddIngredient<GrandScale>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
