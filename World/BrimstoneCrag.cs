@@ -271,6 +271,8 @@ namespace CalamityMod.World
             Point pylonPlace = new Point(GenVars.dungeonSide == 1 ? (biomeStart + biomeMiddle) / 2 : (biomeMiddle + biomeEdge) / 2, Main.maxTilesY - 150);
             while (!Main.tile[pylonPlace].HasTile && pylonPlace.Y < Main.maxTilesY - 75)
                 pylonPlace.Y++;
+            if (!Main.tile[pylonPlace].HasTile)
+                Main.tile[pylonPlace].TileType = (ushort)ModContent.TileType<BrimstoneSlag>();
             //make sure there's space to place it
             for (int i = pylonPlace.X - 1; i <= pylonPlace.X + 1; i++)
             {
