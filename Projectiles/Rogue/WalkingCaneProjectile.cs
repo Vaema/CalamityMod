@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 position = target.Center + Main.rand.NextVector2CircularEdge(100f, 100f);
                 Vector2 velocity = (target.Center - position).SafeNormalize(Vector2.Zero) * 6f;
                 // Friendly shadow hands normally have four different behaviors, but Walking Cane only spawns shadow hands that immediately lunge
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, velocity, ProjectileID.InsanityShadowFriendly, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, velocity, ProjectileID.InsanityShadowFriendly, (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
             }
         }
     }
