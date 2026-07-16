@@ -30,16 +30,17 @@ namespace CalamityMod.Items.Weapons.Summon
     public class VoidConcentrationStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public static float SummonerTagEffectiveness => 1.67f;
         public static SummonTag summonTag = new SummonTag()
         {
-            MultiplicativeTagDamage = 0.25f, //Percentage of damage dealt added by the void. This is doubled by summons. This was tested - 1.5x was too weak to be worth 4 slots. <-- (nvm)
+            MultiplicativeTagDamage = 0.3f,
             AllowsWhipStacking = true,
             TagOnHit = tagOnHit,
             TagModifyHitEffects = SummonTag.BlankTagModifyHit,
             AutoDrawTooltip = false
         };
 
-        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += (int)(damageDone);
+        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += (int)(damageDone * (1- SummonerTagEffectiveness));
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
@@ -65,27 +66,23 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
+            foreach (var item in Main.ActiveProjectiles)
             {
-                foreach (var item in Main.ActiveProjectiles)
-                {
-                    if (item.type == ModContent.ProjectileType<VoidConcentrationMark>())
-                        item.Kill();
-                }
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationMinion>()] == 0)
-                    Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                if (item.type == ModContent.ProjectileType<VoidConcentrationMark>())
+                    item.Kill();
             }
-            else
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationMinion>()] == 0)
+            {
+                {
+                    Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                    player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationMinion>()]++; //update it instantly so it's read properly later in the same update
+                }
+            if (player.altFunctionUse == 2)
             {
                 player.MinionNPCTargetAim(true);
                 if (player.MinionAttackTargetNPC >= 0)
                 {
                     var target = Main.npc[player.MinionAttackTargetNPC];
-                    foreach (var item in Main.ActiveProjectiles)
-                    {
-                        if (item.type == ModContent.ProjectileType<VoidConcentrationMark>())
-                            item.Kill();
-                    }
                     Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<VoidConcentrationMark>(), damage, knockback, player.whoAmI, target.whoAmI);
                 }
             }
@@ -284,12 +281,12 @@ namespace CalamityMod.Projectiles.Summon
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
         {
-            if (!Main.npc[(int)Projectile.ai[0]].active)
+            Player owner = Main.player[Projectile.owner];
+            if (!Main.npc[(int)Projectile.ai[0]].active || owner.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationMinion>()] <= 0)
             {
                 Projectile.Kill();
                 return;
             }
-            Player owner = Main.player[Projectile.owner];
 
             Projectile.Center = Main.npc[(int)Projectile.ai[0]].Center;
             Main.npc[(int)Projectile.ai[0]].AddBuff(ModContent.BuffType<VoidConcentrationSummonTagBuff>(), 5);
@@ -303,7 +300,7 @@ namespace CalamityMod.Projectiles.Summon
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner);
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(-MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner,1);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(-MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner, 1);
                     }
                 }
             }
@@ -504,7 +501,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         Projectile.NewProjectile(npc.GetSource_OnHurt(null), npc.Center, Vector2.UnitX.RotatedBy(rot), ModContent.ProjectileType<VoidConcentrationSummonTagProj>(), (int)Math.Max((dmg * VoidConcentrationStaff.summonTag.MultiplicativeTagDamage), 1), 0, -1, npc.whoAmI);
                     }
-                    }
+                }
             }
             base.PostAI(npc);
         }

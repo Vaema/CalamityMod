@@ -738,7 +738,6 @@ namespace CalamityMod.CalPlayer
                     finalRegen += 4f;
 
                 regeneratorDamage = finalRegen * Regenerator.RegenToDamageRatio;
-                Player.GetDamage<GenericDamageClass>() += regeneratorDamage;
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;
