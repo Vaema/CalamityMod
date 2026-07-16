@@ -1207,7 +1207,7 @@ NebulousCore: {
 	DisplayName: Nebulous Core
 	Tooltip:
 		'''
-		10% increased damage
+		12% increased damage
 		Summons floating nebula stars to protect you
 		Taking a fatal hit revives you to 100 HP
 		This effect has a 90 second cooldown

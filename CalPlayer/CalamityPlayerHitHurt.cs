@@ -209,7 +209,7 @@ namespace CalamityMod.CalPlayer
                     chaliceBleedoutBuffer = 0D;
                     chaliceDamagePointPartialProgress = 0D;
                 }
-                Player.HealPlayer(100);
+                Player.HealPlayer(300);
 
                 Player.AddCooldown(Cooldowns.NebulousCore.ID, CalamityUtils.SecondsToFrames(90));
                 return false;
