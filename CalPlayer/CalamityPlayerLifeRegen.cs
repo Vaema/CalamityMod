@@ -275,7 +275,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
-                totalNegativeLifeRegen -= Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana;
+                totalNegativeLifeRegen -= (Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana) + Items.Accessories.ChaosStone.BaseLostRegen;
             }
 
             //
