@@ -965,7 +965,7 @@ HallowedRune: {
 
 HarpyRing: {
 	DisplayName: Harpy Ring
-	Tooltip: 10% increased movement speed and 20% increased flight time
+	Tooltip: 20% increased movement speed and increased flight time
 }
 
 HeartofDarkness: {
