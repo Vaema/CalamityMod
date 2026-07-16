@@ -441,7 +441,7 @@ CorrosiveSpine: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		25% increased Sickness and Water debuff damage
+		50% increased Sickness and Water debuff damage
 		All attacks inflict [cbuff:CalamityMod/Irradiated] and reduces the severity of the sulphuric waters
 		You burst into radioactive clouds when struck
 		'''
