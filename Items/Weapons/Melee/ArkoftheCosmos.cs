@@ -23,11 +23,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public float Combo = 0f;
         public float Charge = 0f;
 
-        // Frame window for double right click to snip.
-        // The right click item activation takes 3 frames, so the frame window is frame 3 to frame 11.
-        public static int DoubleRightClickFrames = 11;
-        private int rmbFrames = 0;
-
         public static float NeedleDamageMultiplier = 0.7f; //Damage on the non-homing needle projectile
         public static float MaxThrowReach = 760;
         public static float SnapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
@@ -106,9 +101,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             player.Calamity().mouseWorldListener = true;
 
-            if (rmbFrames > 0)
-                --rmbFrames;
-
             if (CanUseItem(player) && Combo != 4)
                 Item.channel = false;
 
@@ -147,17 +139,16 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
-                // If it has been less than N frames since the last alt function use, this is a double right click.
-                bool rightMouseDoubleClick = rmbFrames > 0;
-                if (Item.HasBoundDynamicHotkey())
-                    rightMouseDoubleClick = Item.CurrentlyPressingKeybind();
 
                 // Check if a parry holdout or blast is already present.
                 Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
                 Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
 
-                bool canExecuteBlast = rightMouseDoubleClick && Charge > 0 && blast is null;
+                bool canExecuteBlast = Charge > 0 && blast is null;
                 bool canExecuteParry = parrier is null && !canExecuteBlast;
+                //Disable blast usage if hotkey is bound
+                if (Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count > 0)
+                    canExecuteBlast = false;
 
                 // The blast is checked first, so that it overrides the first right click triggering a parry. Blasts delete any active parry holdouts on use.
                 if (canExecuteBlast)
@@ -166,13 +157,6 @@ namespace CalamityMod.Items.Weapons.Melee
                     float angle = velocity.ToRotation();
                     Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
                     Charge = 0;
-
-                    // If the parry holdout has existed for very few frames, just delete it.
-                    if (parrier is not null && parrier.timeLeft > ArkoftheCosmosParryHoldout.MaxTime - DoubleRightClickFrames)
-                    {
-                        parrier.active = false;
-                        parrier.netUpdate = true;
-                    }
                 }
 
                 // If the blast cannot be executed, then the parry is executed, assuming no existing holdout is present.
@@ -189,9 +173,6 @@ namespace CalamityMod.Items.Weapons.Melee
                     if (!anyArkParryExists)
                         Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
                 }
-
-                // Regardless of what transpires from the right click, set the double right click frames appropriately.
-                rmbFrames = DoubleRightClickFrames;
                 return false;
             }
 
