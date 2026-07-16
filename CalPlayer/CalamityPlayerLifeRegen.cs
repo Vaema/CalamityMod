@@ -502,6 +502,9 @@ namespace CalamityMod.CalPlayer
             if (livingDew)
                 Player.lifeRegenTime += LivingDew.RegenTimeBoost;
 
+            if (Player.HasBuff<FulfilledContract>())
+                Player.lifeRegenTime += ThePact.RegenTimeBoost;
+
             if (aAmpoule)
             {
                 Player.lifeRegen += (int)Math.Round(MathHelper.Lerp(AmbrosialAmpoule.MaxRegenBoost, AmbrosialAmpoule.MinRegenBoost, lifeRatio));
@@ -707,6 +710,9 @@ namespace CalamityMod.CalPlayer
                 regen *= LivingDew.NaturalRegenPower;
             else if (honeyDew)
                 regen *= HoneyDew.NaturalRegenPower;
+
+            if (Player.HasBuff<FulfilledContract>())
+                regen *= ThePact.NaturalRegenBoost;
             // The Camper counteracts the regen loss while moving horizontally
             if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
             {
