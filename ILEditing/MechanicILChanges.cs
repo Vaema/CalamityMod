@@ -717,7 +717,10 @@ namespace CalamityMod.ILEditing
                     ref FluidField calamityFireDrawer = ref player.Calamity().CalamityFireDrawer;
                     ref Vector2 firePosition = ref player.Calamity().FireDrawerPosition;
                     if (calamityFireDrawer is null || calamityFireDrawer.Size != size)
+                    {
+                        calamityFireDrawer?.Dispose();
                         calamityFireDrawer = FluidFieldManager.CreateField(size, scale, 0.1f, 50f, 0.992f);
+                    }  
 
                     // Update the fire draw position.
                     firePosition = new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
