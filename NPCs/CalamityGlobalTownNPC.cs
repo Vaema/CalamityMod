@@ -236,6 +236,7 @@ namespace CalamityMod.NPCs
             "Morshu", // <@!194931581826236416> (uberransy)
             "Spamton G. Spamton", // <@!497146350438318101> (j.u.n.e.s)
             "Goldluna", // <@!442449102857568257> (goldluna)
+            "Vegetable", // <@!1416248900385247344> (kiwisourlemons)
         ];
         private static readonly string[] NurseNames =
         [
