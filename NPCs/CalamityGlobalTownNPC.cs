@@ -298,6 +298,7 @@ namespace CalamityMod.NPCs
             "Bone Cold Steve Austin", // <@!282704860992897024> (raendrag_of_rovan)
             "Them Bones", // <@!322208584534589450> (dogvtf)
             "Deep-Vein Thrombonesis", // <@!557473830457704458> (thessyll)
+            "Wing Gaster", // <@!1504946198136750135> (tkktkash)
         ];
         private static readonly string[] SteampunkerNames =
         [
