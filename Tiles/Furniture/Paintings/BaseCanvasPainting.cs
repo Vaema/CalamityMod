@@ -99,8 +99,9 @@ namespace CalamityMod.Tiles.Furniture.Paintings
                 var fPX = (int)cube.framePosition.X;
                 var fPY = (int)cube.framePosition.Y;
                 var scale = (int)(texture.Width * 0.1f * cube.scale);
+                var rasterizer = Main.LocalPlayer.gravDir == -1f ? RasterizerState.CullNone : Main.Rasterizer;
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null);
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, rasterizer, null);
                 spriteBatch.Draw(texture, pos - Main.screenPosition, new Rectangle(fPX, fPY, scale, scale), Lighting.GetColor(i, j), 0, new Vector2(0, 0), 1 / cube.scale * Scale, 0, 0);
                 spriteBatch.End();
                 spriteBatch.Begin();
