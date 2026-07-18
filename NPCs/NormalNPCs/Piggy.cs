@@ -51,12 +51,26 @@ namespace CalamityMod.NPCs.NormalNPCs
             MaxInstances = 0,
         };
 
+        private static SoundStyle DivineSwine_MisophoniaSwineSpeakLoopingSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneMonsterDrone")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0,
+        };
+
         private static SoundStyle HorribleHog_CackleSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogCackle");
         private static SoundStyle HorribleHog_IdleSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogIdle", 2)
         {
             PitchVariance = 0.25f,
         };
         private static SoundStyle HorribleHog_DevilsTongueLoopingSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogNearbyLoop")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0
+        };
+
+        private static SoundStyle HorribleHog_MisophoniaDevilsTongueLoopingSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneMonsterDrone")
         {
             IsLooped = true,
             PauseBehavior = PauseBehavior.PauseWithGame,
@@ -168,8 +182,17 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.velocity.X *= 0.9f;
             NPC.rotation = 0f;
+
+
             if (Timer < 2 && !SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
-                NearbySoundSlot = SoundEngine.PlaySound(DivineSwine_SwineSpeakLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+            {
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                {
+                    NearbySoundSlot = SoundEngine.PlaySound(DivineSwine_SwineSpeakLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+                }
+                else
+                    NearbySoundSlot = SoundEngine.PlaySound(DivineSwine_MisophoniaSwineSpeakLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+            }
 
             float lightSpawnDistance = MathHelper.Lerp(52f, 84f, Timer / 180f);
             int lightAmt = Main.rand.Next(1, 2);
@@ -239,8 +262,16 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.velocity.X *= 0.9f;
             NPC.rotation = 0f;
+
             if (Timer < 2 && !SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
-                NearbySoundSlot = SoundEngine.PlaySound(HorribleHog_DevilsTongueLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+            {
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                {
+                    NearbySoundSlot = SoundEngine.PlaySound(HorribleHog_DevilsTongueLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+                }
+                else
+                    NearbySoundSlot = SoundEngine.PlaySound(HorribleHog_MisophoniaDevilsTongueLoopingSound, NPC.Center, NearbySoundCallbackMethod);
+            }
 
             float smokeOpacity = Utils.GetLerpValue(0f, 45f, Timer, true);
             int circlingSmokeAmount = Main.rand.Next(2, 5);
@@ -327,8 +358,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.netUpdate = true;
                 }
 
-                var chosenSoundStyle = Utils.SelectRandom(Main.rand, IdleSound_Grunt, IdleSound_SnortYip, IdleSound_Yip);
-                SoundEngine.PlaySound(chosenSoundStyle, NPC.Center);
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                {
+                    var chosenSoundStyle = Utils.SelectRandom(Main.rand, IdleSound_Grunt, IdleSound_SnortYip, IdleSound_Yip);
+                    SoundEngine.PlaySound(chosenSoundStyle, NPC.Center);
+                }
                 NPC.soundDelay = Main.rand.Next(60, 120);
             }
 
@@ -362,7 +396,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.collideX)
                 {
                     SoundEngine.PlaySound(SoundID.Dig with { Volume = 0.7f }, NPC.Center);
-                    SoundEngine.PlaySound(IdleSound_Grunt with { Volume = 1.2f }, NPC.Center);
+                    if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                        SoundEngine.PlaySound(IdleSound_Grunt with { Volume = 1.2f }, NPC.Center);
+
                     SquashVector = new Vector2(0.6f, 1f);
 
                     NPC.velocity.X = NPC.oldVelocity.X * -0.86f;
@@ -393,7 +429,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.Y = -4f;
                         var soundStyle = Utils.SelectRandom(Main.rand, IdleSound_SnortYip, IdleSound_Yip);
-                        SoundEngine.PlaySound(soundStyle.WithPitchOffset(0.35f), NPC.Center);
+                        if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                            SoundEngine.PlaySound(soundStyle.WithPitchOffset(0.35f), NPC.Center);
                     }
                 }
 

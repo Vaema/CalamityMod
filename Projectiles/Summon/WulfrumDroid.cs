@@ -247,7 +247,7 @@ namespace CalamityMod.Projectiles.Summon
 
             if (Projectile.soundDelay > 0)
                 Projectile.soundDelay--;
-            else
+            else if (!CalamityClientConfig.Instance.MisophoniaSupport)
             {
                 SoundEngine.PlaySound(RandomChirpSound with { Volume = RandomChirpSound.Volume * Main.rand.NextFloat(0.5f, 1f) }, Projectile.Center);
                 Projectile.soundDelay = NewSoundDelay;
