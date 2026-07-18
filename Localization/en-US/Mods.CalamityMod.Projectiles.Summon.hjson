@@ -63,7 +63,6 @@ CinderBlossom.DisplayName: Cinder Blossom
 CloudElementalMinion.DisplayName: Cloud Elemental
 CnidarianJellyfishOnTheString.DisplayName: Cnidarian
 CnidarianSpark.DisplayName: Cnidarian Spark
-CorruptionSlimeGodMinion.DisplayName: Slime God
 CosmicBlast.DisplayName: Cosmic Blast
 CosmicBlastBig.DisplayName: Cosmic Blast
 CosmicEnergySpiral.DisplayName: Cosmic Energy
@@ -74,7 +73,6 @@ CosmicViperSplittingRocket.DisplayName: Splitting Rocket
 CosmicViperSummon.DisplayName: Cosmic Viper
 CosmilampBeam.DisplayName: Cosmic Beam
 CosmilampMinion.DisplayName: Cosmilamp
-CrimsonSlimeGodMinion.DisplayName: Slime God
 DaedalusCrystal.DisplayName: Daedalus Crystal
 DaedalusCrystalShot.DisplayName: Crystal Shot
 DaedalusGolem.DisplayName: Daedalus Golem
@@ -281,6 +279,7 @@ SquirrelSquireAcorn.DisplayName: Squirrel Acorn
 SquirrelSquireMinion.DisplayName: Squirrel Squire
 Starforge.DisplayName: Starforge
 StarforgeBlast.DisplayName: Starforge Blast
+StatigelBlightedSlime.DisplayName: Slime God
 StellarTorusBeam.DisplayName: Stellar Torus Beam
 StellarTorusSummon.DisplayName: Stellar Torus Summon
 StormjawBaby.DisplayName: Stormjaw Baby
