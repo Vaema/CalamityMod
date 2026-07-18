@@ -425,11 +425,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (NPC.velocity.Y == 0f)
                 {
                     NPC.velocity.X *= 0.9f;
-                    if (MathF.Abs(NPC.velocity.X) >= 0.08f && MathF.Abs(NPC.velocity.X) < 0.09f && !CalamityClientConfig.Instance.MisophoniaSupport)
+                    if (MathF.Abs(NPC.velocity.X) >= 0.08f && MathF.Abs(NPC.velocity.X) < 0.09f)
                     {
                         NPC.velocity.Y = -4f;
                         var soundStyle = Utils.SelectRandom(Main.rand, IdleSound_SnortYip, IdleSound_Yip);
-                        SoundEngine.PlaySound(soundStyle.WithPitchOffset(0.35f), NPC.Center);
+                        if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                            SoundEngine.PlaySound(soundStyle.WithPitchOffset(0.35f), NPC.Center);
                     }
                 }
 
