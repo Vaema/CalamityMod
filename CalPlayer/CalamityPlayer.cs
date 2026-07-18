@@ -4818,7 +4818,7 @@ namespace CalamityMod.CalPlayer
                         Player.velocity.Y = 0.5f;
                 }
                 else
-                    Player.velocity.Y = 0f;
+                    Player.velocity.Y = 1E-05f;
 
                 if (CalamityKeybinds.ExoChairSlowdownHotkey.Current)
                     Player.velocity *= 0.5f;
