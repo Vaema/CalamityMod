@@ -731,11 +731,7 @@ SquirrelSquireStaff: {
 
 StaffOfNecrosteocytes: {
 	DisplayName: Staff of Necrosteocytes
-	Tooltip:
-		'''
-		Summons small skeletons to fight for you
-		The skeletons leave behind bone cells as they move
-		'''
+	Tooltip: Summons small skeletons to fight for you
 }
 
 StarspawnHelixStaff: {
