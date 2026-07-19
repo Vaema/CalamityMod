@@ -154,6 +154,7 @@ namespace CalamityMod.NPCs
             "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
             "Perrin", // <@!253764551139393537> (easyperrin)
             "Spud McGee", // <@!727111000658018326> (starchman)
+            "Lumen Lucille", // <@!529392083136413696> (raiden_ii)
         ];
         private static readonly string[] CyborgNames =
         [
@@ -192,7 +193,6 @@ namespace CalamityMod.NPCs
             "Tooshiboots", // <@!333532730593771522> (ulmod)
             "Neesh", // <@!175803493464932352> (xjetty)
             "Bars Boldia", // <@!332989575708540939> (careless_imp)
-            "Basel Raiden John Clive Fantasy 16", // <@!529392083136413696> (raiden_ii)
             "Gobby, Destroyer of Wallets", // <@!429024941296582658> (bwlstorm)
             "Potential Man", // <@!320787277007552512> (veruze)
             "Donny G", // <@!308736236523225088> (donnyg66)
