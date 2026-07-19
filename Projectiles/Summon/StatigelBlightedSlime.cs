@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon
                 dust += 1f;
             }
             bool isMinion = Projectile.type == ModContent.ProjectileType<StatigelBlightedSlime>();
-            player.AddBuff(ModContent.BuffType<BabySlimeGodBuff>(), 3600);
+            player.AddBuff(ModContent.BuffType<BabyPaladinBuff>(), 3600);
             if (!modPlayer.slimeGod)
             {
                 Projectile.active = false;

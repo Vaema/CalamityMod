@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class BabySlimeGodBuff : BaseSummonBuff
+    public class BabyPaladinBuff : BaseSummonBuff
     {
         protected override int MinionProjectileType => ModContent.ProjectileType<StatigelBlightedSlime>();
 

@@ -1274,9 +1274,9 @@ BabyBloodCrawlerBuff: {
 	Description: The baby blood crawler will protect you
 }
 
-BabySlimeGodBuff: {
-	DisplayName: Baby Slime God
-	Description: The Slime God will protect you
+BabyPaladinBuff: {
+	DisplayName: Baby Paladin
+	Description: The blighted paladin will protect you
 }
 
 BabyStormlionBuff: {
