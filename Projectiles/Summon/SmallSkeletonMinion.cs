@@ -36,9 +36,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft *= 5;
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
-            Projectile.MaxUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 15;
+            Projectile.localNPCHitCooldown = 20;
         }
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -66,82 +65,61 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frameCounter = 0;
             }
             if (Projectile.frame < 1)
-            {
                 Projectile.frame = 1;
-            }
             if (Projectile.frame >= Main.projFrames[Type])
-            {
                 Projectile.frame = 1;
-            }
 
             bool isCorrectProjectile = Projectile.type == ModContent.ProjectileType<SmallSkeletonMinion>();
             player.AddBuff(ModContent.BuffType<SmallSkeletonBuff>(), 3600);
             if (isCorrectProjectile)
             {
                 if (player.dead)
-                {
                     modPlayer.necrosteocytesDudes = false;
-                }
                 if (modPlayer.necrosteocytesDudes)
-                {
                     Projectile.timeLeft = 2;
-                }
             }
             NPC potentialTarget = Projectile.Center.MinionHoming(900f, player);
-            if (Projectile.velocity.Y == 0 && (HoleBelow() || (Projectile.Distance(player.Center) > 205f && Projectile.position.X == Projectile.oldPosition.X)))
-            {
+            if (Projectile.velocity.Y == 0 && (HoleBelow() || (Projectile.Distance(player.Center) > 320f && Projectile.position.X == Projectile.oldPosition.X) || (potentialTarget is not null && Projectile.Top.Y > potentialTarget.Bottom.Y)))
                 Projectile.velocity.Y = -10f;
-            }
             else if (Projectile.velocity.Y != 0f)
-            {
                 Projectile.frame = 2;
-            }
-            if (Projectile.velocity.Y > -16f)
-            {
+            if (Projectile.velocity.Y < 16f)
                 Projectile.velocity.Y += 0.3f;
-            }
 
-            Projectile.ai[0]++;
-            if (Projectile.ai[0] % 60f == 59f && Main.myPlayer == Projectile.owner)
-            {
-                int type = Utils.SelectRandom(Main.rand, ModContent.ProjectileType<BoneMatter>(), ModContent.ProjectileType<BoneMatter2>());
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, type, Projectile.damage, Projectile.knockBack, Projectile.owner);
-            }
             if (potentialTarget is null)
             {
-                if (Math.Abs(player.Center.X - Projectile.Center.X + 40f * Projectile.minionPos) > 160f)
+                if (Math.Abs(player.Center.X - Projectile.Center.X - 30f * Projectile.minionPos * player.direction) > 80f)
                 {
-                    Projectile.velocity.X += Main.rand.NextFloat(0.11f, 0.16f) * (player.Center.X - Projectile.Center.X + 40f * Projectile.minionPos > 0f).ToDirectionInt();
+                    Projectile.velocity.X += Main.rand.NextFloat(0.1f, 0.13f) * (player.Center.X - Projectile.Center.X + 40f * Projectile.minionPos > 0f).ToDirectionInt();
                     Projectile.velocity.X = MathHelper.Clamp(Projectile.velocity.X, -13f, 13f);
                 }
                 else
                 {
-                    Projectile.velocity.X *= 0.95f;
+                    Projectile.velocity.X *= 0.925f;
+                    if (MathF.Abs(Projectile.velocity.X) < 0.05f)
+                        Projectile.velocity.X = 0f;
                 }
-                if (Projectile.Distance(player.Center) <= 150f)
-                {
+
+                if (Projectile.velocity.X == 0f)
                     Projectile.frame = 0;
-                }
                 if (Projectile.Distance(player.Center) > 1600f)
                 {
                     Projectile.Center = player.Center;
+                    Projectile.velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }
             }
             else
             {
-                if (Math.Abs(potentialTarget.Center.X - Projectile.Center.X + (int)MathHelper.Min(potentialTarget.width / 2, 40f)) > (int)MathHelper.Min(potentialTarget.width / 2, 40f))
-                {
-                    Projectile.velocity.X += Main.rand.NextFloat(0.08f, 0.15f) * (potentialTarget.Center.X - Projectile.Center.X > 0f).ToDirectionInt();
-                    Projectile.velocity.X = MathHelper.Clamp(Projectile.velocity.X, -16f, 16f);
-                }
-                else
-                {
+                Projectile.velocity.X += Main.rand.NextFloat(0.1f, 0.13f) * (potentialTarget.Center.X > Projectile.Center.X).ToDirectionInt();
+                Projectile.velocity.X = MathHelper.Clamp(Projectile.velocity.X, -13f, 13f);
+                if (Math.Sign(Projectile.velocity.X) != (potentialTarget.Center.X > Projectile.Center.X).ToDirectionInt())
                     Projectile.velocity.X *= 0.95f;
-                }
+
                 if (Projectile.Distance(player.Center) > 1400f)
                 {
                     Projectile.Center = player.Center;
+                    Projectile.velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }
                 Projectile.MinionAntiClump(0.075f);

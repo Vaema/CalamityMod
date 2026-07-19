@@ -76,7 +76,8 @@ namespace CalamityMod.Items
                         ItemID.LucyTheAxe,
                         ItemID.PewMaticHorn,
                         ItemID.WeatherPain,
-                        ItemID.HoundiusShootius
+                        ItemID.HoundiusShootius,
+                        ModContent.ItemType<WalkingCane>()
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, deerclopsWeapons));
                     loot.AddRevBagAccessories();

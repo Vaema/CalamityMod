@@ -1138,6 +1138,7 @@ namespace CalamityMod.CalPlayer
                 Asset<Texture2D> carpetAuric = ExtraTextureRefs.FlyingCarpetAuric;
                 Asset<Texture2D> carpetOriginal = ExtraTextureRefs.FlyingCarpetVanilla;
                 TextureAssets.FlyingCarpet = (auricSet ? carpetAuric : carpetOriginal);
+                TextureAssets.Buff[ModContent.BuffType<BlightedSlime>()] = WorldGen.crimson ? ExtraTextureRefs.BlightedSlimeCrimIcon : ExtraTextureRefs.BlightedSlimeCorroIcon;
 
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
@@ -2764,9 +2765,6 @@ namespace CalamityMod.CalPlayer
                     if (Player.buffTime[l] <= 2 && buffID == ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>())
                         if (Player.whoAmI == Main.myPlayer)
                             Player.AddCooldown(Cooldowns.TarragonImmunity.ID, TarragonHeadRogue.ImmunityCooldown);
-
-                    if (CalamityBuffSets.IsDebuff[buffID])
-                        Player.GetDamage<RogueDamageClass>() += TarragonHeadRogue.RogueDamageBoostWhileDebuffed;
                 }
             }
 
@@ -2831,6 +2829,10 @@ namespace CalamityMod.CalPlayer
             // Reduce Ichor debuff defense reduction from -15 to -10
             if (Player.ichor)
                 Player.statDefense += 5;
+
+            // Holding Walking Cane increases movement speed
+            if (Player.HeldItem.type == ModContent.ItemType<WalkingCane>())
+                Player.moveSpeed += WalkingCane.MoveSpeedBoost;
 
             // Fairy Boots bonus
             if (fairyBoots)
@@ -3637,8 +3639,7 @@ namespace CalamityMod.CalPlayer
                 --bloodflareCoreRemainingHealOverTime;
             }
 
-
-            // Reduce how slow Chilled makes the player, because it's cancerous right now
+            // Reduce how slow Chilled makes the player
             // The moveSpeed multiplier for Chilled in vanilla is 0.75, so we just multiply by 1.166667 here to make it 0.875, effectively cutting the reduction in half
             if (Player.chilled)
                 Player.moveSpeed *= 1f + (1f / 6f);
@@ -3935,12 +3936,6 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.statLife <= (int)(Player.statLifeMax2 * HydrothermicArmor.InfernoHealthThreshold))
                     Player.AddBuff(BuffID.Inferno, 2);
-            }
-
-            if (bloodflareThrowing)
-            {
-                if (Player.statLife > (int)(Player.statLifeMax2 * BloodflareHeadRogue.DefenseBoostHealthThreshold))
-                    Player.statDefense += BloodflareHeadRogue.DefenseBoostAboveHealthThreshold;
             }
 
             if (bloodflareSummon)

@@ -110,11 +110,6 @@ namespace CalamityMod.Projectiles.Melee
             return true;
         }
 
-        /*public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(150, Main.DiscoG, 255, 127);
-        }*/
-
         // Only inflict Nightwither if not spawned from Icebreaker
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

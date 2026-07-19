@@ -88,19 +88,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             modifiers.HideCombatText();
             
         }
-        public override void OnKill(int timeLeft)
-        {
-            /*
-            for (int i = 0; i < 7; i++)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 267);
-                dust.velocity = (Projectile.velocity * 3 * Projectile.scale).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.3f, 1f);
-                dust.scale = Main.rand.NextFloat(0.4f, 0.7f) * Projectile.scale;
-                dust.noGravity = true;
-                dust.color = Color.Red;
-            }
-            */
-        }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
             overPlayers.Add(index);

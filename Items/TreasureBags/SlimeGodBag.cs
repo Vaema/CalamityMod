@@ -68,8 +68,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<OverloadedBlaster>(),
                 ModContent.ItemType<AbyssalTome>(),
                 ModContent.ItemType<EldritchTome>(),
-                ModContent.ItemType<CorroslimeStaff>(),
-                ModContent.ItemType<CrimslimeStaff>()
+                ModContent.ItemType<BlightedSlimeStaff>()
             }));
 
             // Equipment

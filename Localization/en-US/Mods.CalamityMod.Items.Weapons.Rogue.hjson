@@ -1069,17 +1069,6 @@ SkyfinBombers: {
 		'''
 }
 
-SlickCane: {
-	DisplayName: Slick Cane
-	Tooltip:
-		'''
-		Swipes a cane that steals money from enemies
-		Stealth strikes give a 1 in 20 chance for enemies to drop 1-2 gold coins when hit
-		Stealth strikes boost damage in proportion to money in the inventory, up to 1 Platinum
-		'Economy at its finest'
-		'''
-}
-
 SludgeSplotch: {
 	DisplayName: Sludge Splotch
 	Tooltip: Stealth strikes cause the main ball of sludge to split on hit, inflicting more damage
@@ -1356,6 +1345,17 @@ Vega: {
 		This strike calls all star fragments to attack the damaged foe and inflicts [cbuff:CalamityMod/Voidfrost]
 		Consuming Starbursts with Vega allows using stealth for 10 seconds, even without rogue armor
 		'The final song of a misunderstood genius... or just a madman'
+		'''
+}
+
+WalkingCane: {
+	DisplayName: Walking Cane
+	Tooltip:
+		'''
+		Swipes a pointed walking cane
+		Stealth strikes drain the sanity of foes, causing shadow hands to be summoned when attacked
+		While held, increases movement speed by {0}%
+		'Is it walking me, or am I walking it?'
 		'''
 }
 

@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 42;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
+            Item.value = Item.sellPrice(copper: 10);
             Item.rare = ItemRarityID.White;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;

@@ -640,12 +640,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                     string key = "Mods.CalamityMod.Status.Boss.DoGPhase2";
                     Color messageColor = Color.Cyan;
                     CalamityUtils.BroadcastLocalizedText(key, messageColor);
-                    /*                    
-                    var ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
-                    if (ctid < Main.maxCombatText)
-                        player.Calamity().subtitletext = Main.combatText[ctid];
-                    player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                    */
                     DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 2, 120, false, new BossText());
                 }
             }
@@ -1477,13 +1471,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                             string key = "Mods.CalamityMod.Status.Boss.DoGSubphase1";
                             Color messageColor = Color.Cyan;
                             CalamityUtils.BroadcastLocalizedText(key, messageColor);
-
-                            /*
-                            int ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
-                            if (ctid < Main.maxCombatText)
-                                player.Calamity().subtitletext = Main.combatText[ctid];
-                            player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                            */
                             DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 1, 120, false, new BossText());
                         }
 

@@ -237,14 +237,6 @@ namespace CalamityMod.ILEditing
                 dir = self.direction;
                 dashing = true;
 
-                // CIT 16OCT2024: Commented this code out, as there's no reason for custom dash hotkey to use Player.dashTime
-                // and was causing the return of Celestial Starboard's dash bug from early 1.4 versions
-                /*if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
-                {
-                    self.dashTime = 15;
-                    return;
-                }*/
-
                 dashing = true;
                 self.dashTime = 0;
                 self.timeSinceLastDashStarted = 0;
