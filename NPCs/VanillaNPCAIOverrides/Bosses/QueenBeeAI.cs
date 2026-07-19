@@ -189,7 +189,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
-                    int maxRandom = phase4 ? (death ? 5 : 4) : 4;
+                    int maxRandom = phase4 ? 5 : 4;
                     do phase = Main.rand.Next(maxRandom);
                     while (phase == NPC.ai[1] || phase == 1 || (phase == 2 && phase4) || (death && phase6 && phase == 3));
 
@@ -199,7 +199,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // 5 is stinger arc and charge
                     if (stingerArcs)
                         phase = 5;
-
 
                     CalamityUtils.CalamityTargeting(NPC, CalamityTargetingParameters.BossDefaults);
                     NPC.ai[0] = phase;

@@ -288,6 +288,7 @@ namespace CalamityMod.NPCs
         public bool crumble = false;
 
         public int antlionCloudDebuffTimer = 0;
+        public int caneInsanityTimer = 0;
         public bool scionsCurioEffected = false;
         public bool abaddonEffected = false;
         public bool apollyonEffected = false;
@@ -569,6 +570,7 @@ namespace CalamityMod.NPCs
             myClone.crumble = crumble;
 
             myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
+            myClone.caneInsanityTimer = caneInsanityTimer;
             myClone.scionsCurioEffected = scionsCurioEffected;
             myClone.abaddonEffected = abaddonEffected;
             myClone.apollyonEffected = apollyonEffected;
@@ -799,6 +801,8 @@ namespace CalamityMod.NPCs
 
             if (antlionCloudDebuffTimer > 0)
                 antlionCloudDebuffTimer--;
+            if (caneInsanityTimer > 0)
+                caneInsanityTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
             relicOfResilienceWeakness = false;
@@ -4865,6 +4869,29 @@ namespace CalamityMod.NPCs
                         return DrawVanillaBestiaryWorms(spriteBatch, npc, drawColor);
                 }
             }
+
+            if (caneInsanityTimer > 0)
+            {
+                Texture2D tex = TextureAssets.Npc[npc.type].Value;
+                Rectangle frame = npc.frame;
+                float fadeInAmt = caneInsanityTimer > 570 ? Utils.GetLerpValue(600, 570, caneInsanityTimer) : caneInsanityTimer < 30 ? Utils.GetLerpValue(0, 30, caneInsanityTimer) : 1f;
+                Vector2 origin = new Vector2(tex.Width / 2, tex.Height / Main.npcFrameCount[npc.type] / 2);
+                SpriteEffects sp = npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                Vector3 colorHSL = Main.rgbToHsl(Color.Violet);
+
+                CalamityUtils.EnterShaderRegion(spriteBatch);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(1f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseSaturation(fadeInAmt * 0.35f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseColor(Main.hslToRgb(1f - colorHSL.X, colorHSL.Y, colorHSL.Z));
+                GameShaders.Misc["CalamityMod:BasicTint"].Apply();
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector2 offset = Vector2.UnitX.RotatedBy(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi * 2f + (MathHelper.TwoPi * i / 4f)) * 6f * fadeInAmt;
+                    Main.EntitySpriteDraw(tex, npc.Center - screenPos - Vector2.UnitY * (npc.gfxOffY) + offset, frame, Color.Violet, npc.rotation, origin, npc.scale, sp);
+                }
+                CalamityUtils.ExitShaderRegion(spriteBatch);
+            }
+
             if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
             {
                 if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityNPCSets.ForceDrawDebuffDisplay[npc.type]))

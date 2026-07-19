@@ -55,18 +55,18 @@ namespace CalamityMod.Projectiles.Melee
 
         //more precise hitbox. makes the weapon harder to use but looks visually better: use it if you want.
         /*
-                public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-                {
-                    if (HitTimer <= 0)
-                    {
-                        float size = Projectile.Size.Length();
-                        Vector2 hiltPos = Projectile.Center - Projectile.velocity * size / 2;
-                        Vector2 endPos = Projectile.Center + Projectile.velocity * size / 2;
-                        float useless = 0f;
-                        return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), hiltPos, endPos, size / 2, ref useless);
-                    }
-                    return base.Colliding(projHitbox, targetHitbox);
-                }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            if (HitTimer <= 0)
+            {
+                float size = Projectile.Size.Length();
+                Vector2 hiltPos = Projectile.Center - Projectile.velocity * size / 2;
+                Vector2 endPos = Projectile.Center + Projectile.velocity * size / 2;
+                float useless = 0f;
+                return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), hiltPos, endPos, size / 2, ref useless);
+            }
+            return base.Colliding(projHitbox, targetHitbox);
+        }
         */
 
         public override void AI()

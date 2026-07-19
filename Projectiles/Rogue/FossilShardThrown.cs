@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
@@ -11,6 +13,10 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Ranged/FossilShard";
 
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[Type] = 5;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -31,6 +37,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.originalDamage = SpearofPaleolith.ShardBaseDamage;
                 Projectile.ContinuouslyUpdateDamageStats = true;
+                Projectile.frame = Main.rand.Next(5);
             }
 
             Projectile.velocity.X *= 0.975f;
@@ -58,6 +65,14 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnKill(int timeLeft)
         {
             Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Sand, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+            return false;
         }
     }
 }

@@ -63,25 +63,6 @@ namespace CalamityMod.Projectiles.Typeless
             // Stay on the player's head
             Projectile.Center = (Owner.MountedCenter + new Vector2(0, -45));
 
-            Vector2 spawnPos = Projectile.Center + Main.rand.NextVector2Circular(5, 5);
-            int lifetime = Main.rand.Next(3, 6);
-            float scale = Main.rand.NextFloat(0.5f, 0.9f);
-            Color color = Main.rand.NextBool(3) ? Color.LightGreen : Color.Khaki;
-            /*
-            SparkParticle spark1 = new SparkParticle(spawnPos, new Vector2(Main.rand.NextFloat(7, 12), Main.rand.NextFloat(7, 12)), false, lifetime, scale, color);
-            GeneralParticleHandler.SpawnParticle(spark1);
-            SparkParticle spark2 = new SparkParticle(spawnPos, new Vector2(Main.rand.NextFloat(-7, -12), Main.rand.NextFloat(7, 12)), false, lifetime, scale, color);
-            GeneralParticleHandler.SpawnParticle(spark2);
-            SparkParticle spark3 = new SparkParticle(spawnPos, new Vector2(Main.rand.NextFloat(7, 12), Main.rand.NextFloat(-7, -12)), false, lifetime, scale, color);
-            GeneralParticleHandler.SpawnParticle(spark3);
-            SparkParticle spark4 = new SparkParticle(spawnPos, new Vector2(Main.rand.NextFloat(-7, -12), Main.rand.NextFloat(-7, -12)), false, lifetime, scale, color);
-            GeneralParticleHandler.SpawnParticle(spark4);
-            SparkParticle spark5 = new SparkParticle(Projectile.Center + new Vector2(20, 0), new Vector2(Main.rand.NextFloat(7, 12), 0), false, lifetime, scale, color);
-            GeneralParticleHandler.SpawnParticle(spark5);
-            SparkParticle spark6 = new SparkParticle(Projectile.Center + new Vector2(-20, 0), new Vector2(Main.rand.NextFloat(-7, -12), 0), false, lifetime, scale - 0.3f, color);
-            GeneralParticleHandler.SpawnParticle(spark6);
-            */
-
             // Emit some light
             Vector3 Light = new Vector3(0.251f, 0.255f, 0.219f);
             Lighting.AddLight(Projectile.Center, Light * 5);

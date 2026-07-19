@@ -2,23 +2,33 @@
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class CrimsonSlimeGodMinion : ModProjectile, ILocalizedModType
+    public class StatigelBlightedSlime : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/Projectiles/Summon/CrimslimeMinion";
+        public override string Texture => "CalamityMod/Projectiles/Summon/BlightedSlimeCorro";
         public float dust = 0f;
+
+        public static Asset<Texture2D> Corroslime;
+        public static Asset<Texture2D> Crimslime;
 
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+
+            if (!Main.dedServ)
+            {
+                Corroslime = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/BlightedSlimeCorro");
+                Crimslime = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/BlightedSlimeCrim");
+            }
         }
 
         public override void SetDefaults()
@@ -34,10 +44,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.penetrate = -1;
             Projectile.timeLeft *= 5;
             Projectile.minion = true;
+            AIType = ProjectileID.BabySlime;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 23;
-            AIType = ProjectileID.BabySlime;
+            Projectile.localNPCHitCooldown = 30;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -59,15 +69,15 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                     rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.Blood, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
+                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.ShadowbeamStaff, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].noLight = true;
                     Main.dust[dust].velocity = faceDirection;
                 }
                 dust += 1f;
             }
-            bool isMinion = Projectile.type == ModContent.ProjectileType<CrimsonSlimeGodMinion>();
-            player.AddBuff(ModContent.BuffType<BabySlimeGodBuff>(), 3600);
+            bool isMinion = Projectile.type == ModContent.ProjectileType<StatigelBlightedSlime>();
+            player.AddBuff(ModContent.BuffType<BabyPaladinBuff>(), 3600);
             if (!modPlayer.slimeGod)
             {
                 Projectile.active = false;
@@ -90,7 +100,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D slom = TextureAssets.Projectile[Type].Value;
+            Texture2D slom = (WorldGen.crimson ? Crimslime : Corroslime).Value;
             Rectangle frame = slom.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Main.EntitySpriteDraw(slom, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
