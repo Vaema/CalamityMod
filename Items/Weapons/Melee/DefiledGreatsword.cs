@@ -137,8 +137,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<BlightedCleaver>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient<UelibloomBar>(15).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
