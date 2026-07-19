@@ -33,7 +33,7 @@ namespace CalamityMod.World
 
         public class SolidOrPlatform : GenCondition
         {
-            protected override bool CheckValidity(int x, int y) => TileID.Sets.Platforms[CalamityUtils.ParanoidTileRetrieval(x, y).TileType] || WorldGen.SolidTile(x, y);
+            protected override bool CheckValidity(int x, int y) => TileID.Sets.Platforms[CalamityUtils.ParanoidTileRetrieval(x, y).TileType] || WorldGen.SolidTile(Framing.GetTileSafely(x, y));
         }
 
         public class IsNotTouchingAir : GenCondition

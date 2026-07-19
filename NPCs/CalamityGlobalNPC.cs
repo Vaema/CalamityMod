@@ -4510,8 +4510,10 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
             {
                 if (Main.rand.NextBool(4))
-                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Main.rand.NextVector2Circular(2.75f, 6.5f), ProjectileType<RancorFog>(), 0, 0f, Main.myPlayer, 0f, 0.475f);
-
+                {
+                    RancorFog fog = new(npc.Center, Main.rand.NextVector2Circular(2.75f, 6.5f), 180, Main.rand.NextFloat(0.45f, 0.75f), Main.rand.NextFloat(MathHelper.TwoPi));
+                    GeneralParticleHandler.SpawnParticle(fog, false, Enums.GeneralDrawLayer.BeforeNPCs);
+                }
                 if (Main.rand.NextBool(6))
                 {
                     Vector2 randomPosition = new(npc.position.X + Main.rand.NextFloat(-10f, npc.width + 10f), npc.position.Y + Main.rand.NextFloat(-10f, npc.height + 10f));

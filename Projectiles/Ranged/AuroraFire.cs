@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class AuroraFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Magic/RancorFog";
+        public override string Texture => "CalamityMod/Particles/RancorFog";
 
         public static int Lifetime => 480;
         public static int Fadetime => 450;
