@@ -368,25 +368,5 @@ namespace CalamityMod.Projectiles.Melee
 
             return false;
         }
-        /*
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Projectile.timeLeft);
-            writer.Write(Projectile.rotation);
-            writer.Write(Projectile.localAI[2]);
-            writer.Write(Projectile.localAI[0]);
-
-            writer.WriteFlags(stuckInTarget, thrown);
-        }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.timeLeft = reader.Read();
-            Projectile.rotation = reader.ReadSingle();
-            Projectile.localAI[2] = reader.ReadSingle();
-            Projectile.localAI[0] = reader.ReadSingle();
-
-            reader.ReadFlags(out stuckInTarget, out thrown);
-        }
-        */
     }
 }

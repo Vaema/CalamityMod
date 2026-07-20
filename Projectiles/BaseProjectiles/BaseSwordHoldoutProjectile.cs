@@ -200,7 +200,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// <summary>
         /// Internal timer for the projectile's swing animation
         /// </summary>
-        internal int swingTimer = 0;
+        public int swingTimer = 0;
 
         public static Asset<Texture2D> TrailTexture;
 
@@ -212,7 +212,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         List<float> oldProjectileRot = new List<float> { };
         List<Vector2> oldProjectilePos = new List<Vector2> { };
 
-        internal int ExistsTime = 20;
+        public int ExistsTime = 20;
         public bool inStartup => timer < StartupTime;
 
         public bool inCooldown => timer > CooldownStartFrame;

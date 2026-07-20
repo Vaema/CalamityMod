@@ -81,6 +81,12 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             PauseBehavior = PauseBehavior.PauseWithGame,
             MaxInstances = 0
         };
+        private static SoundStyle MisophoniaDevilsTongueLoopingSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneMonsterDrone")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0
+        };
 
         public Dictionary<BehaviorState, int> PreviousAttackCounters = [];
 
@@ -646,8 +652,16 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
             // "Devil's Tongue" looping sound.
             // Similar to Divine Swine; gets louder and lowers music volume based on proximity.
+
             if (!SoundEngine.TryGetActiveSound(DevilsTongueSlot, out _))
-                DevilsTongueSlot = SoundEngine.PlaySound(DevilsTongueLoopingSound, NPC.Center, DevilsTongueLoopCallback);
+            {
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                {
+                    DevilsTongueSlot = SoundEngine.PlaySound(DevilsTongueLoopingSound, NPC.Center, DevilsTongueLoopCallback);
+                }
+                else
+                    DevilsTongueSlot = SoundEngine.PlaySound(MisophoniaDevilsTongueLoopingSound, NPC.Center, DevilsTongueLoopCallback);
+            }
 
             float idealVolume = Utils.Remap(NPC.Distance(Main.LocalPlayer.Center), 800f, 400f, 1f, 0.05f, true);
             Main.musicFade[Main.curMusic] = MathHelper.Lerp(1f, idealVolume, DevilsTongueVolumeMultiplier);

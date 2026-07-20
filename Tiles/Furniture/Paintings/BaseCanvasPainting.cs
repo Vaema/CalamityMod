@@ -93,18 +93,18 @@ namespace CalamityMod.Tiles.Furniture.Paintings
             var t = Main.tile[i, j];
             var texture = TextureAssets.Tile[Type].Value;
             var cube = CalamityUtils.FindTileEntity<TECanvasPainting>(i, j, 1, 1);
-
             var pos = new Vector2(i * 16, j * 16) + CalamityUtils.TileDrawOffset;
             if (cube != null && t.TileFrameX == 0)
             {
                 var fPX = (int)cube.framePosition.X;
                 var fPY = (int)cube.framePosition.Y;
                 var scale = (int)(texture.Width * 0.1f * cube.scale);
+                var rasterizer = Main.LocalPlayer.gravDir == -1f ? RasterizerState.CullNone : Main.Rasterizer;
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null);
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, rasterizer, null);
                 spriteBatch.Draw(texture, pos - Main.screenPosition, new Rectangle(fPX, fPY, scale, scale), Lighting.GetColor(i, j), 0, new Vector2(0, 0), 1 / cube.scale * Scale, 0, 0);
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null);
+                spriteBatch.Begin();
             }
             // Calculate and draw the borders
             if (t.TileFrameX == 0 && t.TileFrameY == 0)

@@ -2,6 +2,7 @@
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -18,6 +19,7 @@ namespace CalamityMod.Items.Armor.Demonshade
         // Shadow Speed... (elusive)
         public static float MoveSpeedBoost = 0.3f;
         public static float AccelerationBoost = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), AccelerationBoost.ToPercent());
 
         public override void SetDefaults()
         {

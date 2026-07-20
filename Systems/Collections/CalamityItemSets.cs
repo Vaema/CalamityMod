@@ -33,7 +33,7 @@ namespace CalamityMod.Systems.Collections
         public static bool[] WeaponWithToolPowerAffectedBySummonPenalty = Factory.CreateNamedSet("WeaponWithToolPowerAffectedBySummonPenalty")
             .Description("Makes items with tool power still trigger the summon damage penalty.")
             .RegisterBoolSet(ItemID.ButchersChainsaw, ItemID.LucyTheAxe, ItemID.Rockfish, ItemType<AxeofPurity>(), ItemType<HydraulicVoltCrasher>(), ItemType<InfernaCutter>(),
-                ItemType<PhotonRipper>(), ItemType<Respiteblock>());
+                ItemType<PhotonRipper>(), ItemType<Respiteblock>(), ItemType<Spadefish>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, manually disables Calamity's summon damage penalty mechanic while that item type is held.<br/>
@@ -60,7 +60,7 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] DisablesVeneratedLocketEffect = Factory.CreateNamedSet("DisablesVeneratedLocketEffect")
             .Description("Prevents this item from triggering Venerated Locket's clone projectiles.")
-            .RegisterBoolSet(ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
+            .RegisterBoolSet(ItemType<WalkingCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a magic gun.<br/>

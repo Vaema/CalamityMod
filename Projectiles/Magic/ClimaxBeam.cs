@@ -29,15 +29,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            /*
-            Vector2 projPos = Projectile.position;
-            projPos -= Projectile.velocity * 0.25f;
-            int boltDust = Dust.NewDust(projPos, 1, 1, DustID.UnusedWhiteBluePurple, 0f, 0f, 0, default, 1.25f);
-            Main.dust[boltDust].position = projPos;
-            Main.dust[boltDust].scale = (float)Main.rand.Next(70, 110) * 0.013f;
-            Main.dust[boltDust].velocity *= 0.1f;
-            */
-
             if (Projectile.timeLeft == 500)
             {
                 Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Aqua, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 3);

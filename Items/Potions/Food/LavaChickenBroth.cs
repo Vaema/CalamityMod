@@ -14,6 +14,8 @@ namespace CalamityMod.Items.Potions.Food
     {
         public new string LocalizationCategory => "Items.Potions";
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/SoupConsumption");
+        public static readonly SoundStyle MisophonicUseSound = new("CalamityMod/Sounds/Item/SoupConsumptionMisophonic");
+
         public SlotId DrinkSoundSlot;
 
         public override void SetStaticDefaults()
@@ -38,7 +40,10 @@ namespace CalamityMod.Items.Potions.Food
         }
         public override bool? UseItem(Player player)
         {
-            DrinkSoundSlot = SoundEngine.PlaySound(UseSound, player.Center);
+            if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                DrinkSoundSlot = SoundEngine.PlaySound(UseSound, player.Center);
+            else
+                DrinkSoundSlot = SoundEngine.PlaySound(MisophonicUseSound, player.Center);
             return true;
         }
 

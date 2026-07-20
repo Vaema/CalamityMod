@@ -2,7 +2,10 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -43,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
             bool isActive = Projectile.type == ModContent.ProjectileType<BrimstoneElementalMinion>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.brimElemental && !modPlayer.allElementals && !modPlayer.brimElementalVanity && !modPlayer.allElementalsVanity)
+            if (modPlayer.brimElemental is null && modPlayer.allElementals is null && !modPlayer.brimElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -218,6 +221,30 @@ namespace CalamityMod.Projectiles.Summon
             {
                 return null;
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            SpriteEffects sp = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            var cplayer = Main.player[Projectile.owner].Calamity();
+
+            if ((cplayer.brimElemental.HasValue && !cplayer.brimElemental.Value) || (cplayer.allElementals.HasValue && !cplayer.allElementals.Value))
+            {
+                Vector3 hsl = Main.rgbToHsl(Color.Red);
+                CalamityUtils.EnterShaderRegion(Main.spriteBatch);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(1f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseSaturation(0.25f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseColor(Main.hslToRgb(1 - hsl.X, hsl.Y, hsl.Z));
+                GameShaders.Misc["CalamityMod:BasicTint"].Apply();
+                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, sp);
+                CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+            }
+            else
+                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, sp);
+
+            return false;
         }
     }
 }

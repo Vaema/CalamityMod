@@ -701,7 +701,11 @@ ElementalGauntlet: {
 
 ElementalinaBottle: {
 	DisplayName: Elemental in a Bottle
-	Tooltip: Summons a sand elemental to fight for you
+	Tooltip:
+		'''
+		Summons a sand elemental to fight for you
+		The elemental has reduced opacity if visibility is disabled
+		'''
 }
 
 ElysianAegis: {
@@ -758,7 +762,11 @@ EvasionScarf: {
 
 EyeoftheStorm: {
 	DisplayName: Eye of the Storm
-	Tooltip: Summons a Cloud Elemental to fight for you
+	Tooltip:
+		'''
+		Summons a Cloud Elemental to fight for you
+		The elemental has reduced opacity if visibility is disabled
+		'''
 }
 
 FeatherCrown: {
@@ -983,6 +991,7 @@ HeartoftheElements: {
 	Tooltip:
 		'''
 		Summons all elementals to protect you
+		The elementals have reduced opacity if visibility is disabled
 		'The heart of the world'
 		'''
 }
@@ -1320,6 +1329,7 @@ PearlofEnthrallment: {
 		'''
 		Summons a water elemental to fight for you
 		The elemental stays above you, shooting water spears, ice mist, and treble clefs at nearby enemies
+		The elemental has reduced opacity if visibility is disabled
 		'''
 }
 
@@ -1487,6 +1497,7 @@ OasisElementalinaBottle: {
 		'''
 		Summons an oasis elemental to assist you
 		The elemental fires healing orbs that restore 10 health while you are damaged
+		The elemental has reduced opacity if visibility is disabled
 		'''
 }
 
@@ -1519,7 +1530,11 @@ RogueEmblem: {
 
 RoseStone: {
 	DisplayName: Rose Stone
-	Tooltip: Summons a Brimstone Elemental to fight for you
+	Tooltip:
+		'''
+		Summons a Brimstone Elemental to fight for you
+		The elemental has reduced opacity if visibility is disabled
+		'''
 }
 
 RottenBrain: {

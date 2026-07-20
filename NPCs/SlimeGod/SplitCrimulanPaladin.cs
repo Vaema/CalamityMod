@@ -712,6 +712,8 @@ namespace CalamityMod.NPCs.SlimeGod
             }
         }
 
+        public override bool CheckActive() => false;
+
         public override Color? GetAlpha(Color drawColor)
         {
             Color lightColor = new Color(Main.DiscoR, 100, 150, NPC.alpha);

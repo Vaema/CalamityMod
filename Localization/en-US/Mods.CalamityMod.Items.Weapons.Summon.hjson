@@ -85,6 +85,11 @@ BlackHawkRemote: {
 		'''
 }
 
+BlightedSlimeStaff: {
+	DisplayName: Blighted Slime Staff
+	Tooltip: Summons a blighted slime to fight for you
+}
+
 BorealisBomber: {
 	DisplayName: Borealis Bomber
 	Tooltip:
@@ -191,11 +196,6 @@ Cnidarian: {
 		'''
 }
 
-CorroslimeStaff: {
-	DisplayName: Corroslime Staff
-	Tooltip: Summons a corro slime to fight for you
-}
-
 CorvidHarbringerStaff: {
 	DisplayName: Corvid Harbinger Staff
 	Tooltip:
@@ -231,11 +231,6 @@ CosmicViperEngine: {
 Cosmilamp: {
 	DisplayName: Cosmilamp
 	Tooltip: Summons a cosmic lantern above your head to fight for you
-}
-
-CrimslimeStaff: {
-	DisplayName: Crimslime Staff
-	Tooltip: Summons a crim slime to fight for you
 }
 
 CryogenicStaff: {
@@ -736,11 +731,7 @@ SquirrelSquireStaff: {
 
 StaffOfNecrosteocytes: {
 	DisplayName: Staff of Necrosteocytes
-	Tooltip:
-		'''
-		Summons small skeletons to fight for you
-		The skeletons leave behind bone cells as they move
-		'''
+	Tooltip: Summons small skeletons to fight for you
 }
 
 StarspawnHelixStaff: {

@@ -112,31 +112,6 @@ namespace CalamityMod.Items.Fishing
             }
             else
                 CalamityMod.Log.Warn("Could not find either Marine Kelp or Marine Kelp Seeds from Thorium. These items will not be added to Stuffed Fish.");
-
-            // Ozzatron 30DEC2022: It is unlikely SoA will ever be ported to 1.4 and beyond. Commenting this out indefinitely.
-            /*
-            Mod soa = CalamityMod.Instance.soa;
-            if (soa is not null)
-            {
-                try
-                {
-                    itemLoot.Add(soa.Find<ModItem>("Welkinbell").Type, 4, herbMin, herbMax);
-                    itemLoot.Add(soa.Find<ModItem>("WelkinbellSeeds").Type, 10, seedMin, seedMax);
-
-                    itemLoot.AddIf(() => Main.hardMode, soa.Find<ModItem>("Illumifern").Type, 4, herbMin, herbMax);
-                    itemLoot.AddIf(() => Main.hardMode, soa.Find<ModItem>("IllumifernSeeds").Type, 10, seedMin, seedMax);
-
-                    // TODO -- There is no way to determine if SoA's Abaddon is dead without reflection.
-                    // Dan Yami has confirmed that downed calls will be added to SoA eventually.
-                    //itemLoot.AddIf(() => SacredTools.ModdedWorld.downedAbaddon, soa.Find<ModItem>("Enduflora").Type, 4, herbMin, herbMax);
-                    //itemLoot.AddIf(() => SacredTools.ModdedWorld.downedAbaddon, soa.Find<ModItem>("EndufloraSeeds").Type, 10, seedMin, seedMax);
-                }
-                catch
-                {
-                    CalamityMod.Log.Debug("One of the items in this file got renamed internally. Please report this in the #bugs-read-pins channel of the official Calamity discord server.");
-                }
-            }
-            */
         }
 
         public override void ModifyTooltips(List<TooltipLine> list)

@@ -1196,7 +1196,8 @@ namespace CalamityMod.NPCs
                                 ItemID.LucyTheAxe,
                                 ItemID.PewMaticHorn,
                                 ItemID.WeatherPain,
-                                ItemID.HoundiusShootius
+                                ItemID.HoundiusShootius,
+                                ModContent.ItemType<WalkingCane>()
                             };
                             LCR_NotExpert.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, deerWeapons));
                         }

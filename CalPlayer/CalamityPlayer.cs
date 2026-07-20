@@ -1077,15 +1077,15 @@ namespace CalamityMod.CalPlayer
         public bool jellyChargedBattery = false;
         /// <summary> General cooldown for accessories which spawn projectiles on minion hits. </summary>
         public float summonProjCooldown;
-        public bool sandElemental = false;
+        public bool? sandElemental = null;
         public bool sandElementalVanity = false;
-        public bool oasisElemental = false;
+        public bool? oasisElemental = null;
         public bool oasisElementalVanity = false;
-        public bool cloudElemental = false;
+        public bool? cloudElemental = null;
         public bool cloudElementalVanity = false;
-        public bool brimElemental = false;
+        public bool? brimElemental = null;
         public bool brimElementalVanity = false;
-        public bool waterElemental = false;
+        public bool? waterElemental = null;
         public bool waterElementalVanity = false;
         public bool fungalClump = false;
         public bool fungalClumpVanity = false;
@@ -1227,7 +1227,6 @@ namespace CalamityMod.CalPlayer
         public bool bloodflareFrenzy = false;
         public int bloodflareMeleeHits = 0;
         public bool bloodflareRanged = false;
-        public bool bloodflareThrowing = false;
         public bool bloodflareMage = false;
         public int bloodflareMageCooldown = 0;
         public bool bloodflareSummon = false;
@@ -1516,10 +1515,8 @@ namespace CalamityMod.CalPlayer
         public bool CalamarisLament = false;
         /// <summary> Entropy's Vigil. </summary>
         public bool cEyes = false;
-        /// <summary> Corroslime Staff. </summary>
-        public bool cSlime = false;
-        /// <summary> Crimslime Staff. </summary>
-        public bool cSlime2 = false;
+        /// <summary> Blighted Slime Staff. </summary>
+        public bool blightedSlime = false;
         /// <summary> Abandoned Slime Staff. </summary>
         public bool aSlime = false;
         public bool brittleStar = false;
@@ -1550,7 +1547,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Enchanted Conch. </summary>
         public bool hCrab = false;
         /// <summary> Heart of the Elements. </summary>
-        public bool allElementals = false;
+        public bool? allElementals = null;
         /// <summary> Heart of the Elements; however, the minions will not attack. </summary>
         public bool allElementalsVanity = false;
         /// <summary> Silva armor's Silva Crystal. </summary>
@@ -2592,7 +2589,6 @@ namespace CalamityMod.CalPlayer
             bloodflareMelee = false;
             bloodflareFrenzy = false;
             bloodflareRanged = false;
-            bloodflareThrowing = false;
             bloodflareMage = false;
             bloodflareSummon = false;
 
@@ -2775,8 +2771,7 @@ namespace CalamityMod.CalPlayer
             cosmicViper = false;
             CalamarisLament = false;
             cEyes = false;
-            cSlime = false;
-            cSlime2 = false;
+            blightedSlime = false;
             aSlime = false;
             brittleStar = false;
             aquaticStar = false;
@@ -2811,17 +2806,17 @@ namespace CalamityMod.CalPlayer
             cSpirit = false;
             dCrystal = false;
             MutatedTruffleBool = false;
-            sandElemental = false;
+            sandElemental = null;
             sandElementalVanity = false;
-            oasisElemental = false;
+            oasisElemental = null;
             oasisElementalVanity = false;
-            cloudElemental = false;
+            cloudElemental = null;
             cloudElementalVanity = false;
-            brimElemental = false;
+            brimElemental = null;
             brimElementalVanity = false;
-            waterElemental = false;
+            waterElemental = null;
             waterElementalVanity = false;
-            allElementals = false;
+            allElementals = null;
             allElementalsVanity = false;
             fungalClump = false;
             fungalClumpVanity = false;
@@ -3375,7 +3370,6 @@ namespace CalamityMod.CalPlayer
             bloodflareFrenzy = false;
             bloodflareMeleeHits = 0;
             bloodflareRanged = false;
-            bloodflareThrowing = false;
             bloodflareMage = false;
             bloodflareSummon = false;
             bloodflareSummonTimer = 0;
@@ -4818,7 +4812,7 @@ namespace CalamityMod.CalPlayer
                         Player.velocity.Y = 0.5f;
                 }
                 else
-                    Player.velocity.Y = 0f;
+                    Player.velocity.Y = 1E-05f;
 
                 if (CalamityKeybinds.ExoChairSlowdownHotkey.Current)
                     Player.velocity *= 0.5f;
@@ -5327,7 +5321,7 @@ namespace CalamityMod.CalPlayer
                 EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex.Value));
 
                 //we draw light around the player when far away so they have some visibility, although very small. This is especially nice in multiplayer. we scale opacity with distance bc it looks better
-                EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / (409600 /*640^2*/), 0, 1)));
+                EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / 409600, 0, 1)));
 
                 if (darknessIntensity == 0)
                 {
@@ -6059,7 +6053,10 @@ namespace CalamityMod.CalPlayer
 
                 float scale = MathHelper.Max(Main.screenWidth, Main.screenHeight) / size * 0.4f;
                 if (ProfanedMoonlightAuroraDrawer is null || ProfanedMoonlightAuroraDrawer.Size != size)
+                {
+                    ProfanedMoonlightAuroraDrawer?.Dispose();
                     ProfanedMoonlightAuroraDrawer = FluidFieldManager.CreateField(size, scale, 0.1f, 50f, 0.992f);
+                }  
 
                 int sourceArea = (int)Math.Ceiling(6f / ProfanedMoonlightAuroraDrawer.Scale) + 1;
                 ProfanedMoonlightAuroraDrawer.ShouldUpdate = Player.miscCounter % 2 == 0;

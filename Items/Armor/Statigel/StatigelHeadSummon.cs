@@ -47,18 +47,13 @@ namespace CalamityMod.Items.Armor.Statigel
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<BabySlimeGodBuff>()) == -1)
-                {
-                    player.AddBuff(ModContent.BuffType<BabySlimeGodBuff>(), 3600, true);
-                }
+                if (player.FindBuffIndex(ModContent.BuffType<BabyPaladinBuff>()) == -1)
+                    player.AddBuff(ModContent.BuffType<BabyPaladinBuff>(), 3600, true);
 
                 int minionID = -1;
                 int minionDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(SlimeDamage);
-
-                if (WorldGen.crimson && player.ownedProjectileCounts[ModContent.ProjectileType<CrimsonSlimeGodMinion>()] < 1)
-                    minionID = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<CrimsonSlimeGodMinion>(), minionDamage, 0f, Main.myPlayer);
-                else if (!WorldGen.crimson && player.ownedProjectileCounts[ModContent.ProjectileType<CorruptionSlimeGodMinion>()] < 1)
-                    minionID = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<CorruptionSlimeGodMinion>(), minionDamage, 0f, Main.myPlayer);
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<StatigelBlightedSlime>()] < 1)
+                    minionID = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<StatigelBlightedSlime>(), minionDamage, 0f, Main.myPlayer);
 
                 if (Main.projectile.IndexInRange(minionID))
                     Main.projectile[minionID].originalDamage = SlimeDamage;

@@ -158,22 +158,6 @@ public class CrimsonEye : ModProjectile, ILocalizedModType
 
         if (DistanceRatio > 0)
         {
-            /*
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HollowCircleHardEdge").Value;
-            Color color = Color.Red * DistanceRatio;
-            if (Time <= 65)
-                color *= (Time - 45) / 20f;
-
-            if (Projectile.timeLeft <= 20)
-                color *= Projectile.timeLeft / 20f;
-
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, color, 0f, tex.Size() * 0.5f, 1.75f, 0);
-
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
-            */
-
             float opacity = DistanceRatio;
             if (Time <= 65)
                 opacity *= (Time - 45) / 20f;

@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.Blue;
         }
 
