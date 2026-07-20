@@ -428,7 +428,7 @@ namespace CalamityMod.CalPlayer
 
 
             if (Player.HasBuff<FulfilledContract>())
-                target.AddBuff(ModContent.BuffType<Laceration>(), ThePact.DebuffInflictionDuration)
+                target.AddBuff(ModContent.BuffType<Laceration>(), ThePact.DebuffInflictionDuration);
 
                 int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
             if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (target.Calamity().abaddonEffected || target.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
