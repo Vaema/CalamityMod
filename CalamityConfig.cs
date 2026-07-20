@@ -52,10 +52,6 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool EnableVanillaTextureEdits { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
         public bool SunkenSeaBackgroundDistortion { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
