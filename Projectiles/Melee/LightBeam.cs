@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Melee
 
         private const float MaxVelocity = DarklightGreatsword.ShootSpeed * 12f;
 
-        private const int FadeOutTime = 85;
+        private const int FadeOutTime = 30;
 
-        private const int TimeLeft = 215 + FadeOutTime;
+        private const int TimeLeft = 150 + FadeOutTime;
 
         private const int Alpha = 100;
 
