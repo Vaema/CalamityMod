@@ -923,8 +923,8 @@ FulfilledContract: {
 	Description: A reward earned through blood and tears
 	ItemTooltipPlayer:
 		'''
-		50% increased Healing Potion effectiveness
-		Greatly increased natural regeneration power and recovery rate
+		25% reduced Healing Potion cooldown
+		75% increased natural regeneration power
 		All attacks inflict Laceration
 		'''
 }
