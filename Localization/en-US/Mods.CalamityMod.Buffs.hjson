@@ -924,10 +924,8 @@ FulfilledContract: {
 	ItemTooltipPlayer:
 		'''
 		50% increased Healing Potion effectiveness
-		5% increased damage
-		20 defense
-		Increased natural regen power and recovery rate
-		Increases the length of invicibility after taking damage
+		Greatly increased natural regeneration power and recovery rate
+		All attacks inflict Laceration
 		'''
 }
 

@@ -16,8 +16,6 @@ namespace CalamityMod.Buffs.StatBuffs
         public override void Update(Player player, ref int buffIndex)
         {
             Main.buffNoTimeDisplay[Type] = false;
-            player.statDefense += ThePact.DefenseBoost;
-            player.GetDamage<GenericDamageClass>() += ThePact.DamageBoost;
         }
     }
 }

@@ -17,10 +17,10 @@ namespace CalamityMod.Items.Accessories
         public static float ChanceToBeCrit => 0.25f;
         public static float CritDmgTaken => 2.25f;
         public static float HealingPotionBoost => 1.5f;
-        public static float DamageBoost => 0.05f;
-        public static int DefenseBoost => 20;
+        public static int BoostDuration => 900;
+        public static int DebuffInflictionDuration => 60;
         public static float NaturalRegenBoost => 1.5f;
-        public static int RegenTimeBoost => 1;
+        public static int RegenTimeBoost => 3;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifeMult,ChanceToBeCrit.ToPercent(),CritDmgTaken);
 
         public override void SetStaticDefaults()

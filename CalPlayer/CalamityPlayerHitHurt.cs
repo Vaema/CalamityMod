@@ -426,7 +426,11 @@ namespace CalamityMod.CalPlayer
             if (Player.Calamity().yharimsGift)
                 target.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
 
-            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
+
+            if (Player.HasBuff<FulfilledContract>())
+                target.AddBuff(ModContent.BuffType<Laceration>(), ThePact.DebuffInflictionDuration)
+
+                int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
             if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (target.Calamity().abaddonEffected || target.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
             {
                 int maxTargetNum = target.Calamity().apollyonEffected ? 10 : 6;
@@ -1489,7 +1493,7 @@ namespace CalamityMod.CalPlayer
             if (CanBeCritByThePact && Main.rand.NextFloat() < ThePact.ChanceToBeCrit)
             {
                 modifiers.SourceDamage *= ThePact.CritDmgTaken;
-                Player.AddBuff(ModContent.BuffType<FulfilledContract>(), 600);
+                Player.AddBuff(ModContent.BuffType<FulfilledContract>(), ThePact.BoostDuration);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BloodPactCrit"));
             }
 
