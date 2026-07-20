@@ -139,7 +139,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity = toMouse;
                 Projectile.rotation = toMouse.ToRotation() + bladeRot;
                 Projectile.rotation += MathHelper.PiOver2 * 0.5f; // Adjustment made so texture actually faces cursor
-                Projectile.rotation += 0.15f * Owner.direction; // Another to make the tip look like its more directly pointing at cursor
 
                 if (Owner.direction == -1)
                     Projectile.rotation -= MathHelper.TwoPi * 0.75f;
@@ -197,7 +196,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.altFunctionUse == 0 && DashState == 0)
             {
-                Projectile.Center += (Utils.DirectionTo(Owner.MountedCenter, Owner.ClampedMouseWorld()) * Main.rand.NextFloat(-5f, 8f));
+                Projectile.Center += (Utils.DirectionTo(Owner.MountedCenter, Owner.ClampedMouseWorld()) * Main.rand.NextFloat(-5f, 8f)); // When using M1, randomly offset position
                 UsePrimary(toMouse);
             }
 
@@ -219,6 +218,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 stabOrigin = Projectile.Center;
             Vector2 stabTip = stabOrigin + stabDir * 62f * Projectile.scale;
 
+            // Spawn spawks extending out of the blade which represent the hitbox
             for (int i = 0; i < 4; i++)
             {
                 Vector2 spawnPos = stabTip + Main.rand.NextVector2Circular(18f, 12f) * Projectile.scale;
@@ -231,7 +231,7 @@ namespace CalamityMod.Projectiles.Melee
             Particle afterImage = new CustomSpark(Projectile.Center + (stabDir * 10f) + Main.rand.NextVector2Circular(4f, 11f), (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2(), new("CalamityMod/Items/Weapons/Melee/Lightspeed"), false, Main.rand.Next(5,9), 0.6f * Main.rand.NextFloat(0.9f, 1.02f), Color.White * Main.rand.NextFloat(0.66f, 0.825f), new Vector2(1, 1), true, false, flipHorizontal: Owner.direction == -1 ? true : false);
             GeneralParticleHandler.SpawnParticle(afterImage);
 
-            // Make blade randomly vibrate
+            // Make blade randomly vibrate and draw with quirks
             bladeRot = Main.rand.NextFloat(-0.12f, 0.3f) * Owner.direction;
             Projectile.scale *= Main.rand.NextFloat(0.75f, 1f);
             Projectile.Center += stabDir + Main.rand.NextVector2Circular(7f, 1.5f);
@@ -240,9 +240,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation += bladeRot * 0.1f;
             // Make arm randomly vibrate
             if (Main.rand.NextBool())
-            {
                 Owner.SetCompositeArmFront(true, Main.rand.NextBool() ? CompositeArmStretchAmount.ThreeQuarters : CompositeArmStretchAmount.Quarter, Owner.itemRotation);
-            }
 
             stabSoundTimer++;
             if (stabSoundTimer % 3 == 0)
