@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public const float MaxTargetingDistance = 1360f;
 
         public const float BeamHomeSpeed = 17f;
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
 
         public override void SetDefaults()
         {
