@@ -288,7 +288,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<GreedPot>()
                 .Add<FishStocks>()
                 .Add<TheGift>()
-                .Add<ThePact>(Condition.BloodMoonOrHardmode)
+                .Add<ThePact>(CalamityConditions.DownedDreadnautilus, Condition.BloodMoon)
                 .Add<TheMonument>(Condition.Hardmode)
                 .Add<TheHousingContract>(Condition.Hardmode)
                 .Add<OmniGun>(Condition.DownedGolem)
