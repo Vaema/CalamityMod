@@ -107,15 +107,12 @@ namespace CalamityMod.Projectiles.Melee
                 // Visual rotation
                 Projectile.rotation = dashArmRotation;
                 Projectile.rotation = Projectile.velocity.ToRotation() + (Owner.direction == 1 ? MathHelper.PiOver4 : MathHelper.Pi * 0.75f);
-                Projectile.rotation += 0.15f * Owner.direction; // Adjustment to make the tip look like its more directly pointing at cursor
 
                 // Item rotation (for arm positioning)
                 Owner.itemRotation = dashArmRotation + MathHelper.PiOver4;
 
                 if (Owner.direction != 1)
-                {
                     Owner.itemRotation -= MathHelper.TwoPi * 0.75f;
-                }
 
                 Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             }
@@ -145,9 +142,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.rotation += 0.15f * Owner.direction; // Another to make the tip look like its more directly pointing at cursor
 
                 if (Owner.direction == -1)
-                {
                     Projectile.rotation -= MathHelper.TwoPi * 0.75f;
-                }
 
                 Projectile.Center = handPos + toMouse * Projectile.scale;
 
@@ -157,13 +152,9 @@ namespace CalamityMod.Projectiles.Melee
                 // Item rotation (for arm positioning)
                 Owner.itemRotation = Projectile.rotation - MathHelper.PiOver4; // Adjustment undone for arm pos
                 if (Owner.direction == -1)
-                {
                     Owner.itemRotation -= MathHelper.Pi;
-                }
                 else
-                {
                     Owner.itemRotation -= MathHelper.PiOver2;
-                }
 
                 Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
 
