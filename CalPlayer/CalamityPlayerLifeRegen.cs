@@ -502,9 +502,6 @@ namespace CalamityMod.CalPlayer
             if (livingDew)
                 Player.lifeRegenTime += LivingDew.RegenTimeBoost;
 
-            if (Player.HasBuff<FulfilledContract>())
-                Player.lifeRegenTime += ThePact.RegenTimeBoost;
-
             if (aAmpoule)
             {
                 Player.lifeRegen += (int)Math.Round(MathHelper.Lerp(AmbrosialAmpoule.MaxRegenBoost, AmbrosialAmpoule.MinRegenBoost, lifeRatio));
