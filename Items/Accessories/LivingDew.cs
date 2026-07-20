@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int RegenTimeBoost => 1;
-        public static float NaturalRegenPower => 1.5f;
+        public static float NaturalRegenPower => 1.75f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((NaturalRegenPower - 1f).ToPercent(), RegenTimeBoost.ToPercent());
         public override void SetDefaults()
         {

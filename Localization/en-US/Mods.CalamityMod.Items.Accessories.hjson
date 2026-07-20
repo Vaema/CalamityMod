@@ -441,7 +441,7 @@ CorrosiveSpine: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		25% increased Sickness and Water debuff damage
+		50% increased Sickness and Water debuff damage
 		All attacks inflict [cbuff:CalamityMod/Irradiated] and reduces the severity of the sulphuric waters
 		You burst into radioactive clouds when struck
 		'''
@@ -973,7 +973,7 @@ HallowedRune: {
 
 HarpyRing: {
 	DisplayName: Harpy Ring
-	Tooltip: 10% increased movement speed and 20% increased flight time
+	Tooltip: 20% increased movement speed and flight time
 }
 
 HeartofDarkness: {
@@ -1216,7 +1216,7 @@ NebulousCore: {
 	DisplayName: Nebulous Core
 	Tooltip:
 		'''
-		10% increased damage
+		12% increased damage
 		Summons floating nebula stars to protect you
 		Taking a fatal hit revives you to 100 HP
 		This effect has a 90 second cooldown

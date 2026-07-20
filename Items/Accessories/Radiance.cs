@@ -20,10 +20,10 @@ namespace CalamityMod.Items.Accessories
 
         public static int MinRegenBoost => 2;
         public static int MaxRegenBoost => 8;
-        public static int ReducedDoTAmount => 20;
-        public static int PostDebuffRegenTimeBoost => CalamityUtils.SecondsToFrames(10);
+        public static int ReducedDoTAmount => 24;
+        public static int PostDebuffRegenTimeBoost => CalamityUtils.SecondsToFrames(15);
         public static float RegenTimeBoost => 1;
-        public static float NaturalRegenPower => 1.5f;
+        public static float NaturalRegenPower => 1.75f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinRegenBoost.ToRegenPerSecond(),MaxRegenBoost.ToRegenPerSecond(),ReducedDoTAmount.ToRegenPerSecond(), (NaturalRegenPower - 1f).ToPercent(),RegenTimeBoost.ToPercent());
         public override void SetStaticDefaults()
         {

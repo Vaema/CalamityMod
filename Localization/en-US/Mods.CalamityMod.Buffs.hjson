@@ -1027,7 +1027,7 @@ ReaverRage: {
 		Rage of the earth
 		Defense increased by {0} and damage increased by {1}%
 		'''
-	ItemTooltipPlayer: Increases your defense by 10 and damage by 10%
+	ItemTooltipPlayer: Increases your defense by 5 and damage by 10%
 }
 
 SandsWindBuff: {

@@ -128,11 +128,7 @@ EditedTooltip: {
 	*/
 	Campfires: Life regen is increased by 0.5 HP/s when near a campfire
 	HeartLantern: Grants +1 HP/s life regeneration when placed nearby
-	BottledHoney:
-		'''
-		Grants +1 HP/s life regen for a short time
-		Grants an additional +1 HP/s life regen while inflicted with a damaging debuff
-		'''
+	BottledHoney: Grants the [cbuffplr:Honey] buff for 15 seconds
 	ShinyStone: Grants +2 HP/s life regen and accelerates natural life regen when not moving
 	BandofRegeneration: Grants +1 HP/s life regeneration
 	CharmofMyths: Grants +1 HP/s life regeneration and reduces the cooldown of healing potions by 25%
