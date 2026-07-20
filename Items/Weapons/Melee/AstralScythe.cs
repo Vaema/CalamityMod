@@ -15,12 +15,11 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 56;
             Item.height = 60;
-            Item.damage = 120;
+            Item.damage = 80;
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
-            Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 20;
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
@@ -28,12 +27,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<AstralScytheProjectile>();
             Item.shootSpeed = 5f;
-        }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, type, (int)(damage * 0.6), knockback, player.whoAmI);
-            return false;
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
