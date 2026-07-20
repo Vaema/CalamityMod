@@ -4812,7 +4812,7 @@ namespace CalamityMod.CalPlayer
                         Player.velocity.Y = 0.5f;
                 }
                 else
-                    Player.velocity.Y = 0f;
+                    Player.velocity.Y = 1E-05f;
 
                 if (CalamityKeybinds.ExoChairSlowdownHotkey.Current)
                     Player.velocity *= 0.5f;
@@ -6053,7 +6053,10 @@ namespace CalamityMod.CalPlayer
 
                 float scale = MathHelper.Max(Main.screenWidth, Main.screenHeight) / size * 0.4f;
                 if (ProfanedMoonlightAuroraDrawer is null || ProfanedMoonlightAuroraDrawer.Size != size)
+                {
+                    ProfanedMoonlightAuroraDrawer?.Dispose();
                     ProfanedMoonlightAuroraDrawer = FluidFieldManager.CreateField(size, scale, 0.1f, 50f, 0.992f);
+                }  
 
                 int sourceArea = (int)Math.Ceiling(6f / ProfanedMoonlightAuroraDrawer.Scale) + 1;
                 ProfanedMoonlightAuroraDrawer.ShouldUpdate = Player.miscCounter % 2 == 0;

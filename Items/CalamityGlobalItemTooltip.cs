@@ -394,8 +394,9 @@ namespace CalamityMod.Items
 
                 if (showTheTip)
                 {
-                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
-                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}", str))));
+                    var bind = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"];
+                    string str = bind.Count == 0 ? GetTextValue("Misc.HotkeyNotBound") : bind.First().ToString();
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", GetTextValue("Misc.AltExpand").Replace("{0}", str))));
                     tooltips[lastTooltipIndex].OverrideColor = new Color(170, 170, 170);
                 }
                 else if (foundDebuff)
