@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.penetrate = -1;
             Projectile.ownerHitCheck = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override float InitialSpeed => 3f;
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override float ForwardSpeed => 0.8f;
         public override Action<Projectile> EffectBeforeReelback => (proj) =>
         {
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 2f, ModContent.ProjectileType<HellionSpike>(), Projectile.damage, Projectile.knockBack * 0.85f, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 2f, ModContent.ProjectileType<HellionSpike>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
         };
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

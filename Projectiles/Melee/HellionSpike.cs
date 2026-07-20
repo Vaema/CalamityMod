@@ -21,12 +21,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.aiStyle = ProjAIStyleID.Beam;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 2;
             Projectile.MaxUpdates = 2;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 180;
             AIType = ProjectileID.SporeCloud;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8 * Projectile.MaxUpdates;
         }
 
         public override void AI()
@@ -48,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 595)
+            if (Projectile.timeLeft > 175)
                 return false;
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
