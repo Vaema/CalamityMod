@@ -84,80 +84,64 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Positioning(Vector2 toMouse) // Hand and holdout positioning
         {
-            if (DashState == 2)
+            Owner.heldProj = Projectile.whoAmI;
+            Owner.itemTime = Owner.itemAnimation = 2;
+
+            bool isDashing = DashState == 2;
+            Vector2 baseDir = isDashing ? Projectile.velocity.SafeNormalize(Vector2.UnitX * Owner.direction) : toMouse;
+            Owner.ChangeDir(Math.Sign(baseDir.X));
+
+            float gravDir = Owner.gravDir;
+
+            float playerArmRotation = new Vector2(baseDir.X, baseDir.Y * gravDir).ToRotation();
+            float worldArmRotation = baseDir.ToRotation(); // The absolute world angle to point the projectile
+
+            float compositeArmRotation;
+
+            if (isDashing)
             {
-                Vector2 dashDirection = Projectile.velocity.SafeNormalize(Vector2.UnitX * Owner.direction);
-                Owner.ChangeDir(Math.Sign(dashDirection.X));
-
-                float dashArmRotation = dashDirection.ToRotation();
-                float dashCompositeArmRotation = dashArmRotation + (MathHelper.TwoPi * 0.75f);
-
-                Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, dashCompositeArmRotation);
-                Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, 0f);
-
                 bladeRot = 0;
-
-                handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.Full, dashCompositeArmRotation);
+                compositeArmRotation = playerArmRotation + (MathHelper.TwoPi * 0.75f);
+                handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.Full, compositeArmRotation);
 
                 Projectile.Center = handPos;
 
-                Owner.heldProj = Projectile.whoAmI;
-                Owner.itemTime = Owner.itemAnimation = 2;
+                // Keep projectile rotation in world space, but invert the offset direction when flipped
+                Projectile.rotation = worldArmRotation + (Owner.direction == 1 ? MathHelper.PiOver4 : MathHelper.Pi * 0.75f) * gravDir;
 
-                // Visual rotation
-                Projectile.rotation = dashArmRotation;
-                Projectile.rotation = Projectile.velocity.ToRotation() + (Owner.direction == 1 ? MathHelper.PiOver4 : MathHelper.Pi * 0.75f);
-
-                // Item rotation (for arm positioning)
-                Owner.itemRotation = dashArmRotation + MathHelper.PiOver4;
-
-                if (Owner.direction != 1)
-                    Owner.itemRotation -= MathHelper.TwoPi * 0.75f;
-
-                Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
+                Owner.itemRotation = playerArmRotation + MathHelper.PiOver4 - (Owner.direction != 1 ? MathHelper.TwoPi * 0.75f : 0f);
             }
-
             else // If not in dash
             {
-                Owner.ChangeDir(Math.Sign(toMouse.X));
+                compositeArmRotation = playerArmRotation + bladeRot - MathHelper.PiOver2;
 
-                float baseArmRotation = toMouse.ToRotation();
-                float compositeArmRotation = baseArmRotation + bladeRot - MathHelper.PiOver2;
-
-                Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, compositeArmRotation);
-                Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, 0f);
-
-                Vector2 actualInnateOffset = innateOffset;
+                Vector2 actualOffset = innateOffset;
                 if (Owner.direction == -1)
                 {
-                    actualInnateOffset.X += 1f;
-                    actualInnateOffset.Y += 2f;
+                    actualOffset.X += 1f;
+                    actualOffset.Y += 2f;
                 }
 
-                handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.Full, compositeArmRotation) + actualInnateOffset.RotatedBy(baseArmRotation);
+                actualOffset.Y *= gravDir;
+                handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.Full, compositeArmRotation) + actualOffset.RotatedBy(worldArmRotation);
 
                 Projectile.velocity = toMouse;
-                Projectile.rotation = toMouse.ToRotation() + bladeRot;
-                Projectile.rotation += MathHelper.PiOver2 * 0.5f; // Adjustment made so texture actually faces cursor
 
+                // Adjust sprite rotation logic to compensate for the vertical flip applied in PreDraw
+                float rotOffset = MathHelper.PiOver4 * gravDir;
                 if (Owner.direction == -1)
-                    Projectile.rotation -= MathHelper.TwoPi * 0.75f;
+                    rotOffset -= (gravDir == 1f ? MathHelper.TwoPi * 0.75f : MathHelper.PiOver2);
 
+                Projectile.rotation = worldArmRotation + bladeRot + rotOffset;
                 Projectile.Center = handPos + toMouse * Projectile.scale;
 
-                Owner.heldProj = Projectile.whoAmI;
-                Owner.itemTime = Owner.itemAnimation = 2;
-
-                // Item rotation (for arm positioning)
-                Owner.itemRotation = Projectile.rotation - MathHelper.PiOver4; // Adjustment undone for arm pos
-                if (Owner.direction == -1)
-                    Owner.itemRotation -= MathHelper.Pi;
-                else
-                    Owner.itemRotation -= MathHelper.PiOver2;
-
-                Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
-
+                // Simplified: The messy itemRotation calculation mathematically reduces to just this!
+                Owner.itemRotation = compositeArmRotation;
             }
+
+            Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, compositeArmRotation);
+            Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, 0f);
+            Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
         }
 
         public override void AI()
@@ -228,7 +212,24 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
-            Particle afterImage = new CustomSpark(Projectile.Center + (stabDir * 10f) + Main.rand.NextVector2Circular(4f, 11f), (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2(), new("CalamityMod/Items/Weapons/Melee/Lightspeed"), false, Main.rand.Next(5,9), 0.6f * Main.rand.NextFloat(0.9f, 1.02f), Color.White * Main.rand.NextFloat(0.66f, 0.825f), new Vector2(1, 1), true, false, flipHorizontal: Owner.direction == -1 ? true : false);
+            bool flipParticle = Owner.direction == -1;
+            float particleRot = Projectile.rotation - MathHelper.PiOver2;
+
+            Vector2 afterImageDir = Owner.direction == -1 ? stabDir.RotatedBy(MathHelper.PiOver4) : stabDir.RotatedBy(-MathHelper.PiOver4);
+
+            Particle afterImage = new CustomSpark(
+                Projectile.Center + (stabDir * 10f) + Main.rand.NextVector2Circular(4f, 11f),
+                afterImageDir,
+                new("CalamityMod/Items/Weapons/Melee/Lightspeed"),
+                false,
+                Main.rand.Next(5, 9),
+                0.6f * Main.rand.NextFloat(0.9f, 1.02f),
+                Color.White * Main.rand.NextFloat(0.66f, 0.825f),
+                new Vector2(1, 1),
+                true,
+                false,
+                flipHorizontal: Owner.direction == -1 
+            );
             GeneralParticleHandler.SpawnParticle(afterImage);
 
             // Make blade randomly vibrate and draw with quirks
@@ -286,26 +287,27 @@ namespace CalamityMod.Projectiles.Melee
                     float eased = MathF.Pow(t, 1.2f);
 
                     AltSpinRotation = eased * (4f * MathHelper.Pi * 0.7175f);
-                    float orbitalAngle = AltSpinRotation * initialDirectionForThisAnim + (initialDirectionForThisAnim == -1 ? MathHelper.Pi : 0);
+
+                    float orbitalAngle = (AltSpinRotation * initialDirectionForThisAnim + (initialDirectionForThisAnim == -1 ? MathHelper.Pi : 0)) * Owner.gravDir;
                     float orbitRadius = 40f;
 
                     Projectile.Center = Owner.MountedCenter + orbitalAngle.ToRotationVector2() * orbitRadius;
-                    float tangentAngle = orbitalAngle + (initialDirectionForThisAnim == 1 ? MathHelper.PiOver4 : -MathHelper.PiOver4 + MathHelper.Pi);
-                    Projectile.rotation = tangentAngle;
 
                     // Proper arm positioning
-                    Vector2 armDirection = Projectile.Center - Owner.MountedCenter;
-                    float baseArmRotation = armDirection.ToRotation();
+                    float rotOffset = MathHelper.PiOver4 * Owner.gravDir;
+                    if (initialDirectionForThisAnim == -1)
+                        rotOffset -= (Owner.gravDir == 1f ? MathHelper.TwoPi * 0.75f : MathHelper.PiOver2);
 
-                    float compositeArmRotation = baseArmRotation + (initialDirectionForThisAnim == 1 ? MathHelper.TwoPi * 0.75f : -MathHelper.PiOver2);
+                    Projectile.rotation = orbitalAngle + rotOffset;
+
+                    Vector2 armDirection = Projectile.Center - Owner.MountedCenter;
+                    float playerArmRotation = new Vector2(armDirection.X, armDirection.Y * Owner.gravDir).ToRotation();
+
+                    float compositeArmRotation = playerArmRotation + (initialDirectionForThisAnim == 1 ? MathHelper.TwoPi * 0.75f : -MathHelper.PiOver2);
                     Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, compositeArmRotation);
                     Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, 0f);
 
-                    Owner.itemRotation = baseArmRotation;
-                    if (Owner.direction == -1)
-                        Owner.itemRotation += MathHelper.Pi;
-                    
-                    Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
+                    Owner.itemRotation = MathHelper.WrapAngle(compositeArmRotation);
                 }
 
                 // Mid-spin VFX
@@ -379,7 +381,7 @@ namespace CalamityMod.Projectiles.Melee
         public float PierceWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * Projectile.scale * 24f;
-            //Fade it out starkly near the end of the lunge
+            // Fade it out starkly near the end of the lunge
             width *= (1 - (float)Math.Pow(LungeProgression, 4));
             return width;
         }
@@ -389,15 +391,21 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
-            Rectangle frame = new Rectangle(0, Projectile.frame * frameHeight, texture.Width, frameHeight);
-            Vector2 origin = new Vector2(texture.Width / 2f, frameHeight / 2f);
+            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Vector2 origin = frame.Size() / 2f;
 
-            SpriteEffects spriteEffects = Owner.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            lightColor = Color.White; // Fullbright
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, lightColor * Projectile.Opacity, Projectile.rotation, origin, 0.6f, spriteEffects, 0);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (Owner.direction == -1)
+                spriteEffects |= SpriteEffects.FlipHorizontally;
 
-            DrawPierceTrail();
+            // Account for inverse gravity
+            if (Owner.gravDir == -1f)
+                spriteEffects |= SpriteEffects.FlipVertically;
+
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, Color.White * Projectile.Opacity, Projectile.rotation, origin, 0.6f, spriteEffects, 0);
+
+            if (DashState == 2)
+                DrawPierceTrail();
 
             return false;
         }
