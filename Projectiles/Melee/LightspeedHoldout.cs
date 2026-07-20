@@ -91,9 +91,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 baseDir = isDashing ? Projectile.velocity.SafeNormalize(Vector2.UnitX * Owner.direction) : toMouse;
             Owner.ChangeDir(Math.Sign(baseDir.X));
 
-            float gravDir = Owner.gravDir;
-
-            float playerArmRotation = new Vector2(baseDir.X, baseDir.Y * gravDir).ToRotation();
+            float playerArmRotation = new Vector2(baseDir.X, baseDir.Y * Owner.gravDir).ToRotation();
             float worldArmRotation = baseDir.ToRotation(); // The absolute world angle to point the projectile
 
             float compositeArmRotation;
@@ -107,7 +105,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = handPos;
 
                 // Keep projectile rotation in world space, but invert the offset direction when flipped
-                Projectile.rotation = worldArmRotation + (Owner.direction == 1 ? MathHelper.PiOver4 : MathHelper.Pi * 0.75f) * gravDir;
+                Projectile.rotation = worldArmRotation + (Owner.direction == 1 ? MathHelper.PiOver4 : MathHelper.Pi * 0.75f) * Owner.gravDir;
 
                 Owner.itemRotation = playerArmRotation + MathHelper.PiOver4 - (Owner.direction != 1 ? MathHelper.TwoPi * 0.75f : 0f);
             }
@@ -122,15 +120,14 @@ namespace CalamityMod.Projectiles.Melee
                     actualOffset.Y += 2f;
                 }
 
-                actualOffset.Y *= gravDir;
+                actualOffset.Y *= Owner.gravDir;
                 handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.Full, compositeArmRotation) + actualOffset.RotatedBy(worldArmRotation);
-
                 Projectile.velocity = toMouse;
 
                 // Adjust sprite rotation logic to compensate for the vertical flip applied in PreDraw
-                float rotOffset = MathHelper.PiOver4 * gravDir;
+                float rotOffset = MathHelper.PiOver4 * Owner.gravDir;
                 if (Owner.direction == -1)
-                    rotOffset -= (gravDir == 1f ? MathHelper.TwoPi * 0.75f : MathHelper.PiOver2);
+                    rotOffset -= (Owner.gravDir == 1f ? MathHelper.TwoPi * 0.75f : MathHelper.PiOver2);
 
                 Projectile.rotation = worldArmRotation + bladeRot + rotOffset;
                 Projectile.Center = handPos + toMouse * Projectile.scale;
@@ -212,10 +209,10 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
-            bool flipParticle = Owner.direction == -1;
-            float particleRot = Projectile.rotation - MathHelper.PiOver2;
+            bool flipParticle = Owner.gravDir == -1 ? Owner.direction == 1 : Owner.direction == -1;
 
-            Vector2 afterImageDir = Owner.direction == -1 ? stabDir.RotatedBy(MathHelper.PiOver4) : stabDir.RotatedBy(-MathHelper.PiOver4);
+            float rotOffset = Owner.gravDir == -1 ? -MathHelper.PiOver4 : MathHelper.PiOver4;
+            Vector2 afterImageDir = Owner.direction == -1 ? stabDir.RotatedBy(rotOffset) : stabDir.RotatedBy(-rotOffset);
 
             Particle afterImage = new CustomSpark(
                 Projectile.Center + (stabDir * 10f) + Main.rand.NextVector2Circular(4f, 11f),
@@ -228,7 +225,7 @@ namespace CalamityMod.Projectiles.Melee
                 new Vector2(1, 1),
                 true,
                 false,
-                flipHorizontal: Owner.direction == -1 
+                flipHorizontal: flipParticle
             );
             GeneralParticleHandler.SpawnParticle(afterImage);
 
