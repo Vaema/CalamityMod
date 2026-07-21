@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Armor.Daedalus
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CryonicBar>(10).
+                AddIngredient<CryonicBar>(18).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

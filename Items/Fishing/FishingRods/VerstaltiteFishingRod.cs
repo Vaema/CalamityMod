@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CryonicBar>(6).
+                AddIngredient<CryonicBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CryonicBar>(5).
-                AddIngredient(ItemID.CrystalShard, 10).
+                AddIngredient<CryonicBar>(8).
+                AddIngredient(ItemID.CrystalShard, 20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
