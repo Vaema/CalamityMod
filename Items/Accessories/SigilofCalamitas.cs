@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient(ItemID.CelestialEmblem).
-                AddIngredient<ScoriaBar>(5).
+                AddIngredient<ScoriaBar>(6).
                 AddIngredient<AshesofCalamity>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();

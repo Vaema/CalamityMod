@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<AbyssGravel>(10).
                 AddIngredient<DepthCells>(5).
                 AddIngredient<PyreMantle>(10).
-                AddIngredient<ScoriaBar>(5).
+                AddIngredient<ScoriaBar>(6).
                 AddIngredient<Voidstone>(10).
                 AddIngredient<Lumenyl>(5).
                 AddTile(TileID.MythrilAnvil).

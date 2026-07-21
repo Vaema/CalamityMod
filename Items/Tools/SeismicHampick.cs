@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ScoriaBar>(7).
+                AddIngredient<ScoriaBar>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
