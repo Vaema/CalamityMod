@@ -1188,7 +1188,7 @@ namespace CalamityMod.Items
                 {
                     player.GetJumpState<GravityJump>().Available = true;
                 }
-                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8)
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 7)
                 {
                     player.maxRunSpeed = 7f;
                 }
