@@ -43,8 +43,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<DepthCrusher>().
-                AddIngredient<Voidstone>(20).
-                AddIngredient<DepthCells>(20).
+                AddIngredient<Voidstone>(30).
+                AddIngredient<DepthCells>(30).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -59,8 +59,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.Megashark).
                 AddIngredient<Archerfish>().
-                AddIngredient<DepthCells>(15).
-                AddIngredient<PlantyMush>(10).
+                AddIngredient<DepthCells>(30).
+                AddIngredient<PlantyMush>(30).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

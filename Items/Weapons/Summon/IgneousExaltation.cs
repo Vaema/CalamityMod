@@ -140,8 +140,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UnholyCore>(10).
-                AddIngredient<EssenceofHavoc>(5).
+                AddIngredient<UnholyCore>(6).
+                AddIngredient<EssenceofHavoc>(6).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
