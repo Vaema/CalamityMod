@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<AsgardsValor>().
                 AddIngredient<ElysianAegis>().
-                AddIngredient<CosmiliteBar>(10).
+                AddIngredient<CosmiliteBar>(6).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();

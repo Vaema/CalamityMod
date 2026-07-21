@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CosmiliteBar>(5).
+                AddIngredient<CosmiliteBar>(6).
                 AddIngredient<Elumplate>(25).
                 AddIngredient<ExodiumCluster>(25).
                 AddTile<CosmicAnvil>().
