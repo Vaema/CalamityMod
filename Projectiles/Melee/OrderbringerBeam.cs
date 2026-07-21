@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-            if (Projectile.timeLeft % 12 == 0 && targetDist < 1400f)
+            if (!CalamityClientConfig.Instance.Photosensitivity && Projectile.timeLeft % 12 == 0 && targetDist < 1400f)
             {
                 Particle spark = new CustomSpark(Projectile.Center, Projectile.velocity * 0.2f, "CalamityMod/Particles/BloomCircle", false, 23, 0.25f * Projectile.scale, mainColor * 0.75f, new Vector2(1f, 7.35f), true, true, shrinkSpeed: 0.2f, glowOpacity: 0.7f);
                 GeneralParticleHandler.SpawnParticle(spark);

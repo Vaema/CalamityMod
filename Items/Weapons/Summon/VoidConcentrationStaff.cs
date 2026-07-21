@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
@@ -12,7 +11,6 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
-using CalamityMod.Systems.Collections;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
@@ -40,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
             AutoDrawTooltip = false
         };
 
-        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += (int)(damageDone * (1- SummonerTagEffectiveness));
+        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += (int)(damageDone * (1 - SummonerTagEffectiveness));
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
@@ -77,6 +75,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
                     player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationMinion>()]++; //update it instantly so it's read properly later in the same update
                 }
+            }
             if (player.altFunctionUse == 2)
             {
                 player.MinionNPCTargetAim(true);
@@ -86,6 +85,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<VoidConcentrationMark>(), damage, knockback, player.whoAmI, target.whoAmI);
                 }
             }
+
             return false;
         }
         public override bool AltFunctionUse(Player player) => true;
