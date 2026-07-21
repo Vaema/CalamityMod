@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient(ItemID.FishingBobber).
-                AddIngredient<PerennialBar>(5).
+                AddIngredient<PerennialBar>(6).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

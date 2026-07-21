@@ -106,7 +106,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient(ItemID.SoulofFlight, 20).
-                AddIngredient<PerennialBar>(5).
+                AddIngredient<PerennialBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
