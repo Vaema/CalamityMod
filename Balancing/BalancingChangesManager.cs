@@ -304,6 +304,9 @@ namespace CalamityMod.Balancing
 
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<NuclearFuryProjectile>()))));
+
+            // 50% resist to Stratus Sphere
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<StratusBlackHole>()))));
             #endregion The Devourer of Gods
 
             #region Exo Mechs: Ares
