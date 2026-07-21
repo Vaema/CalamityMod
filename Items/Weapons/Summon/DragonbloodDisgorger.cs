@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BloodstoneCore>(12).
+                AddIngredient<BloodstoneCore>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
