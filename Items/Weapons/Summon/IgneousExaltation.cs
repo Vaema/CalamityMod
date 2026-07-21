@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Summon;
@@ -61,20 +62,16 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.DamageType = DamageClass.Summon;
         }
 
-        public override bool CanRightClick()
+        public override void HoldItem(Player player)
         {
-            if (!Main.keyState.PressingShift())
-                return false;
-            return true;
+            if (Main.myPlayer == player.whoAmI && Item.JustPressedKeybind())
+            {
+                Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
+            }
         }
-        public override void RightClick(Player player)
-        {
-            Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
-            if (Main.netMode != NetmodeID.SinglePlayer)
-                ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
-        }
-
-        public override bool ConsumeItem(Player player) => false;
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateDynamicHotkey(Item);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

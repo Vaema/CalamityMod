@@ -86,7 +86,8 @@ ArkoftheCosmos: {
 		You can also parry projectiles to make them deal 120 less damage for a short period
 		Parrying will empower the next 16 swings of the sword
 		'''
-	BlastInfo: Double <right> with charges available to cause a Big Rip in spacetime and consume all charges
+	BlastInfo: <right> with charges available to cause a Big Rip in spacetime and consume all charges
+	BlastInfoKeybind: Press [KEY] with charges available to cause a Big Rip in spacetime and consume all charges
 }
 
 ArkoftheElements: {
