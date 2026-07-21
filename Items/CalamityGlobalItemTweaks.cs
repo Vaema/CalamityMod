@@ -128,14 +128,12 @@ namespace CalamityMod.Items
                 { ItemID.Handgun, Do(UseExact(20)) }, // VANILLA: 15 UT
                 { ItemID.HighVelocityBullet, Do(DamageExact(13)) }, // VANILLA: 11 DMG
                 { ItemID.HiveFive, Do(DamageExact(27)) }, // VANILLA: 24 DMG
-                { ItemID.HornetStaff, Do(DamageExact(18)) }, // VANILLA: 12 DMG
                 { ItemID.IceBlade, Do(UseMeleeSpeed) },
                 { ItemID.IceBoomerang, Do(ShootSpeedExact(9), UseExact(25)) }, // VANILLA: 20 UT, 11.5 VEL
                 { ItemID.IceRod, Do(ShootSpeedExact(20), UseExact(6)) }, // VANILLA: 9 UT, 12 VEL
                 { ItemID.IceSickle, Do(UseMeleeSpeed, DamageExact(75), ShootSpeedExact(20f)) }, // VANILLA: 50 DMG, 12 VEL
                 { ItemID.IchorArrow, Do(DamageExact(13)) }, // VANILLA: 16 DMG
                 { ItemID.IchorBullet, Do(DamageExact(11)) }, // VANILLA: 13 DMG
-                { ItemID.ImpStaff, Do(DamageExact(25)) }, // VANILLA: 17 DMG
                 { ItemID.InfernoFork, Do(DamageExact(83), ShootSpeedExact(11)) }, // VANILLA: 70 DMG, 8 VEL
                 { ItemID.InfluxWaver, Do(UseMeleeSpeed, DamageExact(80), UseExact(25)) }, // VANILLA: 100 DMG, 20 UT
                 { ItemID.IronShortsword, Do(TrueMelee, DamageExact(10)) }, // VANILLA: 8 DMG

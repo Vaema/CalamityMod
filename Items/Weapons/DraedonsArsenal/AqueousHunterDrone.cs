@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 34;
             Item.height = 32;
             Item.shootSpeed = 10f;
-            Item.damage = 24;
+            Item.damage = 18;
             Item.ArmorPenetration = ArmorPenetration;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 36;
