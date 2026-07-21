@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Tools
             Item.damage = 65;
             Item.crit = 25;
             Item.knockBack = 5f;
-            Item.useTime = 6;
+            Item.useTime = 5;
             Item.useAnimation = 10;
             Item.pick = 220;
             Item.tileBoost += 3;
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AstralBar>(7).
+                AddIngredient<AstralBar>(18).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

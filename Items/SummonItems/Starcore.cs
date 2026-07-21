@@ -30,7 +30,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient<StarblightSoot>(25).
                 AddIngredient<AureusCell>(8).
-                AddIngredient<AstralBar>(4).
+                AddIngredient<AstralBar>(8).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
