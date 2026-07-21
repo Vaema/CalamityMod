@@ -171,7 +171,7 @@ namespace CalamityMod.Items.Weapons.Summon
             CreateRecipe().
                 AddIngredient<IgneousExaltation>().
                 AddIngredient<ViralSprout>().
-                AddIngredient<UelibloomBar>(15).
+                AddIngredient<UelibloomBar>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient(ItemID.WarriorEmblem).
-                AddIngredient<UelibloomBar>(2).
+                AddIngredient<UelibloomBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

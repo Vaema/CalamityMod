@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UelibloomBar>(7).
+                AddIngredient<UelibloomBar>(18).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

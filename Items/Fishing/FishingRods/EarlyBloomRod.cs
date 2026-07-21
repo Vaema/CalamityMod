@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
         {
             CreateRecipe().
                 AddIngredient(ItemID.WoodFishingPole).
-                AddIngredient<UelibloomBar>(6).
+                AddIngredient<UelibloomBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

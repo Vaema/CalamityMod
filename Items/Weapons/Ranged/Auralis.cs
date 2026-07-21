@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.SniperRifle).
-                AddIngredient<UelibloomBar>(5).
+                AddIngredient<UelibloomBar>(10).
                 AddIngredient<AureusCell>(5).
                 AddIngredient<StarblightSoot>(50).
                 AddTile(TileID.MythrilAnvil).
