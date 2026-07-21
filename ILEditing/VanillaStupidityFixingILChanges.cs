@@ -744,7 +744,7 @@ namespace CalamityMod.ILEditing
             cplay.justChangedGravity = cplay.oldGravDir != Player.gravDir;
 
             cplay.oldGravDir = Player.gravDir;
-            if (Main.netMode != NetmodeID.Server && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
+            if (!Main.dedServ && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
             {
                 if (Player.gravDir == -1)
                 {
@@ -763,6 +763,14 @@ namespace CalamityMod.ILEditing
                         Filters.Scene.Deactivate("CalamityMod:FlipScreen");
 
                     }
+                }
+            }
+            if (!Main.dedServ && !CalamityClientConfig.Instance.DisableGravityScreenSwap)
+            {
+                if (Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+                {
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
+                    Filters.Scene.Deactivate("CalamityMod:FlipScreen");
                 }
             }
             if (cplay.justChangedGravity)
