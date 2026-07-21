@@ -47,8 +47,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<Prismalline>().
                 AddIngredient<AstralBar>(12).
-                AddIngredient<StarblightSoot>(15).
                 AddIngredient(ItemID.FallenStar, 10).
+                AddIngredient<StarblightSoot>(15).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
