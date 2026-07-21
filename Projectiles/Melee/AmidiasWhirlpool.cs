@@ -69,7 +69,6 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (homeTracker == 1)
             {
-                int inc;
                 Projectile.rotation -= MathHelper.Pi / 30f;
                 Vector2 projCenter = Projectile.Center;
                 float homingRange = 150f;

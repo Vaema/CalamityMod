@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
@@ -31,6 +33,14 @@ namespace CalamityMod
         public static ModKeybind Accessory7 { get; private set; }
 
         public static ModKeybind[] AccessoryKeybinds = [];
+
+        public static List<int> RentedKeybinds = [];
+        /// <summary>
+        /// We store the keybind then move it to the main list at the end of the frame
+        /// This ensures that between frames has keybinds in the values needed for drawing
+        /// This does means there's a 1 frame delay when switching slots for item tooltips to update, but that's never important
+        /// </summary>
+        public static List<int> KeybindRentalQueue = [];
 
         public override void Load()
         {
@@ -87,6 +97,24 @@ namespace CalamityMod
 
             AccessoryKeybinds = null;
         }
+        public override void PostUpdateEverything()
+        {
+            RentedKeybinds = KeybindRentalQueue.ToList();
+            KeybindRentalQueue.Clear();
+        }
+    }
+
+    public class AccessoryKeybindManager : GlobalItem
+    {
+        public override bool InstancePerEntity => true;
+
+        internal int KeybindId { get; set; }
+
+        public override void UpdateEquip(Item item, Player player)
+        {
+            if (CalamityItemSets.HasAccessoryKeybind[item.type])
+                CalamityKeybinds.KeybindRentalQueue.Add(item.type);
+        }
     }
 
     public static class CalamityKeybindsExtensions
@@ -104,20 +132,16 @@ namespace CalamityMod
                 return CalamityKeybinds.HeldItem.JustPressed;
 
             if (!CalamityItemSets.HasAccessoryKeybind[item.type])
-                throw new InvalidOperationException("Item is not marked as having a Calamity keybind in the HasAccessoryKeybind item set");
+                Debug.Assert(false, "Item is not marked as having a Calamity keybind in the HasAccessoryKeybind item set, but is requesting an accessory keybind");
 
-            int keybindToUse = 0;
-
-            for (var i = 0; i < Main.LocalPlayer.armor.Length; i++)
+            if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
-                if (Main.LocalPlayer.armor[i].type == item.type)
-                    break;
-                if (CalamityItemSets.HasAccessoryKeybind[Main.LocalPlayer.armor[i].type])
-                    keybindToUse++;
+                int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index].JustPressed;
             }
-            if (keybindToUse > 6)
-                return false;
-            return CalamityKeybinds.AccessoryKeybinds[keybindToUse].JustPressed;
+
+            return false;
         }
 
         /// <summary>
@@ -134,21 +158,16 @@ namespace CalamityMod
                 return CalamityKeybinds.HeldItem.JustReleased;
 
             if (!CalamityItemSets.HasAccessoryKeybind[item.type])
-                throw new InvalidOperationException("Item is not marked as having a Calamity keybind in the HasAccessoryKeybind item set");
+                Debug.Assert(false, "Item is not marked as having a Calamity keybind in the HasAccessoryKeybind item set, but is requesting an accessory keybind");
 
-            int keybindToUse = 0;
-
-            for (var i = 0; i < Main.LocalPlayer.armor.Length; i++)
+            if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
-                if (Main.LocalPlayer.armor[i].type == item.type)
-                    break;
-                if (CalamityItemSets.HasAccessoryKeybind[Main.LocalPlayer.armor[i].type])
-                    keybindToUse++;
+                int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index].JustReleased;
             }
 
-            if (keybindToUse > 6)
-                return false;
-            return CalamityKeybinds.AccessoryKeybinds[keybindToUse].JustReleased;
+            return false;
         }
 
 
@@ -165,21 +184,16 @@ namespace CalamityMod
                 return CalamityKeybinds.HeldItem.Current;
 
             if (!CalamityItemSets.HasAccessoryKeybind[item.type])
-                throw new InvalidOperationException("Item is not marked as having a Calamity keybind in the HasAccessoryKeybind item set");
+                Debug.Assert(false, "Item is not marked as having a Calamity keybind in the HasAccessoryKeybind item set, but is requesting an accessory keybind");
 
-            int keybindToUse = 0;
-
-            for (var i = 0; i < Main.LocalPlayer.armor.Length; i++)
+            if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
-                if (Main.LocalPlayer.armor[i].type == item.type)
-                    break;
-                if (CalamityItemSets.HasAccessoryKeybind[Main.LocalPlayer.armor[i].type])
-                    keybindToUse++;
+                int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index].Current;
             }
-            if (keybindToUse > 6)
-                return false;
 
-            return CalamityKeybinds.AccessoryKeybinds[keybindToUse].Current;
+            return false;
         }
 
 
@@ -196,30 +210,20 @@ namespace CalamityMod
             if (!CalamityItemSets.HasAccessoryKeybind[item.type])
                 return CalamityKeybinds.HeldItem;
 
-            if (!Main.LocalPlayer.armor.Any(x => x.type == item.type))
-                return null;
-
-            int keybindToUse = 0;
-
-            for (var i = 0; i < Main.LocalPlayer.armor.Length; i++)
+            if (CalamityKeybinds.RentedKeybinds.Contains(item.type))
             {
-                if (Main.LocalPlayer.armor[i].type == item.type)
-                    break;
-                if (CalamityItemSets.HasAccessoryKeybind[Main.LocalPlayer.armor[i].type])
-                    keybindToUse++;
+                int index = CalamityKeybinds.RentedKeybinds.IndexOf(item.type);
+                if (CalamityKeybinds.AccessoryKeybinds.IndexInRange(index))
+                    return CalamityKeybinds.AccessoryKeybinds[index];
             }
-
-            if (keybindToUse > 6)
-                return null;
-
-            return CalamityKeybinds.AccessoryKeybinds[keybindToUse];
+            return null;
         }
-
+       
         public static bool HasBoundDynamicHotkey(this Item item)
         {
             var h = item.GetDynamicModHotkey();
             if (h == null) return false;
-            if (h?.GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count() == 0)
+            if (h?.GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count == 0)
                 return false;
             return true;
         }

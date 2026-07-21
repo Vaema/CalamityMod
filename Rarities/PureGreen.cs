@@ -13,7 +13,7 @@ namespace CalamityMod.Rarities
         {
             -2 => ItemRarityID.Purple,
             -1 => ModContent.RarityType<Turquoise>(),
-            _ => Type, // Cannot reach Cosmic Purple or Burnished Auric
+            _ => Type, // All higher rarities are unique, and so it cannot go up.
         };
     }
 }

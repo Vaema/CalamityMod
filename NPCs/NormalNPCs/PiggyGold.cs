@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,9 +17,13 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
+            Main.npcFrameCount[Type] = 8;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
+            NPCID.Sets.TakesDamageFromHostilesWithoutBeingFriendly[Type] = true;
             NPCID.Sets.GoldCrittersCollection.Add(Type);
-            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.GoldBunny) + 2, Type);
-            base.SetStaticDefaults();
+            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(ModContent.NPCType<Piggy>()) + 1, Type);
         }
 
         public override void SetDefaults()

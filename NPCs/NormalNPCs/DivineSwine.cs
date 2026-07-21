@@ -112,7 +112,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             Main.npcFrameCount[Type] = 14;
             NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
-            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.GoldBunny) + 3, Type);
+            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.GoldBunny) + 1, Type);
+            NPCID.Sets.ImmuneToAllBuffs[Type] = true;
+            NPCID.Sets.ShimmerImmunity[Type] = true;
         }
 
         public override void SetDefaults()
@@ -129,9 +131,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.immortal = true;
             NPC.noGravity = true;
-            NPC.Calamity().VulnerableToHeat = true;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToSickness = true;
+
+            NPC.Calamity().VulnerableToCold = false;
+            NPC.Calamity().VulnerableToElectricity = false;
+            NPC.Calamity().VulnerableToHeat = false;
+            NPC.Calamity().VulnerableToSickness = false;
+            NPC.Calamity().VulnerableToWater = false;
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -290,14 +295,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
                 SoundEngine.PlaySound(IdleSound, NPC.Center);
-                if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out var activeSound))
-                    activeSound.Stop();
+                if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
+                    swineSpeakInstance.Stop();
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    NPC.Transform(ModContent.NPCType<Piggy>());
-                    NPC.netUpdate = true;
-                }
+                NPC.Transform(ModContent.NPCType<Piggy>());
             }
         }
 
@@ -432,6 +433,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                     GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? meatSparkle : meatLight, true, Enums.GeneralDrawLayer.AfterNPCs);
                 }
 
+                if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
+                    swineSpeakInstance.Stop();
+
                 // Despawn immediately afterwards.
                 NPC.checkDead();
                 NPC.active = false;
@@ -465,6 +469,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
                 SoundEngine.PlaySound(IdleSound, NPC.Center);
+                if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
+                    swineSpeakInstance.Stop();
 
                 NPC.checkDead();
                 NPC.active = false;

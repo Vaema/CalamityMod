@@ -1,4 +1,6 @@
-﻿using CalamityMod.Events;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
@@ -36,28 +38,27 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool CanUseItem(Player player)
         {
-            var Prov = CalamityGlobalNPC.holyBoss;
-            bool canPissOffProvi = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && Main.npc[Prov].Calamity().newAI[3] >= 180f && !Main.npc[Prov].Calamity().CurrentlyEnraged;
-            return ((!NPC.AnyNPCs(ModContent.NPCType<Providence>()) && (player.ZoneHallow || player.ZoneUnderworldHeight)) || canPissOffProvi) && !BossRushEvent.BossRushActive;
+            return !NPC.AnyNPCs(ModContent.NPCType<Providence>()) && (player.ZoneHallow || player.ZoneUnderworldHeight) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
-            var Prov = CalamityGlobalNPC.holyBoss;
-            bool usingToMakeProviPissedOff = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && Main.npc[Prov].Calamity().newAI[3] >= 180f && !Main.npc[Prov].Calamity().CurrentlyEnraged;
-            if (usingToMakeProviPissedOff)
+            int posX = (int)player.position.X;
+            int posY = (int)(player.position.Y - 100f);
+            int bossToSpawn = ModContent.NPCType<Providence>();
+            NPC prov = CalamityUtils.SpawnBossOnPosUsingItem(player, bossToSpawn, posX, posY, Providence.SpawnSound);
+            if (Main.getGoodWorld)
             {
-                (Main.npc[Prov].ModNPC as Providence).hasBeenGivenFullPower = true;
+                (prov.ModNPC as Providence).hasBeenGivenFullPower = true;
                 Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<HolyProfanedCore>(), 0, 0);
             }
-            else
-            {
-                int posX = (int)player.position.X;
-                int posY = (int)(player.position.Y - 100f);
-                int bossToSpawn = ModContent.NPCType<Providence>();
-                CalamityUtils.SpawnBossOnPosUsingItem(player, bossToSpawn, posX, posY, Providence.SpawnSound);
-            }
             return true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            string enrageTooltip = Main.getGoodWorld ? "\n" + this.GetLocalizedValue("EnrageText") : "";
+            tooltips.FindAndReplace("[ENRAGE]", enrageTooltip);
         }
     }
 }

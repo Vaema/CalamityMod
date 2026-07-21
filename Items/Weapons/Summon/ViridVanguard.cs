@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Weapons.Summon
         #region Damage Balancing Properties
 
 
-        //Sage Poison's damage  is kept in the Sage Poison file
-        public static float ActiveAttackSlashDmgMult => 5f;
+        //Sage Poison's damage is kept in the Sage Poison file
+        public static float ActiveAttackSlashDmgMult => 4f;
 
         //Note: the following two only apply when not using the active attack
         public static float AxeDmgMult => 1.25f;
@@ -78,7 +78,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 26;
             Item.height = 36;
-            Item.damage = 60;
+            Item.damage = 55;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 24;

@@ -204,5 +204,15 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor()
+        {
+            if (Main.GlobalTimeWrappedHourly % 1f < 0.6f)
+                return new Color(89, 229, 255);
+            else if (Main.GlobalTimeWrappedHourly % 1f < 0.8f)
+                return Color.Lerp(new Color(89, 229, 255), Color.White, (Main.GlobalTimeWrappedHourly % 1f - 0.6f) / 0.2f);
+            else
+                return Color.Lerp(Color.White, new Color(89, 229, 255), (Main.GlobalTimeWrappedHourly % 1f - 0.8f) / 0.2f);
+        }
     }
 }

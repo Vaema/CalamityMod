@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
         public static float EnemyDetectionDistance = 1200f;
-        public static int IFrames = 10;
+        public static int IFrames = 8;
 
         // In frames.
         public static float TimeBeforeCharging = 45f;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 42;
             Item.height = 42;
-            Item.damage = 142;
+            Item.damage = 132;
             Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 4f;
             Item.mana = 10;

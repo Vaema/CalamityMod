@@ -82,5 +82,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => new Color(220, 20, 60);
     }
 }

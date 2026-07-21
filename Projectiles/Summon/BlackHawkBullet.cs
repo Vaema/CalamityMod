@@ -14,16 +14,19 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 4;
+            Projectile.width = Projectile.height = 6;
             Projectile.light = 0.5f;
             Projectile.alpha = 0;
-            Projectile.extraUpdates = 4;
             Projectile.scale = 1.18f;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
-            Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
+            Projectile.MaxUpdates = 6;
+            Projectile.penetrate = 5;
+            Projectile.timeLeft = 60 * Projectile.MaxUpdates;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
             AIType = ProjectileID.BulletHighVelocity;
             Projectile.DamageType = DamageClass.Summon;
         }

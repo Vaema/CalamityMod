@@ -4,6 +4,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -64,5 +65,7 @@ namespace CalamityMod.Items.Accessories
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f % 1f, [ new Color(255, 196, 55), new Color(255, 231, 107), new Color(255, 254, 243) ]);
     }
 }

@@ -53,5 +53,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ContagionBow>(), damage, knockback, player.whoAmI);
             return false;
         }
+
+        public static Color RarityColor() => new Color(207, 17, 117);
     }
 }

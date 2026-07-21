@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
 
             // Hover in place.
-            Projectile.velocity = -Vector2.UnitY * (float)Math.Sin(MathHelper.TwoPi * Projectile.timeLeft / 96f) * 3f;
+            Projectile.velocity = -Vector2.UnitY * MathF.Sin(MathHelper.TwoPi * Projectile.timeLeft / 96f) * 3f;
 
             // Look at nearby enemies.
             NPC potentialTarget = Projectile.Center.MinionHoming(1000f, Owner);
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.spriteDirection = (Projectile.Center.X < potentialTarget.Center.X).ToDirectionInt();
 
             // Release pulses of irradiated energy.
-            if (Projectile.timeLeft % RustyBeaconPrototype.PulseReleaseRate == RustyBeaconPrototype.PulseReleaseRate / 2)
+            if (Projectile.timeLeft % RustyBeaconPrototype.PulseReleaseRate == 1)
             {
                 SoundEngine.PlaySound(SoundID.DD2_WitherBeastAuraPulse with { Volume = 1.6f }, Projectile.Center);
 

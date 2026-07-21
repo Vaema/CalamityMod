@@ -2,6 +2,7 @@
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -44,5 +45,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => Color.Blue;
     }
 }

@@ -104,11 +104,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 if (SoundEngine.TryGetActiveSound(DevilsTongueSlot, out var activeSound))
                     activeSound.Stop();
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    NPC.Transform(ModContent.NPCType<Piggy>());
-                    NPC.netUpdate = true;
-                }
+                NPC.Transform(ModContent.NPCType<Piggy>());
             }
 
             Animate(IdleFrame, IdleFrame, 0, false, dynamicChanges: true);

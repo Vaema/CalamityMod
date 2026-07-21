@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Dyes
@@ -12,6 +13,7 @@ namespace CalamityMod.Items.Dyes
         public override void SafeSetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ProfanedFlameDye>();
         }
 
         public override void SafeSetDefaults()

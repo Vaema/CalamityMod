@@ -33,7 +33,6 @@ namespace CalamityMod.Projectiles.Summon
         }
         private Action _currentState;
 
-        private ref float DashTimer => ref Projectile.ai[0];
 
         private ref float SwingTimer => ref Projectile.ai[1];
 
@@ -62,14 +61,21 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = Projectile.height = 32;
         }
 
+        public override bool? CanDamage() => SwingTimer >= SwingWait && SwingTimer <= SwingWait + SwingTime ? base.CanDamage() : false;
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float damageMult = MathHelper.Clamp(Utils.GetLerpValue(3, 0, Projectile.numHits), 0.25f, 1);
+            modifiers.SourceDamage *= damageMult;
+        }
+
         #region AI
 
         public override void MinionAI()
         {
             if (!HasSpawned)
             {
+                IFrames = -1;
                 TrailCacheLength = 4;
-                DashTimer = Main.rand.Next(30);
                 Projectile.velocity = Projectile.DirectionFrom(Owner.Center);
                 CurrentState = GoToOwnerState;
                 HasSpawned = true;
@@ -157,7 +163,7 @@ namespace CalamityMod.Projectiles.Summon
             if (SwingTimer == SwingWait + SwingTime * 0.5f && Main.myPlayer == Projectile.owner)
             {
                 Vector2 spawnPosition = SwingCenter + predictiveDirection.SafeNormalize(-Vector2.UnitY) * 40f;
-                Projectile.NewProjectileDirect(
+                Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     spawnPosition,
                     predictiveDirection,
@@ -166,14 +172,30 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.knockBack,
                     Projectile.owner);
             }
-
-            if (DashTimer >= DashCooldown)
+            if ((SwingTimer == SwingWait && SwingDirection == 1) || (SwingTimer == SwingWait + SwingTime && SwingDirection == -1))
             {
-                Vector2 dashVelocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, DashSpeed);
+                Projectile.ResetLocalNPCHitImmunity();
+                Projectile.numHits = 0;
+            }                
+
+            if (Vector2.Distance(SwingCenter, Target.Center) > 48f + MathF.Min(Target.width, Target.height) * 0.8f)
+            {
+                Vector2 dashVelocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, ChaseSpeed);
                 if (!float.IsNaN(dashVelocity.X) && !float.IsNaN(dashVelocity.Y))
                     Projectile.velocity = dashVelocity;
-                DashTimer = 0f;
             }
+            else if (Vector2.Distance(SwingCenter, Target.Center) < 40f + MathF.Min(Target.width, Target.height) * 0.5f)
+            {
+                Vector2 dashVelocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, RecoilSpeed);
+                if (!float.IsNaN(dashVelocity.X) && !float.IsNaN(dashVelocity.Y))
+                    Projectile.velocity = dashVelocity;
+            }
+            else
+                Projectile.velocity *= 0.5f;
+
+            // Cancel out choppy movement
+            if (Projectile.velocity.Length() < 1f)
+                Projectile.velocity *= 0f;
 
             SwingTimer += 1f * SwingDirection;
             if (SwingTimer == 0f || SwingTimer == SwingWait + SwingTime + SwingWait)
@@ -183,9 +205,6 @@ namespace CalamityMod.Projectiles.Summon
                 else
                     HasStartedSwinging = true;
             }
-
-            if (Projectile.DistanceSQ(Target.Center) > 320f * 320f)
-                DashTimer += Main.rand.NextBool((int)DashCooldown) ? 2 : 1;
         }
 
         private void OnStateChange(Action newState)
