@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void HoldItem(Player player)
         {
-            if (Main.myPlayer == player.whoAmI && player.ownedProjectileCounts[Item.shoot] > 0)
+            if (Main.myPlayer == player.whoAmI && player.ownedProjectileCounts[Item.shoot] > 0 && Item.JustPressedKeybind())
             {
                 var p = Main.projectile.First(x => x.active && x.type == Item.shoot && x.owner == player.whoAmI);
                 if (p.ModProjectile is VoidEaterMarionetteProjectile vem)

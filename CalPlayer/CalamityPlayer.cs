@@ -2999,8 +2999,9 @@ namespace CalamityMod.CalPlayer
             HalleyScopeLerp = MathHelper.Clamp(HalleyScopeLerp + (HalleyToggle ? 0.05f : -0.05f), 0, 1);
             if (HalleyScopeLerp > 0)
             {
-                Vector2 center = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
-                Main.screenPosition -= (center - Main.MouseWorld) / Main.GameZoomTarget * 0.66f * MathHelper.SmoothStep(0,1,HalleyScopeLerp);
+                var screenSize = new Vector2(Main.screenWidth, Main.screenHeight);
+                Vector2 center = Main.screenPosition + screenSize * 0.5f;
+                Main.screenPosition -= (Vector2.Clamp((center - Main.MouseWorld) / screenSize, new(-0.5f), new(0.5f)) / Main.GameZoomTarget * MathHelper.SmoothStep(0, 1, HalleyScopeLerp)) * new Vector2(1920, 1200) * 0.9f;
             }
         }
         #endregion
