@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Placeables.FurnitureWulfrum;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
@@ -17,10 +17,8 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(8).
-                AddIngredient<WulfrumMetalScrap>().
-                AddIngredient<AnodizedWulfrumMetal>().
-                AddIngredient<EnergyCore>().
+            CreateRecipe(4).
+                AddIngredient<WulfrumPlating>().
                 AddTile(TileID.WorkBenches).
                 Register();
         }
