@@ -855,7 +855,8 @@ VoidConcentrationStaff: {
 	DisplayName: Void Concentration Staff
 	Tooltip:
 		'''
-		Surrounds you with dark energy, which makes all attacks deal 15% less damage
+		Summons an endless darkness that surrounds you with orbiting dark energies
+		While the dark energies are orbiting you, you take 15% less damage from all attacks
 		<right> to condense the energy onto a target, focusing your minions on them and creating homing beams
 		When the focused enemy takes damage from any source, they will be struck by additional dark energies
 		These dark energy are twice as strong when the strike was from a minion or sentry

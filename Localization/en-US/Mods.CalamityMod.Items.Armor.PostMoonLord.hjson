@@ -287,7 +287,11 @@ DemonshadeBreastplate: {
 
 DemonshadeGreaves: {
 	DisplayName: Demonshade Greaves
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedMovementSpeed} and {1}% increased acceleration"
+	Tooltip:
+		'''
+		Shadow speed
+		[c/aaaaaa:Shift-<right> in your inventory to toggle the increased acceleration]
+		'''
 }
 
 DemonshadeHelm: {

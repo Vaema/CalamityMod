@@ -26,6 +26,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public static int ArmorPenetration = 15;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
+
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();

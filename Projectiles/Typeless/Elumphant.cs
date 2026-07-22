@@ -783,5 +783,10 @@ namespace CalamityMod.Projectiles.Typeless
             // These extra frames before the hit allow for a bit of "hitstop" on the jump attack
             return (dashing && attackTimer >= attackTimeAdjusted + 3 && target == targeted) ? null : false;
         }
+
+        public override bool? CanCutTiles()
+        {
+            return false;
+        }
     }
 }

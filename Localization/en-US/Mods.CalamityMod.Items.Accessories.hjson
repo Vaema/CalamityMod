@@ -843,7 +843,7 @@ FleshTotem: {
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
 		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
-		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
+		Upon being struck, the effigy unleashes half of all stored up mana as vengeful souls that chase your enemies
 		The effigy is transparent and silent if visibility is disabled
 		'''
 }
@@ -882,7 +882,7 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 5 defense and +1 HP/s life regen
+		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 3 defense and +1 HP/s life regen
 		10% increased damage while you have [cbuffplr:CalamityMod/Mushy]
 		'''
 	SalesPitch: "{$Common.SalesmanShrinePitch}"
@@ -2173,7 +2173,7 @@ WarbanneroftheRighteous: {
 	Tooltip:
 		'''
 		Multiplies all damage based on how close you are to enemies
-		Maximum damage boost is 15%, minimum damage boost is -15%
+		Maximum damage boost is 1.15x, minimum damage boost is 0.85x
 		Emit a blazing aura that burns and repels nearby enemies with [cbuff:CalamityMod/HolyFlames]
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
