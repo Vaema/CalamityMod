@@ -289,7 +289,7 @@ DemonshadeGreaves: {
 	DisplayName: Demonshade Greaves
 	Tooltip:
 		'''
-		Shadow speed
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed} and {1}% increased acceleration
 		[c/aaaaaa:Shift-<right> in your inventory to toggle the increased acceleration]
 		'''
 }
