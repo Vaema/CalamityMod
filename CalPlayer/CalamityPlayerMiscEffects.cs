@@ -2025,8 +2025,8 @@ namespace CalamityMod.CalPlayer
                     if (Player.velocity.Y == 0 && fallingBootVelCheckTimer > 10)
                     {
                         float power = Utils.Remap(fallingBootVelCheckTimer, 10, 40, 0.1f, 1);
-                        float scaledPower = (float)Math.Pow(power, 3);
-                        int damage = (int)Player.GetBestClassDamage().ApplyTo(1500 * scaledPower); // Damage scales down thrice
+                        float scaledPower = (float)Math.Pow(power, 2);
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(300 * scaledPower); // Damage scales down thrice
                         Vector2 playerFeet = Player.Center + Vector2.UnitY * 26 * Player.gravDir;
 
                         float blastSize = 120 * power;
