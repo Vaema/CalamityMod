@@ -108,18 +108,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     SoundEngine.PlaySound(fire with { Volume = 0.6f, PitchVariance = 0.2f }, Projectile.Center);
                 }
 
-                // Technically scrapped because the weapon is complex enough, but we might want to use this in the future
-                /*
-                if (timer % 60 == 0) // Fire Heal Stars at player (slightly predictive)
-                {
-                    Vector2 vel = ((Projectile.Center - Owner.Center) - Owner.velocity * 8).SafeNormalize(Vector2.UnitX) * -10;
-                    Projectile healStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyLight>(), 0, Projectile.knockBack, Projectile.owner, 0, cloneYoyo ? 3 : 10, 5);
-                    healStar.extraUpdates = 2;
-                    SoundStyle fireHeal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
-                    SoundEngine.PlaySound(fireHeal with { Volume = 0.9f, Pitch = 0.3f }, Projectile.Center);
-                }
-                */
-
                 if (timer > 0)
                 {
                     timer--;

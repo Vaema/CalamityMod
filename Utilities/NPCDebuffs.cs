@@ -106,7 +106,7 @@ namespace CalamityMod
                 NPCID.Sets.SpecificDebuffImmunity[npc.type][BuffID.Confused] = true;
 
             // Sets certain vanilla NPCs and all town NPCs to be immune to most debuffs.
-            bool isConsideredSpecialTarget = npc.type == NPCID.SkeletronHead || npc.type == NPCID.DD2EterniaCrystal;
+            bool isConsideredSpecialTarget = npc.type == NPCID.DD2EterniaCrystal;
             bool isTownNPC = npc.townNPC || NPCID.Sets.ActsLikeTownNPC[npc.type];
             bool applyRegularBuffImmunitySpecialCases = isConsideredSpecialTarget || isTownNPC;
             if (applyRegularBuffImmunitySpecialCases)

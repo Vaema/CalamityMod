@@ -42,7 +42,8 @@ namespace CalamityMod.Projectiles.Summon
                 if (value == AIState.Attack)
                 {
                     Animation = AnimationState.Run;
-                    SoundEngine.PlaySound(ScreamSound, Projectile.Center);
+                    if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                        SoundEngine.PlaySound(ScreamSound, Projectile.Center);
                 }
                 else if (value == AIState.Idle)
                     Animation = AnimationState.Idle;
@@ -385,7 +386,7 @@ namespace CalamityMod.Projectiles.Summon
             // When the pumpkin encounters a 1-tile-height obstacle, it'll climb it, like the player.
             Collision.StepUp(ref Projectile.position, ref Projectile.velocity, Projectile.width, Projectile.height, ref Projectile.stepSpeed, ref Projectile.gfxOffY);
 
-            if (Main.rand.NextBool(700))
+            if (Main.rand.NextBool(700) && !CalamityClientConfig.Instance.MisophoniaSupport)
                 SoundEngine.PlaySound(Main.rand.NextBool(20) ? IdleRareSound : IdleSound, Projectile.Center);
         }
 

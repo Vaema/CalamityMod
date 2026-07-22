@@ -307,7 +307,6 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCShop shop = new(Type);
             shop.Add<Cinquedea>()
                 .Add<Glaive>()
-                .Add<SlickCane>()
                 .Add<OldDie>()
                 .Add(ItemID.TigerClimbingGear)
                 .Add<ThiefsDime>(Condition.DownedPirates)

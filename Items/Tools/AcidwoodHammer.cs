@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,7 +21,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 40;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
+            Item.value = Item.sellPrice(copper: 10);
             Item.rare = ItemRarityID.White;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;

@@ -237,14 +237,6 @@ namespace CalamityMod.ILEditing
                 dir = self.direction;
                 dashing = true;
 
-                // CIT 16OCT2024: Commented this code out, as there's no reason for custom dash hotkey to use Player.dashTime
-                // and was causing the return of Celestial Starboard's dash bug from early 1.4 versions
-                /*if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
-                {
-                    self.dashTime = 15;
-                    return;
-                }*/
-
                 dashing = true;
                 self.dashTime = 0;
                 self.timeSinceLastDashStarted = 0;
@@ -717,7 +709,10 @@ namespace CalamityMod.ILEditing
                     ref FluidField calamityFireDrawer = ref player.Calamity().CalamityFireDrawer;
                     ref Vector2 firePosition = ref player.Calamity().FireDrawerPosition;
                     if (calamityFireDrawer is null || calamityFireDrawer.Size != size)
+                    {
+                        calamityFireDrawer?.Dispose();
                         calamityFireDrawer = FluidFieldManager.CreateField(size, scale, 0.1f, 50f, 0.992f);
+                    }  
 
                     // Update the fire draw position.
                     firePosition = new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;

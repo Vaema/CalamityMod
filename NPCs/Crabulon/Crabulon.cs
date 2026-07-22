@@ -178,40 +178,6 @@ namespace CalamityMod.NPCs.Crabulon
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            if (NPC.ai[0] < 2f)
-            {
-                int mushBombAmt = phase4 ? 6 : phase3 ? 3 : phase2 ? 2 : 1;
-                float fireRate = phase4 ? 6f : phase3 ? 3f : phase2 ? 2f : 1f;
-                NPC.localAI[3] += fireRate;
-                if (NPC.ai[3] == 0f)
-                {
-                    float shootMushroomsGateValue = revenge ? 120f : expertMode ? 200f : 300f;
-                    if (NPC.localAI[3] > shootMushroomsGateValue)
-                    {
-                        NPC.ai[3] = 1f;
-                        NPC.localAI[3] = 0f;
-                    }
-                }
-                else if (NPC.localAI[3] > 30f)
-                {
-                    NPC.localAI[3] = 0f;
-                    NPC.ai[3] += 1f;
-                    if (NPC.ai[3] >= mushBombAmt)
-                        NPC.ai[3] = 0f;
-
-                    float mushBombSpeed = phase4 ? 16f : phase3 ? 14f : phase2 ? 12f : 10f;
-                    int type = ModContent.ProjectileType<MushBomb>();
-                    SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        float yVelocity = death ? 1f : expertMode ? 2.5f : 4f;
-                        Vector2 projectileVelocity = (Vector2.Normalize(player.Center - NPC.Center) * mushBombSpeed) - Vector2.UnitY * yVelocity;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, MushroomShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
-                    }
-                }
-            }
-
             if (NPC.ai[0] == 0f)
             {
                 // Avoid cheap bullshit
@@ -245,7 +211,40 @@ namespace CalamityMod.NPCs.Crabulon
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                float walkingVelocity = death ? (5f + 1f * (1f - lifeRatio)) : expertMode ? 5f : 3.5f;
+                // Fire mushroom projectiles at the player
+                int mushBombAmt = phase4 ? 6 : phase3 ? 3 : phase2 ? 2 : 1;
+                float fireRate = phase4 ? 6f : phase3 ? 3f : phase2 ? 2f : 1f;
+                NPC.localAI[3] += fireRate;
+                if (NPC.ai[3] == 0f)
+                {
+                    float shootMushroomsGateValue = revenge ? 120f : expertMode ? 200f : 300f;
+                    if (NPC.localAI[3] > shootMushroomsGateValue)
+                    {
+                        NPC.ai[3] = 1f;
+                        NPC.localAI[3] = 0f;
+                    }
+                }
+                else if (NPC.localAI[3] > 30f)
+                {
+                    NPC.localAI[3] = 0f;
+                    NPC.ai[3] += 1f;
+                    if (NPC.ai[3] >= mushBombAmt)
+                        NPC.ai[3] = 0f;
+
+                    float mushBombSpeed = phase4 ? 16f : phase3 ? 14f : phase2 ? 12f : 10f;
+                    int type = ModContent.ProjectileType<MushBomb>();
+                    SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        float yVelocity = death ? 1f : expertMode ? 2.5f : 4f;
+                        Vector2 projectileVelocity = (Vector2.Normalize(player.Center - NPC.Center) * mushBombSpeed) - Vector2.UnitY * yVelocity;
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, MushroomShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                    }
+                }
+
+                // Walking
+                float walkingVelocity = expertMode ? 4.5f : 3.5f;
                 if (phase2)
                     walkingVelocity += 0.5f;
                 if (phase3)
@@ -330,6 +329,7 @@ namespace CalamityMod.NPCs.Crabulon
                     NPC.noTileCollide = false;
                     NPC.ai[0] = (Main.rand.NextBool() && revenge && phase2) ? 4f : 2f;
                     NPC.ai[1] = 0f;
+                    NPC.ai[3] = 0f;
                     NPC.ForceNetUpdate();
                 }
 
@@ -485,7 +485,7 @@ namespace CalamityMod.NPCs.Crabulon
 
                     int type = ModContent.ProjectileType<MushBombFall>();
 
-                    if ((NPC.ai[2] % 2f == 0f || death) && ((phase2 && revenge) || (phase3 && expertMode)))
+                    if (NPC.ai[2] % 2f == 0f && ((phase2 && revenge) || (phase3 && expertMode)))
                     {
                         SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -495,8 +495,7 @@ namespace CalamityMod.NPCs.Crabulon
                             destination.Normalize();
                             destination *= projectileVelocity;
 
-                            // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
-                            int numProj = phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
+                            int numProj = phase4 ? 14 : CalamityWorld.death ? 16 : 12;
                             float rotation = MathHelper.ToRadians(90);
                             for (int i = 0; i < numProj; i++)
                             {
@@ -520,8 +519,7 @@ namespace CalamityMod.NPCs.Crabulon
                                 destination.Normalize();
                                 destination *= projectileVelocity;
 
-                                // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
-                                int numProj = phase4 ? 8 : (phase3 && death) ? 6 : 8;
+                                int numProj = 8;
                                 float rotation = MathHelper.ToRadians(60);
                                 for (int i = 0; i < numProj; i++)
                                 {
@@ -621,42 +619,19 @@ namespace CalamityMod.NPCs.Crabulon
                         if (revenge)
                         {
                             float velocityXAdjustment = maxVelocityX;
-
-                            if (lifeRatio < 0.5f && death)
+                            switch ((int)NPC.ai[3])
                             {
-                                // Mega velocity
-                                switch ((int)NPC.ai[3])
-                                {
-                                    case 0: // Normal
-                                    case 1: // High
-                                    case 2: // Low
-                                        maxVelocityX += velocityXAdjustment * 0.5f;
-                                        break;
+                                case 0: // Normal
+                                case 1: // High
+                                case 2: // Low
+                                    break;
 
-                                    case 3: // Long and low
-                                        maxVelocityX += velocityXAdjustment * 1.5f;
-                                        break;
+                                case 3: // Long and low
+                                    maxVelocityX += velocityXAdjustment * (lifeRatio < 0.5f && death ? 1.5f : 1f);
+                                    break;
 
-                                    default:
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                switch ((int)NPC.ai[3])
-                                {
-                                    case 0: // Normal
-                                    case 1: // High
-                                    case 2: // Low
-                                        break;
-
-                                    case 3: // Long and low
-                                        maxVelocityX += velocityXAdjustment;
-                                        break;
-
-                                    default:
-                                        break;
-                                }
+                                default:
+                                    break;
                             }
                         }
 
@@ -728,31 +703,30 @@ namespace CalamityMod.NPCs.Crabulon
                         if (NPC.velocity.Y >= 0f && NPC.Bottom.Y >= NPC.ai[3] - NPC.height)
                             NPC.noTileCollide = false;
 
-                        // Impact and create lines of mushrooms that spread out along the ground (similar to an old Providence attack)
                         if (NPC.Bottom.Y >= NPC.ai[3] || NPC.velocity.Y == 0f)
                         {
                             SoundEngine.PlaySound(SlamSound, NPC.Center);
 
+                            NPC.velocity.X *= 0.5f;
                             NPC.ai[0] = 0f;
                             NPC.ai[1] = 0f;
                             NPC.ai[2] = 0f;
                             NPC.ai[3] = 0f;
                             NPC.netUpdate = true;
 
-                            int type = ModContent.ProjectileType<MushBombGround>();
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            // Create lines of mushrooms that spread out along the ground in Death Mode
+                            if (death && Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float xVelocity = death ? 2f : 1f;
-                                int numProj = death ? 5 : 3;
-                                Vector2 initialVelocity = Vector2.UnitX * xVelocity;
+                                int numProj = 3;
+                                int type = ModContent.ProjectileType<MushBombGround>();
+                                Vector2 initialVelocity = Vector2.UnitX;
                                 Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(0f, 8f);
 
-                                for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity - (i / (float)numProj * initialVelocity), type, MushroomShotDamage, 0f, Main.myPlayer);
+                                for (int i = 1; i <= numProj; i++)
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity * (i / (float)numProj), type, MushroomShotDamage, 0f, Main.myPlayer);
 
-                                for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(-81, 0), Main.rand.Next(-20, 1)), -(initialVelocity - (i / (float)numProj * initialVelocity)), type, MushroomShotDamage, 0f, Main.myPlayer);
+                                for (int i = 1; i <= numProj; i++)
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(-81, 0), Main.rand.Next(-20, 1)), -(initialVelocity * (i / (float)numProj)), type, MushroomShotDamage, 0f, Main.myPlayer);
                             }
 
                             for (int j = (int)NPC.position.X - 20; j < (int)NPC.position.X + NPC.width + 40; j += 20)
@@ -949,7 +923,7 @@ namespace CalamityMod.NPCs.Crabulon
                     if ((NPC.life + crabShroomSpawnFreq) < NPC.localAI[0])
                     {
                         NPC.localAI[0] = NPC.life;
-                        int crabShroomAmt = death ? 4 : expertMode ? 3 : 2;
+                        int crabShroomAmt = expertMode ? 3 : 2;
                         for (int mush = 0; mush < crabShroomAmt; mush++)
                         {
                             int x = (int)(NPC.position.X + Main.rand.Next(NPC.width - 32));

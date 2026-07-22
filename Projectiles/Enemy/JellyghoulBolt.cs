@@ -89,17 +89,6 @@ namespace CalamityMod.Projectiles.Enemy
             Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             int projFrame = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = projFrame * Projectile.frame;
-
-            /*Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-            Texture2D ring = ModContent.Request<Texture2D>("CalamityMod/Particles/HollowCircleHardEdge").Value;
-            for (int j = 0; j < 2; j++)
-            {
-                for (int i = 2; i < 7; i += 2)
-                {
-                    Main.spriteBatch.Draw(ring, Projectile.oldPos[i] + Projectile.Size / 2 - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), null, Color.Red * Projectile.Opacity, Projectile.velocity.ToRotation(), ring.Size() / 2, new Vector2(0.5f, 1) * 0.2f * MathHelper.Lerp(1f, 0.5f, (i - 2) / 3f), SpriteEffects.None, 0);
-                }
-            }
-            Main.spriteBatch.ExitShaderRegion();*/
             return false;
         }
         public float SlashWidthFunction(float _, Vector2 vertexPos) => 16 * Utils.GetLerpValue(0f, 0.1f, _, true);

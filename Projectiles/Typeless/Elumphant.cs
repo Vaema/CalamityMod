@@ -434,7 +434,7 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Projectile.soundDelay == cryStart) // Sound
                 {
                     verticalSquash = 0.3f;
-                    if (vis)
+                    if (vis && !CalamityClientConfig.Instance.MisophoniaSupport)
                         soundSlot = SoundEngine.PlaySound(FrozenCube.cry with { Pitch = Main.rand.NextFloat(-0.2f, 0.2f) }, Projectile.Center);
                 }
                 trunkRotation = Utils.AngleLerp(trunkRotation, maxTrunkRot * Projectile.spriteDirection, 0.025f);
@@ -772,6 +772,11 @@ namespace CalamityMod.Projectiles.Typeless
                 return false;
             // These extra frames before the hit allow for a bit of "hitstop" on the jump attack
             return (dashing && attackTimer >= attackTimeAdjusted + 3 && target == targeted) ? null : false;
+        }
+
+        public override bool? CanCutTiles()
+        {
+            return false;
         }
     }
 }

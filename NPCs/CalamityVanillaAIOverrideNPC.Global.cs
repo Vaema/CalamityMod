@@ -230,8 +230,8 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
 
                 // Light colors
                 int alpha = 192;
-                Color groundColor = new Color(150, 0, 0, alpha);
-                Color flightColor = revenge ? new Color(0, 0, 150, alpha) : groundColor;
+                Color groundColor = new Color(255, 125, 125, alpha);
+                Color flightColor = revenge ? new Color(125, 0, 255, alpha) : groundColor;
                 Color segmentColor = Color.Lerp(groundColor, flightColor, phaseTransitionColorAmount);
                 Color telegraphColor_Red = new Color(255, 125, 125, alpha);
                 Color telegraphColor_Green = new Color(125, 255, 125, alpha);
@@ -261,23 +261,17 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
                         telegraphProgress = MathHelper.Clamp((calNPC.newAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
                     }
                 }
+                Color finalColor = Color.Lerp(segmentColor, telegraphColor, telegraphProgress);
+                Vector3 teleHsl = Main.rgbToHsl(finalColor);
 
-                Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerHeadGlowmask.Value : TextureAssets.Dest[0].Value;
-                switch (npc.type)
-                {
-                    default:
-                    case NPCID.TheDestroyer:
-                        break;
-                    case NPCID.TheDestroyerBody:
-                        glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerBodyGlowmask.Value : TextureAssets.Dest[1].Value;
-                        break;
-                    case NPCID.TheDestroyerTail:
-                        glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerTailGlowmask.Value : TextureAssets.Dest[2].Value;
-                        break;
-                }
+                Texture2D glowTexture = TextureAssets.Dest[npc.type - 134].Value;
 
-                float alphaMultiplier = 1f - npc.alpha / 255f;
-                spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, Color.Lerp(segmentColor, telegraphColor, telegraphProgress) * alphaMultiplier, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                CalamityUtils.EnterShaderRegion(spriteBatch);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(1f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseColor(Main.hslToRgb(1f - teleHsl.X, teleHsl.Y, teleHsl.Z));
+                GameShaders.Misc["CalamityMod:BasicTint"].Apply();
+                spriteBatch.Draw(glowTexture, npc.Center - screenPos + Vector2.UnitY * npc.gfxOffY, npc.frame, Color.White * npc.Opacity, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                CalamityUtils.ExitShaderRegion(spriteBatch);
             }
             return false;
         }

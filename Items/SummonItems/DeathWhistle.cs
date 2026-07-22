@@ -41,7 +41,7 @@ namespace CalamityMod.Items.SummonItems
             int posX = (int)(player.position.X + Main.rand.Next(-250, 251));
             int posY = (int)(player.position.Y - 500f);
             int bossToSpawn = ModContent.NPCType<RavagerBody>();
-            CalamityUtils.SpawnBossOnPosUsingItem(player, bossToSpawn, posX, posY, SoundID.ScaryScream);
+            CalamityUtils.SpawnBossOnPosUsingItem(player, bossToSpawn, posX, posY, CalamityClientConfig.Instance.MisophoniaSupport ? SoundID.Roar : SoundID.ScaryScream);
             return true;
         }
 

@@ -1234,8 +1234,8 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.DoGDefeated");
                     else if (Main.rand.NextBool(5) && !DownedBossSystem.downedBrimstoneElemental)
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.PreBrimmy");
-                    else if (Main.rand.NextBool(10) && CalamityUtils.InventoryHas(Main.LocalPlayer, ItemType<SlickCane>()))
-                        chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.HasSlickCane");
+                    else if (Main.rand.NextBool(10) && CalamityUtils.InventoryHas(Main.LocalPlayer, ItemType<WalkingCane>()))
+                        chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.HasWalkingCane");
                     else if (Main.rand.NextBool(5) && platinumCoins >= 500)
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.Has500Plat");
                     else if (Main.rand.NextBool(5) && platinumCoins >= 100)
@@ -1315,14 +1315,6 @@ namespace CalamityMod.NPCs
                 defense += 20;
             }
         }
-
-        public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
-        {
-            // Not an axe but close enough
-            if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
-                return true;
-            return base.CanBeHitByProjectile(npc, projectile);
-        }
         #endregion
 
         #region Shop Stuff
@@ -1359,7 +1351,7 @@ namespace CalamityMod.NPCs
             {
                 shop.Add<M1Garand>(Condition.DownedSkeletron)
                 .Add<P90>(Condition.Hardmode)
-                .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
+                .AddWithCustomValue(ItemID.Revolver, Item.buyPrice(gold: 35), Condition.Hardmode)
                 .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera);
             }
 

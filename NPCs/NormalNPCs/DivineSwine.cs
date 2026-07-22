@@ -59,6 +59,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             PauseBehavior = PauseBehavior.PauseWithGame,
             MaxInstances = 0,
         };
+        private static SoundStyle MisophoniaSwineSpeakLoopingSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneMonsterDrone")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0,
+        };
 
         public int FrameY;
 
@@ -294,7 +300,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
 
                 SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
-                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                    SoundEngine.PlaySound(IdleSound, NPC.Center);
+
                 if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
                     swineSpeakInstance.Stop();
 
@@ -468,7 +476,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
 
                 SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
-                SoundEngine.PlaySound(IdleSound, NPC.Center);
+
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                    SoundEngine.PlaySound(IdleSound, NPC.Center);
+
                 if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
                     swineSpeakInstance.Stop();
 
@@ -586,7 +597,9 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (NPC.soundDelay == 0 && Main.rand.NextBool(200) && AIState == (int)BehaviorState.IdleAndFly)
             {
-                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                    SoundEngine.PlaySound(IdleSound, NPC.Center);
+
                 SquashVector = Utils.SelectRandom(Main.rand, new Vector2(1.4f, 0.7f), new Vector2(0.7f, 1.4f));
                 AdditionalBrightness = Main.rand.NextFloat(0.3f, 0.4f);
                 NPC.soundDelay = Main.rand.Next(60, 120);
@@ -594,7 +607,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             if (!SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out _))
-                SwineSpeakSoundSlot = SoundEngine.PlaySound(SwineSpeakLoopingSound, NPC.Center, SoundCallbackMethod);
+            {
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                {
+                    SwineSpeakSoundSlot = SoundEngine.PlaySound(SwineSpeakLoopingSound, NPC.Center, SoundCallbackMethod);
+                }
+                else
+                    SwineSpeakSoundSlot = SoundEngine.PlaySound(MisophoniaSwineSpeakLoopingSound, NPC.Center, SoundCallbackMethod);
+            }
 
             // Fade the music depending on the distance between the player and Divine Swine.
             float musicVolumeInterpolant = Utils.Remap(NPC.Distance(Main.LocalPlayer.Center), 600f, 100f, 1f, 0.2f, true);

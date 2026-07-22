@@ -153,21 +153,11 @@ IL_6899:
             if (Projectile.tileCollide)
             {
                 Projectile.hide = false;
-
-                //if (projectile.extraUpdates == 1)
                 PreventFastfall();
-
-                /*Vector2 distance = Main.player[projectile.owner].Center - projectile.Center;
-                if (distance.Length() < 100)
-                    projectile.extraUpdates = 0;
-                else
-                    projectile.extraUpdates = 1;*/
             }
             else
             {
                 Projectile.hide = true;
-                //projectile.extraUpdates = 1;
-
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<ChibiiDoggoFly>()] <= 0)
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, 0f, 0f, ModContent.ProjectileType<ChibiiDoggoFly>(), 0, 0f, Projectile.owner, (float)Projectile.identity);
             }
