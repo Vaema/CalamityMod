@@ -84,9 +84,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.ElfMelter).
-                AddIngredient<Lumenyl>(6).
+                AddIngredient<Lumenyl>(8).
                 AddIngredient<RuinousSoul>(4).
-                AddIngredient<ExodiumCluster>(12).
+                AddIngredient<ExodiumCluster>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

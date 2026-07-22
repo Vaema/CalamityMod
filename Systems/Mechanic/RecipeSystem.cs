@@ -755,7 +755,7 @@ namespace CalamityMod.Systems
 
                 // Tier lock various items to a higher tier (sorted by progression)
                 { Vanilla(ItemID.Trimarang), AddIngredient(ItemType<PearlShard>(), 5) },
-                { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 5) },
+                { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 10) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
                 { Vanilla(ItemID.FairyBell), RemoveIngredient(ItemID.SoulofSight) },
                 { Vanilla(ItemID.HellfireTreads), AddIngredient(ItemType<EssenceofHavoc>(), 4) },
