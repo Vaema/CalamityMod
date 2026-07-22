@@ -72,7 +72,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<GodSlayerChestplate>().
                 AddIngredient<BloodflareBodyArmor>().
                 AddIngredient<TarragonBreastplate>().
-                AddIngredient<AuricBar>(18).
+                AddIngredient<AuricBar>(20).
                 AddTile<CosmicAnvil>().
                 Register();
 
@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<SilvaArmor>().
                 AddIngredient<BloodflareBodyArmor>().
                 AddIngredient<TarragonBreastplate>().
-                AddIngredient<AuricBar>(18).
+                AddIngredient<AuricBar>(20).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddRecipeGroup("AnyGoldCrown").
-                AddIngredient<AerialiteBar>(6).
+                AddIngredient<AerialiteBar>(8).
                 AddIngredient(ItemID.Feather, 8).
                 AddTile(TileID.Anvils).
                 Register();

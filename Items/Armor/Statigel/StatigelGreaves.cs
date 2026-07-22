@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Armor.Statigel
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PurifiedGel>(7).
-                AddIngredient<BlightedGel>(7).
+                AddIngredient<PurifiedGel>(10).
+                AddIngredient<BlightedGel>(10).
                 AddTile(TileID.Solidifier).
                 Register();
         }

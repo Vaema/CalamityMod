@@ -164,8 +164,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 7).
-                AddIngredient<CoreofCalamity>().
                 AddIngredient(ItemID.ShimmerBlock, 10).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

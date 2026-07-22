@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(7).
+                AddIngredient<AerialiteBar>(15).
                 AddTile(TileID.Anvils).
                 Register();
         }

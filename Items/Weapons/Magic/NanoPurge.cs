@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.LaserMachinegun).
-                AddIngredient<UelibloomBar>(7).
+                AddIngredient<UelibloomBar>(10).
                 AddIngredient(ItemID.Nanites, 100).
                 AddTile(TileID.MythrilAnvil).
                 Register();

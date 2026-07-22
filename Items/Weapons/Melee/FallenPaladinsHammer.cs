@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.PaladinsHammer).
                 AddIngredient<Pwnagehammer>().
-                AddIngredient<ScoriaBar>(5).
-                AddIngredient<AshesofCalamity>(5).
+                AddIngredient<ScoriaBar>(8).
+                AddIngredient<AshesofCalamity>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

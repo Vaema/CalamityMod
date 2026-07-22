@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<AshesofCalamity>(12).
                 AddIngredient<EssenceofEleum>(15).
                 AddIngredient<PlagueCellCanister>(15).
-                AddIngredient<DepthCells>(15).
+                AddIngredient<DepthCells>(20).
                 AddIngredient<ArmoredShell>(4).
                 AddTile<CosmicAnvil>().
                 Register();

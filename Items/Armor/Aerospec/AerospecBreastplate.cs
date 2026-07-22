@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(15).
+                AddIngredient<AerialiteBar>(20).
                 AddIngredient(ItemID.Feather, 2).
                 AddTile(TileID.Anvils).
                 Register();

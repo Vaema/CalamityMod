@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         {
             CreateRecipe().
                 AddIngredient<ReaperTooth>(5).
-                AddIngredient<DepthCells>(18).
+                AddIngredient<DepthCells>(25).
                 AddIngredient<RuinousSoul>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();

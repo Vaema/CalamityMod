@@ -95,7 +95,7 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<BladecrestOathsword>().
                 AddIngredient<OldLordClaymore>().
-                AddIngredient<UnholyCore>(5).
+                AddIngredient<UnholyCore>(8).
                 AddIngredient<EssenceofHavoc>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();

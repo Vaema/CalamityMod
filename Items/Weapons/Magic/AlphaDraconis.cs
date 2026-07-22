@@ -72,9 +72,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<WyvernsCall>().
-                AddIngredient<Lumenyl>(6).
-                AddIngredient<RuinousSoul>(5).
-                AddIngredient<ExodiumCluster>(10).
+                AddIngredient<Lumenyl>(8).
+                AddIngredient<RuinousSoul>(4).
+                AddIngredient<ExodiumCluster>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
