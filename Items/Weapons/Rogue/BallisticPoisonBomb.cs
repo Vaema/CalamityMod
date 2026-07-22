@@ -42,9 +42,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<SeafoamBomb>().
-                AddIngredient<SulphurousSand>(20).
+                AddIngredient<SulphurousSand>(10).
                 AddIngredient<Voidstone>(10).
-                AddIngredient<DepthCells>(30).
+                AddIngredient<DepthCells>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

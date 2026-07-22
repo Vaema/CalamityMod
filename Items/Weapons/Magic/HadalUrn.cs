@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<BlackAnurian>().
                 AddIngredient<Voidstone>(20).
-                AddIngredient<DepthCells>(30).
+                AddIngredient<DepthCells>(15).
                 AddIngredient(ItemID.Bone, 10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
