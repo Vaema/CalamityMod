@@ -77,7 +77,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.BreakerBlade).
-                AddIngredient<UnholyCore>(6).
+                AddIngredient<UnholyCore>(8).
                 AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
