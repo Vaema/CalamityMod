@@ -218,7 +218,7 @@ PlagueCellCanister: {
 }
 
 PlasmaDriveCore: {
-	DisplayName: Prototype Plasma Drive Core
+	DisplayName: Prototype Plasma Drive
 	Tooltip: Despite all the time it spent in storage, its furnace still burns strong
 }
 
