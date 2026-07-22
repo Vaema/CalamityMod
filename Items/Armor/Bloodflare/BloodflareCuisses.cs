@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BloodstoneCore>(14).
+                AddIngredient<BloodstoneCore>(15).
                 AddIngredient<RuinousSoul>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();

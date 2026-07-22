@@ -80,14 +80,14 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.StarVeil).
                 AddIngredient(ItemID.SweetheartNecklace).
-                AddIngredient<AstralBar>(8).
+                AddIngredient<AstralBar>(10).
                 AddTile(TileID.TinkerersWorkbench).
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.BeeCloak).
                 AddIngredient(ItemID.CrossNecklace).
                 AddIngredient(ItemID.PanicNecklace).
-                AddIngredient<AstralBar>(8).
+                AddIngredient<AstralBar>(10).
                 AddTile(TileID.TinkerersWorkbench).
                 Register();
         }

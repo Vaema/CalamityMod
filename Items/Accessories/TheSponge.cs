@@ -163,7 +163,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RoverDrive>().
                 AddIngredient<MysteriousCircuitry>(10).
                 AddIngredient<DubiousPlating>(20).
-                AddIngredient<CosmiliteBar>(6).
+                AddIngredient<CosmiliteBar>(5).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();
