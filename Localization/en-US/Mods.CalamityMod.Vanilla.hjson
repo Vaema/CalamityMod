@@ -519,7 +519,7 @@ TownNPCMood: {
 	PartyGirl: {
 		Monument: Yeeesh, we're gonna have an ugly statue of big money around? That like, totally kills the party mood around here.
 		GiftPositive: PARTY GIFTS? FOR ME? Oh just you wait, I'm gonna throw the BIGGEST party this town has ever seen, forever and always!
-		GiftNegative: I knew you were trouble when you walked in that suspicious looking box! It's too late now to say sorry!
+		GiftNegative: I knew you were trouble when you walked in with that suspicious looking box! It's too late now to say sorry!
 	}
 
 	Pirate: {
