@@ -105,7 +105,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<GodSlayerHeadRogue>().
                 AddIngredient<BloodflareHeadRogue>().
                 AddIngredient<TarragonHeadRogue>().
-                AddIngredient<AuricBar>(12).
+                AddIngredient<AuricBar>(10).
                 AddTile<CosmicAnvil>().
                 SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaBodyArmor>()).
                 Register();
