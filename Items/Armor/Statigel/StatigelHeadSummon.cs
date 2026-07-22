@@ -74,8 +74,8 @@ namespace CalamityMod.Items.Armor.Statigel
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PurifiedGel>(5).
-                AddIngredient<BlightedGel>(5).
+                AddIngredient<PurifiedGel>(8).
+                AddIngredient<BlightedGel>(8).
                 AddTile(TileID.Solidifier).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelHeadRogue>()).
                 Register();

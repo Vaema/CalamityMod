@@ -63,8 +63,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PurifiedGel>(18).
-                AddIngredient<BlightedGel>(18).
+                AddIngredient<PurifiedGel>(14).
+                AddIngredient<BlightedGel>(14).
                 AddTile(TileID.Solidifier).
                 Register();
         }
