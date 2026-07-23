@@ -653,6 +653,9 @@ namespace CalamityMod.ILEditing
         {
             if (self.Calamity().ChaosStone)
             {
+                if (amount <= -1)
+                    amount = self.GetManaCost(item);
+
                 if (pay)
                 {
                     self.statMana -= item.mana;
