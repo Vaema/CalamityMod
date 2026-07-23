@@ -275,7 +275,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
-                totalNegativeLifeRegen -= Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana;
+                totalNegativeLifeRegen -= (Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana) + Items.Accessories.ChaosStone.BaseLostRegen;
             }
 
             //
@@ -677,7 +677,7 @@ namespace CalamityMod.CalPlayer
                 {
                     Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
                     pulseCounter = 0;
-                    if (toxicHeartVisuals)
+                    if (toxicHeartVisuals && !CalamityClientConfig.Instance.MisophoniaSupport)
                     {
                         float soundVolume = Utils.Remap(Player.lifeRegen, minLifeRegen, maxLifeRegen, 1f, 0.3f, true);
                         SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");

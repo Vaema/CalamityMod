@@ -24,5 +24,6 @@ namespace CalamityMod.Projectiles.Magic
         {
             CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 24f, 5, ModContent.ProjectileType<NightBolt>());
         }
+        public override bool? CanDamage() => false;
     }
 }

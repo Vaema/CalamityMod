@@ -394,8 +394,9 @@ namespace CalamityMod.Items
 
                 if (showTheTip)
                 {
-                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
-                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}", str))));
+                    var bind = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"];
+                    string str = bind.Count == 0 ? GetTextValue("Misc.HotkeyNotBound") : bind.First().ToString();
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", GetTextValue("Misc.AltExpand").Replace("{0}", str))));
                     tooltips[lastTooltipIndex].OverrideColor = new Color(170, 170, 170);
                 }
                 else if (foundDebuff)
@@ -1374,23 +1375,23 @@ namespace CalamityMod.Items
         /// <remarks>
         /// Currently, the dictionary functions as follows: <br />
         /// 1-5   insanely fast <br />
-        /// 6-9   very fast <br />
-        /// 10-14 fast <br />
-        /// 15-22 average <br />
-        /// 23-29 slow <br />
-        /// 30-37 very slow <br />
-        /// 38-45 extremely slow <br />
-        /// 46+   snail
+        /// 6-10  very fast <br />
+        /// 11-17 fast <br />
+        /// 18-24 average <br />
+        /// 25-30 slow <br />
+        /// 31-43 very slow <br />
+        /// 44-60 extremely slow <br />
+        /// 61+   snail
         /// </remarks>
         private static readonly Dictionary<int, LocalizedText> SpeedTooltips = new Dictionary<int, LocalizedText>()
         {
             { 5, Language.GetText("LegacyTooltip.6") },
-            { 9, Language.GetText("LegacyTooltip.7") },
-            { 14, Language.GetText("LegacyTooltip.8") },
-            { 22, Language.GetText("LegacyTooltip.9") },
-            { 29, Language.GetText("LegacyTooltip.10") },
-            { 37, Language.GetText("LegacyTooltip.11") },
-            { 45, Language.GetText("LegacyTooltip.12") },
+            { 10, Language.GetText("LegacyTooltip.7") },
+            { 17, Language.GetText("LegacyTooltip.8") },
+            { 24, Language.GetText("LegacyTooltip.9") },
+            { 30, Language.GetText("LegacyTooltip.10") },
+            { 43, Language.GetText("LegacyTooltip.11") },
+            { 60, Language.GetText("LegacyTooltip.12") },
             // TODO: Using int.MaxValue here may be considered kind of strange - only alternatives I can think of require hardcoding.
             { int.MaxValue, Language.GetText("LegacyTooltip.13") }
         };
@@ -1669,14 +1670,6 @@ namespace CalamityMod.Items
 
                 return false;
             }
-
-            // Rainbow effect originally made for Orderbringer because it used to have a special rarity
-            // But why did it have one in the first place??
-            // Might be used for Miracle stuff later or something idk
-            /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
-            {
-                
-            }*/
             return true;
         }
         #endregion

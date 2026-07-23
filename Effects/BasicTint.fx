@@ -3,7 +3,7 @@ sampler uImage1 : register(s1);
 float3 uColor;
 float3 uSecondaryColor;
 float uOpacity;
-float uSaturation;
+float uSaturation; // Saturation gets used as a "true" opacity
 float uRotation;
 float uTime;
 float4 uSourceRect;
@@ -20,7 +20,7 @@ float4 Recolor(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
     float4 color = tex2D(uImage0, coords);
     float originalAlpha = color.a;
     color.rbg = lerp(color.rbg, uColor, uOpacity);
-    return color * originalAlpha;
+    return color * originalAlpha * uSaturation;
     
 }
 

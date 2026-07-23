@@ -104,10 +104,10 @@ namespace CalamityMod.NPCs
 
                 #region Sky / Space
                 // Harpy
-                // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
+                // Sky Glaze @ 3.33%
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
-                    postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
+                    npcLoot.Add(ModContent.ItemType<SkyGlaze>(), 30);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
 
@@ -1196,7 +1196,8 @@ namespace CalamityMod.NPCs
                                 ItemID.LucyTheAxe,
                                 ItemID.PewMaticHorn,
                                 ItemID.WeatherPain,
-                                ItemID.HoundiusShootius
+                                ItemID.HoundiusShootius,
+                                ModContent.ItemType<WalkingCane>()
                             };
                             LCR_NotExpert.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, deerWeapons));
                         }

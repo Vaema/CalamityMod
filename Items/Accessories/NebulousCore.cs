@@ -37,12 +37,12 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.nebulousCore = true;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
+            player.GetDamage<GenericDamageClass>() += 0.12f;
 
             // Spawn nebula stars
             if (Main.rand.NextBool(15))
             {
-                // Count the number of current active nebula stars; if this is at least 10, no more can spawn
+                // Count the number of current active nebula stars; if this is at least 15, no more can spawn
                 int numProj = 0;
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Accessories
                         numProj++;
                     }
                 }
-                if (Main.rand.Next(15) >= numProj && numProj < 10)
+                if (Main.rand.Next(15) >= numProj && numProj < 15)
                 {
                     int spawnRadius = 24;
                     for (int j = 0; j < 50; j++) // Attempt to spawn the star randomly around the player

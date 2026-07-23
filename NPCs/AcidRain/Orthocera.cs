@@ -7,6 +7,7 @@ using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
@@ -208,7 +209,8 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.Calamity().newAI[0]++;
                 if (NPC.Calamity().newAI[0] % 5 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Bottom, Main.rand.NextVector2Circular(4f, 8f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Main.myPlayer);
+                    RancorFog fog = new(NPC.Bottom, Main.rand.NextVector2Circular(4f, 8f), 180, Main.rand.NextFloat(1f, 1.7f), Main.rand.NextFloat(MathHelper.TwoPi));
+                    GeneralParticleHandler.SpawnParticle(fog, false, Enums.GeneralDrawLayer.BeforeNPCs);
                     RancorLavaMetaball.SpawnParticle(NPC.Bottom + Main.rand.NextVector2Circular(10f, 10f), 135f);
                 }
                 if (NPC.Calamity().newAI[0] % 30 == 0 && Main.netMode != NetmodeID.MultiplayerClient)

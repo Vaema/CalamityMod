@@ -206,7 +206,7 @@ namespace CalamityMod.CalPlayer
                     chaliceBleedoutBuffer = 0D;
                     chaliceDamagePointPartialProgress = 0D;
                 }
-                Player.HealPlayer(100);
+                Player.HealPlayer(300);
 
                 Player.AddCooldown(Cooldowns.NebulousCore.ID, CalamityUtils.SecondsToFrames(90));
                 return false;
@@ -557,7 +557,7 @@ namespace CalamityMod.CalPlayer
             }
         }
 
-        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)/* tModPorter If you don't need the Projectile, consider using ModifyHitNPC instead */
+        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)
         {
             if (proj.npcProj || proj.trap)
                 return;
@@ -2230,12 +2230,13 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                if (fleshTotem && hurtInfo.Damage > 0)
+                if (fleshTotem && hurtInfo.Damage > 0 && fleshTotemManaStorage > 0)
                 {
                     SoundStyle Counter = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down");
                     if (fleshTotemManaStorage >= 100 && fleshTotemVisual)
                         SoundEngine.PlaySound(Counter with { Volume = 0.75f }, Player.Center);
-                    int lostSoulAmount = fleshTotemManaStorage / 25;
+                    int lostSoulAmount = (fleshTotemManaStorage / 2) / 25;
+                    int lostSoulDamage = (int)Player.GetTotalDamage<MagicDamageClass>().ApplyTo(FleshTotem.lostSoulDamage);
                     if (Player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] != 0)
                     {
                         for (int i = 0; i < Main.maxProjectiles; i++)
@@ -2245,13 +2246,13 @@ namespace CalamityMod.CalPlayer
                             {
                                 for (int k = 0; k < lostSoulAmount; k++)
                                 {
-                                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<FleshTotem>(), hurtInfo.DamageSource), proj.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<FleshTotemSoul>(), FleshTotem.lostSoulDamage, 0f, Main.myPlayer, 0f, 0f, 3f);
+                                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<FleshTotem>(), hurtInfo.DamageSource), proj.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<FleshTotemSoul>(), lostSoulDamage, 0f, Main.myPlayer, 0f, 0f, 3f);
                                 }
                                 break;
                             }
                         }
                     }
-                    fleshTotemManaStorage = 0;
+                    fleshTotemManaStorage = fleshTotemManaStorage / 2;
                 }
 
                 // By setting brainOfConfusionItem, these accessories have this code already,

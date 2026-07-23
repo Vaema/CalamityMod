@@ -85,6 +85,11 @@ BlackHawkRemote: {
 		'''
 }
 
+BlightedSlimeStaff: {
+	DisplayName: Blighted Slime Staff
+	Tooltip: Summons a blighted slime to fight for you
+}
+
 BorealisBomber: {
 	DisplayName: Borealis Bomber
 	Tooltip:
@@ -191,11 +196,6 @@ Cnidarian: {
 		'''
 }
 
-CorroslimeStaff: {
-	DisplayName: Corroslime Staff
-	Tooltip: Summons a corro slime to fight for you
-}
-
 CorvidHarbringerStaff: {
 	DisplayName: Corvid Harbinger Staff
 	Tooltip:
@@ -231,11 +231,6 @@ CosmicViperEngine: {
 Cosmilamp: {
 	DisplayName: Cosmilamp
 	Tooltip: Summons a cosmic lantern above your head to fight for you
-}
-
-CrimslimeStaff: {
-	DisplayName: Crimslime Staff
-	Tooltip: Summons a crim slime to fight for you
 }
 
 CryogenicStaff: {
@@ -496,7 +491,7 @@ IgneousExaltation: {
 		Summons an Igneous blade that orbits around you
 		When your minion slots are full, <left> again to launch all blades towards the cursor
 		This ability has a two-second cooldown that requires holding this item
-		Shift-<right> this item in your inventory to change the rotation direction
+		Press [KEY] while holding this item to change the rotation direction
 		'''
 }
 
@@ -736,11 +731,7 @@ SquirrelSquireStaff: {
 
 StaffOfNecrosteocytes: {
 	DisplayName: Staff of Necrosteocytes
-	Tooltip:
-		'''
-		Summons small skeletons to fight for you
-		The skeletons leave behind bone cells as they move
-		'''
+	Tooltip: Summons small skeletons to fight for you
 }
 
 StarspawnHelixStaff: {
@@ -856,7 +847,7 @@ ViridVanguard: {
 		All weapons inflict [cbuff:CalamityMod/SagePoison], which becomes more powerful the more weapons are summoned
 		When all minion slots are full, <left> again to spin up a flurry of slashes aimed at your cursor
 		This ability has a five-second cooldown that requires holding this item
-		Shift-<right> this item in your inventory to change the rotation direction
+		Press [KEY] while holding this item to change the rotation direction
 		'''
 }
 
@@ -864,7 +855,8 @@ VoidConcentrationStaff: {
 	DisplayName: Void Concentration Staff
 	Tooltip:
 		'''
-		Surrounds you with dark energy, which makes all attacks deal 15% less damage
+		Summons an endless darkness that surrounds you with orbiting dark energies
+		While the dark energies are orbiting you, you take 15% less damage from all attacks
 		<right> to condense the energy onto a target, focusing your minions on them and creating homing beams
 		When the focused enemy takes damage from any source, they will be struck by additional dark energies
 		These dark energy are twice as strong when the strike was from a minion or sentry
@@ -880,8 +872,10 @@ VoidEaterMarionette: {
 		Repeated summons increase the length and power of the Devourer
 		The Devourer attacks with [ceffect/dog:Divinity Devourer], [ceffect/dog:Faith Incinerator] and [ceffect/dog:Ultracosmic Maelstrom]
 		Can play fetch with dropped items 
-		Shift-<right> this item in your inventory when the Devourer has been spawned to prioritize fetching
+		Press [KEY] while holding this item when the Devourer has been spawned to prioritize fetching
 		'''
+	FetchStart: Go fetch!
+	FetchEnd: Get 'em!
 }
 
 WarloksMoonFist: {

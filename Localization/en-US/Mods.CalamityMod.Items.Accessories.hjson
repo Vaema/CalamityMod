@@ -441,7 +441,7 @@ CorrosiveSpine: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		25% increased Sickness and Water debuff damage
+		50% increased Sickness and Water debuff damage
 		All attacks inflict [cbuff:CalamityMod/Irradiated] and reduces the severity of the sulphuric waters
 		You burst into radioactive clouds when struck
 		'''
@@ -701,7 +701,11 @@ ElementalGauntlet: {
 
 ElementalinaBottle: {
 	DisplayName: Elemental in a Bottle
-	Tooltip: Summons a sand elemental to fight for you
+	Tooltip:
+		'''
+		Summons a sand elemental to fight for you
+		The elemental has reduced opacity if visibility is disabled
+		'''
 }
 
 ElysianAegis: {
@@ -758,7 +762,11 @@ EvasionScarf: {
 
 EyeoftheStorm: {
 	DisplayName: Eye of the Storm
-	Tooltip: Summons a Cloud Elemental to fight for you
+	Tooltip:
+		'''
+		Summons a Cloud Elemental to fight for you
+		The elemental has reduced opacity if visibility is disabled
+		'''
 }
 
 FeatherCrown: {
@@ -835,7 +843,7 @@ FleshTotem: {
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
 		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
-		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
+		Upon being struck, the effigy unleashes half of all stored up mana as vengeful souls that chase your enemies
 		The effigy is transparent and silent if visibility is disabled
 		'''
 }
@@ -874,7 +882,7 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 5 defense and +1 HP/s life regen
+		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 3 defense and +1 HP/s life regen
 		10% increased damage while you have [cbuffplr:CalamityMod/Mushy]
 		'''
 	SalesPitch: "{$Common.SalesmanShrinePitch}"
@@ -965,7 +973,7 @@ HallowedRune: {
 
 HarpyRing: {
 	DisplayName: Harpy Ring
-	Tooltip: 10% increased movement speed and 20% increased flight time
+	Tooltip: 20% increased movement speed and flight time
 }
 
 HeartofDarkness: {
@@ -983,6 +991,7 @@ HeartoftheElements: {
 	Tooltip:
 		'''
 		Summons all elementals to protect you
+		The elementals have reduced opacity if visibility is disabled
 		'The heart of the world'
 		'''
 }
@@ -1207,7 +1216,7 @@ NebulousCore: {
 	DisplayName: Nebulous Core
 	Tooltip:
 		'''
-		10% increased damage
+		12% increased damage
 		Summons floating nebula stars to protect you
 		Taking a fatal hit revives you to 100 HP
 		This effect has a 90 second cooldown
@@ -1320,6 +1329,7 @@ PearlofEnthrallment: {
 		'''
 		Summons a water elemental to fight for you
 		The elemental stays above you, shooting water spears, ice mist, and treble clefs at nearby enemies
+		The elemental has reduced opacity if visibility is disabled
 		'''
 }
 
@@ -1487,6 +1497,7 @@ OasisElementalinaBottle: {
 		'''
 		Summons an oasis elemental to assist you
 		The elemental fires healing orbs that restore 10 health while you are damaged
+		The elemental has reduced opacity if visibility is disabled
 		'''
 }
 
@@ -1519,7 +1530,11 @@ RogueEmblem: {
 
 RoseStone: {
 	DisplayName: Rose Stone
-	Tooltip: Summons a Brimstone Elemental to fight for you
+	Tooltip:
+		'''
+		Summons a Brimstone Elemental to fight for you
+		The elemental has reduced opacity if visibility is disabled
+		'''
 }
 
 RottenBrain: {
@@ -2173,7 +2188,7 @@ WarbanneroftheRighteous: {
 	Tooltip:
 		'''
 		Multiplies all damage based on how close you are to enemies
-		Maximum damage boost is 15%, minimum damage boost is -15%
+		Maximum damage boost is 1.15x, minimum damage boost is 0.85x
 		Emit a blazing aura that burns and repels nearby enemies with [cbuff:CalamityMod/HolyFlames]
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled

@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float RecoilResolveSpeed => (KeepRefreshingLifetime || CurrentChargingFrames < ArcNovaDiffuser.Charge2Frames) ? 0.4f : 0.04f;
 
         public static int FramesPerLoad = 13;
-        public static int MaxLoadableShots = 15;
+        public static int MaxLoadableShots = 20;
         public static float BulletSpeed = 12f;
         public SlotId NovaChargeSlot;
 
@@ -107,11 +107,13 @@ namespace CalamityMod.Projectiles.Ranged
                 // Rapid Fire mode
                 else if (ShotsLoaded > 0)
                 {
+                    float lvCompLerp = Math.Min(CurrentChargingFrames / ArcNovaDiffuser.Charge1Frames, 1);
+
                     // While bullets are remaining, refresh the lifespan; it will not refresh again after bullets run out
                     Projectile.timeLeft = ArcNovaDiffuser.AftershotCooldownFrames;
 
                     // Retract recoil & shoot faster if charged
-                    ShootRecoilTimer -= ChargeLV1 ? 2.3f : 2f;
+                    ShootRecoilTimer -= (ChargeLV1 ? 2.8f : 2f) * MathHelper.Lerp(0.4f, 1f, MathF.Pow(lvCompLerp, 2.5f));
 
                     if (ShootRecoilTimer <= 0f)
                     {
@@ -120,8 +122,9 @@ namespace CalamityMod.Projectiles.Ranged
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                         Vector2 fireVec = shootVelocity.RotatedByRandom(MathHelper.ToRadians(2f));
+                        int damage = (int)(Projectile.damage * MathHelper.Lerp(0.5f, 1f, lvCompLerp));
                         if (Main.myPlayer == Projectile.owner)
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec * (ChargeLV1 ? 1 : 0.7f), ModContent.ProjectileType<NovaShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec * (ChargeLV1 ? 1 : 0.7f), ModContent.ProjectileType<NovaShot>(), damage, Projectile.knockBack, Projectile.owner);
                         for (int i = 0; i <= 4; i++)
                         {
                             Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, ModContent.DustType<SquashDust>(), shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(1.2f, 1.6f), 0, default, Main.rand.NextFloat(0.8f, 1.8f));
@@ -137,7 +140,7 @@ namespace CalamityMod.Projectiles.Ranged
                         }
 
                         ShotsLoaded--;
-                        ShootRecoilTimer = (int)MathHelper.Lerp(33, 13, Math.Min(CurrentChargingFrames / ArcNovaDiffuser.Charge1Frames, 1));
+                        ShootRecoilTimer = (int)MathHelper.Lerp(23, 13, lvCompLerp);
                         OffsetLengthFromArm -= 6f;
                     }
                 }

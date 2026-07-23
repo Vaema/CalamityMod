@@ -5,6 +5,7 @@ using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
@@ -15,8 +16,12 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
-
         public bool gotEnergyThisSwing = false;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.AllowsContactDamageFromJellyfish[Type] = true;
+        }
 
         public override void SetDefaults()
         {

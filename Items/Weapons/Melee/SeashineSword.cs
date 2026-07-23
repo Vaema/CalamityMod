@@ -18,8 +18,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.CloneDefaults(ItemID.EnchantedSword);
             Item.width = 40;
             Item.height = 40;
-            Item.useTime = 30;
-            Item.damage = 25;
+            Item.useTime = 40;
+            Item.damage = 22;
             Item.DamageType = DamageClass.Melee;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.knockBack = 4f;

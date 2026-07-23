@@ -91,14 +91,6 @@ namespace CalamityMod.Projectiles.Boss
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            return false;
-            
-            /*
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-            */
-        }
+        public override bool PreDraw(ref Color lightColor) => false;
     }
 }

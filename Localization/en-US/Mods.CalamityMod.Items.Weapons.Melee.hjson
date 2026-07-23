@@ -86,7 +86,8 @@ ArkoftheCosmos: {
 		You can also parry projectiles to make them deal 120 less damage for a short period
 		Parrying will empower the next 16 swings of the sword
 		'''
-	BlastInfo: Double <right> with charges available to cause a Big Rip in spacetime and consume all charges
+	BlastInfo: <right> with charges available to cause a Big Rip in spacetime and consume all charges
+	BlastInfoKeybind: Press [KEY] with charges available to cause a Big Rip in spacetime and consume all charges
 }
 
 ArkoftheElements: {
@@ -924,7 +925,6 @@ Oblivion: {
 		At maximum charge, the yoyo bursts into brimstone darts and resets its flight duration
 		Striking an enemy at maximum charge will overload the yoyo, causing it to release all stored up power and shatter
 		Shattering the yoyo deals immense damage but leaves it unable to be used for several seconds
-		[c/C61B40:'I have memories from eyes that are not my own']
 		'''
 }
 
@@ -1245,7 +1245,7 @@ StygianShield: {
 	DisplayName: Stygian Shield
 	Tooltip:
 		'''
-		Hold <left> to charge an omni-directional dash which slams through enemies
+		Hold <left> to charge an omni-directional dash which grants immunity to damage and can slam through enemies
 		<right> to throw a buckler which bounces towards a nearby foe upon collision
 		Grants knockback immunity and {0} defense while held
 		However, dashes are disabled until you stop holding this weapon for {1} seconds
