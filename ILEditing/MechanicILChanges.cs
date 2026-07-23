@@ -654,7 +654,10 @@ namespace CalamityMod.ILEditing
             if (self.Calamity().ChaosStone)
             {
                 if (pay)
+                {
                     self.statMana -= item.mana;
+                    CombinedHooks.OnConsumeMana(self, item, amount);
+                }
                 if (self.statMana < -self.statManaMax2)
                     self.statMana = -self.statManaMax2;
                 return true;
