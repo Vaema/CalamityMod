@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
             AutoDrawTooltip = false
         };
 
-        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += (int)(damageDone * (1 - SummonerTagEffectiveness));
+        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += (int)(damageDone * (SummonerTagEffectiveness - 1));
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
