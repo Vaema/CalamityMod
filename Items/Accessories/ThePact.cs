@@ -26,15 +26,13 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(4, 4));
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
             CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Laceration>()];
         }
 
         public override void SetDefaults()
         {
-            Item.width = 40;
-            Item.height = 50;
+            Item.width = 46;
+            Item.height = 64;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
@@ -60,24 +58,6 @@ namespace CalamityMod.Items.Accessories
                     }
                 }
             }
-        }
-        
-
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 0.5f,
-                drawOffset: new(0f, 0f)
-            );
-            return false;
         }
     }
 }
