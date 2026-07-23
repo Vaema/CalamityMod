@@ -2327,6 +2327,6 @@ FrozenCube: {
 		'''
 	SalesPitch: "{$Common.SalesmanShrinePitch}"
 	EquippedDebuff: Current Cold Debuff boost: +{0}%
-	EquippedElumphant: Current Elumphant Power: +{0}%
+	EquippedElumphant: Current Elumphant Power: {0}%
 	Unequipped: Equip this accessory to view its statistics
 }

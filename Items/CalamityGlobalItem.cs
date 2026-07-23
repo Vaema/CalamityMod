@@ -1188,13 +1188,13 @@ namespace CalamityMod.Items
                 {
                     player.GetJumpState<GravityJump>().Available = true;
                 }
-                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8)
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 7)
                 {
-                    player.maxRunSpeed = 5f;
+                    player.maxRunSpeed = 7f;
                 }
-                player.jumpSpeedBoost += 1.6f;
+                player.jumpSpeedBoost += 2f;
                 if (player.controlDown)
-                    player.maxFallSpeed *= 1.5f;
+                    player.maxFallSpeed *= (player.Calamity().ironBoots || player.Calamity().gSabaton) ? 1.5f : 2f;
                 else
                     player.maxFallSpeed *= 1.2f;
             }

@@ -775,11 +775,17 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         private void SpawnFloorMist(int x, int y)
         {
+            //the particles are all just visual
+            //also, calling lighting check on a server breaks
+            if (Main.netMode == NetmodeID.Server)
+                return;
+
             int textureIndex = Main.rand.Next(GoreID.AmbientFloorCloud1, GoreID.AmbientFloorCloud4 + 1);
 
             Vector2 position = new Point(x, y - 1).ToWorldCoordinates();
             Vector2 velocity = Vector2.UnitX * Main.rand.NextFloat(0.2f, 0.4f) * Main.WindForVisuals;
             Color mistColor = Color.Lerp(new(30, 30, 30), Color.Crimson, Main.rand.NextBool(3) ? Main.rand.NextFloat(0.2f, 0.8f) : Main.rand.Next(2));
+            var point = new Point(x, y);
             Color color = Color.Lerp(Lighting.GetColor(new Point(x, y)), mistColor, 0.5f);
 
             float yOffset = 16f * Main.rand.NextFloat();

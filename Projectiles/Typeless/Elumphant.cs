@@ -123,31 +123,21 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public void SetStats()
         {
-            maxTargetingDistance = (float)(500 * GetPower(0.3f));
-            attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed / (GetPower(0.5f)));
-            damageScaling = (float)GetPower(1.35f, (1 + frozenCubePower * 0.2f));
-            cooldownTime = (int)(FrozenCube.baseAttackCooldown / GetPower(0.5f));
+            maxTargetingDistance = (float)(400 * (1+frozenCubePower));
+            attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed/(1+frozenCubePower));
+            damageScaling = 1+frozenCubePower;
+            cooldownTime = (int)(FrozenCube.baseAttackCooldown / (1 + frozenCubePower));
         }
         public void SetElumphantPower()
         {
             int usedDefense = Owner.Calamity().frozenCubeUsedDefense;
             if (time == 0) // Show the player how much defense is being used
                 CombatText.NewText(Projectile.Hitbox, color2, -usedDefense, false, true);
-
-            // Defense investment softcaps at 110 (aka player has 330 defense)
-            float defenseCap = 110;
-            if (usedDefense > defenseCap)
-            {
-                float ratio = usedDefense / defenseCap;
-                usedDefense = (int)(defenseCap * MathF.Pow(ratio, 0.15f));
-            }
-
-            frozenCubePower = usedDefense * 0.05f; // 1 point of defense = 5% effectiveness
             
-            float power = (float)(GetPower(0.8f, (1 + frozenCubePower * 0.2f)) - 1);
-            Owner.Calamity().frozenCubeDebuffBoost = power;
-            Owner.Calamity().frozenCubeElumphantBoost = damageScaling - 1;
-            Owner.Calamity().ColdDebuffMultiplier += power; // Boost cold debuff damage
+            frozenCubePower = usedDefense * 0.04f;
+            Owner.Calamity().frozenCubeDebuffBoost = frozenCubePower;
+            Owner.Calamity().frozenCubeElumphantBoost = damageScaling;
+            Owner.Calamity().ColdDebuffMultiplier += frozenCubePower;
         }
         public double GetPower(float efficiency, float intenseScaling = 1)
         {
@@ -288,7 +278,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.frame = 2;
             if (recoiling)
             {
-                attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed / GetPower(0.5f));
+                attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed / (GetPower(0.5f)));
                 if (Projectile.numHits > 1)
                     attackTimer = attackTimeAdjusted;
                 Projectile.numHits = 1;
@@ -394,7 +384,7 @@ namespace CalamityMod.Projectiles.Typeless
                     Vector2 shootPosition = Projectile.Center + shootVel * 5 * Projectile.scale;
                     Projectile mist = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), shootPosition, (shootVel * shootPosition.Distance(targeted.Center) / 25) * Main.rand.NextFloat(0.9f, 1.1f), projectile, damage, 0, Owner.whoAmI, 0, Owner.ownedProjectileCounts[projectile] % 3, (float)GetPower(1));
                 }
-                mistShootTimer += (float)(0.35f * GetPower(0.25f));
+                mistShootTimer += (float)(0.2f * GetPower(0.25f));
                 if (mistShootTimer >= 2f)
                     mistShootTimer = 0;
             }
