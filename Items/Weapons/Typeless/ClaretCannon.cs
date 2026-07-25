@@ -65,7 +65,8 @@ namespace CalamityMod.Items.Weapons.Typeless
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BloodstoneCore>(10).
+                AddIngredient<Bloodstone>(25).
+                AddIngredient<BloodOrb>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -58,11 +58,6 @@ Bloodstone: {
 	Tooltip: ""
 }
 
-BloodstoneCore: {
-	DisplayName: Bloodstone Core
-	Tooltip: ""
-}
-
 CoreofCalamity: {
 	DisplayName: Core of Calamity
 	Tooltip: ""
