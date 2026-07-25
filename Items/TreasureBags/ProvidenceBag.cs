@@ -75,7 +75,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ModContent.ItemType<PristineFury>(), 10);
 
             // Equipment
-            itemLoot.Add(ModContent.ItemType<BlazingCore>());
+            itemLoot.Add(ModContent.ItemType<DivineProvidence>());
             itemLoot.AddRevBagAccessories();
 
             // Vanity

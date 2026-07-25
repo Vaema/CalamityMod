@@ -301,20 +301,6 @@ BlackGlassBand: {
 		'''
 }
 
-BlazingCore: {
-	DisplayName: Blazing Core
-	Tooltip:
-		'''
-		{$Common.KnockbackImmunity}
-		The searing core of the Profaned Goddess
-		Pressing [KEY] will activate a parry, encasing you in luminous profaned crystal
-		Being hit shortly after encasement will shatter the crystal
-		Upon shattering, holy stars spiral outwards and damage taken is negated
-		After shattering, this damage reduction effect goes on cooldown
-		Damage parried whilst on cooldown summons additional healing stars, and will not be reduced
-		'''
-}
-
 BloodflareCore: {
 	DisplayName: Bloodflare Core
 	Tooltip:
@@ -599,6 +585,20 @@ CrushingEgo: {
 		'''
 		Multiplies all damage by 1.3x, but at the cost of taking 20% increased damage
 		[c/ff00ff:'Don the mask of arrogance, and dance by your lonesome. Once the ball has gone quiet, you'll be the last man standing.']
+		'''
+}
+
+DivineProvidence: {
+	DisplayName: Divine Providence
+	Tooltip:
+		'''
+		{$Common.KnockbackImmunity}
+		Pressing [KEY] will activate a parry, encasing you in luminous profaned crystal
+		Being hit shortly after encasement will shatter the crystal
+		Upon shattering, holy stars spiral outwards and damage taken is negated
+		After shattering, this damage reduction effect goes on cooldown
+		Damage parried whilst on cooldown summons additional healing stars, and will not be reduced
+		[c/FF8C00:The searing core of the Profaned Goddess]
 		'''
 }
 

@@ -1563,23 +1563,23 @@ namespace CalamityMod.CalPlayer
             // It has not yet been mitigated by any means.
             //
 
-            if (blazingCoreParry > 0) //check for active parry
+            if (divineProvParry > 0) //check for active parry
             {
-                if (blazingCoreParry >= 12) //only the first 18 frames (0.3 seconds) counts for a valid parry
+                if (divineProvParry >= 12) //only the first 18 frames (0.3 seconds) counts for a valid parry
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID))
                     {
-                        // 17APR2024: Ozzatron: Blazing Core is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
-                        int blazingCoreParryIFrames = Player.ComputeParryIFrames();
-                        Player.GiveUniversalIFrames(blazingCoreParryIFrames, true);
+                        // 17APR2024: Ozzatron: Divine Providence is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+                        int divineProvParryIFrames = Player.ComputeParryIFrames();
+                        Player.GiveUniversalIFrames(divineProvParryIFrames, true);
 
-                        blazingCoreEmpoweredParry = true;
+                        divineProvEmpoweredParry = true;
 
                         modifiers.Cancel();
                         modifiers.DisableSound(); //prevents hurt sound from playing, had no idea this was a thing
                     }
 
-                    SoundEngine.PlaySound(BlazingCore.ParrySuccessSound, Player.Center);
+                    SoundEngine.PlaySound(DivineProvidence.ParrySuccessSound, Player.Center);
 
                     float power = 2;
                     for (int i = 0; i < (int)(20 * power); i++)
@@ -1609,12 +1609,12 @@ namespace CalamityMod.CalPlayer
                     Particle orb2 = new CustomPulse(Player.Center, Vector2.Zero, Color.Khaki, "CalamityMod/Particles/BloomRing", new Vector2(1f, 0.5f), 0, 0, 2.1f * power, 25);
                     GeneralParticleHandler.SpawnParticle(orb2);
 
-                    blazingCoreSuccessfulParry = 60;
+                    divineProvSuccessfulParry = 60;
                     Player.AddCooldown(ParryCooldown.ID, 60 * 30, false, "blazingcore"); //cooldown is frames in seconds multiplied by the desired amount of seconds
                 }
 
-                if (blazingCoreParry > 1)
-                    blazingCoreParry = 1; //schedule parry to end next frame
+                if (divineProvParry > 1)
+                    divineProvParry = 1; //schedule parry to end next frame
             }
             else if (flameLickedShellParry > 0)
             {

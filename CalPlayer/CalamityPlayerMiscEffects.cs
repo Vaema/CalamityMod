@@ -2535,15 +2535,15 @@ namespace CalamityMod.CalPlayer
             if (auralisAuroraCooldown > 0)
                 auralisAuroraCooldown--;
 
-            if (blazingCore)
+            if (divineProvidence)
             {
-                if (blazingCoreSuccessfulParry > 0)
-                    BlazingCore.HandleStars(Player);
-                else if (blazingCoreParry > 0)
-                    BlazingCore.HandleParryCountdown(Player);
+                if (divineProvSuccessfulParry > 0)
+                    DivineProvidence.HandleStars(Player);
+                else if (divineProvParry > 0)
+                    DivineProvidence.HandleParryCountdown(Player);
             }
-            else if (blazingCoreParry > 0)
-                blazingCoreParry--;
+            else if (divineProvParry > 0)
+                divineProvParry--;
             else if (flameLickedShellParry > 0)
             {
                 if (flameLickedShell)

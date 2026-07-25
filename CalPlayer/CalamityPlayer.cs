@@ -1070,10 +1070,10 @@ namespace CalamityMod.CalPlayer
         public bool dynamoStemCells = false;
         public bool etherealExtorter = false;
         public Item AccessoryParryItem = null;
-        public bool blazingCore = false;
-        public int blazingCoreParry = 0;
-        public int blazingCoreSuccessfulParry = 0;
-        public bool blazingCoreEmpoweredParry = false;
+        public bool divineProvidence = false;
+        public int divineProvParry = 0;
+        public int divineProvSuccessfulParry = 0;
+        public bool divineProvEmpoweredParry = false;
         public bool voltaicJelly = false;
         public bool jellyChargedBattery = false;
         /// <summary> General cooldown for accessories which spawn projectiles on minion hits. </summary>
@@ -2478,7 +2478,7 @@ namespace CalamityMod.CalPlayer
             dynamoStemCells = false;
             etherealExtorter = false;
             AccessoryParryItem = null;
-            blazingCore = false;
+            divineProvidence = false;
             voltaicJelly = false;
             jellyChargedBattery = false;
             starbusterCore = false;
@@ -3399,9 +3399,9 @@ namespace CalamityMod.CalPlayer
             xerocSet = false;
             tracersDust = false;
             GemTechState.OnDeathEffects();
-            blazingCoreParry = 0;
-            blazingCoreEmpoweredParry = false;
-            blazingCoreSuccessfulParry = 0;
+            divineProvParry = 0;
+            divineProvEmpoweredParry = false;
+            divineProvSuccessfulParry = 0;
             flameLickedShellParry = 0;
             flameLickedShellEmpoweredParry = false;
             profanedCrystalAnim = -1;
@@ -3754,7 +3754,7 @@ namespace CalamityMod.CalPlayer
 
             if (AccessoryParryItem != null && AccessoryParryItem.JustPressedKeybind())
             {
-                if (blazingCore && blazingCoreParry == 0 && blazingCoreSuccessfulParry == 0)
+                if (divineProvidence && divineProvParry == 0 && divineProvSuccessfulParry == 0)
                 {
                     //minor cheese prevention with standing on a spike with later game gear spamming parry :skull:
                     //because of ordering, if they do not have the cooldown, it will not check the projectile array. Likewise if there are no bosses alive.
@@ -3762,8 +3762,8 @@ namespace CalamityMod.CalPlayer
                     if (!Player.HasCooldown(ParryCooldown.ID) || Player.ownedProjectileCounts[ProjectileType<BlazingStarHeal>()] == 0)
                     {
                         Player.SetScreenshake(3.5f);
-                        blazingCoreParry = 30;
-                        SoundEngine.PlaySound(BlazingCore.ParryActivateSound, Player.Center);
+                        divineProvParry = 30;
+                        SoundEngine.PlaySound(DivineProvidence.ParryActivateSound, Player.Center);
                         var mySourceIsIMadeItUp = Player.GetSource_FromThis();
                         int blazingSun = Projectile.NewProjectile(mySourceIsIMadeItUp, Player.Center, Vector2.Zero, ProjectileType<BlazingSun>(), 0, 0f, Player.whoAmI, 0f, 0f);
                         Main.projectile[blazingSun].Center = Player.Center;
