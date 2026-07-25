@@ -2016,7 +2016,7 @@ ThePact: {
 	Tooltip:
 		'''
 		Increases your max health by {0}x
-		Causes of {1}% hits you take to critically strike you
+		Causes {1}% of hits you take to critically strike you
 		These crits deal {2}x damage and infict [cbuffplr:CalamityMod/FulfilledContract]
 		'''
 	SalesPitch:
