@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<SandSharkToothNecklace>().
                 AddIngredient<ReaperTooth>(6).
-                AddIngredient<DepthCells>(15).
+                AddIngredient<DepthCells>(20).
                 AddTile(TileID.TinkerersWorkbench).
                 Register();
         }

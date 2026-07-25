@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Armor.Reaver
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PerennialBar>(10).
+                AddIngredient<PerennialBar>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<OrnateShield>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient(ItemID.HallowedBar, 5).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

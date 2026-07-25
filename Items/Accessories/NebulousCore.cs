@@ -5,6 +5,7 @@ using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -12,6 +13,13 @@ namespace CalamityMod.Items.Accessories
     public class NebulousCore : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float DamageBoost => 0.12f;
+        public static int HealLifeOnRevive => 300;
+        public static int ReviveCooldown => CalamityUtils.SecondsToFrames(90);
+        public static int MaxStars => 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), HealLifeOnRevive, ReviveCooldown.FramesToSeconds());
+
         public override void SetStaticDefaults()
         {
             CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<GodSlayerInferno>()];
@@ -37,7 +45,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.nebulousCore = true;
-            player.GetDamage<GenericDamageClass>() += 0.12f;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
 
             // Spawn nebula stars
             if (Main.rand.NextBool(15))
@@ -51,7 +59,7 @@ namespace CalamityMod.Items.Accessories
                         numProj++;
                     }
                 }
-                if (Main.rand.Next(15) >= numProj && numProj < 15)
+                if (Main.rand.Next(15) >= numProj && numProj < MaxStars)
                 {
                     int spawnRadius = 24;
                     for (int j = 0; j < 50; j++) // Attempt to spawn the star randomly around the player

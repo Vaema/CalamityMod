@@ -918,6 +918,17 @@ Encased: {
 	Description: Increased defense by {0} and damage reduction by {1}%, but...
 }
 
+FulfilledContract: {
+	DisplayName: Fulfilled Contract
+	Description: A reward earned through blood and tears
+	ItemTooltipPlayer:
+		'''
+		25% reduced Healing Potion cooldown
+		75% increased natural regeneration power
+		All attacks inflict Laceration
+		'''
+}
+
 GraxBoost: {
 	DisplayName: Grax Boost
 	Description: Your defenses and muscles are strong

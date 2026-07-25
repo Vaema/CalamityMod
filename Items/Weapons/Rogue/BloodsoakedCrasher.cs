@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<CrushsawCrasher>().
-                AddIngredient<BloodstoneCore>(12).
+                AddIngredient<BloodstoneCore>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

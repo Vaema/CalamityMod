@@ -33,12 +33,12 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<SeaSpiritAmulet>().
-                AddIngredient<AbyssGravel>(10).
-                AddIngredient<DepthCells>(5).
-                AddIngredient<PyreMantle>(10).
                 AddIngredient<ScoriaBar>(5).
-                AddIngredient<Voidstone>(10).
-                AddIngredient<Lumenyl>(5).
+                AddIngredient<AbyssGravel>(20).
+                AddIngredient<PyreMantle>(20).
+                AddIngredient<Voidstone>(20).
+                AddIngredient<DepthCells>(20).
+                AddIngredient<Lumenyl>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -42,8 +42,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.MeteoriteBar, 20).
                 AddIngredient<EssenceofSunlight>(4).
-                AddIngredient<StarblightSoot>(12).
                 AddIngredient(ItemID.FallenStar, 5).
+                AddIngredient<StarblightSoot>(12).
                 AddTile(TileID.Anvils).
                 Register();
         }

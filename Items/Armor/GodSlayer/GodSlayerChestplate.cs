@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Armor.GodSlayer
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CosmiliteBar>(15).
-                AddIngredient<AscendantSpiritEssence>(3).
+                AddIngredient<CosmiliteBar>(20).
+                AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

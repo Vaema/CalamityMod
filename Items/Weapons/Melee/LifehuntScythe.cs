@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UelibloomBar>(15).
+                AddIngredient<UelibloomBar>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

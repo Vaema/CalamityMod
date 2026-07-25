@@ -298,12 +298,16 @@ namespace CalamityMod.Balancing
 
             // 60% resist to Corinth Prime's grenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.4f, ProjectileType<CorinthPrimeAirburst>()))));
-            
+
+            // 50% resist to Stratus Sphere
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<StratusBlackHole>()))));
+
             // 35% resist to Sulphuric Acid Cannon's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
 
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<NuclearFuryProjectile>()))));
+
             #endregion The Devourer of Gods
 
             #region Exo Mechs: Ares

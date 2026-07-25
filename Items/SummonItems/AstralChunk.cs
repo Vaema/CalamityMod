@@ -55,9 +55,9 @@ namespace CalamityMod.Items.SummonItems
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<StarblightSoot>(30).
-                AddIngredient(ItemID.FallenStar, 20).
                 AddIngredient<DubiousPlating>(8).
+                AddIngredient(ItemID.FallenStar, 20).
+                AddIngredient<StarblightSoot>(30).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();

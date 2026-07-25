@@ -32,6 +32,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.rarity = 3;
             NPC.catchItem = (short)ModContent.ItemType<PiggyGoldItem>();
             Banner = 0;
+            BannerItem = 0;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

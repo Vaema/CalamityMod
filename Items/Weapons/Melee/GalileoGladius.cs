@@ -69,8 +69,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.Gladius).
                 AddIngredient<Lumenyl>(8).
-                AddIngredient<RuinousSoul>(5).
-                AddIngredient<ExodiumCluster>(15).
+                AddIngredient<RuinousSoul>(4).
+                AddIngredient<ExodiumCluster>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

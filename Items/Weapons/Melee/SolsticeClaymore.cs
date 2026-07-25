@@ -76,7 +76,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.BeamSword).
-                AddIngredient<AstralBar>(20).
+                AddIngredient<AstralBar>(18).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentSolar, 5).
                 AddIngredient(ItemID.FragmentStardust, 5).

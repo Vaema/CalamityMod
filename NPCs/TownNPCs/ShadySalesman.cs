@@ -280,14 +280,15 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<RageBait>(Condition.MoonPhasesEven)
                 .Add<TrustyOldRod>(Condition.MoonPhasesOdd)
                 .Add<CombatVoucher>(Condition.DownedGoblinArmy)
-                .Add<AggressiveVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesEven)
+                .Add<AggressiveVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesOdd)
                 .Add<OddVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesOdd)
                 .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesEven)
-                .Add<HurriedVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesOdd)
+                .Add<HurriedVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesEven)
                 .Add<GluttonyBlender>()
                 .Add<GreedPot>()
                 .Add<FishStocks>()
                 .Add<TheGift>()
+                .Add<ThePact>(CalamityConditions.DownedDreadnautilus, Condition.BloodMoon)
                 .Add<TheMonument>(Condition.Hardmode)
                 .Add<TheHousingContract>(Condition.Hardmode)
                 .Add<OmniGun>(Condition.DownedGolem)
@@ -670,7 +671,7 @@ namespace CalamityMod.NPCs.TownNPCs
             for (var i = 0; i < tooltips.Count; i++)
             {
                 var line = tooltips[i];
-                if (!ExemptFromSmall.Contains(line.Name))
+                if (!ExemptFromSmall.Contains(line.Name) && line.Visible)
                 {
                     if (placetoMove < 0)
                         placetoMove = i;
@@ -681,6 +682,15 @@ namespace CalamityMod.NPCs.TownNPCs
                     for (int i2 = 0; i2 < snippets.Length; i2++)
                     {
                         lineText += snippets[i2].Text;
+
+                        if (snippets[i2] is BuffTagPlayerEffectHandler.Snippet snip)
+                        {
+                            lineText += Lang.GetBuffName(snip.BuffId);
+                        }
+                        else if (snippets[i2] is BuffTagEnemyEffectHandler.Snippet snip2)
+                        {
+                            lineText += Lang.GetBuffName(snip2.BuffId);
+                        }
                     }
 
                     if (string.IsNullOrWhiteSpace(lineText))

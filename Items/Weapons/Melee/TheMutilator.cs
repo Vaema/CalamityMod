@@ -85,7 +85,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BloodstoneCore>(5).
+                AddIngredient<BloodstoneCore>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

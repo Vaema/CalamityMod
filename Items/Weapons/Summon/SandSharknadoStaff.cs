@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<ForgottenApexWand>().
-                AddIngredient(ItemID.AncientCloth, 5).
+                AddIngredient(ItemID.AncientCloth, 2).
                 AddIngredient<GrandScale>().
                 AddTile(TileID.MythrilAnvil).
                 Register();

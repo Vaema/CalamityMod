@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Needler>().
                 AddIngredient(ItemID.Stynger).
-                AddIngredient<UelibloomBar>(5).
+                AddIngredient<UelibloomBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
