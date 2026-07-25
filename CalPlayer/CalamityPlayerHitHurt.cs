@@ -7,7 +7,6 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
-using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Events;
@@ -24,7 +23,6 @@ using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Items.Armor.Tarragon;
-using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Tools;
@@ -42,7 +40,6 @@ using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Pets;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -146,7 +143,7 @@ namespace CalamityMod.CalPlayer
             NetMessage.SendData(MessageID.Dodge, -1, -1, null, Player.whoAmI, 1f, 0f, 0f, 0, 0, 0);
         }
 
-        
+
         #endregion
 
         #region Pre Kill
@@ -393,7 +390,7 @@ namespace CalamityMod.CalPlayer
                 var npc = Main.npc[damageSource.SourceNPCIndex];
                 if (npc.ai[3] < 2) //Divinity Devourer
                 {
-                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.DivinityDevourer"+Main.rand.Next(1,4)).ToNetworkText(Player.name));
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.DivinityDevourer" + Main.rand.Next(1, 4)).ToNetworkText(Player.name));
                 }
                 else if (npc.ai[3] >= 3)
                 {
@@ -427,9 +424,13 @@ namespace CalamityMod.CalPlayer
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Player.Calamity().yharimsGift)
-                target.AddBuff(ModContent.BuffType<AuricRebuke>(),120);
+                target.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
 
-            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
+
+            if (Player.HasBuff<FulfilledContract>())
+                target.AddBuff(ModContent.BuffType<Laceration>(), ThePact.DebuffInflictionDuration);
+
+                int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
             if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (target.Calamity().abaddonEffected || target.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
             {
                 int maxTargetNum = target.Calamity().apollyonEffected ? 10 : 6;
@@ -1120,7 +1121,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (sulphurSet)
                         Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
-                }   
+                }
             }
 
             if (proj.hostile && hurtInfo.Damage > 0)
@@ -1405,7 +1406,8 @@ namespace CalamityMod.CalPlayer
             bool sufficientDamageForDodging = actualDamageTaken >= dodgeDamageGateValue;
 
             //This is in a method here so the logic below can call it in multiple places
-            void GenericDodgeEffects() {
+            void GenericDodgeEffects()
+            {
                 double maxCooldownDurationDamagePercent = 0.5;
                 int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
 
@@ -1465,7 +1467,7 @@ namespace CalamityMod.CalPlayer
                 storedShadowDodge = false;
                 return true;
             }
-            
+
             if (!Player.HasCooldown(GlobalDodge.ID) && sufficientDamageForDodging && DodgeEffects.Count > 0)
             {
                 GenericDodgeEffects();
@@ -1488,6 +1490,14 @@ namespace CalamityMod.CalPlayer
         #region Modify Hurt
         public override void ModifyHurt(ref Player.HurtModifiers modifiers)
         {
+            if (CanBeCritByThePact && Main.rand.NextFloat() < ThePact.ChanceToBeCrit)
+            {
+                modifiers.SourceDamage *= ThePact.CritDmgTaken;
+                Player.AddBuff(ModContent.BuffType<FulfilledContract>(), ThePact.BoostDuration);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BloodPactCrit"));
+            }
+
+
             // Calcium Potion knockback reduction
             if (calcium)
                 modifiers.Knockback *= (1f - CalciumPotion.KnockbackResistance);
@@ -1498,7 +1508,7 @@ namespace CalamityMod.CalPlayer
             #region Custom Hurt Sounds
             if (hurtSoundTimer == 0)
             {
-                if(Player.Transformation().Type != -1 && Player.Transformation().currentTransformation.HurtSound(Player) != null)
+                if (Player.Transformation().Type != -1 && Player.Transformation().currentTransformation.HurtSound(Player) != null)
                 {
                     var hurtSound = Player.Transformation().currentTransformation.HurtSound(Player).Value;
                     modifiers.DisableSound();
@@ -2224,7 +2234,7 @@ namespace CalamityMod.CalPlayer
                 {
                     SoundStyle Counter = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down");
                     if (fleshTotemManaStorage >= 100 && fleshTotemVisual)
-                        SoundEngine.PlaySound(Counter with { Volume = 0.75f}, Player.Center);
+                        SoundEngine.PlaySound(Counter with { Volume = 0.75f }, Player.Center);
                     int lostSoulAmount = (fleshTotemManaStorage / 2) / 25;
                     int lostSoulDamage = (int)Player.GetTotalDamage<MagicDamageClass>().ApplyTo(FleshTotem.lostSoulDamage);
                     if (Player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] != 0)
@@ -2370,7 +2380,7 @@ namespace CalamityMod.CalPlayer
                     {
                         int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage));
 
-                        Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15 * (rampartOfDeities && n % 2 == 0 ? 0.75f: 1.25f)).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
+                        Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0, -15 * (rampartOfDeities && n % 2 == 0 ? 0.75f : 1.25f)).RotatedBy(MathHelper.TwoPi / projAmount * n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
                         if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
                         {
                             onHitProj.DamageType = DamageClass.Generic;

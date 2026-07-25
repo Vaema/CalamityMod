@@ -2011,6 +2011,21 @@ TheFirstShadowflame: {
 		'''
 }
 
+ThePact: {
+	DisplayName: The Pact
+	Tooltip:
+		'''
+		Increases your max health by {0}x
+		Causes {1}% of hits you take to critically strike you
+		These crits deal {2}x damage and infict [cbuffplr:CalamityMod/FulfilledContract]
+		'''
+	SalesPitch:
+        '''
+        'Money's a fickle thing, buddy. One slip, and next you know, you're livin' it up... in a dumpster!'
+        'Gambling with life itself, that's where it's truly at. Just write my name in your will, would ya?'
+        '''
+}
+
 ThePointer: {
 	DisplayName: The Pointer
 	Tooltip:

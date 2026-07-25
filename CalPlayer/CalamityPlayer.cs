@@ -981,6 +981,7 @@ namespace CalamityMod.CalPlayer
         public bool fleshTotemVisual = false;
         public int fleshTotemManaStorage = 0;
         public bool bloodPact = false;
+        public bool CanBeCritByThePact = false;
         public bool bloodflareCore = false;
         public int bloodflareCoreRemainingHealOverTime = 0;
 
@@ -2122,6 +2123,9 @@ namespace CalamityMod.CalPlayer
             if (crimEffigy)
                 Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1f - CrimsonEffigy.MaxHealthLossPercent));
 
+            if (CanBeCritByThePact)
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * ThePact.MaxLifeMult);
+
             ResetRogueStealth();
 
             calamityBonusLuck = 0f;
@@ -2430,6 +2434,7 @@ namespace CalamityMod.CalPlayer
             fleshTotemVisual = false;
             fleshTotemMinion = false;
             bloodPact = false;
+            CanBeCritByThePact = false;
             bloodflareCore = false;
             chaliceOfTheBloodGod = false;
             chaliceHeartStyle = false;

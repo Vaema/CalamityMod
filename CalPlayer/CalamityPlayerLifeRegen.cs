@@ -707,6 +707,9 @@ namespace CalamityMod.CalPlayer
                 regen *= LivingDew.NaturalRegenPower;
             else if (honeyDew)
                 regen *= HoneyDew.NaturalRegenPower;
+
+            if (Player.HasBuff<FulfilledContract>())
+                regen *= ThePact.NaturalRegenBoost;
             // The Camper counteracts the regen loss while moving horizontally
             if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
             {
