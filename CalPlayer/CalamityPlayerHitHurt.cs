@@ -895,11 +895,11 @@ namespace CalamityMod.CalPlayer
                 modifiers.Cancel();
 
             bool isIgnoredTrap = (proj.type == ProjectileID.PoisonDartTrap) || (proj.type == ProjectileID.VenomDartTrap) || (proj.type == ProjectileID.PoisonDart);
-            if (Player.Calamity().trapProtection && isIgnoredTrap)
+            if (Player.Calamity().archaicPowder && isIgnoredTrap)
                 modifiers.Cancel();
 
             bool isReducedTrap = (proj.trap || proj.type == ProjectileID.RollingCactusSpike || proj.type == ProjectileID.Landmine) && !isIgnoredTrap;
-            if (Player.Calamity().trapProtection && isReducedTrap)
+            if (Player.Calamity().archaicPowder && isReducedTrap)
                 modifiers.SourceDamage *= (1f - ArchaicPowder.TrapDamageReduction);
 
             // Reduce damage dealt by rainbow trails

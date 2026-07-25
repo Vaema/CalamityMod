@@ -842,7 +842,7 @@ namespace CalamityMod.CalPlayer
         public int theBeeCooldown = 0;
         public bool aFossil = false;
         public bool fallingBlockProtection = false;
-        public bool trapProtection = false;
+        public bool archaicPowder = false;
         public bool alluringBait = false;
         public bool enchantedPearl = false;
         public bool rBrain = false;
@@ -2359,7 +2359,7 @@ namespace CalamityMod.CalPlayer
             protolithBangleVisual = false;
             aFossil = false;
             fallingBlockProtection = false;
-            trapProtection = false;
+            archaicPowder = false;
             alluringBait = false;
             enchantedPearl = false;
             rBrain = false;
@@ -5213,6 +5213,15 @@ namespace CalamityMod.CalPlayer
             // Ancient Chisel nerf (also affects Hand of Creation)
             if (Player.chiselSpeed)
                 Player.pickSpeed += 0.1f;
+
+            // Prevent Archaic Powder mining speed from stacking with Ancient Chisel or Ancient Fossil
+            if (archaicPowder)
+            {
+                if (Player.chiselSpeed)
+                    Player.pickSpeed += 0.15f;
+                if (aFossil)
+                    Player.pickSpeed += AncientFossil.MiningSpeedBoost;
+            }
 
             if (oceanCrest)
             {
