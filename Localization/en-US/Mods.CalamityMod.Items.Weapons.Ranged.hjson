@@ -65,6 +65,11 @@ AntiMaterielRifle: {
 		'''
 }
 
+AquashardShotgun: {
+	DisplayName: Aquashard Shotgun
+	Tooltip: Converts musket balls into aquashards that split upon hitting an enemy
+}
+
 Arbalest: {
 	DisplayName: Arbalest
 	Tooltip:
@@ -73,11 +78,6 @@ Arbalest: {
 		Arrows start off small and grow in size with continuous fire
 		Arrow damage, spread and knockback scale with arrow size
 		'''
-}
-
-AquashardShotgun: {
-	DisplayName: Aquashard Shotgun
-	Tooltip: Converts musket balls into aquashards that split upon hitting an enemy
 }
 
 Archerfish: {
@@ -820,6 +820,23 @@ NullificationPistol: {
 		'''
 }
 
+OmniGun: {
+	DisplayName: The Omnigun
+	Tooltip:
+		'''
+		A multipurpose weapon with several modes which are used in sequence
+		The first shot is a sniper round which gains damage over time and always critically strikes
+		The second shot is a burst of 10 standard bullets
+		The third shot is a devastating point blank spread
+		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
+		'''
+	SalesPitch:
+		'''
+		'Why carry four different guns when you can carry just one? That's what I used to ask myself!'
+		'With this thing-a-beauty, even a bumbling moron can become invincible - and for the right price, it can be yours!'
+		'''
+}
+
 OntologicalDespoiler: {
 	DisplayName: Ontological Despoiler
 	Tooltip:
@@ -850,23 +867,6 @@ Onyxia: {
 		'''
 		Fires a storm of bullets and onyx shards
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
-		'''
-}
-
-OmniGun: {
-	DisplayName: The Omnigun
-	Tooltip:
-		'''
-		A multipurpose weapon with several modes which are used in sequence
-		The first shot is a sniper round which gains damage over time and always critically strikes
-		The second shot is a burst of 10 standard bullets
-		The third shot is a devastating point blank spread
-		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
-		'''
-	SalesPitch:
-		'''
-		'Why carry four different guns when you can carry just one? That's what I used to ask myself!'
-		'With this thing-a-beauty, even a bumbling moron can become invincible - and for the right price, it can be yours!'
 		'''
 }
 

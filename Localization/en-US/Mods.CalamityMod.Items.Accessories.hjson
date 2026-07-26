@@ -252,15 +252,6 @@ AsgardsValor: {
 		'''
 }
 
-FadedIdolatry: {
-	DisplayName: Faded Idolatry
-	Tooltip:
-		'''
-		Summoned [i:CalamityMod/YharonsKindleStaff] Fiery Draconids cost one less minion slot
-		[c/ffe100:'Once everything has crumbled to dust, what will be left of the world you created?']
-		'''
-}
-
 BadgeofBravery: {
 	DisplayName: Badge of Bravery
 	Tooltip:
@@ -460,6 +451,15 @@ CrownJewel: {
 		'''
 }
 
+CrushingEgo: {
+	DisplayName: Crushing Ego
+	Tooltip:
+		'''
+		Multiplies all damage by 1.3x, but at the cost of taking 20% increased damage
+		[c/ff00ff:'Don the mask of arrogance, and dance by your lonesome. Once the ball has gone quiet, you'll be the last man standing.']
+		'''
+}
+
 CryoStone: {
 	DisplayName: Cryo Stone
 	Tooltip:
@@ -579,15 +579,6 @@ DiamondOfTheDeep: {
 		'''
 }
 
-CrushingEgo: {
-	DisplayName: Crushing Ego
-	Tooltip:
-		'''
-		Multiplies all damage by 1.3x, but at the cost of taking 20% increased damage
-		[c/ff00ff:'Don the mask of arrogance, and dance by your lonesome. Once the ball has gone quiet, you'll be the last man standing.']
-		'''
-}
-
 DivineProvidence: {
 	DisplayName: Divine Providence
 	Tooltip:
@@ -661,20 +652,6 @@ EclipseMirror: {
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 	FlavorTooltip: "'Its reflection shows naught but darkness'"
-}
-
-FragmentsOfAnotherWorld: {
-	DisplayName: Fragments of Another World
-	Tooltip:
-		'''
-		Grants immunity to [cbuffplr:CalamityMod/WhisperingDeath]
-		{0}% increased melee speed
-		{1}x specialist ranged damage
-		{2}% reduced mana usage
-		+{3} maximum sentries
-		{4}% increased rogue attack speed
-		[c/ff0000:'Don't speak of your desires to the shadows, they listen.']
-		'''
 }
 
 ElectriciansGlove: {
@@ -769,6 +746,15 @@ EyeoftheStorm: {
 		'''
 }
 
+FadedIdolatry: {
+	DisplayName: Faded Idolatry
+	Tooltip:
+		'''
+		Summoned [i:CalamityMod/YharonsKindleStaff] Fiery Draconids cost one less minion slot
+		[c/ffe100:'Once everything has crumbled to dust, what will be left of the world you created?']
+		'''
+}
+
 FeatherCrown: {
 	DisplayName: Feather Crown
 	Tooltip:
@@ -848,6 +834,20 @@ FleshTotem: {
 		'''
 }
 
+FragmentsOfAnotherWorld: {
+	DisplayName: Fragments of Another World
+	Tooltip:
+		'''
+		Grants immunity to [cbuffplr:CalamityMod/WhisperingDeath]
+		{0}% increased melee speed
+		{1}x specialist ranged damage
+		{2}% reduced mana usage
+		+{3} maximum sentries
+		{4}% increased rogue attack speed
+		[c/ff0000:'Don't speak of your desires to the shadows, they listen.']
+		'''
+}
+
 FrostBarrier: {
 	DisplayName: Frost Barrier
 	Tooltip:
@@ -866,6 +866,24 @@ FrostFlare: {
 		Being below {0}% life grants {2} defense and {3}% increased max movement speed and acceleration
 		Grants resistance against cold attacks, [cbuffplr:Frostburn], [cbuffplr:Chilled] and [cbuffplr:Frozen]
 		'''
+}
+
+FrozenCube: {
+	DisplayName: Frozen Cube
+	Tooltip:
+		'''
+		A frozen block of ice with something inside
+		Summons an Elumphant to sit atop your head and protect you
+		The Elumphant will cycle between shooting cold air that inflicts [cbuff:CalamityMod/WindChilled], and headbutting enemies
+		Elumphant's headbutts only target enemies inflicted with [cbuff:CalamityMod/WindChilled]
+		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
+		[DAMAGELINE]
+		[c/7497ED:'What I wanna know is, where's the mammoth?']
+		'''
+	SalesPitch: "{$Common.SalesmanShrinePitch}"
+	EquippedDebuff: Current Cold Debuff boost: +{0}%
+	EquippedElumphant: Current Elumphant Power: {0}%
+	Unequipped: Equip this accessory to view its statistics
 }
 
 FungalClump: {
@@ -1257,6 +1275,16 @@ Nucleogenesis: {
 		'''
 }
 
+OasisElementalinaBottle: {
+	DisplayName: Oasis Elemental in a Bottle
+	Tooltip:
+		'''
+		Summons an oasis elemental to assist you
+		The elemental fires healing orbs that restore 10 health while you are damaged
+		The elemental has reduced opacity if visibility is disabled
+		'''
+}
+
 OccultSkullCrown: {
 	DisplayName: Occult Skull Crown
 	Tooltip:
@@ -1489,16 +1517,6 @@ RampartofDeities: {
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 		'''
 	ToggleEffect: ", increases movement speed,"
-}
-
-OasisElementalinaBottle: {
-	DisplayName: Oasis Elemental in a Bottle
-	Tooltip:
-		'''
-		Summons an oasis elemental to assist you
-		The elemental fires healing orbs that restore 10 health while you are damaged
-		The elemental has reduced opacity if visibility is disabled
-		'''
 }
 
 ReaperToothNecklace: {
@@ -2251,6 +2269,11 @@ GhostBracelet: {
 	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
 }
 
+GlimmeringRibbon: {
+	DisplayName: Glimmering Ribbon
+	Tooltip: "'We are born colorless. It's the people we meet who give us color.'"
+}
+
 HapuFruit: {
 	DisplayName: Ha-pu Fruit
 	Tooltip: "'A fruit that calms your nerves (may have unintended side effects)'"
@@ -2283,11 +2306,6 @@ Popo: {
 SharkyPlush: {
 	DisplayName: Sharky Plush
 	Tooltip: "[c/696969:'Like lovers and heroes, and the restless part of everyone...']"
-}
-
-GlimmeringRibbon: {
-	DisplayName: Glimmering Ribbon
-	Tooltip: "'We are born colorless. It's the people we meet who give us color.'"
 }
 
 TheComb: {
@@ -2326,22 +2344,4 @@ XyksBlessingOrange: {
 		'''
 	ArmorDisabled: "[c/D44748:DISABLED]"
 	ArmorEnabled: "[c/58D447:ENABLED]"
-}
-
-FrozenCube: {
-	DisplayName: Frozen Cube
-	Tooltip:
-		'''
-		A frozen block of ice with something inside
-		Summons an Elumphant to sit atop your head and protect you
-		The Elumphant will cycle between shooting cold air that inflicts [cbuff:CalamityMod/WindChilled], and headbutting enemies
-		Elumphant's headbutts only target enemies inflicted with [cbuff:CalamityMod/WindChilled]
-		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
-		[DAMAGELINE]
-		[c/7497ED:'What I wanna know is, where's the mammoth?']
-		'''
-	SalesPitch: "{$Common.SalesmanShrinePitch}"
-	EquippedDebuff: Current Cold Debuff boost: +{0}%
-	EquippedElumphant: Current Elumphant Power: {0}%
-	Unequipped: Equip this accessory to view its statistics
 }

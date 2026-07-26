@@ -23,11 +23,6 @@ AethersWhisper: {
 	Tooltip: Fires void beams that gain damage as they travel and split on tile hits
 }
 
-AlulaAustralis: {
-	DisplayName: Alula Australis
-	Tooltip: Fires a beautiful aurora that spreads the [cbuff:CalamityMod/AstralInfectionDebuff] and is trailed by a star shower
-}
-
 AlphaDraconis: {
 	DisplayName: Alpha Draconis
 	Tooltip:
@@ -39,6 +34,11 @@ AlphaDraconis: {
 		Draco inflicts [cbuff:CalamityMod/Voidfrost]
 		'An imitation of insanity'
 		'''
+}
+
+AlulaAustralis: {
+	DisplayName: Alula Australis
+	Tooltip: Fires a beautiful aurora that spreads the [cbuff:CalamityMod/AstralInfectionDebuff] and is trailed by a star shower
 }
 
 AnahitasArpeggio: {

@@ -128,6 +128,16 @@ TarragonWings: {
 		'''
 }
 
+TiredTail: {
+	DisplayName: Tired Tail
+	Tooltip:
+		'''
+		{$CommonItemTooltip.FlightAndSlowfall}
+		{$CommonItemTooltip.PressDownToHover}
+		{$CommonItemTooltip.PressUpToBooster}
+		'''
+}
+
 VoidStriders: {
 	DisplayName: Void Striders
 	TreadsName: Void Kicks
@@ -148,15 +158,5 @@ WingsofRebirth: {
 		'''
 		{$CommonItemTooltip.FlightAndSlowfall}
 		'Resplendent to the very end'
-		'''
-}
-
-TiredTail: {
-	DisplayName: Tired Tail
-	Tooltip:
-		'''
-		{$CommonItemTooltip.FlightAndSlowfall}
-		{$CommonItemTooltip.PressDownToHover}
-		{$CommonItemTooltip.PressUpToBooster}
 		'''
 }

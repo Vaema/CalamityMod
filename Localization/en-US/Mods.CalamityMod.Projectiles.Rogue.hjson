@@ -159,6 +159,8 @@ Knife.DisplayName: Knife
 KylieBoomerang.DisplayName: Kylie
 LanceofDestiny.DisplayName: Holy Lance
 LeadTomahawkProj.DisplayName: Lead Tomahawk
+LemonNadeHoldout.DisplayName: Lemon 'nade
+LemonNadeProjectile.DisplayName: Lemon 'nade
 LeonidCometBig.DisplayName: Leonid Comet
 LeonidCometSmall.DisplayName: Leonid Comet
 LeonidProgenitorBombshell.DisplayName: Leonid Bombshell
@@ -189,6 +191,7 @@ NanoblackLightspeedCarve: {
 	Standard: Light-speed Carve
 }
 
+NanoblackLightspeedCarveSlashVisual.DisplayName: Nanoblack Light-speed Carve Visuals
 NanoblackMain.DisplayName: Nanoblack Reaper
 NanoblackPiercingStrike.DisplayName: Zero-Point Energy Strike
 NanoblackStrike.DisplayName: Zero-Point Energy Strike
@@ -196,6 +199,7 @@ NanoblackTesselation.DisplayName: Nanoblack Tesselation
 NastyChollaBol.DisplayName: Nasty Cholla
 NastyChollaNeedle.DisplayName: Cactus Needle
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
+PaleoShatterExplosion.DisplayName: Paleo Shatter Explosion
 PalladiumJavelinProjectile.DisplayName: Palladium Javelin
 PartisanExplosion.DisplayName: Profaned Explosion
 PenumbraBomb.DisplayName: Penumbra Bomb
@@ -275,11 +279,12 @@ SludgeSplotchProj2.DisplayName: Sludge Splotch
 SmallCoral.DisplayName: Small Coral
 SnapClamProj.DisplayName: Snap Clam
 SnapClamStealth.DisplayName: Snap Clam
+SpadefishHoldout.DisplayName: Spinfish
+SpadefishThrown.DisplayName: Spadefish
 SpearofDestinyProjectile.DisplayName: Destiny Spear
 SpearofDestinyStealth.DisplayName: Empowered Holy Lance
 SpearofDestinyStealthExplosion.DisplayName: Strong Burst
 SpearofPaleolithProj.DisplayName: Paleolith Spear
-PaleoShatterExplosion.DisplayName: Paleo Shatter Explosion
 SpentFuelContainerProjectile.DisplayName: Spent Fuel Container
 SphereBladed.DisplayName: Bladed Sphere
 SphereBlue.DisplayName: Blue Thruster Sphere
@@ -343,8 +348,3 @@ WrathwingCinder.DisplayName: Wrathwing Eruption
 WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
-NanoblackLightspeedCarveSlashVisual.DisplayName: Nanoblack Light-speed Carve Visuals
-LemonNadeHoldout.DisplayName: Lemon 'nade
-LemonNadeProjectile.DisplayName: Lemon 'nade
-SpadefishHoldout.DisplayName: Spinfish
-SpadefishThrown.DisplayName: Spadefish
