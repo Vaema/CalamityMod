@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Ranged
         public int extendedLifetime => (int)(85 * Math.Min(damageMult, 1) + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time after lifetime reaches zero where the droplet does its attack
         public bool fading => trueLifetime <= fadeLifetime; // If the projectile is fading away
         public bool crit = false; // If the main hit crit, used to make the teardrop crit
-
+        public Vector2 hitTileVel = Vector2.Zero;
 
         public float explosionDamageMult = 1f;
         public float mainBulletDamageMult = 0.75f;
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
+            Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -248,7 +248,7 @@ namespace CalamityMod.Projectiles.Ranged
                         falling ? (int)(10 * (1 - dropLerp * 0.6f)) : (int)(6 + 2 * dropletScaling), 0.135f * dropletScaling * (1 + dropLerp * 0.3f), Color.Turquoise * colorMult, falling ? Color.Lime * colorMult : Color.Teal * colorMult, new Vector2(0.15f * (falling ? 0.5f + dropLerp * 3 : 1) * damageMult, (Math.Max(0.15f * lastDropletPosition.Distance(dropletPosition), 0.25f) * (1 - dropLerp * 0.2f))), noShrink: true, colorFadeSpeed: 5, glowOpacity: colorMult, shrinkSpeed: falling ? 1.5f - dropLerp : 0);
                     GeneralParticleHandler.SpawnParticle(dropTrail, true);
 
-                    if (Main.rand.NextBool(3))
+                    if (Main.rand.NextBool((int)(4 / damageMult) + 1))
                     {
                         Dust dust = Dust.NewDustPerfect(dropletPosition + Main.rand.NextVector2Circular(5 + 20 * (1 - dropletAttackLerp), 5 + 20 * (1 - dropletAttackLerp)), ModContent.DustType<SquashDustPixelated>());
                         dust.noGravity = true;
@@ -277,7 +277,29 @@ namespace CalamityMod.Projectiles.Ranged
                 trueLifetime -= 1 / MathF.Pow(damageMult, 0.3f);
             if (trueLifetime <= -extendedLifetime && Projectile.FinalExtraUpdate())
                 frameDelay++;
+
+            if (hitTileVel != Vector2.Zero)
+            {
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, hitTileVel, 0.03f / damageMult);
+            }
+
             time++;
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            if (Projectile.numHits == 0) // Store a tile reflect velocity and lerp to it afterwards
+            {
+                float velX = oldVelocity.X;
+                float velY = oldVelocity.Y;
+                if (Projectile.velocity.Y != oldVelocity.Y)
+                    velY = -oldVelocity.Y;
+                if (Projectile.velocity.X != oldVelocity.X)
+                    velX = -oldVelocity.X;
+                Projectile.velocity = oldVelocity;
+                hitTileVel = new Vector2(velX, velY);
+                Projectile.tileCollide = false;
+            }
+            return false;
         }
         public void Splash()
         {
