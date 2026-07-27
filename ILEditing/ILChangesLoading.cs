@@ -142,6 +142,8 @@ namespace CalamityMod.ILEditing
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
+            IL_WorldGen.IslandHouse += MakeFledgingWingsMoreCommon;
+            IL_WorldGen.AddBuriedChest_int_int_int_bool_int_bool_ushort += DisableFledglingWingsSecondary;
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
