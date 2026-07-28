@@ -287,6 +287,7 @@ namespace CalamityMod.Items
                 { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, DamageExact(33), TileBoostExact(+0)) }, // VANILLA: 20 DMG, -1 TILE
                 { ItemID.AdamantitePickaxe, Do(TileBoostExact(+1)) }, // VANILLA: 0 TILE
                 { ItemID.AdamantiteWaraxe, Do(UseTimeExact(10), AxePower(160), TileBoostExact(+1)) }, // VANILLA: 8 SPD, 100 AXE, 0 TILE
+                { ItemID.AshWoodHammer, Do(UseTimeExact(7), HammerPower(25)) }, // VANILLA: 20 SPD, 45 HAM
                 { ItemID.BloodLustCluster, Do(UseTimeExact(13), AxePower(100)) }, // VANILLA: 15 SPD, 75 AXE
                 { ItemID.BonePickaxe, Do(UseTimeExact(6)) }, // VANILLA: 11 SPD
                 { ItemID.BorealWoodHammer, Do(UseTimeExact(11), HammerPower(25)) }, // VANILLA: 23 SPD, 35 HAM
@@ -397,6 +398,7 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 5: UseTurn
+                { ItemID.AshWoodSword, Do(UseTurn) },
                 { ItemID.BeeKeeper, Do(UseTurn) },
                 { ItemID.BladeofGrass, Do(UseTurn) },
                 { ItemID.BloodButcherer, Do(UseTurn) },

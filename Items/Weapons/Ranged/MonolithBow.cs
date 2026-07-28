@@ -13,24 +13,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.damage = 19;
-            Item.DamageType = DamageClass.Ranged;
+            Item.CloneDefaults(ItemID.PearlwoodBow); // Monolith >= Pearlwood
             Item.width = 24;
             Item.height = 54;
+            Item.damage = 19;
             Item.useTime = 5;
             Item.useAnimation = 20;
+            Item.useLimitPerAnimation = 4;
             Item.reuseDelay = 25;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
-            Item.UseSound = SoundID.Item5;
-            Item.autoReuse = true;
-            Item.shoot = ProjectileID.WoodenArrowFriendly;
-            Item.shootSpeed = 9f;
-            Item.useAmmo = AmmoID.Arrow;
             Item.consumeAmmoOnFirstShotOnly = true;
+            Item.shootSpeed = 9f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
