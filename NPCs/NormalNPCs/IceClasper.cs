@@ -321,7 +321,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.Add(ModContent.ItemType<EssenceofEleum>());
             npcLoot.Add(ModContent.ItemType<FrostBarrier>(), 5);
-            npcLoot.Add(ModContent.ItemType<AncientIceChunk>(), 3);
+            npcLoot.Add(ModContent.ItemType<AncientIceChunk>(), 5);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
