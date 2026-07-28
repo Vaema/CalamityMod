@@ -47,7 +47,6 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.DemonScythe).
                 AddIngredient<Bloodstone>(20).
-                AddIngredient<BloodOrb>(8).
                 AddIngredient<EssenceofHavoc>(8).
                 AddTile(TileID.Bookcases).
                 Register();
