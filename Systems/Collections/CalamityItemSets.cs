@@ -176,7 +176,7 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] HasAccessoryKeybind = Factory.CreateNamedSet("HasAccessoryKeybind")
             .Description("Counts this item as having an accessory keybind. Used for assigning which keybind goes to which accessory.")
-            .RegisterBoolSet(ItemType<AngelicAlliance>(), ItemType<AscendantInsignia>(), ItemType<BlazingCore>(), ItemType<BlunderBooster>(), ItemType<DeadshotBrooch>(), ItemType<FlameLickedShell>(), 
+            .RegisterBoolSet(ItemType<AngelicAlliance>(), ItemType<AscendantInsignia>(), ItemType<DivineProvidence>(), ItemType<BlunderBooster>(), ItemType<DeadshotBrooch>(), ItemType<FlameLickedShell>(), 
             ItemType<InterstellarStompers>(),ItemType<PlaguedFuelPack>(), ItemType<PlanebreakersPouch>(), ItemType<SpectralVeil>(), ItemType<SpringStool>(), ItemType<ThePointer>(), ItemType<TheTransformer>());
     }
 }

@@ -13,7 +13,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class BlazingCore : ModItem, ILocalizedModType
+    [LegacyName("BlazingCore")]
+    public class DivineProvidence : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
@@ -42,22 +43,22 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().blazingCore = true;
+            player.Calamity().divineProvidence = true;
             player.Calamity().AccessoryParryItem = Item;
             player.noKnockback = true;
         }
 
         public static void HandleStars(Player player)
         {
-            bool empowered = player.Calamity().blazingCoreEmpoweredParry;
+            bool empowered = player.Calamity().divineProvEmpoweredParry;
             float divisor = 3f;
             int totalFlameProjectiles = 45;
             int chains = 3;
             float interval = totalFlameProjectiles / chains * divisor;
-            double patternInterval = Math.Floor(player.Calamity().blazingCoreSuccessfulParry / interval);
+            double patternInterval = Math.Floor(player.Calamity().divineProvSuccessfulParry / interval);
 
 
-            if (player.Calamity().blazingCoreSuccessfulParry % 4 == 0) //play sound every 4 frames
+            if (player.Calamity().divineProvSuccessfulParry % 4 == 0) //play sound every 4 frames
             {
                 SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, player.Center);
             }
@@ -90,19 +91,19 @@ namespace CalamityMod.Items.Accessories
                 offset += 10f;
             }
 
-            player.Calamity().blazingCoreSuccessfulParry--;
-            if (player.Calamity().blazingCoreSuccessfulParry <= 0)
+            player.Calamity().divineProvSuccessfulParry--;
+            if (player.Calamity().divineProvSuccessfulParry <= 0)
             {
                 offset = 0f;
-                player.Calamity().blazingCoreEmpoweredParry = false;
+                player.Calamity().divineProvEmpoweredParry = false;
             }
         }
 
         public static void HandleParryCountdown(Player player)
         {
-            player.Calamity().blazingCoreParry--;
+            player.Calamity().divineProvParry--;
 
-            if (player.Calamity().blazingCoreParry > 0)
+            if (player.Calamity().divineProvParry > 0)
             {
                 player.controlJump = false;
                 player.controlDown = false;

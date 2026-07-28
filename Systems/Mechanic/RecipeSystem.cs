@@ -1541,14 +1541,6 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
-            // Fledgling Wings
-            r = Recipe.Create(ItemID.CreativeWings);
-            r.AddIngredient<AncientBoneDust>(2);
-            r.AddIngredient(ItemID.Cloud, 5);
-            r.AddIngredient(ItemID.Feather, 10);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-
             // Flying Carpet
             r = Recipe.Create(ItemID.FlyingCarpet);
             r.AddIngredient(ItemID.Silk, 10);

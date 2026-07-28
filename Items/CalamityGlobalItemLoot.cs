@@ -301,9 +301,17 @@ namespace CalamityMod.Items
                     loot.Add(ModContent.ItemType<EssenceofEleum>(), 2, 2, 5);
                     break;
 
+                // Reimplement primary loot rule to include Fledgling Wings
+                case ItemID.FloatingIslandFishingCrate:
+                    RemoveLootRuleFromSkyCrates(loot);
+                    loot.Add(ItemDropRule.OneFromOptionsNotScalingWithLuck(1, ItemID.ShinyRedBalloon, ItemID.LuckyHorseshoe, ItemID.Starfury, ItemID.CelestialMagnet, ItemID.CreativeWings));
+                    break;
+
                 // 2-5 Essences of Sunlight @ 50%
                 // This is our equivalent to Souls of Light/Night
                 case ItemID.FloatingIslandFishingCrateHard:
+                    RemoveLootRuleFromSkyCrates(loot);
+                    loot.Add(ItemDropRule.OneFromOptionsNotScalingWithLuck(1, ItemID.ShinyRedBalloon, ItemID.LuckyHorseshoe, ItemID.Starfury, ItemID.CelestialMagnet, ItemID.CreativeWings));
                     RemoveHardmodeOresFromBiomeCrates(loot);
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
                     loot.Add(ModContent.ItemType<EssenceofSunlight>(), 2, 2, 5);
@@ -584,6 +592,34 @@ namespace CalamityMod.Items
                 ItemID.BandofRegeneration,
                 ItemID.ShoeSpikes,
                 ModContent.ItemType<EnchantedKnifeStaff>()); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
+
+        private static void RemoveLootRuleFromSkyCrates(ItemLoot loot)
+        {
+            List<IItemDropRule> rules = loot.Get(false);
+            AlwaysAtleastOneSuccessDropRule main = null;
+            foreach (IItemDropRule rule in rules)
+            {
+                if (rule is AlwaysAtleastOneSuccessDropRule a)
+                    main = a;
+            }
+            if (main is null)
+                return;
+
+            // Remove the primary loot rule and the rule for Fledgling Wings
+            foreach (IItemDropRule rule in main.rules)
+            {
+                if (rule is OneFromOptionsNotScaledWithLuckDropRule one && one.chanceDenominator == 1)
+                {
+                    one.chanceNumerator = 0;
+                    continue;
+                }
+                if (rule is CommonDrop c && c.itemId == ItemID.CreativeWings)
+                {
+                    c.chanceNumerator = 0;
+                    continue;
+                }
+            }
+        }
         #endregion
 
         #region Goodie Bag Bat Hook

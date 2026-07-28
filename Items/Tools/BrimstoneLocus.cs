@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Tools
         {
             CreateRecipe().
                 AddIngredient<AshesofAnnihilation>().
-                AddIngredient<BloodstoneCore>(3).
+                AddIngredient<Bloodstone>(10).
                 Register();
         }
     }
