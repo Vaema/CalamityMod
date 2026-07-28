@@ -604,10 +604,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Fire Imp
-                // Ashen Stalactite @ 4%, 14.28% after defeating EoW/BoC
+                // Ashen Stalactite @ 4%, 8.33% after defeating EoW/BoC
                 case NPCID.FireImp:
                     npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 25);
-                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 7);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 12);
                     break;
 
                 // Demon, Voodoo Demon
@@ -621,10 +621,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Bone Serpent
-                // Old Lord Oathsword @ 4% Normal, 14.29% after defeating EoW/BoC
+                // Old Lord Oathsword @ 4% Normal, 12.5% after defeating EoW/BoC
                 case NPCID.BoneSerpentHead:
                     npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 25);
-                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 4);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 8);
                     break;
 
                 // Red Devil

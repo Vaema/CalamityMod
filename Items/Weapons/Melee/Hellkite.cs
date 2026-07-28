@@ -31,8 +31,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.knockBack = 13f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
 
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<HellkiteHoldout>();

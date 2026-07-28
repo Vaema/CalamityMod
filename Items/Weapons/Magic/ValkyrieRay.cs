@@ -39,8 +39,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useTurn = false;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
+            Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<ValkyrieRayStaff>();
             Item.shootSpeed = 25f;
             Item.autoReuse = true;

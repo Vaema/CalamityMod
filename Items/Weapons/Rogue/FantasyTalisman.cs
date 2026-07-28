@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<FantasyTalismanProj>();
             Item.shootSpeed = 18f;
             Item.DamageType = RogueDamageClass.Instance;
