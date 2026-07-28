@@ -2,13 +2,17 @@
 using CalamityMod.Effects;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Systems;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Drawing;
+using Terraria.Graphics;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -395,10 +399,10 @@ namespace CalamityMod.Tiles.SunkenSea
 
         private void DrawSeaPrismsAndCrystals(On_Main.orig_DrawTiles orig, Main self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
-            Vector2 offscreenPosition = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 offscreenPosition = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             Main.tileBatch.End();
-            Main.spriteBatch.End();
+            Main.spriteBatch.End(out var snapshot);
 
             var oldTex1 = Main.instance.GraphicsDevice.Textures[1];
             var oldSampler1 = Main.instance.GraphicsDevice.SamplerStates[1];
@@ -415,8 +419,9 @@ namespace CalamityMod.Tiles.SunkenSea
             shader.Parameters["doGlint"].SetValue(true);
 
             Vector2 unscaledPosition = Main.Camera.UnscaledPosition;
-
             GetScreenDrawArea(unscaledPosition, offscreenPosition + (Main.Camera.UnscaledPosition - Main.Camera.ScaledPosition), out var firstTileX, out var lastTileX, out var firstTileY, out var lastTileY);
+            RasterizerState rasterizerState = !Main.drawToScreen ? RasterizerState.CullCounterClockwise : snapshot.RasterizerState;
+            Matrix transformMatrix = !Main.drawToScreen ? Matrix.Identity : snapshot.TransformMatrix;
 
             if (solidLayer)
             {
@@ -427,7 +432,7 @@ namespace CalamityMod.Tiles.SunkenSea
                 Main.instance.GraphicsDevice.Textures[3] = SeaPrism.Glint.Value;
                 Main.instance.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
 
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Matrix.Identity);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, snapshot.RasterizerState, shader, snapshot.TransformMatrix);
 
                 for (int y = firstTileY; y < lastTileY + 4; y++)
                 {
@@ -466,7 +471,7 @@ namespace CalamityMod.Tiles.SunkenSea
                 Main.instance.GraphicsDevice.Textures[3] = SeaPrismCrystals.Glint.Value;
                 Main.instance.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
 
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Matrix.Identity);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, snapshot.RasterizerState, shader, snapshot.TransformMatrix);
 
                 for (int y = firstTileY; y < lastTileY + 4; y++)
                 {
@@ -502,7 +507,7 @@ namespace CalamityMod.Tiles.SunkenSea
                 Main.instance.GraphicsDevice.Textures[3] = MediumSeaPrismCrystal.Glint.Value;
                 Main.instance.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
 
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Matrix.Identity);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, snapshot.RasterizerState, shader, snapshot.TransformMatrix);
 
                 for (int y = firstTileY; y < lastTileY + 4; y++)
                 {
@@ -540,7 +545,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.instance.GraphicsDevice.Textures[3] = oldTex3;
             Main.instance.GraphicsDevice.SamplerStates[3] = oldSampler3;
 
-            Main.spriteBatch.Begin();
+            Main.spriteBatch.Begin(snapshot);
             Main.tileBatch.Begin();
 
             orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
@@ -551,7 +556,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Vector2 offscreenPosition = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
 
             Main.tileBatch.End();
-            Main.spriteBatch.End();
+            Main.spriteBatch.End(out var snapshot);
 
             var oldTex1 = Main.instance.GraphicsDevice.Textures[1];
             var oldSampler1 = Main.instance.GraphicsDevice.SamplerStates[1];
@@ -572,7 +577,7 @@ namespace CalamityMod.Tiles.SunkenSea
             shader.Parameters["diagonalScreenLength"].SetValue((Main.screenWidth / 2f) - (Main.screenHeight / 2f));
             shader.Parameters["doGlint"].SetValue(false);
 
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, snapshot.RasterizerState, null, snapshot.TransformMatrix);
 
             Vector2 unscaledPosition = Main.Camera.UnscaledPosition;
 
@@ -618,7 +623,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.instance.GraphicsDevice.SamplerStates[2] = oldSampler2;
             Main.instance.GraphicsDevice.Textures[3] = oldTex3;
 
-            Main.spriteBatch.Begin();
+            Main.spriteBatch.Begin(snapshot);
             Main.tileBatch.Begin();
 
             orig(self);

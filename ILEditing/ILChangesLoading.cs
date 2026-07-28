@@ -171,11 +171,6 @@ namespace CalamityMod.ILEditing
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
             //On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
 
-            On_Player.UpdateControlHolds += DelayGravity;
-            On_PlayerInput.SetZoom_MouseInWorld += GravityMouse;
-            On_Main.DrawPlayerChatBubbles += UI_Unflip_Start;
-            On_Main.DrawInterface += UI_Unflip_End;
-
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;
 
