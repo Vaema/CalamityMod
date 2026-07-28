@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Ectoplasm, 31).
+                AddIngredient(ItemID.Ectoplasm, 13).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
