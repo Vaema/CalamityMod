@@ -26,7 +26,7 @@ namespace CalamityMod.Particles
             BigSmile
         }
 
-        private Rectangle Frame;
+        private EmoteType Emote;
 
         public EmoteExpressionParticle(Vector2 position, Vector2 velocity, float scale, Color color, int lifeTime, EmoteType emote)
         {
@@ -35,7 +35,7 @@ namespace CalamityMod.Particles
             Velocity = velocity;
             Color = color;
             Lifetime = lifeTime;
-            Frame = ModContent.Request<Texture2D>(Texture).Value.Frame(horizontalFrames: 8, verticalFrames: 1, frameX: (int)emote);
+            Emote = emote;
             Rotation = velocity.ToRotation() + MathHelper.PiOver2;
         }
 
@@ -48,10 +48,11 @@ namespace CalamityMod.Particles
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
             Texture2D emoteTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Vector2 origin = new Vector2(Frame.Width / 2f, Frame.Height);
             float opacity = 1 - (float)Math.Pow(LifetimeCompletion, 4f);
+            Rectangle frame = emoteTexture.Frame(horizontalFrames: 8, verticalFrames: 1, frameX: (int)Emote);
+            Vector2 origin = new Vector2(frame.Width / 2f, frame.Height);
 
-            spriteBatch.Draw(emoteTexture, Position - Main.screenPosition, Frame, Color * opacity, Rotation, origin, Scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(emoteTexture, Position - Main.screenPosition, frame, Color * opacity, Rotation, origin, Scale, SpriteEffects.None, 0);
         }
     }
 }
