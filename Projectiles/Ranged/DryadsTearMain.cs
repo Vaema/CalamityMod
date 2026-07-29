@@ -30,7 +30,8 @@ namespace CalamityMod.Projectiles.Ranged
         public int turnDirection = 0; // Direction it will rotate
         public int turnChange = 0; // Adds variance to multiple aspects of the bullet, including when it will change its turn direction
         public float turnIntensity = 0; // Adds a bit more variance, this time to velocity
-        public float damageMult = 1; // Multiplier that updates instantly, used for most of the gameplay effects
+        public float originalDamageMult = 1; // Multiplier that updates instantly, used ONLY for the gameplay effects
+        public float damageMult = 1; // Multiplier that updates instantly, used for most of the gameplay effects and some visual (why did I do this???)
         public float visualMult = 0.75f;// Multiplier that updates over time, used for most of the visual effects
         public Vector2 dropletPosition; // The position of the orbiting teardrop
         public Vector2 lastDropletPosition; // The previous position of the orbiting teardroplet
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
         public float dropletAttackLerp = 1; // A lerp variable used for timing the droplet's attack
         public int frameDelay = 0; // A few frames of delay after landing on the enemy before explosing, which improves the visuals
         public bool detachEffects = true; // Used for the moment when the droplet detatched from the main bullet
-        public bool isMaxPower => damageMult >= 1; // If the bullet is at maximum power
+        public bool isMaxPower = false; // If the bullet is at maximum power
         public float finalEffectMult => Projectile.scale * visualMult; // Used for many but not all visual scaling effects
         public NPC targeted; // The target being attacked by the droplet
         public ref float trueLifetime => ref Projectile.ai[2]; // The lifetime of the projectile, used over vanilla lifetime because it can increment by decimals
@@ -50,9 +51,13 @@ namespace CalamityMod.Projectiles.Ranged
         public int fadeLifetime => (int)(35 + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time in which the projectile fades out and can no longer hit anything
         public int extendedLifetime => (int)(85 * Math.Min(damageMult, 1) + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time after lifetime reaches zero where the droplet does its attack
         public bool fading => trueLifetime <= fadeLifetime; // If the projectile is fading away
+        public bool crit = false; // If the main hit crit, used to make the teardrop crit
+        public Vector2 hitTileVel = Vector2.Zero;
 
-        public float explosionDamageMult = 1.4f;
-        public float maxDamageMult = 1.65f;
+        public float explosionDamageMult = 1f;
+        public float mainBulletDamageMult = 0.75f;
+        public float maxDamageMult = 2.15f;
+        public float bulletScalingDamagePow = 0.1f; // Applied to bullets so that fast fired bullets still do some damage, the original damage mult based on projectile number is put to the power of this number
         public static Asset<Texture2D> ShineTexture { get; private set; }
         public static Asset<Texture2D> BloomTexture { get; private set; }
         public override void Load()
@@ -79,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
+            Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -101,13 +106,14 @@ namespace CalamityMod.Projectiles.Ranged
                 trueLifetime = fadeLifetime * 1.5f;
                 turnDirection = Main.rand.NextBool() ? -1 : 1;
                 turnChange = Main.rand.Next(30, 190 + 1);
-                turnIntensity = Main.rand.NextFloat(0.2f, 1.6f);
+                turnIntensity = Main.rand.NextFloat(0.45f, 2.9f);
                 effectSpeedMod = Main.rand.Next(5, 35);
             }
-            if (time % turnChange == 0 && !fading)
+            if (time % turnChange == 0)
                 turnDirection *= -1;
 
-            visualMult = MathHelper.Lerp(visualMult, damageMult, 0.1f / Projectile.MaxUpdates);
+            float visualMinPow = (isMaxPower ? damageMult : MathF.Pow(damageMult, 0.25f));
+            visualMult = MathHelper.Lerp(visualMult, visualMinPow, 0.1f / Projectile.MaxUpdates);
 
             float speed = 8 * MathF.Pow(visualMult, 0.3f) * Math.Max(MathF.Pow(Utils.GetLerpValue(0, fadeLifetime, trueLifetime, true), 2), 0.15f);
             bool chanceForDust = Main.rand.NextBool((int)Math.Clamp((fading ? 8 : 5) / finalEffectMult, 3, 60));
@@ -122,7 +128,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.fadeIn = 1;
             }
             
-            if (time > 0) // Reduce damage and visual intensity for every projectile of this type from the same player that are relativley close to each other
+            if (time > 0 && Projectile.numHits == 0) // Reduce damage and visual intensity for every projectile of this type from the same player that are relativley close to each other
             {
                 float damageReduction = 1;
                 int ownedProj = Owner.ownedProjectileCounts[Projectile.type];
@@ -132,16 +138,26 @@ namespace CalamityMod.Projectiles.Ranged
                     if (projectile.owner == Projectile.owner && projectile.active && projectile.type == Projectile.type && projectile != Projectile)
                         damageReduction++;
                 }
-                float newDamageMult = MathF.Pow(1 / damageReduction, 0.25f);
-                if (newDamageMult < damageMult && !fading)
+                int maxProjectilesToCount = 12;
+                float newDamageMult = (1 / Math.Min(MathF.Pow(damageReduction, 0.4f), maxProjectilesToCount));
+                float newOriginalDamageMult = (1 / Math.Min(damageReduction, maxProjectilesToCount));
+                if (newDamageMult < damageMult)
+                {
                     damageMult = newDamageMult;
+                }
+                if (newOriginalDamageMult < originalDamageMult)
+                {
+                    originalDamageMult = newOriginalDamageMult;
+                }
             }
+            if (time > 0)
+                isMaxPower = originalDamageMult >= 1;
 
-            if (isMaxPower)
-                damageMult = maxDamageMult;
+            if (isMaxPower && Projectile.numHits == 0)
+            { damageMult = 1.75f; originalDamageMult = 1.75f; } // This is done for visual reasons, the actual max power damage is applied on hit
 
             
-            float movement = Main.rand.NextFloat(0.009f, 0.0115f) * speed;
+            float movement = Main.rand.NextFloat(0.0120f, 0.0165f) * speed;
             if (damageMult < 1)
                 Projectile.velocity += Vector2.Lerp(Projectile.velocity.RotatedBy(MathHelper.PiOver2 * turnDirection).SafeNormalize(Vector2.UnitX) * movement * turnIntensity, Projectile.velocity, MathF.Pow(Math.Min(damageMult + 0.15f, 1), 3.3f));
             Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed;
@@ -232,7 +248,7 @@ namespace CalamityMod.Projectiles.Ranged
                         falling ? (int)(10 * (1 - dropLerp * 0.6f)) : (int)(6 + 2 * dropletScaling), 0.135f * dropletScaling * (1 + dropLerp * 0.3f), Color.Turquoise * colorMult, falling ? Color.Lime * colorMult : Color.Teal * colorMult, new Vector2(0.15f * (falling ? 0.5f + dropLerp * 3 : 1) * damageMult, (Math.Max(0.15f * lastDropletPosition.Distance(dropletPosition), 0.25f) * (1 - dropLerp * 0.2f))), noShrink: true, colorFadeSpeed: 5, glowOpacity: colorMult, shrinkSpeed: falling ? 1.5f - dropLerp : 0);
                     GeneralParticleHandler.SpawnParticle(dropTrail, true);
 
-                    if (Main.rand.NextBool(3))
+                    if (Main.rand.NextBool((int)(4 / damageMult) + 1))
                     {
                         Dust dust = Dust.NewDustPerfect(dropletPosition + Main.rand.NextVector2Circular(5 + 20 * (1 - dropletAttackLerp), 5 + 20 * (1 - dropletAttackLerp)), ModContent.DustType<SquashDustPixelated>());
                         dust.noGravity = true;
@@ -261,7 +277,29 @@ namespace CalamityMod.Projectiles.Ranged
                 trueLifetime -= 1 / MathF.Pow(damageMult, 0.3f);
             if (trueLifetime <= -extendedLifetime && Projectile.FinalExtraUpdate())
                 frameDelay++;
+
+            if (hitTileVel != Vector2.Zero)
+            {
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, hitTileVel, 0.03f / damageMult);
+            }
+
             time++;
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            if (Projectile.numHits == 0) // Store a tile reflect velocity and lerp to it afterwards
+            {
+                float velX = oldVelocity.X;
+                float velY = oldVelocity.Y;
+                if (Projectile.velocity.Y != oldVelocity.Y)
+                    velY = -oldVelocity.Y;
+                if (Projectile.velocity.X != oldVelocity.X)
+                    velX = -oldVelocity.X;
+                Projectile.velocity = oldVelocity;
+                hitTileVel = new Vector2(velX, velY);
+                Projectile.tileCollide = false;
+            }
+            return false;
         }
         public void Splash()
         {
@@ -327,13 +365,15 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     float blastSize = 75 * scale;
                     float minMultiplier = 0.15f;
-                    int hitsToMinMult = (int)(3 + 5 * damageMult);
-                    int knockback = (int)(7 * damageMult * (isMaxPower ? -1 : 1)); // Give heavy knockback at full power
-                    int damage = (int)(Projectile.damage * explosionDamageMult * damageMult);
-                    Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                    int hitsToMinMult = (int)(3 + 5 * originalDamageMult);
+                    int knockback = (int)(7 * originalDamageMult * (isMaxPower ? -1 : 1)); // Give heavy knockback at full power
+                    float finalDamageMult = MathF.Pow(originalDamageMult, bulletScalingDamagePow);
+                    int damage = (int)(Projectile.damage * explosionDamageMult * (isMaxPower ? maxDamageMult : finalDamageMult));
+                    Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<DryadsTearBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 8;
                     blast.DamageType = DamageClass.Ranged;
                     blast.ArmorPenetration = Projectile.ArmorPenetration;
+                    blast.localAI[0] = (crit ? 1 : 0); // Sets the burst to crit if the bullet did
                 }
                 if (damageMult >= 0.75f)
                     Owner.SetScreenshake(3f * damageMult);
@@ -377,9 +417,15 @@ namespace CalamityMod.Projectiles.Ranged
             targeted = target;
             trueLifetime = fadeLifetime;
 
-            modifiers.SourceDamage *= damageMult;
+            float finalDamageMult = MathF.Pow(originalDamageMult, bulletScalingDamagePow);
+            modifiers.SourceDamage *= (isMaxPower ? maxDamageMult : finalDamageMult * mainBulletDamageMult);
         }
-        public override bool? CanHitNPC(NPC target) => ((time > 1) ? null : false && Projectile.numHits == 0);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (hit.Crit)
+                crit = true;
+        }
+        public override bool? CanHitNPC(NPC target) => ((time > 1 && Projectile.numHits == 0) ? null : false);
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float hitboxSize = 20 * Projectile.scale * damageMult;

@@ -12,7 +12,7 @@ BloodfireArrow: {
 	Tooltip:
 		'''
 		High-velocity arrows with a blood soaked tip
-		Firing these arrows will drain your health and boost the arrow damage by 30%
+		Firing these arrows will drain your health and boost the arrow damage by 20%
 		Accelerates your natural life regen and heals you on hit
 		'''
 }
@@ -59,7 +59,11 @@ DryadsTear: {
 
 ElysianArrow: {
 	DisplayName: Elysian Arrow
-	Tooltip: On impact, summons purifying light from above and below at the nearest enemy
+	Tooltip:
+		'''
+		On impact, summons purifying light from above and below at the nearest enemy
+		Purifying light ignores 15 points of enemy Defense
+		'''
 }
 
 FlashRound: {
@@ -85,7 +89,7 @@ HailstormBullet: {
 	Tooltip:
 		'''
 		Once shot, bullets rapidly decelerate
-		Critical hits cause a flash freeze, dealing additional damage and freezing non-boss enemies
+		Critical hits cause a flash freeze, dealing additional damage based on your crit chance and freezing enemies
 		'''
 }
 

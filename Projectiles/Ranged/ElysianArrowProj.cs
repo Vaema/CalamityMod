@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, velocity, ModContent.ProjectileType<ElysianArrowRain>(), (int)(Projectile.damage * 0.15f), 0f, Projectile.owner, 0f, 0f);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, velocity, ModContent.ProjectileType<ElysianArrowRain>(), (int)(Projectile.damage * 0.20f), 0f, Projectile.owner, 0f, 0f);
 
             SoundStyle onKill = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
             SoundEngine.PlaySound(onKill with { Volume = 0.4f, Pitch = 0.4f }, Projectile.position);
