@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Main.npcFrameCount[Type] = 14;
             NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
-            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.GoldBunny) + 1, Type);
+            NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
             NPCID.Sets.ImmuneToAllBuffs[Type] = true;
             NPCID.Sets.ShimmerImmunity[Type] = true;
         }
@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 0;
             NPC.width = 32;
             NPC.height = 34;
-            NPC.lifeMax = 5;
+            NPC.lifeMax = 99999999;
             NPC.defense = 99999999;
             NPC.rarity = 5;
             NPC.aiStyle = -1;

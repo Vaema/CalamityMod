@@ -210,11 +210,6 @@ namespace CalamityMod.NPCs.Deconstructors
 
         public override void AI()
         {
-            //Force burrower bestiary to unlock
-            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
-            {
-                Main.BestiaryTracker.Kills.RegisterKill(NPC);
-            }
             HandleAIStates();
             MainTimer++;
             UpdateSegments();

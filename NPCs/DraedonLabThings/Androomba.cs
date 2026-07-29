@@ -151,12 +151,6 @@ namespace CalamityMod.NPCs.DraedonLabThings
                     }
                     break;
             }
-
-            // Force bestiary unlock
-            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
-            {
-                Main.BestiaryTracker.Kills.RegisterKill(NPC);
-            }
         }
 
         public void ChangeAI(int phase)

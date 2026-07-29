@@ -49,12 +49,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Force bestiary unlock
-            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
-            {
-                Main.BestiaryTracker.Kills.RegisterKill(NPC);
-            }
-
             bool walking = NPC.ai[0] == 1;
             // Do a cute lil' hop randomly
             int jumpChance = walking ? 600 : 100;

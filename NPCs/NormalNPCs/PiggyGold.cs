@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.TakesDamageFromHostilesWithoutBeingFriendly[Type] = true;
             NPCID.Sets.GoldCrittersCollection.Add(Type);
-            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(ModContent.NPCType<Piggy>()) + 1, Type);
+            NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
         }
 
         public override void SetDefaults()
@@ -32,16 +32,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.rarity = 3;
             NPC.catchItem = (short)ModContent.ItemType<PiggyGoldItem>();
             Banner = 0;
+            BannerItem = 0;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             // All gold critters have the same Bestiary entry.
-            var flavorText = database.FindEntryByNPCID(NPCID.GoldBunny).Info.Where(info => info is FlavorTextBestiaryInfoElement).FirstOrDefault();
+            string key = Lang.GetNPCName(NPCID.GoldBunny).Key.Replace("NPCName.", "");
+            string flavorText = "Bestiary_FlavorText.npc_" + key;
             bestiaryEntry.AddTags(
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface, 
-                flavorText);
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
+                new FlavorTextBestiaryInfoElement(flavorText));
         }
 
         public override void AI()
