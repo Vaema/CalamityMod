@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Security.Policy;
-using CalamityMod.Effects;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.NormalNPCs.HorribleHog;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Utilities.Daybreak;
@@ -14,7 +11,6 @@ using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -79,7 +75,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public Vector2 SquashVector;
 
-        public SlotId NearbySoundSlot;
+        public SlotId NearbySoundSlot = SlotId.Invalid;
 
         public static float MaxAcceleration_Walking => 0.035f;
         public static float MaxAcceleration_Running => 0.085f;
@@ -183,13 +179,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.velocity.X *= 0.9f;
             NPC.rotation = 0f;
 
-
             if (Timer < 2 && !SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
             {
                 if (!CalamityClientConfig.Instance.MisophoniaSupport)
-                {
                     NearbySoundSlot = SoundEngine.PlaySound(DivineSwine_SwineSpeakLoopingSound, NPC.Center, NearbySoundCallbackMethod);
-                }
                 else
                     NearbySoundSlot = SoundEngine.PlaySound(DivineSwine_MisophoniaSwineSpeakLoopingSound, NPC.Center, NearbySoundCallbackMethod);
             }
@@ -266,9 +259,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (Timer < 2 && !SoundEngine.TryGetActiveSound(NearbySoundSlot, out _))
             {
                 if (!CalamityClientConfig.Instance.MisophoniaSupport)
-                {
                     NearbySoundSlot = SoundEngine.PlaySound(HorribleHog_DevilsTongueLoopingSound, NPC.Center, NearbySoundCallbackMethod);
-                }
                 else
                     NearbySoundSlot = SoundEngine.PlaySound(HorribleHog_MisophoniaDevilsTongueLoopingSound, NPC.Center, NearbySoundCallbackMethod);
             }
@@ -300,6 +291,16 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void MainBehavior_IdleAndWalk()
         {
+            // Run away when damaged.
+            if (NPC.justHit && Main.rand.NextBool(3))
+            {
+                AIState = (int)BehaviorState.Running;
+                Timer = 0f;
+                LocalAIState = 0f;
+                NPC.netUpdate = true;
+                return;
+            }
+
             // Idling.
             if (LocalAIState == 0f)
             {
@@ -340,8 +341,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.netUpdate = true;
                 }
 
-                if (MathF.Abs(NPC.velocity.X) < MaxSpeed_Walking)
-                    NPC.velocity.X += MaxAcceleration_Walking * NPC.direction;
+                NPC.velocity.X += MaxAcceleration_Walking * NPC.direction;
+                NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -MaxSpeed_Walking, MaxSpeed_Walking);
+                NPC.direction = NPC.velocity.X.DirectionalSign();
 
                 if (NPC.collideX && NPC.velocity.Y == 0f)
                     NPC.velocity.Y -= 6f;
@@ -368,7 +370,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             NPC.spriteDirection = NPC.direction;
             float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.085f * (NPC.velocity.Y < 0).ToDirectionInt() : 0f;
-            NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.075f);
+            NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.125f);
         }
 
         public void MainBehavior_Running()
@@ -376,8 +378,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Run in a random direction until collision with a wall is made.
             if (LocalAIState == 0f)
             {
-                if (MathF.Abs(NPC.velocity.X) < MaxSpeed_Running)
-                    NPC.velocity.X += MaxAcceleration_Running * NPC.direction;
+                NPC.velocity.X += MaxAcceleration_Running * NPC.direction;
+                NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -MaxSpeed_Running, MaxSpeed_Running);
+                NPC.direction = NPC.velocity.X.DirectionalSign();
                 NPC.spriteDirection = NPC.direction;
 
                 // Spawn particles when running at max speed.
