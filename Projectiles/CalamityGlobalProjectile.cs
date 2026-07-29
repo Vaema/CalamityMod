@@ -4729,7 +4729,7 @@ namespace CalamityMod.Projectiles
             if (projectile.type == ProjectileID.UnholyArrow) // damage falloff
             {
                 if (projectile.numHits > 0)
-                    projectile.damage = (int)(projectile.damage * 0.75f);
+                    projectile.damage = (int)(projectile.damage * 0.75f / 0.95f); // Vanilla gives it 5% falloff, this cancels that out
                 if (projectile.damage < 1)
                     projectile.damage = 1;
             }
