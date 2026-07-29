@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 52;
             Item.height = 52;
-            Item.damage = 42;
+            Item.damage = 38;
             Item.DamageType = DamageClass.Summon;
             Item.buffType = ModContent.BuffType<EntropysVigilBuff>();
             Item.shoot = ModContent.ProjectileType<Calamitamini>();
