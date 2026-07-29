@@ -2966,6 +2966,28 @@ namespace CalamityMod.Projectiles
             bool reelingIn = projectile.ai[0] == 1;
             bool lineSnapped = projectile.ai[0] == 2;
 
+            // When using rage bait, gives a chance that your items turn to junk
+            bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
+            bool canRageBaitThePlayer = Main.rand.NextBool(RageBait.junkChance.Item1, RageBait.junkChance.Item2);
+            if (baitItem?.type == ModContent.ItemType<RageBait>() && reelingIn && !alreadyJunk && canRageBaitThePlayer && projectile.localAI[1] != 0)
+            {
+                Fishing_DoRageBaitEffects(projectile, owner);
+                return false;
+            }
+
+            // Trusty Old Rod functionality.
+            bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
+            {
+                Fishing_DoTrustyOldRodEffects(projectile, owner);
+                return false;
+            }
+
+            // For allowing Rage Bait and TOR to function correctly while using custom bobbers.
+            // See the ReelTheBobberChecks function.
+            bool canLetRageBaitRunForMinigame = baitItem?.type == ModContent.ItemType<RageBait>() && !alreadyJunk && canRageBaitThePlayer;
+            bool canLetTrustyOldRodRunForMinigame = owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && pulledNPC;
+
             #region Utilities
             void SmallSplashAtOffset(Vector2 offset)
             {
@@ -3001,7 +3023,15 @@ namespace CalamityMod.Projectiles
             }
             void ReelTheBobberChecks()
             {
-                if (projectile.localAI[1] == 1)
+                if (canLetRageBaitRunForMinigame)
+                {
+                    Fishing_DoRageBaitEffects(projectile, owner);
+                }
+                else if (canLetTrustyOldRodRunForMinigame)
+                {
+                    Fishing_DoTrustyOldRodEffects(projectile, owner);
+                }
+                else if (projectile.localAI[1] == 1)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -3735,61 +3765,59 @@ namespace CalamityMod.Projectiles
 
             }
 
-            bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
-            // When using rage bait, gives a chance that your items turn to junk
-            if (baitItem?.type == ModContent.ItemType<RageBait>() && reelingIn && !alreadyJunk && Main.rand.NextBool(RageBait.junkChance.Item1, RageBait.junkChance.Item2) && projectile.localAI[1] != 0)
-            {
-                var junk = Main.rand.Next(3) switch
-                {
-                    0 => ItemID.OldShoe,
-                    1 => ItemID.FishingSeaweed,
-                    _ => ItemID.TinCan,
-                };
-
-                SoundStyle epicFail = new("CalamityMod/Sounds/Item/Swine", 2);
-                SoundEngine.PlaySound(epicFail with { Volume = 0.9f, Pitch = 0.3f }, projectile.Center);
-                if (CalamityWorld.revenge)
-                    owner.Calamity().rage += 25;
-
-                for (int i = 0; i < 12; i++)
-                {
-                    Particle spray = new CustomSpark(projectile.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10), -Vector2.UnitY * Main.rand.NextFloat(3, 8), "CalamityMod/Particles/BloomCircle", true, Main.rand.Next(18, 24) * 5, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0, 0.7f)) * 0.3f, new Vector2(0.8f, 1f), true, false, 0, false, false);
-                    GeneralParticleHandler.SpawnParticle(spray);
-
-                    if (i % 2 == 0)
-                    {
-                        Particle rage = new CustomSpark(owner.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10) + -Vector2.UnitY * 7.5f, -Vector2.UnitY * Main.rand.NextFloat(0.5f, 2f), "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(12, 18) * 4, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.7f, new Vector2(0.7f, 1f), true, false, 0, false, false);
-                        GeneralParticleHandler.SpawnParticle(rage);
-                    }
-                }
-
-                projectile.ai[1] = junk;
-                return false;
-            }
-
-            bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
-
-            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
-            {
-                // Remove any item you would have fished up
-                projectile.ai[1] = 0;
-                // Get rarity of pull
-                int rarity;
-                int roll = Main.rand.Next(1, 100 + 1);
-                if (roll == 1) rarity = 3; // UltraRare (1/100)
-                else if (roll <= 21) rarity = 2; // Rare ~(1/5)
-                else rarity = 1; // Common ~(4/5)
-
-                if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
-                    TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
-                else if(Main.netMode == NetmodeID.SinglePlayer)
-                    TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
-
-                TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
-                projectile.ai[0] = 2; // snap line
-                return false;
-            }
             return false;
+        }
+
+        private void Fishing_DoRageBaitEffects(Projectile projectile, Player owner)
+        {
+            var junk = Main.rand.Next(3) switch
+            {
+                0 => ItemID.OldShoe,
+                1 => ItemID.FishingSeaweed,
+                _ => ItemID.TinCan,
+            };
+
+            SoundStyle epicFail = new("CalamityMod/Sounds/Item/Swine", 2);
+            SoundEngine.PlaySound(epicFail with { Volume = 0.9f, Pitch = 0.3f }, projectile.Center);
+            if (CalamityWorld.revenge)
+                owner.Calamity().rage += 25;
+
+            for (int i = 0; i < 12; i++)
+            {
+                Particle spray = new CustomSpark(projectile.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10), -Vector2.UnitY * Main.rand.NextFloat(3, 8), "CalamityMod/Particles/BloomCircle", true, Main.rand.Next(18, 24) * 5, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0, 0.7f)) * 0.3f, new Vector2(0.8f, 1f), true, false, 0, false, false);
+                GeneralParticleHandler.SpawnParticle(spray);
+
+                if (i % 2 == 0)
+                {
+                    Particle rage = new CustomSpark(owner.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10) + -Vector2.UnitY * 7.5f, -Vector2.UnitY * Main.rand.NextFloat(0.5f, 2f), "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(12, 18) * 4, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.7f, new Vector2(0.7f, 1f), true, false, 0, false, false);
+                    GeneralParticleHandler.SpawnParticle(rage);
+                }
+            }
+
+            projectile.ai[1] = junk;
+            CaughtItemID = junk;
+        }
+
+        private void Fishing_DoTrustyOldRodEffects(Projectile projectile, Player owner)
+        {
+            // Remove any item you would have fished up
+            projectile.ai[1] = 0;
+            CaughtItemID = 0;
+
+            // Get rarity of pull
+            int rarity;
+            int roll = Main.rand.Next(1, 100 + 1);
+            if (roll == 1) rarity = 3; // UltraRare (1/100)
+            else if (roll <= 21) rarity = 2; // Rare ~(1/5)
+            else rarity = 1; // Common ~(4/5)
+
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
+                TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+            else if (Main.netMode == NetmodeID.SinglePlayer)
+                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+
+            TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+            projectile.ai[0] = 2; // snap line
         }
         #endregion
 
