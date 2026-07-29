@@ -169,7 +169,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         
             NPC.StepUpBlocks();
-
             SquashVector = Vector2.Lerp(SquashVector, Vector2.One, 0.125f);
             Timer++;
         }
@@ -246,6 +245,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                 SoundEngine.PlaySound(DivineSwine_CoinFailSound, NPC.Center);
                 if (SoundEngine.TryGetActiveSound(NearbySoundSlot, out var activeSound))
                     activeSound.Stop();
+                if (NearbySoundSlot.IsValid)
+                    NearbySoundSlot = SlotId.Invalid;
 
                 NPC.Transform(ModContent.NPCType<DivineSwine>());
             }
@@ -284,6 +285,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                 SoundEngine.PlaySound(HorribleHog_CackleSound, NPC.Center);
                 if (SoundEngine.TryGetActiveSound(NearbySoundSlot, out var activeSound))
                     activeSound.Stop();
+                if (NearbySoundSlot.IsValid)
+                    NearbySoundSlot = SlotId.Invalid;
 
                 NPC.Transform(ModContent.NPCType<HorribleHog.HorribleHog>());
             }
