@@ -29,8 +29,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.noMelee = true;
             
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

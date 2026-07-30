@@ -36,8 +36,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.knockBack = 77f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<PureGreen>();
 
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<GrandDadHoldout>();
