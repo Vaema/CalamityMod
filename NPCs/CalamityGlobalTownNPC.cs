@@ -469,6 +469,7 @@ namespace CalamityMod.NPCs
             "Octo", // <@!796112889353994281> (octolinggrimm)
             "Kreska", // <@!130037366852157440> (nuclearnecro)
             "Meokei", // <@!230839680076218378> (azurlia)
+            "Kyubey", // <@!899044218167771146> (thewetsock7)
         ];
         private static readonly string[] TownCatSiameseNames =
         [
