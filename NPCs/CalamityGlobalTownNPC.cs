@@ -259,6 +259,7 @@ namespace CalamityMod.NPCs
             "Typhäne", // <@!222064016107896832> (typhane.)
             "Charlotte Linlin", // <@!563406464522125323> (vixcalibur)
             "Shmizzle Dizzle", // <@!1070551501283528724> (shmizzledizzle)
+            "Daitaku Helios", // <@!700900181872345121> (_ichigoism)
         ];
         private static readonly string[] PirateNames =
         [
