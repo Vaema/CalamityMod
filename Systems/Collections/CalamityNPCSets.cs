@@ -156,13 +156,12 @@ namespace CalamityMod.Systems.Collections
                 NPCID.ZombieElfGirl, NPCID.BloodEelHead, NPCID.GoblinShark, NPCID.EyeballFlyingFish, NPCID.ZombieMerman);
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, then that NPC is a post-Plantera Dungeon enemy. This causes two separate changes to the enemy.<br/>
-        /// First, it grants them a 20% chance to drop Ectoplasm upon death.<br/>
-        /// Second, it multiplies their max health by 2.5x and increases their damage by a flat 30 if Moon Lord has been defeated.<br/>
+        /// If <see langword="true"/> for an NPC type, then that NPC is a post-Plantera Dungeon enemy.<br/>
+        /// This will multiply their max health by 2.5x and increase their damage by a flat 30 if Moon Lord has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] IsBuffedDungeonEnemy = Factory.CreateNamedSet("IsBuffedDungeonEnemy")
-            .Description("Makes this NPC directly drop Ectoplasm on death, and buffs its health and damage after defeating Moon Lord.")
+            .Description("Makes this Dungeon enemy have buffed health and damage after defeating Moon Lord.")
             .RegisterBoolSet(NPCID.SkeletonSniper, NPCID.TacticalSkeleton, NPCID.SkeletonCommando, NPCID.Paladin, NPCID.GiantCursedSkull, NPCID.BoneLee, NPCID.DiabolistWhite,
                 NPCID.DiabolistRed, NPCID.NecromancerArmored, NPCID.Necromancer, NPCID.RaggedCasterOpenCoat, NPCID.RaggedCaster, NPCID.HellArmoredBonesSword, NPCID.HellArmoredBonesMace,
                 NPCID.HellArmoredBonesSpikeShield, NPCID.HellArmoredBones, NPCID.BlueArmoredBonesSword, NPCID.BlueArmoredBonesNoPants, NPCID.BlueArmoredBonesMace, NPCID.BlueArmoredBones,

@@ -538,8 +538,6 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<StaffOfNecrosteocytes>(), 15, 10));
                     break;
 
-                // The ectoplasm extra drops got moved to the list section; just like moss hornets
-
                 // Hardmode Dungeon Melee Skeletons
                 // Wisp in a Bottle @ 0.5% INSTEAD OF 0.25%
                 case NPCID.RustyArmoredBonesAxe:
@@ -1833,11 +1831,6 @@ DukeEditFailed:
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
             if (CalamityNPCTypeSets.Skeleton[npc.type])
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
-
-            // All Hardmode Dungeon Enemies
-            // Ectoplasm @ 20%
-            if (CalamityNPCSets.IsBuffedDungeonEnemy[npc.type])
-                npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
         }
         #endregion

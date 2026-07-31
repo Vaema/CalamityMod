@@ -14,13 +14,14 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Gladiator";
 
-        public const int HelmetRogueDamageBoostPercent = 3;
+        public const int HelmetRogueDamageBoostPercent = 8;
         public const int ChestplateRogueCritBoostPercent = 3;
-        public const int LeggingRogueVelocityBoostPercent = 3;
+        public const int LeggingRogueVelocityBoostPercent = 10;
+        public const float SetBonusRogueStealth = 0.6f;
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
+            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(SetBonusRogueStealth.ToStealth())}";
         }
 
         public override void ApplyHeadPieceEffect(Player player)
@@ -40,10 +41,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            player.Calamity().rogueStealthMax += 0.6f;
+            player.Calamity().rogueStealthMax += SetBonusRogueStealth;
             player.Calamity().wearingRogueArmor = true;
-            player.GetDamage<ThrowingDamageClass>() += 0.05f;
-            player.Calamity().rogueVelocity += 0.1f;
         }
     }
 }

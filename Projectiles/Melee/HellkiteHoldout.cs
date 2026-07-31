@@ -399,7 +399,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.25f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (chargedSwing ? 2.9f : 1) * damageMult;
+            modifiers.SourceDamage *= (chargedSwing ? 2.5f : 1) * damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

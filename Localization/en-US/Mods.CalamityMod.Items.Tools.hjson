@@ -162,8 +162,8 @@ CombatVoucher: {
 	DisplayName: Combat Voucher
 	Tooltip:
 		'''
-		Favorite this item in your inventory to change the result of your next accessory reforge
-		This will always either give the targeted reforge or a unique reforge
+		Favorite this item in your inventory to change the result of your next weapon reforge
+		This will always either give the best reforge based on class or a unique reforge
 		'''
 	SalesPitch:
 		'''

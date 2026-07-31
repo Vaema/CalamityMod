@@ -113,7 +113,7 @@ namespace CalamityMod.Items
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) }, // VANILLA: 35 DMG, 7 VEL
                 { ItemID.FlowerofFire, Do(DamageRatio(0.78f)) }, // VANILLA: 48 DMG. Uses ratios due to remix seed
                 { ItemID.FlowerPow, Do(DamageExact(80)) }, // Displays as 160 damage. VANILLA: 65 DMG (displays as 130)
-                { ItemID.FlyingKnife, Do(DamageExact(53)) }, // VANILLA: 40 DMG
+                { ItemID.FlyingKnife, Do(DamageExact(45)) }, // VANILLA: 40 DMG
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(110)) }, // VANILLA: 49 DMG
                 { ItemID.Gatligator, Do(UseExact(6)) }, // VANILLA: 7 UT
                 { ItemID.GoldShortsword, Do(TrueMelee, DamageExact(17)) }, // VANILLA: 12 DMG
@@ -208,7 +208,7 @@ namespace CalamityMod.Items
                 { ItemID.ShadowbeamStaff, Do(DamageExact(100)) }, // VANILLA: 80 DMG
                 { ItemID.ShadowFlameBow, Do(DamageExact(55)) }, // VANILLA: 47 DMG
                 { ItemID.ShadowFlameHexDoll, Do(DamageExact(40), ShootSpeedExact(30)) }, // VANILLA: 32 DMG, 9 VEL
-                { ItemID.ShadowFlameKnife, Do(DamageExact(50)) }, // VANILLA: 38 DMG
+                { ItemID.ShadowFlameKnife, Do(DamageExact(43)) }, // VANILLA: 38 DMG
                 { ItemID.SharpTears, Do(DamageExact(49)) }, // Blood Thorn. VANILLA: 34 DMG
                 { ItemID.Shotgun, Do(DamageExact(36)) }, // VANILLA: 24 DMG
                 { ItemID.SilverBullet, Do(DamageExact(8)) }, // VANILLA: 9 DMG
@@ -231,7 +231,7 @@ namespace CalamityMod.Items
                 { ItemID.TacticalShotgun, Do(DamageExact(34)) }, // VANILLA: 29 DMG
                 { ItemID.TaxCollectorsStickOfDoom, Do(UseTurn, DamageExact(80), UseExact(10)) }, // Classy Cane. VANILLA: 16 DMG, 15 UT
                 { ItemID.TendonBow, Do(DamageExact(17)) }, // VANILLA: 19 DMG
-                { ItemID.TerraBlade, Do(DamageExact(95)) }, // VANILLA: 85 DMG
+                { ItemID.TerraBlade, Do(DamageExact(90)) }, // VANILLA: 85 DMG
                 { ItemID.Terragrim, Do(TrueMeleeNoSpeed, DamageExact(13)) }, // VANILLA: 17 DMG
                 { ItemID.Terrarian, Do(DamageExact(90)) }, // VANILLA: 190 DMG. Required due to fixing iframes so yoyo and shots can hit simultaneously
                 { ItemID.TheEyeOfCthulhu, Do(DamageExact(80)) }, // VANILLA: 115 DMG
@@ -247,8 +247,8 @@ namespace CalamityMod.Items
                 { ItemID.ToxicFlask, Do(DamageExact(62), UseExact(33)) }, // VANILLA: 52 DMG, 45 UT
                 { ItemID.Toxikarp, Do(UseExact(9)) }, // VANILLA: 10 UT
                 { ItemID.Trident, Do(TrueMelee, DamageExact(20)) }, // VANILLA: 14 DMG
-                { ItemID.TrueExcalibur, Do(TrueMelee, DamageExact(112)) }, // VANILLA: 72 DMG
-                { ItemID.TrueNightsEdge, Do(DamageExact(105)) }, // VANILLA: 70 DMG
+                { ItemID.TrueExcalibur, Do(TrueMelee, DamageExact(105)) }, // VANILLA: 72 DMG
+                { ItemID.TrueNightsEdge, Do(DamageExact(99)) }, // VANILLA: 70 DMG
                 { ItemID.Tsunami, Do(DamageExact(45)) }, // VANILLA: 53 DMG
                 { ItemID.TungstenBullet, Do(DamageExact(8)) }, // VANILLA: 9 DMG
                 { ItemID.TungstenShortsword, Do(TrueMelee, DamageExact(15)) }, // VANILLA: 10 DMG
@@ -283,6 +283,7 @@ namespace CalamityMod.Items
                 { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, DamageExact(33), TileBoostExact(+0)) }, // VANILLA: 20 DMG, -1 TILE
                 { ItemID.AdamantitePickaxe, Do(TileBoostExact(+1)) }, // VANILLA: 0 TILE
                 { ItemID.AdamantiteWaraxe, Do(UseTimeExact(10), AxePower(160), TileBoostExact(+1)) }, // VANILLA: 8 SPD, 100 AXE, 0 TILE
+                { ItemID.AshWoodHammer, Do(UseTimeExact(7), HammerPower(25)) }, // VANILLA: 20 SPD, 45 HAM
                 { ItemID.BloodLustCluster, Do(UseTimeExact(13), AxePower(100)) }, // VANILLA: 15 SPD, 75 AXE
                 { ItemID.BonePickaxe, Do(UseTimeExact(6)) }, // VANILLA: 11 SPD
                 { ItemID.BorealWoodHammer, Do(UseTimeExact(11), HammerPower(25)) }, // VANILLA: 23 SPD, 35 HAM
@@ -393,6 +394,7 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 5: UseTurn
+                { ItemID.AshWoodSword, Do(UseTurn) },
                 { ItemID.BeeKeeper, Do(UseTurn) },
                 { ItemID.BladeofGrass, Do(UseTurn) },
                 { ItemID.BloodButcherer, Do(UseTurn) },

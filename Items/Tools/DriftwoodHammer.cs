@@ -10,26 +10,15 @@ namespace CalamityMod.Items.Tools
     {
         public new string LocalizationCategory => "Items.Tools";
 
-        public static int NormalUseTime = 11;
-        public static int FasterUseTime = 8;
+        public static int NormalUseTime = 9; // Equals Shadewood
+        public static int FasterUseTime = 7;
 
         public override void SetDefaults()
         {
-            Item.damage = 13;
-            Item.knockBack = 4f;
-            Item.useTime = NormalUseTime;
-            Item.useAnimation = 31;
-            Item.hammer = 25;
-
-            Item.DamageType = DamageClass.Melee;
+            Item.CloneDefaults(ItemID.ShadewoodHammer); // Driftwood (base) = Shadewood
             Item.width = 40;
             Item.height = 42;
-            Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = Item.sellPrice(copper: 10);
-            Item.rare = ItemRarityID.White;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
+            Item.useTime = NormalUseTime;
         }
 
         // The tool is mechanically faster when wet.
