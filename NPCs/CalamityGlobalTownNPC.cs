@@ -155,6 +155,7 @@ namespace CalamityMod.NPCs
             "Perrin", // <@!253764551139393537> (easyperrin)
             "Spud McGee", // <@!727111000658018326> (starchman)
             "Lumen Lucille", // <@!529392083136413696> (raiden_ii)
+            "Soup", // <@!100329863541444608> (djsnj20)
         ];
         private static readonly string[] CyborgNames =
         [
