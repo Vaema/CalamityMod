@@ -77,6 +77,7 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = true;
+            NPC.housingCategory = 1; // Prevent the Salesman from being instantly evicted when housed with existing Town NPCs as Town Piggy
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -112,9 +113,24 @@ namespace CalamityMod.NPCs.TownNPCs
                 {
                     if (CalamityWorld.unlockedTownPig)
                     {
+                        int oldHomeTileX = -1;
+                        int oldHomeTileY = -1;
+                        if (NPC.homeTileX != -1 && NPC.homeTileY != -1 && !NPC.homeless)
+                        {
+                            oldHomeTileX = NPC.homeTileX;
+                            oldHomeTileY = NPC.homeTileY;
+                        }
+
                         string name = NPC.GivenName;
                         NPC.Transform(ModContent.NPCType<TownPiggy>());
                         NPC.GivenName = name;
+                        // Transform will force all these back to their unset values, so we need to set them back
+                        if (oldHomeTileX != -1 && oldHomeTileY != -1)
+                        {
+                            NPC.homeTileX = oldHomeTileX;
+                            NPC.homeTileY = oldHomeTileY;
+                            NPC.homeless = false;
+                        }
                     }
                     else
                     {
@@ -598,11 +614,25 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                string name = Main.npc[petPig].GivenName;
-                Main.npc[petPig].Transform(ModContent.NPCType<ShadySalesman>());
-                Main.npc[petPig].GivenName = name;
+                NPC pig = Main.npc[petPig];
+                int oldHomeTileX = -1;
+                int oldHomeTileY = -1;
+                if (pig.homeTileX != -1 && pig.homeTileY != -1 && !pig.homeless)
+                {
+                    oldHomeTileX = pig.homeTileX;
+                    oldHomeTileY = pig.homeTileY;
+                }
 
-                string fullName = Main.npc[petPig].FullName;
+                string name = pig.GivenName;
+                pig.Transform(ModContent.NPCType<ShadySalesman>());
+                pig.GivenName = name;
+                // Transform will force all these back to their unset values, so we need to set them back
+                if (oldHomeTileX != -1 && oldHomeTileY != -1)
+                {
+                    pig.homeTileX = oldHomeTileX;
+                    pig.homeTileY = oldHomeTileY;
+                    pig.homeless = false;
+                }
             }
             CanSpawnTonight = false;
         }

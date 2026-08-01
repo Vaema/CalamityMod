@@ -371,7 +371,7 @@ namespace CalamityMod.Projectiles.Ranged
                     int damage = (int)(Projectile.damage * explosionDamageMult * (isMaxPower ? maxDamageMult : finalDamageMult));
                     Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<DryadsTearBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 8;
-                    blast.DamageType = DamageClass.Ranged;
+                    blast.DamageType = Projectile.DamageType;
                     blast.ArmorPenetration = Projectile.ArmorPenetration;
                     blast.localAI[0] = (crit ? 1 : 0); // Sets the burst to crit if the bullet did
                 }
