@@ -519,6 +519,7 @@ namespace CalamityMod.NPCs
         [
             "Poco", // <@!1192261996146593872> (tostitomuncher33)
             "Puffer", // <@!181103507711983616> (piky)
+            "W53 Nuclear Bomb", // <@!555779410788089861> (t_syrin_t)
         ];
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
