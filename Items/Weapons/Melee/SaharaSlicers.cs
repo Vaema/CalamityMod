@@ -28,10 +28,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noUseGraphic = true;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.damage = 23;
+            Item.damage = 20;
             Item.DamageType = TrueMeleeDamageClass.Instance;
-            Item.useTime = 12;
-            Item.useAnimation = 12;
+            Item.useAnimation = Item.useTime = 12;
             Item.shoot = ModContent.ProjectileType<SaharaSlicersBolt>();
             Item.shootSpeed = 3.3f;
             Item.knockBack = 6f;
@@ -49,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 if (player.Calamity().saharaSlicersBolts > 0)
                 {
                     SoundEngine.PlaySound(SoundID.DD2_GhastlyGlaivePierce with { Pitch = 1.5f }, player.Center);
-                    Projectile.NewProjectile(source, position, velocity * 2, ModContent.ProjectileType<SaharaSlicersBolt>(), (int)(damage * 1.2), knockback * 1.2f, player.whoAmI, 1);
+                    Projectile.NewProjectile(source, position, velocity * 2, ModContent.ProjectileType<SaharaSlicersBolt>(), damage, knockback, player.whoAmI, 1);
                     player.Calamity().saharaSlicersBolts--;
                 }
                 else
