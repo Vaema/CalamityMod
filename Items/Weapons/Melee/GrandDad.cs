@@ -29,10 +29,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 124;
             Item.height = 124;
-            Item.damage = 5777; // Feel free to change these 7s as balance requires. The other 7s should stay - Update: no more 2777... :(
+            Item.damage = 5577; // Feel free to change these 7s as balance requires. The other 7s should stay - Update: no more 2777... :(
             Item.DamageType = TrueMeleeDamageClass.Instance;
-            Item.useAnimation = 77;
-            Item.useTime = 77;
+            Item.useAnimation = Item.useTime = 77;
             Item.useTurn = true;
             Item.knockBack = 77f;
             Item.autoReuse = true;

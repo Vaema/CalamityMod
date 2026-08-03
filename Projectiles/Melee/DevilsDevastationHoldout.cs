@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
             // This is needed because EntitySource_ItemUse always sets Projectile.originalDamage to the item's damage,
             // regardless of the value passed into the damage argument of NewProjectile.
             // This results in continuous updating damage resetting the damage.
-            Projectile.originalDamage *= 15;
+            Projectile.originalDamage *= DevilsDevastation.BigSlashDamageMult;
         }
         public override void WhenSpawned()
         {
@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 2;
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
-                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.666f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * DevilsDevastation.MarkDamageMult), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
                 strike.DamageType = DamageClass.Melee;
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
