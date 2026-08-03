@@ -204,8 +204,8 @@ namespace CalamityMod.Items
             stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
             stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
             stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
-            // (Spectre Wings) 1 -> 1.5 acceleration multiplier
-            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 1.5f;
+            // (Spectre Wings) 1 -> 2 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
 
             // 170 -> 210 flight time
             stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
@@ -1199,6 +1199,9 @@ namespace CalamityMod.Items
                     player.maxFallSpeed *= 1.2f;
             }
 
+            if (item.type == ItemID.EmpressFlightBooster)
+                player.wingTimeMax += 150;
+
             if (item.type == ItemID.DemonWings && !player.mount.Active)
                 player.maxFallSpeed *= 1.2f;
 
@@ -1268,7 +1271,6 @@ namespace CalamityMod.Items
             float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.06f;
 
             float flightSpeedMult = 1f +
-                (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
                 (modPlayer.reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0f) +
                 moveSpeedBoost;
 
@@ -1294,14 +1296,14 @@ namespace CalamityMod.Items
                     break;
                 case ItemID.FlameWings:
                     maxAscentMultiplier *= 1.1067f;
-                    constantAscend *= 1.25f;
+                    constantAscend *= 1.2f;
                     break;
                 case ItemID.ButterflyWings:
                     maxAscentMultiplier *= 0.6667f;
                     constantAscend *= 5f;
                     break;
                 case ItemID.GhostWings:
-                    maxAscentMultiplier *= 0.6025f;
+                    maxAscentMultiplier *= 0.6625f;
                     constantAscend *= 5f;
                     break;
                 default:

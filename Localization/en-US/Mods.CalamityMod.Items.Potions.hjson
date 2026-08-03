@@ -140,7 +140,7 @@ ShadowPotion: {
 
 SoaringPotion: {
 	DisplayName: Soaring Potion
-	Tooltip: "{0}% increased flight time and horizontal flight speed"
+	Tooltip: "{0}% increased flight time"
 }
 
 SulphurskinPotion: {

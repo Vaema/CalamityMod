@@ -52,7 +52,7 @@ AeroStone: {
 	DisplayName: Aero Stone
 	Tooltip:
 		'''
-		Provides an additional {0} seconds of flight time
+		Grants {0} additional seconds of flight time
 		You slowly recover flight time while in the air while not flying or gliding
 		'One of the ancient relics'
 		'''
@@ -226,9 +226,10 @@ AscendantInsignia: {
 	DisplayName: Ascendant Insignia
 	Tooltip:
 		'''
-		Increases wing flight time by {0}%, movement and jump speed by {1}%, and acceleration by {2}x
-		Pressing [KEY] grants you the power of ascension, providing infinite flight time for {3} seconds
-		Ascension has a {4} second cooldown
+		Grants {0} additional seconds of flight time
+		Increases movement speed by {1}%, jump speed by {2}%, and acceleration by {3}x
+		Pressing [KEY] fully restores flight time and prevents it from decreasing for {4} seconds
+		This ability has a {5} second cooldown
 		'''
 }
 

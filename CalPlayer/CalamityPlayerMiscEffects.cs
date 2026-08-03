@@ -3752,10 +3752,9 @@ namespace CalamityMod.CalPlayer
                 (reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0D) +
                 (angelTreads ? AngelTreads.FlightTimeBoost : 0D) +
                 (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
-                (soaring ? SoaringPotion.FlightBoost : 0D) +
+                (soaring ? SoaringPotion.FlightTimeBoost : 0D) +
                 (prismaticGreaves ? PrismaticGreaves.FlightTimeBoost : 0D) +
                 (plagueReaper ? PlagueReaperMask.SetBonusFlightTimeBoost : 0D) +
-                (ascendantInsignia ? AscendantInsignia.FlightTimeBoost : Player.empressBrooch ? 0.33D : 0D) +
                 externalFlightTimeMultBoost;
 
             if (community)
