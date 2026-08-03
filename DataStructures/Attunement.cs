@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -72,7 +73,12 @@ namespace CalamityMod.DataStructures
         /// <param name="CanLunge">>Used by evil attunements to check if a regular dash is avaialble</param>
         /// <param name="PowerLungeCounter">Used by evil attunements to check if a strong dash is avaialble</param>
         /// <returns></returns>
-        public virtual bool Shoot(Player player, IEntitySource source, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack, ref int Combo, ref int CanLunge, ref int PowerLungeCounter) => true;
+        public virtual bool Shoot(Player player, IEntitySource source, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack, ref int Combo, ref int CanLunge, ref int PowerLungeCounter)
+        {
+            Projectile blade = Projectile.NewProjectileDirect(source, position, new Vector2(speedX, speedY), type, damage, knockBack, player.whoAmI);
+            blade.originalDamage = (int)MathF.Round(blade.originalDamage * DamageMultiplier);
+            return false;
+        }
 
         public virtual void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
         {
@@ -155,20 +161,14 @@ namespace CalamityMod.DataStructures
 
         public override bool Shoot(Player player, IEntitySource source, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack, ref int Combo, ref int CanLunge, ref int PowerLungeCounter)
         {
-            switch (Combo)
+            Projectile blade = Projectile.NewProjectileDirect(source, player.Center, new Vector2(speedX, speedY), ProjectileType<BitingEmbrace>(), damage, knockBack, player.whoAmI, 0, 15);
+            blade.originalDamage = (int)MathF.Round(blade.originalDamage * DamageMultiplier);
+            if (Combo > 0)
             {
-                case 0:
-                    Projectile.NewProjectile(source, player.Center, new Vector2(speedX, speedY), ProjectileType<BitingEmbrace>(), damage, knockBack, player.whoAmI, 0, 15);
-                    break;
-
-                case 1:
-                    Projectile.NewProjectile(source, player.Center, new Vector2(speedX, speedY), ProjectileType<BitingEmbrace>(), damage, knockBack, player.whoAmI, 1, 20);
-                    break;
-
-                case 2:
-                    Projectile.NewProjectile(source, player.Center, new Vector2(speedX, speedY), ProjectileType<BitingEmbrace>(), damage, knockBack, player.whoAmI, 2, 50);
-                    break;
+                blade.ai[0] = Combo;
+                blade.ai[1] = (Combo == 2 ? 50 : 20);
             }
+
             Combo++;
             if (Combo > 2)
                 Combo = 0;
@@ -202,7 +202,8 @@ namespace CalamityMod.DataStructures
 
         public override bool Shoot(Player player, IEntitySource source, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack, ref int Combo, ref int CanLunge, ref int PowerLungeCounter)
         {
-            Projectile.NewProjectile(source, player.Center, new Vector2(speedX, speedY), ProjectileType<DecaysRetort>(), damage, knockBack, player.whoAmI, 26, (float)CanLunge);
+            Projectile blade = Projectile.NewProjectileDirect(source, player.Center, new Vector2(speedX, speedY), ProjectileType<DecaysRetort>(), damage, knockBack, player.whoAmI, 26, (float)CanLunge);
+            blade.originalDamage = (int)MathF.Round(blade.originalDamage * DamageMultiplier);
             CanLunge = 0;
             return false;
         }
@@ -283,20 +284,14 @@ namespace CalamityMod.DataStructures
 
         public override bool Shoot(Player player, IEntitySource source, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack, ref int Combo, ref int CanLunge, ref int PowerLungeCounter)
         {
-            switch (Combo)
+            Projectile blade = Projectile.NewProjectileDirect(source, player.Center, new Vector2(speedX, speedY), ProjectileType<TrueBitingEmbrace>(), damage, knockBack, player.whoAmI, 0, 15);
+            blade.originalDamage = (int)MathF.Round(blade.originalDamage * DamageMultiplier);
+            if (Combo > 0)
             {
-                case 0:
-                    Projectile.NewProjectile(source, player.Center, new Vector2(speedX, speedY), ProjectileType<TrueBitingEmbrace>(), damage, knockBack, player.whoAmI, 0, 15);
-                    break;
-
-                case 1:
-                    Projectile.NewProjectile(source, player.Center, new Vector2(speedX, speedY), ProjectileType<TrueBitingEmbrace>(), damage, knockBack, player.whoAmI, 1, 20);
-                    break;
-
-                case 2:
-                    Projectile.NewProjectile(source, player.Center, new Vector2(speedX, speedY), ProjectileType<TrueBitingEmbrace>(), damage, knockBack, player.whoAmI, 2, 50);
-                    break;
+                blade.ai[0] = Combo;
+                blade.ai[1] = (Combo == 2 ? 50 : 20);
             }
+
             Combo++;
             if (Combo > 2)
                 Combo = 0;
@@ -331,6 +326,7 @@ namespace CalamityMod.DataStructures
         public override bool Shoot(Player player, IEntitySource source, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack, ref int Combo, ref int CanLunge, ref int PowerLungeCounter)
         {
             Projectile whipProj = Projectile.NewProjectileDirect(source, player.Center, new Vector2(speedX, speedY), ProjectileType<TrueGrovetendersTouch>(), damage, knockBack, player.whoAmI, 0, 0);
+            whipProj.originalDamage = (int)MathF.Round(whipProj.originalDamage * DamageMultiplier);
             if (whipProj.ModProjectile is TrueGrovetendersTouch whip)
                 whip.flipped = Combo == 0 ? 1 : -1;
             Combo++;
@@ -373,6 +369,7 @@ namespace CalamityMod.DataStructures
                 PowerLungeCounter = 0;
             }
             Projectile proj = Projectile.NewProjectileDirect(source, player.Center, new Vector2(speedX, speedY), ProjectileType<TrueDecaysRetort>(), damage, knockBack, player.whoAmI, 26f, CanLunge > 0 ? 1f : 0f);
+            proj.originalDamage = (int)MathF.Round(proj.originalDamage * DamageMultiplier);
             if (proj.ModProjectile is TrueDecaysRetort rapier)
                 rapier.ChargedUp = powerLungeAvailable;
             CanLunge--;

@@ -207,7 +207,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (mainAttunement == null)
                 return;
 
-            damage += (mainAttunement?.DamageMultiplier ?? 1f) - 1f;
+            damage *= (mainAttunement?.DamageMultiplier ?? 1f);
         }
 
         public void SafeCheckAttunements()

@@ -245,7 +245,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (mainAttunement == null)
                 return;
 
-            damage += (mainAttunement?.DamageMultiplier ?? 1f) - 1f;
+            damage *= (mainAttunement?.DamageMultiplier ?? 1f);
         }
 
         public void SafeCheckAttunements()
@@ -315,8 +315,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
                 if (secondaryAttunement.id == AttunementID.FlailBlade && MeatHook == null)
                 {
-                    int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(FlailBladeAttunement_PassiveBaseDamage);
-                    MeatHook = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ProjectileType<ChainedMeatHook>(), damage, 0f, player.whoAmI);
+                    MeatHook = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ProjectileType<ChainedMeatHook>(), FlailBladeAttunement_PassiveBaseDamage, 0f, player.whoAmI);
+                    MeatHook.originalDamage = FlailBladeAttunement_PassiveBaseDamage;
                 }
 
                 secondaryAttunement.PassiveEffect(player, source, ref UseTimer, ref OnHitProc, MeatHook);
@@ -356,7 +356,9 @@ namespace CalamityMod.Items.Weapons.Melee
             if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
                 return false;
 
-            return true;
+            Projectile blade = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI);
+            blade.originalDamage = (int)MathF.Round(blade.originalDamage * mainAttunement.DamageMultiplier);
+            return false;
         }
 
         internal static ChargingEnergyParticleSet BiomeEnergyParticles = new ChargingEnergyParticleSet(-1, 2, Color.White, Color.White, 0.04f, 20f);

@@ -169,12 +169,14 @@ namespace CalamityMod.Items.Weapons.Melee
             if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
                 return false;
 
-            return true;
+            Projectile blade = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI);
+            blade.originalDamage = (int)MathF.Round(blade.originalDamage * mainAttunement.DamageMultiplier);
+            return false;
         }
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
         {
-            damage += (mainAttunement?.DamageMultiplier ?? 1f) - 1f;
+            damage *= (mainAttunement?.DamageMultiplier ?? 1f);
         }
 
         public void SafeCheckAttunements()
