@@ -32,9 +32,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public bool OnHitProc = false;
 
         #region stats
-        public static int BaseDamage = 200;
+        public static int BaseDamage = 150;
 
-        public static int WhirlwindAttunement_BaseDamage = 120;
+        public static int WhirlwindAttunement_BaseDamage = 150;
         public static int WhirlwindAttunement_LocalIFrames = 20; //Remember its got one extra update
         public static float WhirlwindAttunement_EnergyDamageMult = 0.5f;
         public static float WhirlwindAttunement_BaseSwingDamageMult = 0.4f;
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int WhirlwindAttunement_PassiveBaseDamage = 80;
 
 
-        public static int SuperPogoAttunement_BaseDamage = 190;
+        public static int SuperPogoAttunement_BaseDamage = 200;
         public static int SuperPogoAttunement_PlayerShredIFrames = 8;
         public static int SuperPogoAttunement_LocalIFrames = 24; //Be warned its got one extra update so all the iframes should be divided in 2
         public static float SuperPogoAttunement_ShotDamageMult = 2.5f;
@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int SuperPogoAttunement_PassiveLifeSteal = 7;
 
 
-        public static int ShockwaveAttunement_BaseDamage = 550;
+        public static int ShockwaveAttunement_BaseDamage = 600;
         public static float ShockwaveAttunement_BeamDamageMult = 0.25f;
         public static int ShockwaveAttunement_DashHitIFrames = 20;
         public static float ShockwaveAttunement_FullChargeMult = 3.6f;

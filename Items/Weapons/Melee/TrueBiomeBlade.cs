@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Melee
         #region stats
         public static int BaseDamage = 115;
 
-        public static int DefaultAttunement_BaseDamage = 72;
+        public static int DefaultAttunement_BaseDamage = 90;
         public static int DefaultAttunement_SigilTime = 900;
         public static int DefaultAttunement_BeamTime = 90;
         public static float DefaultAttunement_LungeDamageMult = 2f;
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float EvilAttunement_SlashDamageBoost = 3f;
         public static int EvilAttunement_SlashIFrames = 60;
 
-        public static int ColdAttunement_BaseDamage = 115;
+        public static int ColdAttunement_BaseDamage = 105;
         public static float ColdAttunement_ThirdSwingBoost = 1.25f;
         public static float ColdAttunement_MistDamageReduction = 0.11f;
 
@@ -58,13 +58,13 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int HotAttunement_LocalIFrames = 24; //Be warned its got one extra update so all the iframes should be divided in 2
         public static float HotAttunement_ShredDecayRate = 0.65f; //How much charge is lost per frame.
 
-        public static int TropicalAttunement_BaseDamage = 120;
+        public static int TropicalAttunement_BaseDamage = 115;
         public static float TropicalAttunement_ChainDamageReduction = 0.6f;
         public static float TropicalAttunement_VineDamageReduction = 0.3f;
         public static float TropicalAttunement_SweetSpotDamageMultiplier = 1.5f; //It also crits, so be mindful of that
         public static int TropicalAttunement_LocalIFrames = 60; //Be warned its got 2 extra updates so all the iframes should be divided in 3
 
-        public static int HolyAttunement_BaseDamage = 96;
+        public static int HolyAttunement_BaseDamage = 100;
         public static float HolyAttunement_BaseSwingDamageMult = 0.5f;
         public static float HolyAttunement_FullSwingDamageMult = 1f;
         public static float HolyAttunement_ThrowDamageBoost = 3f;
