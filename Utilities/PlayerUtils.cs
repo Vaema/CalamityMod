@@ -545,8 +545,11 @@ namespace CalamityMod
             player.immune = true;
             player.immuneNoBlink = !blink;
             if (cooldownSlot < 0)
-                player.immuneTime = frames;
-            else
+            {
+                if (player.immuneTime < frames)
+                    player.immuneTime = frames;
+            }
+            else if (player.hurtCooldowns[cooldownSlot] < frames)
                 player.hurtCooldowns[cooldownSlot] = frames;
 
             return true;
@@ -577,7 +580,8 @@ namespace CalamityMod
             // Apply iframes thoroughly. Player.AddImmuneTime is not used because iframes should not exceed the intended amount.
             player.immune = true;
             player.immuneNoBlink = !blink;
-            player.immuneTime = frames;
+            if (player.immuneTime < frames)
+                player.immuneTime = frames;
             for (int i = 0; i < player.hurtCooldowns.Length; ++i)
                 if (player.hurtCooldowns[i] < frames)
                     player.hurtCooldowns[i] = frames;
