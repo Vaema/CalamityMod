@@ -354,24 +354,31 @@ namespace CalamityMod.Projectiles
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
                 projectile.Calamity().supercritHits = -1;
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
+            IEntitySource sourceItemAcc = source as EntitySource_ItemUse;
+
+
+            if (projectile.type == ProjectileID.VolatileGelatinBall && source is EntitySource_ItemUse { Item: Item acc })
             {
-                projectile.DamageType = AverageDamageClass.Instance;
-                projectile.usesIDStaticNPCImmunity = false;
-                projectile.usesLocalNPCImmunity = true;
-                projectile.localNPCHitCooldown = -1;
-                if (projectile.extraUpdates == 0)
-                    projectile.extraUpdates = 1;
-                if (projectile.timeLeft > 700)
-                    projectile.timeLeft = 700;
-                projectile.damage = (int)(projectile.damage * 0.60f); // 40% damage nerf
-                NPC closeTarget = projectile.Center.ClosestNPCAt(640);
-                Vector2 velocity = (projectile.Center.DirectionTo(closeTarget.Center) + closeTarget.velocity * 0.03f).SafeNormalize(Vector2.UnitX);
-                projectile.velocity = velocity * 12;
-                projectile.penetrate = 6; // this is for bounces, actually has pierce 4
-                Player player = Main.player[projectile.owner];
-                projectile.ApplyStatsFromSource(player.GetSource_FromThis());
-                projectile.netUpdate = true;
+                if (acc == Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin))
+                {
+                    projectile.DamageType = AverageDamageClass.Instance;
+                    projectile.usesIDStaticNPCImmunity = false;
+                    projectile.usesLocalNPCImmunity = true;
+                    projectile.localNPCHitCooldown = -1;
+                    if (projectile.extraUpdates == 0)
+                        projectile.extraUpdates = 1;
+                    if (projectile.timeLeft > 700)
+                        projectile.timeLeft = 700;
+                    projectile.damage = (int)(projectile.damage * 0.60f); // 40% damage nerf
+                    NPC closeTarget = projectile.Center.ClosestNPCAt(640);
+                    Vector2 velocity = (projectile.Center.DirectionTo(closeTarget.Center) + closeTarget.velocity * 0.03f).SafeNormalize(Vector2.UnitX);
+                    projectile.velocity = velocity * 12;
+                    projectile.penetrate = 6; // this is for bounces, actually has pierce 4
+                    Player player = Main.player[projectile.owner];
+                    projectile.ApplyStatsFromSource(player.GetSource_FromThis());
+                    projectile.netUpdate = true;
+                    projectile.ai[2] = 5; // Mark them as Volatile Gelatin origin
+                }
             }
 
             void ApplyGrapeBeer()
@@ -596,7 +603,7 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
+            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.ai[2] == 5)
             {
                 Player player = Main.player[projectile.owner];
                 if (projectile.timeLeft == 699 && projectile.FinalExtraUpdate() && player.Calamity().volatileGelatinVisuals)
@@ -4832,7 +4839,7 @@ namespace CalamityMod.Projectiles
             if (forcedCrit)
                 modifiers.SetCrit();
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && player.volatileGelatin && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
+            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.ai[2] == 5)
             {
                 target.AddBuff(BuffID.GelBalloonBuff, 180);
 
@@ -5269,7 +5276,7 @@ namespace CalamityMod.Projectiles
             }
             #endregion
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && Main.player[projectile.owner].Calamity().volatileGelatinVisuals && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
+            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.ai[2] == 5)
             {
                 Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
                 float rate = (projectile.timeLeft * 0.05f);
