@@ -1128,6 +1128,10 @@ namespace CalamityMod.Items
             {
                 modPlayer.magmaStoneVisuals = !hideVisual; // hides the fire dust when hiding the accessory
             }
+            if (item.type == ItemID.VolatileGelatin)
+            {
+                modPlayer.volatileGelatinVisuals = !hideVisual;
+            }
 
             // Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
             if (item.type == ItemID.AmphibianBoots)

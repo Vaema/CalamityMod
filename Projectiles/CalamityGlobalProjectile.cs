@@ -24,8 +24,10 @@ using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.OldDuke;
+using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.Packets;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
@@ -212,6 +214,11 @@ namespace CalamityMod.Projectiles
         public bool grapeBeer = false;
 
         /// <summary>
+        /// If this proj was spawned from the Volatile Gelatin accessory
+        /// </summary>
+        public bool volatileGelatinSpawned = false;
+
+        /// <summary>
         /// How strong grape beer homing is on this. It speeds up the longer the target is targeted.
         /// </summary>
         public float grapeBeerHomingPower = 0.01f;
@@ -351,6 +358,33 @@ namespace CalamityMod.Projectiles
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
                 projectile.Calamity().supercritHits = -1;
+
+            IEntitySource sourceItemAcc = source as EntitySource_ItemUse;
+
+
+            if (projectile.type == ProjectileID.VolatileGelatinBall && source is EntitySource_ItemUse { Item: Item acc })
+            {
+                if (acc == Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin))
+                {
+                    projectile.DamageType = AverageDamageClass.Instance;
+                    projectile.usesIDStaticNPCImmunity = false;
+                    projectile.usesLocalNPCImmunity = true;
+                    projectile.localNPCHitCooldown = -1;
+                    if (projectile.extraUpdates == 0)
+                        projectile.extraUpdates = 1;
+                    if (projectile.timeLeft > 700)
+                        projectile.timeLeft = 700;
+                    projectile.damage = (int)(projectile.damage * 0.60f); // 40% damage nerf
+                    NPC closeTarget = projectile.Center.ClosestNPCAt(640);
+                    Vector2 velocity = (projectile.Center.DirectionTo(closeTarget.Center) + closeTarget.velocity * 0.03f).SafeNormalize(Vector2.UnitX);
+                    projectile.velocity = velocity * 12;
+                    projectile.penetrate = 6; // this is for bounces, actually has pierce 4
+                    Player player = Main.player[projectile.owner];
+                    projectile.ApplyStatsFromSource(player.GetSource_FromThis());
+                    projectile.netUpdate = true;
+                    volatileGelatinSpawned = true; // Mark them as Volatile Gelatin origin
+                }
+            }
 
             void ApplyGrapeBeer()
             {
@@ -574,6 +608,47 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            if (volatileGelatinSpawned)
+            {
+                Player player = Main.player[projectile.owner];
+                if (projectile.timeLeft == 699 && projectile.FinalExtraUpdate() && player.Calamity().volatileGelatinVisuals)
+                {
+                    for (int i = 0; i <= 14; i++)
+                    {
+                        float variance = Main.rand.NextFloat(-0.4f, 0.4f);
+                        Vector2 vel = projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(variance) * Main.rand.NextFloat(12f, 17f) * (1 - Math.Abs(variance * 1.5f));
+
+                        Dust dust2 = Dust.NewDustPerfect(player.Center, ModContent.DustType<LightDustPixelated>(), vel);
+                        dust2.scale = Main.rand.NextFloat(1.7f, 2.5f) * (1 - Math.Abs(variance * 1.5f));
+                        bool gravity = !Main.rand.NextBool(5);
+                        dust2.noGravity = gravity;
+                        if (!gravity)
+                            dust2.velocity /= 2;
+                        dust2.alpha = Main.rand.Next(70, 150 + 1);
+                        dust2.color = Main.rand.NextBool() ? Color.BlueViolet : Color.SlateBlue;
+                        dust2.noLight = true;
+                        dust2.noLightEmittence = true;
+                    }
+                    
+                }
+                if (projectile.timeLeft > 600 && projectile.numHits == 0)
+                    projectile.velocity.Y -= 0.065f;
+                else if (projectile.velocity.Y < 14)
+                    projectile.velocity.Y += 0.15f;
+
+                float fade = Utils.GetLerpValue(600, 700, projectile.timeLeft, true);
+                if (fade > 0 && projectile.timeLeft < 695 && Main.player[projectile.owner].Calamity().volatileGelatinVisuals)
+                {
+                    Particle spark = new CustomSpark(projectile.Center, -projectile.velocity * 0.05f, "CalamityMod/Particles/BloomCircle", false, 11, 0.52f, Color.BlueViolet * 0.5f * fade, new Vector2(0.7f, 1.2f), true, true, glowCenterScale: 0.7f, glowOpacity: 0.5f * fade, shrinkSpeed: 0.14f);
+                    GeneralParticleHandler.SpawnParticle(spark, false, GeneralDrawLayer.BeforeProjectiles);
+                }
+
+                if (projectile.numHits > 4)
+                    projectile.Kill();
+                if (projectile.timeLeft % 5 == 0)
+                    projectile.netUpdate = true;
+            }
+            
             if (projectile.type == ProjectileID.Skull)
             {
                 bool fromRevSkeletron = projectile.ai[0] < 0f;
@@ -4769,6 +4844,48 @@ namespace CalamityMod.Projectiles
             if (forcedCrit)
                 modifiers.SetCrit();
 
+            if (volatileGelatinSpawned)
+            {
+                target.AddBuff(BuffID.GelBalloonBuff, 180);
+
+                float minMult = 0.2f;
+                int hitsToMinMult = 5;
+                float damageMult = Utils.Remap(projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+                modifiers.SourceDamage *= damageMult;
+
+                if (projectile.numHits == 0)
+                    player.Calamity().volatileGelHits++;
+                if (player.Calamity().volatileGelHits == 5)
+                {
+                    player.Calamity().volatileGelHits = 0;
+                    Vector2 spawnPosition = player.Center;
+                    int npcType = ModContent.NPCType<VolatileSlime>();
+
+                    int slimeCap = 6;
+                    int npcCount = 0;
+                    for (int x = 0; x < Main.maxNPCs; x++)
+                    {
+                        NPC npc = Main.npc[x];
+                        if (npc.active && npc.type == npcType && npc.ai[1] == player.whoAmI && npc.ai[3] == 0)
+                            npcCount++;
+                    }
+
+                    if (npcCount < slimeCap && player.wingTime > 0)
+                    {
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                        {
+                            SpawnNPCOnPlayerPacket.Send(player, (int)spawnPosition.X, (int)spawnPosition.Y, npcType);
+                        }
+                        else if (Main.netMode == NetmodeID.SinglePlayer)
+                        {
+                            NPC slime = NPC.NewNPCDirect(player.GetSource_FromThis(), (int)spawnPosition.X, (int)spawnPosition.Y, npcType, ai1: player.whoAmI, ai2: npcCount);
+                        }
+                    }
+                }
+
+                projectile.netUpdate = true;
+            }
+
             if (modPlayer.rottenDogTooth && projectile.Calamity().stealthStrike && !modPlayer.vampiricTalisman)
                 target.AddBuff(BuffType<Crumbling>(), RottenDogtooth.ArmorCrunchDebuffTime);
             else if (modPlayer.vampiricTalisman && projectile.Calamity().stealthStrike)
@@ -5163,6 +5280,37 @@ namespace CalamityMod.Projectiles
                 shouldDrawBool = false;
             }
             #endregion
+
+            if (volatileGelatinSpawned)
+            {
+                Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
+                float rate = (projectile.timeLeft * 0.05f);
+                List<Color> eColors = new List<Color>()
+                {
+                    Color.SlateBlue,
+                    Color.BlueViolet
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                Color finalColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
+
+                float fade = Utils.GetLerpValue(600, 700, projectile.timeLeft, true);
+                int draws = 12;
+                if (Main.player[projectile.owner].Calamity().volatileGelatinVisuals)
+                {
+                    for (int i = 0; i < draws; i++)
+                    {
+                        float rotPoint = MathHelper.TwoPi / draws * i;
+                        float dist = 1.5f * fade;
+                        Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + rotPoint.ToRotationVector2().RotatedBy(Main.GlobalTimeWrappedHourly) * dist, null, finalColor with { A = 0 } * 0.6f * fade, MathF.Pow(projectile.rotation, 2), texture.Size() / 2f, projectile.scale * 1.2f, SpriteEffects.None);
+                    }
+                }
+                
+                Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition, null, Color.Lerp(lightColor, Color.White, fade), projectile.rotation, texture.Size() / 2f, projectile.scale, SpriteEffects.None);
+
+                shouldDrawBool = false;
+            }
 
             if (projectile.type == ProjectileID.DeerclopsIceSpike && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
             {
