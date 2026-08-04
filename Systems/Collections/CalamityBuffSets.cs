@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs;
 using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
@@ -20,8 +19,7 @@ namespace CalamityMod.Systems.Collections
     [ReinitializeDuringResizeArrays]
     public static class CalamityBuffSets
     {
-        private static SetFactory Factory = new SetFactory(BuffLoader.BuffCount, "CalamityMod/BuffID", Search);
-        private static IdDictionary Search = IdDictionary.Create<BuffID, int>();
+        private static SetFactory Factory = BuffID.Sets.Factory;
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff will have its duration extended with The Amalgam equipped.<br/>
@@ -109,8 +107,12 @@ namespace CalamityMod.Systems.Collections
         );
 
         private static DebuffData Alch(int level) => new DebuffData() { AlcoholLevel = level };
+        /// <summary>
+        /// Associates a buff type with its unique <see cref="DebuffData"/>. This class is used to store information about the buff such as DoT, elemental affliation, and whether or not it is an alcohol.<br/>
+        /// Defaults to null, or having no assigned <see cref="DebuffData"/>.
+        /// </summary>
         public static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
-            .Description("Stores DebuffData for a particular debuff")
+            .Description("Associates a buff with its DebuffData, which stores information about that buff.")
             .RegisterCustomSet<DebuffData>(null,
                 BuffID.OnFire, DebuffData.OnFire,
                 BuffID.OnFire3, DebuffData.Hellfire,

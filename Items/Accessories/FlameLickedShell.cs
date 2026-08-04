@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Systems.Collections;
+using System.Collections.Generic;
 using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -15,8 +17,11 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         internal const int flameLickedParry = 30;
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.AccessoryParryHotKey);
-
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Main.LocalPlayer.Calamity().AccessoryParryItem != null ? Main.LocalPlayer.Calamity().AccessoryParryItem : Item);
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 36;
@@ -31,6 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.flameLickedShell = true;
+            modPlayer.AccessoryParryItem = Item;
             player.noKnockback = true;
         }
 

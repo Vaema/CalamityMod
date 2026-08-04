@@ -106,7 +106,7 @@ namespace CalamityMod
                 NPCID.Sets.SpecificDebuffImmunity[npc.type][BuffID.Confused] = true;
 
             // Sets certain vanilla NPCs and all town NPCs to be immune to most debuffs.
-            bool isConsideredSpecialTarget = npc.type == NPCID.SkeletronHead || npc.type == NPCID.DD2EterniaCrystal;
+            bool isConsideredSpecialTarget = npc.type == NPCID.DD2EterniaCrystal;
             bool isTownNPC = npc.townNPC || NPCID.Sets.ActsLikeTownNPC[npc.type];
             bool applyRegularBuffImmunitySpecialCases = isConsideredSpecialTarget || isTownNPC;
             if (applyRegularBuffImmunitySpecialCases)
@@ -326,13 +326,17 @@ namespace CalamityMod
                 { ModContent.NPCType<MicrobialCluster>(), sulphur },
                 { ModContent.NPCType<Trasher>(), sulphur },
 
+                { ModContent.NPCType<BlindedAngler>(), sunkenSea },
                 { ModContent.NPCType<Clam>(), sunkenSea },
                 { ModContent.NPCType<EutrophicRay>(), sunkenSea },
                 { ModContent.NPCType<GhostBell>(), sunkenSea },
                 { ModContent.NPCType<GiantClam>(), sunkenSea },
                 { ModContent.NPCType<PrismBack>(), sunkenSea },
-                { ModContent.NPCType<SandProwler>(), sunkenSea },
-                { ModContent.NPCType<SandProwlerNested>(), sunkenSea },
+                { ModContent.NPCType<SeaSerpent1>(), sunkenSea },
+                { ModContent.NPCType<SeaSerpent2>(), sunkenSea },
+                { ModContent.NPCType<SeaSerpent3>(), sunkenSea },
+                { ModContent.NPCType<SeaSerpent4>(), sunkenSea },
+                { ModContent.NPCType<SeaSerpent5>(), sunkenSea },
 
                 { ModContent.NPCType<BabyCannonballJellyfish>(), abyss },
                 { ModContent.NPCType<CannonballJellyfish>(), abyss },

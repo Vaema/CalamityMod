@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Helstorm : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3];
+        }
         public override void SetDefaults()
         {
             Item.width = 50;
@@ -60,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ScoriaBar>(7).
+                AddIngredient<ScoriaBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

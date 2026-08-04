@@ -170,10 +170,6 @@ namespace CalamityMod.CalPlayer
                     else
                         itemDrop = ModContent.ItemType<CragBullhead>();
                 }
-                if (ZoneBasaltGully)
-                {
-                    itemDrop = ModContent.ItemType<MoltenFishron>();
-                }
                 return;
             }
 
@@ -327,6 +323,17 @@ namespace CalamityMod.CalPlayer
                     itemDrop = ModContent.ItemType<Shadowfish>();
             }
 
+            // Lower chance of Spadefish in Hardmode and/or when already having a spadefish
+            if (underground) // Underground
+            {
+                bool validattempt = Player.HasItemInInventoryOrOpenVoidBag(ModContent.ItemType<Spadefish>()) ? attempt.veryrare : attempt.rare;
+                int chance = Main.hardMode ? 10 : 4;
+                if (validattempt && Main.rand.NextBool(chance))
+                {
+                    itemDrop = ModContent.ItemType<Spadefish>();
+                }
+            }
+
             if (ZoneAstral)
             {
                 if (attempt.legendary)
@@ -359,14 +366,6 @@ namespace CalamityMod.CalPlayer
                 // If the player is overlapping with the desert, split the catches
                 if (Player.ZoneDesert && Main.rand.NextBool())
                     return;
-
-                int commonCatch = ModContent.ItemType<CoralskinFoolfish>();
-                if (ZonePolypForest)
-                    commonCatch = ModContent.ItemType<GleamingCucumber>();
-                else if (ZoneGleamingBurrows)
-                    commonCatch = ModContent.ItemType<SpecularSturgeon>();
-                else if (ZoneTimelessShores)
-                    commonCatch = ModContent.ItemType<Squidoom>();
 
                 if (attempt.legendary)
                 {
@@ -401,7 +400,7 @@ namespace CalamityMod.CalPlayer
                 else if (Main.rand.NextBool()) // 50% chance the common fish is replaced with driftwood
                     itemDrop = ModContent.ItemType<Driftwood>();
                 else
-                    itemDrop = commonCatch;
+                    itemDrop = ModContent.ItemType<PrismaticGuppy>();
                 return;
             }
             // There is no complete fishing pool here, so most of it is vanilla default

@@ -12,23 +12,14 @@ namespace CalamityMod.Items.Tools
         public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
-            Item.damage = 29;
-            Item.knockBack = 2.5f;
-            Item.useTime = 5;
-            Item.useAnimation = 9;
-            Item.hammer = 35;
-            Item.tileBoost = 1;
-
-            Item.DamageType = DamageClass.Melee;
+            Item.CloneDefaults(ItemID.PearlwoodHammer); // Monolith >= Pearlwood
             Item.width = 46;
             Item.height = 44;
-            Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
+            Item.damage = 30;
+            Item.useAnimation = 14;
+            Item.tileBoost = 1;
         }
+
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))

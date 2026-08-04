@@ -1,6 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,6 +13,10 @@ namespace CalamityMod.Items.Accessories
     public class EyeoftheStorm : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WindChilled>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -20,20 +26,12 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.elementalHeart)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().allElementals.HasValue;
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.cloudElemental = true;
+            modPlayer.cloudElemental = !hideVisual;
             if (player.whoAmI == Main.myPlayer)
             {
                 if (player.FindBuffIndex(ModContent.BuffType<CloudElemental>()) == -1)

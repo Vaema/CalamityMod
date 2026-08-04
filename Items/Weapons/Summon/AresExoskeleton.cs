@@ -21,9 +21,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const int PlasmaCannonShootRate = 30;
 
-        public const int TeslaCannonShootRate = 36;
+        public const int TeslaCannonShootRate = 42;
 
-        public const int LaserCannonNormalShootRate = 15;
+        public const int LaserCannonNormalShootRate = 12;
 
         public const int GaussNukeShootRate = 240;
 
@@ -31,13 +31,13 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float MinionSlotsPerCannon = 3f;
 
-        public const float PlasmaCannonBlastFactor = 0.9f;
+        public const float PlasmaCannonBlastFactor = 1f;
 
         // Multiple orbs can arc together when there are 2+ tesla cannons, resulting in a LOT of hits.
         // The local i-frames are also quite high to combat this problem.
         public const float TeslaOrbDamageFactor = 1f;
 
-        public const float LaserDamageFactor = 1.1f;
+        public const float LaserDamageFactor = 1f;
 
         public const float NukeDamageFactor = 1f;
 
@@ -75,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = Item.height = 36;
             Item.mana = 80;
-            Item.damage = 625;
+            Item.damage = 550;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 24;

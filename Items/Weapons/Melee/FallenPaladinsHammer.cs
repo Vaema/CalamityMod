@@ -1,5 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,12 +12,15 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public static float Speed = 27f;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+        }
         public override void SetDefaults()
-
         {
             Item.width = 14;
             Item.height = 28;
-            Item.damage = 368;
+            Item.damage = 315;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -35,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.PaladinsHammer).
                 AddIngredient<Pwnagehammer>().
-                AddIngredient<ScoriaBar>(5).
-                AddIngredient<AshesofCalamity>(5).
+                AddIngredient<ScoriaBar>(8).
+                AddIngredient<AshesofCalamity>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

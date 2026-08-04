@@ -69,10 +69,8 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.88f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            float damageMult = MathHelper.Clamp(Utils.GetLerpValue(4, 0, Projectile.numHits), 0.2f, 1);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.ai[0] == 1 ? 130 : 200, targetHitbox);
     }

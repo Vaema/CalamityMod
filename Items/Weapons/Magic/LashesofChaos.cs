@@ -1,9 +1,11 @@
-﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,6 +19,11 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public int FiringMode = 0; // 0 = hellfireballs, 1 = hellblasts
         public int ProjectilesFired = 0;
+        public static readonly SoundStyle FireSound = new SoundStyle("CalamityMod/Sounds/Custom/CalamitasClone/CalClone_BigFireballBit", 4) with { Volume = 0.6f, MaxInstances = 4 };
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 28;
@@ -26,13 +33,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.mana = 28;
             Item.useAnimation = Item.useTime = 46;
             Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = FireSound;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<BrimstoneHellfireballFriendly>();
-            Item.shootSpeed = 14f;
+            Item.shoot = ModContent.ProjectileType<CalamitousFireballFriendly>();
+            Item.shootSpeed = 22f;
         }
 
         // Shoots twice as fast (and uses half as much mana to compensate) during hellblasts
@@ -46,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             ProjectilesFired++;
-            type = FiringMode == 1 ? ModContent.ProjectileType<SeethingDischargeBrimstoneHellblast>() : Item.shoot;
+            type = FiringMode == 1 ? ModContent.ProjectileType<CalamitousDartFriendly>() : Item.shoot;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, Main.myPlayer);
 
             // DUST
@@ -80,11 +88,13 @@ namespace CalamityMod.Items.Weapons.Magic
             {
                 FiringMode = 1;
                 ProjectilesFired = 0;
+                SoundEngine.PlaySound(SoundID.Item100 with { Volume = 0.8f }, player.Center);
             }
             if (FiringMode == 1 && ProjectilesFired >= 10)
             {
                 FiringMode = 0;
                 ProjectilesFired = 0;
+                SoundEngine.PlaySound(SoundID.Item100 with { Volume = 0.8f }, player.Center);
             }
             return false;
         }

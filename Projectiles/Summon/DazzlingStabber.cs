@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 0.333f;
+            Projectile.minionSlots = 1f;
             Projectile.timeLeft = 90000;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Summon
                     bladeColor = Color.Orchid;
                     Projectile.extraUpdates = 1;
                     damageMult = 0.5f;
-                    Projectile.ArmorPenetration = 40;
+                    Projectile.ArmorPenetration = 20;
                     break;
                 case 2: // Rock
                     bladeColor = Color.OrangeRed;
@@ -82,7 +82,6 @@ namespace CalamityMod.Projectiles.Summon
                 default: // Flame
                     bladeColor = Color.Orange;
                     damageMult = 1;
-                    Projectile.ArmorPenetration = 20;
                     break;
             }
 
@@ -124,7 +123,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     SoundStyle slam = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 2);
                     SoundEngine.PlaySound(slam with { Volume = 0.4f, Pitch = Main.rand.NextFloat(-0.25f, -0.15f), MaxInstances = -1 }, Projectile.Center);
-                    for (int i = 0; i < 7; i++)
+                    for (int i = 0; i < 5; i++)
                     {
                         Particle spark = new CustomSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1f, 5f), "CalamityMod/Projectiles/Typeless/ArtifactOfResilienceShard6", false, Main.rand.Next(15, 25 + 1), Main.rand.NextFloat(0.75f, 1.2f), Color.White, new Vector2(1.3f, 0.5f), false, false, Main.rand.NextFloat(-5, 5), false, false);
                         GeneralParticleHandler.SpawnParticle(spark);
@@ -137,7 +136,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (KnifeType == 1 && attacksDone > 0 && Utils.Distance(Projectile.Center, storedPos) < 150 && attackCooldown == 0)
                 {
-                    Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.1f, false, 20, 0.03f, bladeColor * 0.55f, new Vector2(0.8f, 2.3f), true, false, 0.45f);
+                    Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.1f, false, 20, 0.03f, bladeColor * 0.4f, new Vector2(0.8f, 2.3f), true, false, 0.45f);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
                 if (KnifeType == 2 && attackCooldown == 0)
@@ -166,12 +165,6 @@ namespace CalamityMod.Projectiles.Summon
 
                     Particle spark2 = new CustomSpark(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.5f) * Main.rand.NextFloat(1f, 5f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 14, Main.rand.NextFloat(0.9f, 1.2f), Color.Gold, new Vector2(0.5f, 1.5f), true, false, 0, false, false, -0.25f);
                     GeneralParticleHandler.SpawnParticle(spark2);
-
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Particle trail = new GlowSparkParticle(Projectile.Center + i * Projectile.velocity * 0.4f, -Projectile.velocity * 0.05f, false, 9, 0.05f, Color.Orange * 0.6f, new Vector2(1, 0.3f), true, false, 0.85f);
-                        GeneralParticleHandler.SpawnParticle(trail);
-                    }
 
                 }
                 if (attackCooldown == 0)

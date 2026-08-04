@@ -51,8 +51,12 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 //Set the scaling to 0 whenever it reloads
                 Owner.Calamity().sharkGunDamageScaling = 0;
-                //Has a 1 in 100 chance to set transEffects to true, changing the shot colors to be replaced by the transgender pride flag colors
-                transEffects = Main.rand.NextBool(100);
+                //If the player has a Gender Change Potion in their inventory set transEffects to true, changing the shot colors to be replaced by the transgender pride flag colors
+                //If not, has a 1 in 100 chance every magazine to set it to true
+                if (Main.LocalPlayer.HasItemInAnyInventory(ItemID.GenderChangePotion))
+                    transEffects = true;
+                else
+                    transEffects = Main.rand.NextBool(100);
             }
             if (Time >= 90)
             {

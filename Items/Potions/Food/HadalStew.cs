@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Potions.Food
     {
         public new string LocalizationCategory => "Items.Potions";
         public static int BuffType = BuffID.WellFed3;
-        public static int BuffDuration = CalamityUtils.MinutesToFrames(8);
+        public static int BuffDuration = CalamityUtils.MinutesToFrames(4);
         public static int SicknessDuration = CalamityUtils.SecondsToFrames(50);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDuration / 3600);
 
@@ -55,14 +55,14 @@ namespace CalamityMod.Items.Potions.Food
         {
             CreateRecipe().
                 AddIngredient<AbyssGravel>(3).
-                AddIngredient<CoastalDemonfish>().
+                AddIngredient<CoastalDemonfish>(2).
                 AddIngredient(ItemID.Bowl).
                 AddTile(TileID.CookingPots).
                 Register();
 
             CreateRecipe().
                 AddIngredient<Voidstone>(3).
-                AddIngredient<CoastalDemonfish>().
+                AddIngredient<CoastalDemonfish>(2).
                 AddIngredient(ItemID.Bowl).
                 AddTile(TileID.CookingPots).
                 Register();

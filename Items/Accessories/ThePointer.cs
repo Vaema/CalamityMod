@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -23,12 +24,12 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.ThePointerLock);
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             LockOnHelper.ForceUsability = true;
-            if (CalamityKeybinds.ThePointerLock.JustPressed)
+            if (Item.JustPressedKeybind())
             {
                 LockOnHelper.Toggle();
                 if (LockOnHelper.AimedTarget != null)

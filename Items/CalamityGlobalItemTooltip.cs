@@ -169,9 +169,11 @@ namespace CalamityMod.Items
                 float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(item.DamageType) * 0.02f;
                 tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
             }
-            
+
             //Add "Uses X Minion Slots right above "Uses X Mana"
-            if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0)
+            //Solutions set their "shoot" to 145 less than the projectile id of the spray, effectively making them a COMPLETELY RANDOM projectile that would change based on the folder structure of the mod.
+            //So, we must blacklist solutions from the item.shoot check.
+            if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || (item.ammo != AmmoID.Solution && ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0))
             {
                 float cost = ItemID.Sets.StaffMinionSlotsRequired[item.type];
                 if (item.type == ModContent.ItemType<YharonsKindleStaff>() && Main.LocalPlayer.Calamity().fadedIdolatry)
@@ -322,6 +324,22 @@ namespace CalamityMod.Items
                 }
             }
 
+            foreach (var buffID in CalamityItemSets.ExtraDebuffTooltip_Enemy[item.type])
+            {
+                if (!buffIdsInTooltip.ContainsKey(buffID))
+                    buffIdsInTooltip.Add(buffID, 0);
+                else if (buffIdsInTooltip[buffID] == 1)
+                        buffIdsInTooltip[buffID] = 2;
+            }
+            foreach (var buffID in CalamityItemSets.ExtraDebuffTooltip_Player[item.type])
+            {
+                if (!buffIdsInTooltip.ContainsKey(buffID))
+                    buffIdsInTooltip.Add(buffID, 1);
+                else if (buffIdsInTooltip[buffID] == 0)
+                        buffIdsInTooltip[buffID] = 2;
+
+            }
+
             if (buffIdsInTooltip.Count > 0)
             {
                 bool showTheTip = false;
@@ -376,8 +394,9 @@ namespace CalamityMod.Items
 
                 if (showTheTip)
                 {
-                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
-                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}", str))));
+                    var bind = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"];
+                    string str = bind.Count == 0 ? GetTextValue("Misc.HotkeyNotBound") : bind.First().ToString();
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", GetTextValue("Misc.AltExpand").Replace("{0}", str))));
                     tooltips[lastTooltipIndex].OverrideColor = new Color(170, 170, 170);
                 }
                 else if (foundDebuff)
@@ -397,110 +416,6 @@ namespace CalamityMod.Items
         {
             if (item.type == ModContent.ItemType<TheCommunity>())
                 nameLine.OverrideColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
-
-            // Developer items
-            if (item.type == ModContent.ItemType<Sylvestaff>())
-                nameLine.OverrideColor = new Color(249, 197, 255);
-            if (item.type == ModContent.ItemType<StaffofBlushie>())
-                nameLine.OverrideColor = new Color(0, 0, 255);
-            if (item.type == ModContent.ItemType<TheDanceofLight>())
-                nameLine.OverrideColor = TheDanceofLight.GetSyncedLightColor();
-            if (item.type == ModContent.ItemType<NanoblackReaper>())
-                nameLine.OverrideColor = new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
-            if (item.type == ModContent.ItemType<ShatteredCommunity>())
-                nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
-            if (item.type == ModContent.ItemType<Ozzathoth>())
-                nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
-            if (item.type == ModContent.ItemType<ProfanedSoulCrystal>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25), 6f); //alternates between emerald green and amber (BanditHueh)
-            if (item.type == ModContent.ItemType<TemporalUmbrella>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(210, 0, 255), new Color(255, 248, 24), 4f);
-            if (item.type == ModContent.ItemType<Endogenesis>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(131, 239, 255), new Color(36, 55, 230), 4f);
-            if (item.type == ModContent.ItemType<DraconicDestruction>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 69, 0), new Color(139, 0, 0), 4f);
-            if (item.type == ModContent.ItemType<ScarletDevil>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(191, 45, 71), new Color(185, 187, 253), 4f);
-            if (item.type == ModContent.ItemType<RedSun>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(204, 86, 80), new Color(237, 69, 141), 4f);
-            if (item.type == ModContent.ItemType<CrystylCrusher>())
-                nameLine.OverrideColor = new Color(129, 29, 149);
-            if (item.type == ModContent.ItemType<SomaPrime>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 255, 255), new Color(0xD1, 0xCC, 0x6F), 4f);
-            if (item.type == ModContent.ItemType<Svantechnical>())
-                nameLine.OverrideColor = new Color(220, 20, 60);
-            if (item.type == ModContent.ItemType<Contagion>())
-                nameLine.OverrideColor = new Color(207, 17, 117);
-            if (item.type == ModContent.ItemType<TriactisTruePaladinianMageHammerofMight>())
-                nameLine.OverrideColor = new Color(227, 226, 180);
-            if (item.type == ModContent.ItemType<IllustriousKnives>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(154, 255, 151), new Color(228, 151, 255), 4f);
-            if (item.type == ModContent.ItemType<DemonshadeHelm>() || item.type == ModContent.ItemType<DemonshadeBreastplate>() || item.type == ModContent.ItemType<DemonshadeGreaves>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 132, 22), new Color(221, 85, 7), 4f);
-            if (item.type == ModContent.ItemType<AngelicAlliance>())
-            {
-                nameLine.OverrideColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f % 1f, new Color[]
-                {
-                    new Color(255, 196, 55),
-                    new Color(255, 231, 107),
-                    new Color(255, 254, 243)
-                });
-            }
-
-            // TODO -- for cleanliness, ALL color math should either be a one-line color swap or inside the item's own file
-            // The items that currently violate this are all below:
-            // Eternity, Flamsteed Ring, Earth
-            if (item.type == ModContent.ItemType<Eternity>())
-            {
-                List<Color> colorSet = new List<Color>()
-                    {
-                        new Color(188, 192, 193), // white
-                        new Color(157, 100, 183), // purple
-                        new Color(249, 166, 77), // honey-ish orange
-                        new Color(255, 105, 234), // pink
-                        new Color(67, 204, 219), // sky blue
-                        new Color(249, 245, 99), // bright yellow
-                        new Color(236, 168, 247), // purplish pink
-                    };
-                if (nameLine != null)
-                {
-                    int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 2 % colorSet.Count);
-                    Color currentColor = colorSet[colorIndex];
-                    Color nextColor = colorSet[(colorIndex + 1) % colorSet.Count];
-                    nameLine.OverrideColor = Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 2f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
-                }
-            }
-            if (item.type == ModContent.ItemType<FlamsteedRing>())
-            {
-                if (Main.GlobalTimeWrappedHourly % 1f < 0.6f)
-                {
-                    nameLine.OverrideColor = new Color(89, 229, 255);
-                }
-                else if (Main.GlobalTimeWrappedHourly % 1f < 0.8f)
-                {
-                    nameLine.OverrideColor = Color.Lerp(new Color(89, 229, 255), Color.White, (Main.GlobalTimeWrappedHourly % 1f - 0.6f) / 0.2f);
-                }
-                else
-                {
-                    nameLine.OverrideColor = Color.Lerp(Color.White, new Color(89, 229, 255), (Main.GlobalTimeWrappedHourly % 1f - 0.8f) / 0.2f);
-                }
-            }
-            if (item.type == ModContent.ItemType<Earth>())
-            {
-                List<Color> earthColors = new List<Color>()
-                {
-                    Color.OrangeRed,
-                    Color.MediumTurquoise,
-                    Color.LimeGreen
-                };
-                if (nameLine != null)
-                {
-                    int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 2 % earthColors.Count);
-                    Color currentColor = earthColors[colorIndex];
-                    Color nextColor = earthColors[(colorIndex + 1) % earthColors.Count];
-                    nameLine.OverrideColor = Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 2f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
-                }
-            }
         }
         #endregion
 
@@ -660,7 +575,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.DivingHelmet)
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
             if (item.type == ItemID.ArcticDivingGear)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1") + "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
+                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel") + "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
 
             // Great breath boost
             if (item.type == ItemID.GillsPotion)
@@ -1464,23 +1379,23 @@ namespace CalamityMod.Items
         /// <remarks>
         /// Currently, the dictionary functions as follows: <br />
         /// 1-5   insanely fast <br />
-        /// 6-9   very fast <br />
-        /// 10-14 fast <br />
-        /// 15-22 average <br />
-        /// 23-29 slow <br />
-        /// 30-37 very slow <br />
-        /// 38-45 extremely slow <br />
-        /// 46+   snail
+        /// 6-10  very fast <br />
+        /// 11-17 fast <br />
+        /// 18-24 average <br />
+        /// 25-30 slow <br />
+        /// 31-43 very slow <br />
+        /// 44-60 extremely slow <br />
+        /// 61+   snail
         /// </remarks>
         private static readonly Dictionary<int, LocalizedText> SpeedTooltips = new Dictionary<int, LocalizedText>()
         {
             { 5, Language.GetText("LegacyTooltip.6") },
-            { 9, Language.GetText("LegacyTooltip.7") },
-            { 14, Language.GetText("LegacyTooltip.8") },
-            { 22, Language.GetText("LegacyTooltip.9") },
-            { 29, Language.GetText("LegacyTooltip.10") },
-            { 37, Language.GetText("LegacyTooltip.11") },
-            { 45, Language.GetText("LegacyTooltip.12") },
+            { 10, Language.GetText("LegacyTooltip.7") },
+            { 17, Language.GetText("LegacyTooltip.8") },
+            { 24, Language.GetText("LegacyTooltip.9") },
+            { 30, Language.GetText("LegacyTooltip.10") },
+            { 43, Language.GetText("LegacyTooltip.11") },
+            { 60, Language.GetText("LegacyTooltip.12") },
             // TODO: Using int.MaxValue here may be considered kind of strange - only alternatives I can think of require hardcoding.
             { int.MaxValue, Language.GetText("LegacyTooltip.13") }
         };
@@ -1759,14 +1674,6 @@ namespace CalamityMod.Items
 
                 return false;
             }
-
-            // Rainbow effect originally made for Orderbringer because it used to have a special rarity
-            // But why did it have one in the first place??
-            // Might be used for Miracle stuff later or something idk
-            /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
-            {
-                
-            }*/
             return true;
         }
         #endregion

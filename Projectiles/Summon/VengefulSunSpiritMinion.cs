@@ -108,9 +108,9 @@ namespace CalamityMod.Projectiles.Summon
                 float shootSpeed = 15f;
                 Vector2 source = Projectile.Center;
                 var velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, target, shootSpeed, 2);
-                Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<VengefulSunBeam>(), (int)(Projectile.damage * (0.75f + Projectile.minionSlots * 0.25f)), Projectile.knockBack, Projectile.owner, ai1: (Projectile.minionSlots - 1) / 6f);
+                Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<VengefulSunBeam>(), (int)(Projectile.damage * (0.8f + Projectile.minionSlots * 0.2f)), Projectile.knockBack, Projectile.owner, ai1: (Projectile.minionSlots - 1) / 6f);
                 beam.DamageType = DamageClass.Summon;
-                Projectile.ai[1] += 60f / (0.75f + Projectile.minionSlots * 0.25f);
+                Projectile.ai[1] += 60f / (0.8f + Projectile.minionSlots * 0.2f);
             }
         }
         public override void SendExtraAI(BinaryWriter writer)

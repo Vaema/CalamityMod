@@ -1,5 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,6 +14,10 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int BrimstoneFlamesDmg => CalamityUtils.ScaleWithDifficulty(15);
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -25,8 +31,6 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.voidOfCalamity = true;
             player.GetDamage<GenericDamageClass>() += 0.12f;
             if (player.whoAmI == Main.myPlayer)
             {

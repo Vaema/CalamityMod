@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon.Umbrella;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,7 +17,11 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.BetsysCurse, BuffID.Ichor];
+        }
 
         public override void SetDefaults()
         {
@@ -60,5 +65,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => CalamityUtils.ColorSwap(new Color(210, 0, 255), new Color(255, 248, 24), 4f);
     }
 }

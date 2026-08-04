@@ -7,7 +7,7 @@ namespace CalamityMod.Buffs.Potions
 {
     public class Soaring : ModBuff
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(SoaringPotion.FlightBoost.ToPercent());
+        public override LocalizedText Description => base.Description.WithFormatArgs(SoaringPotion.FlightTimeBoost.ToPercent());
 
         public override void SetStaticDefaults()
         {

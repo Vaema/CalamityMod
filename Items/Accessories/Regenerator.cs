@@ -32,6 +32,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.regenerator = true;
             player.longInvince = true; // Gives better iframes because god help you if you end up getting hit twice
+            player.GetDamage<GenericDamageClass>() += player.Calamity().regeneratorDamage;
         }
 
         public override void ModifyTooltips(List<TooltipLine> list)

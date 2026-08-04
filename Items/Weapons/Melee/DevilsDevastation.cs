@@ -1,9 +1,11 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -18,6 +20,14 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public int throwCount = 0;
+
+        public static int BigSlashDamageMult = 10;
+        public static float MarkDamageMult = 1.5f; // Multiplied on top of the big slash mult
+
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<DemonicFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 118;
@@ -75,7 +85,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<DevilsDevastationHoldout>(), Item.damage * 15, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 30x damage.
+                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<DevilsDevastationHoldout>(), Item.damage * BigSlashDamageMult, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 30x damage.
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

@@ -59,8 +59,8 @@ namespace CalamityMod.Items.DraedonMisc
             CreateRecipe().
                 AddIngredient<MysteriousCircuitry>(10).
                 AddIngredient<DubiousPlating>(10).
-                AddIngredient<UelibloomBar>(5).
-                AddIngredient(ItemID.LunarBar, 5).
+                AddIngredient<UelibloomBar>(10).
+                AddIngredient(ItemID.LunarBar, 10).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();

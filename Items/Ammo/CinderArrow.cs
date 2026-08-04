@@ -1,5 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,6 +14,7 @@ namespace CalamityMod.Items.Ammo
         public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
             Item.ResearchUnlockCount = 99;
         }
 
@@ -19,7 +22,7 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 22;
             Item.height = 36;
-            Item.damage = 12;
+            Item.damage = 17;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;

@@ -32,6 +32,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient(ItemID.Leather, 5).
+                AddIngredient(ItemID.FlinxFur, 5).
                 AddIngredient(ItemID.Obsidian, 20).
                 AddTile(TileID.Anvils).
                 Register();

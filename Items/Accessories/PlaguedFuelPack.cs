@@ -17,12 +17,9 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        // TODO -- Check if the slot contains the other rogue jetpack, in which case, let the player swap accs
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().hasJetpack;
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().hasJetpack = true;
+            player.Calamity().rogueDashItem = Item;
             player.GetDamage<ThrowingDamageClass>() += 0.08f;
             player.Calamity().rogueVelocity += 0.15f;
             player.Calamity().plaguedFuelPack = true;
@@ -30,6 +27,6 @@ namespace CalamityMod.Items.Accessories
             player.Calamity().stealthGenMoving += 0.1f;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.BoosterDashHotKey);
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
     }
 }

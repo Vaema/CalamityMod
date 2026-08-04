@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,6 +15,10 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         private const float Spread = 0.025f;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 64;

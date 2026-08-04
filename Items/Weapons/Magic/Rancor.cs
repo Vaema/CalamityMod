@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 66;
             Item.height = 82;
-            Item.damage = 290;
+            Item.damage = 333;
             Item.DamageType = DamageClass.Magic;
             Item.noUseGraphic = true;
             Item.channel = true;
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<RancorHoldout>();
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<CalamityRed>();
         }
 
         public override void SetStaticDefaults()

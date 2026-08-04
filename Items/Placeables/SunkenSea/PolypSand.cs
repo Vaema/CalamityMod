@@ -10,6 +10,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VolcanicSand>();
 
             ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<PolypSandBallGun>(), 0);
         }

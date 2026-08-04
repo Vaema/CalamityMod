@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,13 +13,14 @@ namespace CalamityMod.Items.Ammo
         public new string LocalizationCategory => "Items.Ammo";
         public override void SetStaticDefaults()
         {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn2, BuffID.Frozen];
             Item.ResearchUnlockCount = 99;
         }
         public override void SetDefaults()
         {
             Item.width = 14;
             Item.height = 20;
-            Item.damage = 12;
+            Item.damage = 9;
             Item.DamageType = DamageClass.Ranged;
             Item.consumable = true;
             Item.knockBack = 2f;

@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,6 +14,10 @@ namespace CalamityMod.Items.Weapons.Magic
     public class VitriolicViper : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<SulphuricPoisoning>(), ModContent.BuffType<Irradiated>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 60;

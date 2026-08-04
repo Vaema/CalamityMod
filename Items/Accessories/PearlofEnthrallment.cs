@@ -1,6 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -13,6 +15,10 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         public static int ElementalDamage = 65;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WindChilled>(), BuffID.Confused];
+        }
 
         public override void SetDefaults()
         {
@@ -23,20 +29,12 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.elementalHeart)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().allElementals.HasValue;
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.waterElemental = true;
+            modPlayer.waterElemental = !hideVisual;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);

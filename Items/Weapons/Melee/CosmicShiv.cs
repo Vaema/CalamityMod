@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,7 +12,10 @@ namespace CalamityMod.Items.Weapons.Melee
     public class CosmicShiv : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<GodSlayerInferno>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 44;
@@ -37,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<Lightspeed>().
-                AddIngredient<CosmiliteBar>(8).
+                AddIngredient<CosmiliteBar>(10).
                 AddTile<CosmicAnvil>().
                 Register();
         }

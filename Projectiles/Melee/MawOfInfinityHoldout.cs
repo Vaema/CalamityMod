@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Melee
                 jawScaleMult = 1-CooldownCompletion;
             jawScaleMult = MathF.Pow(jawScaleMult, 3);
             float rotation = Projectile.rotation - (Projectile.spriteDirection == -1 ? MathHelper.PiOver2: 0);
-            Vector2 DrawPos = Projectile.Center + Projectile.scale * new Vector2(50,10 * Projectile.spriteDirection).RotatedBy(Projectile.rotation - MathHelper.PiOver2 + (Projectile.spriteDirection == -1 ? -MathHelper.PiOver4 : MathHelper.PiOver4));
+            Vector2 DrawPos = Projectile.Center + Projectile.scale * new Vector2(50,-10 * Projectile.spriteDirection).RotatedBy(Projectile.rotation - MathHelper.PiOver2 + (Projectile.spriteDirection == -1 ? -MathHelper.PiOver4 : MathHelper.PiOver4));
             
             Main.spriteBatch.SetBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, DrawPos - Main.screenPosition, tex.Frame(2,1,0,0), modplayer.swingNum == 1 ? Color.Fuchsia : Color.Cyan, rotation + MathHelper.PiOver4, new Vector2(tex.Width * 0.25f,tex.Height * 0.5f), Projectile.scale * jawScaleMult, Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);

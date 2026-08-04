@@ -85,7 +85,6 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
 
-            // Main.dust[dust].velocity /= 2f;
             Vector2 current = Projectile.Center;
             if (target)
             {
@@ -115,33 +114,6 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             Projectile.position = current;
-
-            /*int tx = (int)(projectile.position.X / 16f);
-            int ty = (int)(projectile.position.Y / 16f);
-
-            if (tx < 0)
-            {
-                tx = 0;
-            }
-            if (tx > Main.maxTilesX)
-            {
-                tx = Main.maxTilesX;
-            }
-            if (ty < 0)
-            {
-                ty = 0;
-            }
-            if (ty > Main.maxTilesY)
-            {
-                ty = Main.maxTilesY;
-            }
-
-            if (Main.tile[tx, ty] != null && Main.tileSolid[(int)Main.tile[tx,ty].type] && Main.tile[tx, ty].wall == 0)
-            {
-                projectile.timeLeft -= 12;
-            }*/
-
-
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {

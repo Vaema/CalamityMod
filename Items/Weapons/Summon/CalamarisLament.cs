@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -35,13 +37,14 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HadopelagicPressure>()];
         }
 
         public override void SetDefaults()
         {
             Item.width = 88;
             Item.height = 108;
-            Item.damage = 110;
+            Item.damage = 120;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 24;

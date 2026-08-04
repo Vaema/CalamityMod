@@ -15,11 +15,6 @@ namespace CalamityMod.Walls.UnsafeWalls
         public static Asset<Texture2D> leafTexture = null;
 
         public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
-        /*public override bool Autoload(ref string name, ref string texture)
-        {
-            mod.AddWall("AstralGrassWallUnsafe", this, texture);
-            return base.Autoload(ref name, ref texture);
-        }*/
 
         public override void SetStaticDefaults()
         {

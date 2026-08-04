@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -13,11 +14,15 @@ namespace CalamityMod.Items.Weapons.Melee
     public class SoulHarvester : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.CursedInferno, ModContent.BuffType<Plague>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 64;
-            Item.damage = 85;
+            Item.damage = 77;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 22;
             Item.useStyle = ItemUseStyleID.Swing;

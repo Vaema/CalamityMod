@@ -53,33 +53,10 @@ namespace CalamityMod.Systems
         #region ModifyWorldGenTasks
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
-            // Better Underworld (similar to Don't Dig Up seed but with some adjustments)
-            int underworldIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Underworld"));
-            if (underworldIndex != -1)
-            {
-                tasks[underworldIndex] = new PassLegacy("Underworld", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterUnderworld").Value;
-                    CustomUnderworld.NewUnderworld();
-                });
-            }
-
             // Better Underworld structures after the world has been smoothed
             int underworldStructuresIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Smooth World"));
             if (underworldStructuresIndex != -1)
             {
-                tasks.Insert(underworldStructuresIndex + 1, new PassLegacy("Underworld Structures", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldStructures").Value;
-                    CustomUnderworld.NewUnderworldStructures();
-
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldTreesAndGrass").Value;
-                    CustomUnderworld.AshTreesAndGrass();
-
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldGeyserTraps").Value;
-                    CustomUnderworld.PlaceGeyserTraps();
-                }));
-
                 // Generate the Shimmer Shrine directly above the center of the underground Shimmer lake
                 tasks.Insert(underworldStructuresIndex + 2, new PassLegacy("Shimmer Shrine", (progress, config) =>
                 {
@@ -228,38 +205,16 @@ namespace CalamityMod.Systems
                 }));
             }
 
-            // Sunken Sea
-            int sunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Cactus, Palm Trees, & Coral"));
-            if (sunkenSeaIndex != -1)
+            // Sunken sea
+            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Settle Liquids Again"));
+            if (SunkenSeaIndex != -1)
             {
-                tasks.Insert(sunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
+                tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
                 {
-                    int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
-                    int sunkenSeaY = Main.maxTilesY / 2;
-
-                    // place each piece of the sunken sea based on the above positons
-
-                    // messages intentionally in the "incorrect" order for the player's experience.
-                    // they'll see the OG message first, then subsequent biomes are placed in vertical order.
-                    // it breaks up the 3 minute gen time and makes it more interesting for those who dont tab out while worldgen runs,
-                    // rather than keeping the player in the dark about what's happening.
-                    // it doesn't have to make sense, just be cool for the players :) -ena
-                    //SunkenSea.PlaceBasaltGullyBorderBlend(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
-                    SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.TimelessShores").Value;
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX, sunkenSeaY + 110);
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.RadiantReefs").Value;
-                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.PolypForest").Value;
-                    SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
-                    SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 630);
-                    SunkenSea.PlaceGleamingBurrowsGeodes(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.GleamingBurrows").Value;
-                    SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BasaltGully").Value;
-                    //SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
-                    SunkenSea.PlaceSunkenSeaAmbience();
+
+                    Point ssBottomLeft = new Point(GenVars.UndergroundDesertLocation.Left, Main.maxTilesY - 400);
+                    SunkenSea.Place(ssBottomLeft);
                 }));
             }
 
@@ -416,6 +371,12 @@ namespace CalamityMod.Systems
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SulphurSea2").Value;
                     SulphurousSea.SulphurSeaGenerationAfterAbyss();
+                }));
+
+                tasks.Insert(++currentFinalIndex, new PassLegacy("Iron Ball", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.IronBall").Value;
+                    MiscWorldgenRoutines.GenerateIronBall();
                 }));
 
                 // No Traps/GFB Auric Land Mines

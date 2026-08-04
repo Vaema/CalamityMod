@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Tools
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.sellPrice(gold: 4, silver: 35);
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ScoriaBar>(9).
+                AddIngredient<ScoriaBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Terraria;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -45,13 +46,18 @@ namespace CalamityMod.Items.Fishing
         {
             int gemMin = 1;
             int gemMax = 3;
-            itemLoot.Add(ItemID.Amethyst, 2, gemMin, gemMax);
-            itemLoot.Add(ItemID.Topaz, 2, gemMin, gemMax);
-            itemLoot.Add(ItemID.Sapphire, 4, gemMin, gemMax);
-            itemLoot.Add(ItemID.Emerald, 4, gemMin, gemMax);
-            itemLoot.Add(ItemID.Ruby, 8, gemMin, gemMax);
-            itemLoot.Add(ItemID.Diamond, 10, gemMin, gemMax);
-            itemLoot.Add(ItemID.Amber, 8, gemMin, gemMax);
+
+            IItemDropRule[] gems = [
+                new CommonDrop(ItemID.Amethyst, 2, gemMin, gemMax),
+                new CommonDrop(ItemID.Topaz, 2, gemMin, gemMax),
+                new CommonDrop(ItemID.Sapphire, 4, gemMin, gemMax),
+                new CommonDrop(ItemID.Emerald, 4, gemMin, gemMax),
+                new CommonDrop(ItemID.Ruby, 8, gemMin, gemMax),
+                new CommonDrop(ItemID.Diamond, 8, gemMin, gemMax),
+                new CommonDrop(ItemID.Amber, 8, gemMin, gemMax),
+            ];
+
+            itemLoot.Add(new AlwaysAtleastOneSuccessDropRule(gems));
 
             // Add Thorium gems if Thorium is loaded.
             Mod thorium = ExternalMods.thorium;

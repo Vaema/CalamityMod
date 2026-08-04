@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -21,11 +22,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public float Combo = 0f;
         public float Charge = 0f;
-
-        // Frame window for double right click to snip.
-        // The right click item activation takes 3 frames, so the frame window is frame 3 to frame 11.
-        public static int DoubleRightClickFrames = 11;
-        private int rmbFrames = 0;
 
         public static float NeedleDamageMultiplier = 0.7f; //Damage on the non-homing needle projectile
         public static float MaxThrowReach = 760;
@@ -68,21 +64,25 @@ namespace CalamityMod.Items.Weapons.Melee
             var blastTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[BLAST]") && x.Mod == "Terraria");
             if (blastTooltip != null)
             {
-                blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
+                var key = Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode);
+                if (key.Count > 0)
+                    blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfoKeybind"));
+                else
+                    blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
                 blastTooltip.OverrideColor = Color.Lerp(Color.HotPink, Color.Crimson, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.625f);
             }
+            tooltips.IntegrateDynamicHotkey(Item);
         }
 
         public override void SetDefaults()
         {
             Item.width = Item.height = 136;
-            Item.damage = 1800;
+            Item.damage = 1700;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.crit = 15;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 15;
-            Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 9.5f;
@@ -100,14 +100,30 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             player.Calamity().mouseWorldListener = true;
 
-            if (rmbFrames > 0)
-                --rmbFrames;
-
             if (CanUseItem(player) && Combo != 4)
                 Item.channel = false;
 
             if (Combo == 4)
                 Item.channel = true;
+
+            if (Main.myPlayer == player.whoAmI && Item.CurrentlyPressingKeybind() && Charge > 0)
+            {
+                Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
+
+                if (blast == null)
+                {
+                    float speed = Item.shootSpeed;
+                    int dmg = (int)player.GetTotalDamage(Item.DamageType).ApplyTo(Item.damage);
+                    Vector2 pos = player.Center;
+                    int shoot = Item.shoot;
+                    float kb = Item.knockBack;
+                    var velocity = player.DirectionTo(Main.MouseWorld) * Item.shootSpeed;
+                    PlayerLoader.ModifyShootStats(player, Item, ref pos, ref velocity, ref shoot, ref dmg, ref kb);
+                    float angle = velocity.ToRotation();
+                    Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(dmg * BlastDamageMultiplier), 0, player.whoAmI, Charge);
+                    Charge = 0;
+                }
+            }
         }
 
         public override bool CanUseItem(Player player)
@@ -122,15 +138,16 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
-                // If it has been less than N frames since the last alt function use, this is a double right click.
-                bool rightMouseDoubleClick = rmbFrames > 0;
 
                 // Check if a parry holdout or blast is already present.
                 Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
                 Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
 
-                bool canExecuteBlast = rightMouseDoubleClick && Charge > 0 && blast is null;
+                bool canExecuteBlast = Charge > 0 && blast is null;
                 bool canExecuteParry = parrier is null && !canExecuteBlast;
+                //Disable blast usage if hotkey is bound
+                if (Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count > 0)
+                    canExecuteBlast = false;
 
                 // The blast is checked first, so that it overrides the first right click triggering a parry. Blasts delete any active parry holdouts on use.
                 if (canExecuteBlast)
@@ -139,13 +156,6 @@ namespace CalamityMod.Items.Weapons.Melee
                     float angle = velocity.ToRotation();
                     Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
                     Charge = 0;
-
-                    // If the parry holdout has existed for very few frames, just delete it.
-                    if (parrier is not null && parrier.timeLeft > ArkoftheCosmosParryHoldout.MaxTime - DoubleRightClickFrames)
-                    {
-                        parrier.active = false;
-                        parrier.netUpdate = true;
-                    }
                 }
 
                 // If the blast cannot be executed, then the parry is executed, assuming no existing holdout is present.
@@ -162,9 +172,6 @@ namespace CalamityMod.Items.Weapons.Melee
                     if (!anyArkParryExists)
                         Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
                 }
-
-                // Regardless of what transpires from the right click, set the double right click frames appropriately.
-                rmbFrames = DoubleRightClickFrames;
                 return false;
             }
 

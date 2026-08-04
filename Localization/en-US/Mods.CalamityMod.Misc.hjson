@@ -128,3 +128,4 @@ GFBRougeUppercase: Rouge
 GFBRogueLowercase: rogue
 GFBRougeLowercase: rouge
 HotkeyNotBound: "[None]"
+HotkeyNotEquipped: an Accessory Ability hotkey

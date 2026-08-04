@@ -1,5 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,21 +16,21 @@ namespace CalamityMod.Items.Weapons.Melee
 
         internal const float ShootSpeed = 2f;
 
-        internal const float ProjectileDamageMultiplier = 0.8f;
-
-        internal const float TrueMeleeSlashProjectileDamageMultiplier = 0.8f;
-
-        internal const float SlashProjectileDamageMultiplier = 0.4125f; // Makes them do 33% damage since main projectile does 80% damage
+        internal const float SlashProjectileDamageMultiplier = 0.33f;
 
         internal const int SlashProjectileLimit = 4;
 
         internal const int SlashCreationRate = 18;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Shadowflame>(), BuffID.Frostburn2];
+        }
 
         public override void SetDefaults()
         {
             Item.width = 92;
             Item.height = 100;
-            Item.damage = 75;
+            Item.damage = 60;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -53,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Melee
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             velocity = (Main.MouseWorld - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
             type = Main.rand.NextBool() ? type : ModContent.ProjectileType<LightBeam>();
-            Projectile.NewProjectile(source, position, velocity, type, (int)(damage * ProjectileDamageMultiplier), knockback * ProjectileDamageMultiplier, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
         }
 

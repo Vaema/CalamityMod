@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<CalamityRed>();
             Item.Calamity().devItem = true;
 
             Item.shoot = ModContent.ProjectileType<GaelSkull>();

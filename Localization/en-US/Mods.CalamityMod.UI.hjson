@@ -129,6 +129,7 @@ Cooldowns: {
 	MasterChefShieldDurability: MJOLNIR Shield Level
 	MasterChefShieldRecharge: MJOLNIR Shield Recharge
 	NebulousCore: Nebulous Core Cooldown
+	OblivionCooldown: Oblivion Cooldown
 	OldDukeScalesFatigue: Stamina
 	OmegaBlueActive: Abyssal Madness
 	OmegaBlueCooldown: Abyssal Madness Cooldown
@@ -664,6 +665,7 @@ Abyss: Disposing of Silva's remains
 SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
 AuricLandMines: Setting god killing traps
+IronBall: Adding a bit more iron
 // Hold Shift tooltip default
 HoldShiftTooltipExtensionIndicator: Hold Shift for more
 HoldShiftTooltipReplacementIndicator: Hold Shift for details

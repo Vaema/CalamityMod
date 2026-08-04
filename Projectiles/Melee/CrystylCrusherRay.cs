@@ -144,9 +144,7 @@ namespace CalamityMod.Projectiles.Melee
             DestroyTiles();
         }
 
-        /*
-         * Sets the end of the laser position based on where it collides with something
-         */
+        // Sets the end of the laser position based on where it collides with something
         private void SetLaserPosition(Player player)
         {
             Distance = MathHelper.Max(player.Distance(player.ClampedMouseWorld()) - 20f, MOVE_DISTANCE + 5f);
@@ -228,9 +226,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool ShouldUpdatePosition() => false;
 
-        /*
-         * Update CutTiles so the laser will cut tiles (like grass)
-         */
+        // Update CutTiles so the laser will cut tiles (like grass)
         public override bool? CanCutTiles() => IsAtMaxCharge ? null : false;
         public override void CutTiles()
         {

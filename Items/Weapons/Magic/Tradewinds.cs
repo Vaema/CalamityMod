@@ -30,8 +30,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(6).
-                AddIngredient(ItemID.SunplateBlock, 5).
+                AddIngredient<AerialiteBar>(10).
                 AddTile(TileID.Bookcases).
                 Register();
         }

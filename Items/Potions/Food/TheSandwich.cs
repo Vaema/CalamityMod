@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Potions.Food
 		public override void SetDefaults()
 		{
 			Item.DefaultToFood(70, 48, ModContent.BuffType<Malnourished>(), CalamityUtils.MinutesToFrames(10));
-			Item.value = Item.sellPrice(silver: 20);
+			Item.value = Item.buyPrice(silver: 55); // Same price as Pad Thai; Sold by Shady Salesman
 			Item.rare = ItemRarityID.Blue;
 		}
         public override void UseAnimation(Player player)

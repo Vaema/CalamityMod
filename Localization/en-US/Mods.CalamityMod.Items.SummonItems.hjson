@@ -226,11 +226,11 @@ ProfanedCore: {
 	DisplayName: Profaned Core
 	Tooltip:
 		'''
-		Summons Providence when used in the Hallow or Underworld
-		Use again while Providence is at high health to unleash Her perfect fury
+		Summons Providence when used in the Hallow or Underworld[ENRAGE]
 		{$Common.NotConsumable}
 		'The heart of Her Guardians, Her wicked wrath shall burn upon whoever now wields it.'
 		'''
+	EnrageText: "[c/64c8fa:The nature of this world will unleash Her perfect fury, beware!]"
 }
 
 ProfanedShard: {
@@ -292,6 +292,11 @@ Terminus: {
 TheHousingContract: {
 	DisplayName: The Housing Contract
 	Tooltip: Use to adopt a piggy for your town
+	SalesPitch:
+		'''
+		'Have you ever wanted to take care of a piggy? As part of our campaign to stop piggy abuse, you can get one here and now!'
+		'Just sign here and we'll deliver you one posthaste!'
+		'''
 }
 
 YharonEgg: {

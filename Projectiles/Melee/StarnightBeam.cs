@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 3;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 120;
             AIType = ProjectileID.LightBeam;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 10;
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 595)
+            if (Projectile.timeLeft > 115)
                 return false;
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);

@@ -1,6 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -20,6 +22,7 @@ namespace CalamityMod.Items.Accessories
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 8));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<WindChilled>(), BuffID.Confused];
         }
 
         public override void SetDefaults()
@@ -34,7 +37,7 @@ namespace CalamityMod.Items.Accessories
         public override bool CanEquipAccessory(Player player, int slot, bool modded)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.brimElemental || modPlayer.sandElemental || modPlayer.oasisElemental || modPlayer.cloudElemental || modPlayer.waterElemental)
+            if (modPlayer.brimElemental.HasValue || modPlayer.sandElemental.HasValue || modPlayer.oasisElemental.HasValue || modPlayer.cloudElemental.HasValue || modPlayer.waterElemental.HasValue)
             {
                 return false;
             }
@@ -47,8 +50,7 @@ namespace CalamityMod.Items.Accessories
                 Lighting.AddLight((int)player.Center.X / 16, (int)player.Center.Y / 16, Main.DiscoR / 255f, Main.DiscoG / 255f, Main.DiscoB / 255f);
 
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.allElementals = true;
-            modPlayer.elementalHeart = true;
+            modPlayer.allElementals = !hideVisual;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
             int siren = ProjectileType<WaterElementalMinion>();
@@ -112,7 +114,6 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.allElementalsVanity = true;
-            // modPlayer.elementalHeart = true;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
             int siren = ProjectileType<WaterElementalMinion>();

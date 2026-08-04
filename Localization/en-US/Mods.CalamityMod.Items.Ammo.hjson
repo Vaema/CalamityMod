@@ -12,7 +12,7 @@ BloodfireArrow: {
 	Tooltip:
 		'''
 		High-velocity arrows with a blood soaked tip
-		Firing these arrows will drain your health and boost the arrow damage by 30%
+		Firing these arrows will drain your health and boost the arrow damage by 20%
 		Accelerates your natural life regen and heals you on hit
 		'''
 }
@@ -59,7 +59,11 @@ DryadsTear: {
 
 ElysianArrow: {
 	DisplayName: Elysian Arrow
-	Tooltip: On impact, summons purifying light from above and below at the nearest enemy
+	Tooltip:
+		'''
+		On impact, summons purifying light from above and below at the nearest enemy
+		Purifying light ignores 15 points of enemy Defense
+		'''
 }
 
 FlashRound: {
@@ -85,7 +89,7 @@ HailstormBullet: {
 	Tooltip:
 		'''
 		Once shot, bullets rapidly decelerate
-		Critical hits cause a flash freeze, dealing additional damage and freezing non-boss enemies
+		Critical hits cause a flash freeze, dealing additional damage based on your crit chance and freezing enemies
 		'''
 }
 
@@ -102,7 +106,7 @@ HolyFireBullet: {
 	DisplayName: Holy Fire Bullet
 	Tooltip:
 		'''
-		Profaned bullets that deal 1.15x damage and explode on impact, inflicting [cbuff:CalamityMod/HolyFlames]
+		Profaned bullets that deal 1.15x damage and explode on impact
 		The explosion is larger and the bullet deals increased damage if impact occurs immediately after firing
 		The extra damage bonus caps at 1.15x
 		'''
@@ -171,7 +175,7 @@ VanquisherArrow: {
 	DisplayName: Vanquisher Arrow
 	Tooltip:
 		'''
-		Pierces through tiles and homes in on enemies, inflicting [cbuff:CalamityMod/GodSlayerInferno]
+		Pierces through tiles and homes in on enemies
 		Tears a rift in space on enemy hits
 		'''
 }

@@ -24,6 +24,9 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.appliesImmunityTimeOnSingleHits = true;
         }
 
         public override void AI()
@@ -171,8 +174,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             Projectile.maxPenetrate = -1;
             Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int j = 0; j < 20; j++)

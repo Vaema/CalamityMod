@@ -96,6 +96,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.ai[0]--;
             }
         }
+        public override bool? CanDamage() => false;
 
         public override void OnKill(int timeLeft)
         {

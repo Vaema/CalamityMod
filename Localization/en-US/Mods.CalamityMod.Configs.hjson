@@ -6,7 +6,7 @@ CalamityClientConfig: {
 		Graphics: Graphics Changes
 		UI: UI Changes
 		MeterPositions: Meter Positions
-		MusicToggles: Music Toggles
+		AudioToggles: Audio Toggles
 	}
 
 	AbyssLayer3Alt: {
@@ -38,6 +38,15 @@ CalamityClientConfig: {
 			'''
 			Enables rendering afterimages for Calamity NPCs, projectiles, etc.
 			Disable to improve performance.
+			'''
+	}
+
+	BoCSpriteChange: {
+		Label: "[i:BrainOfConfusion] Remove Potentially Disturbing Imagery"
+		Tooltip:
+			'''
+			Replaces some boss sprites to remove potentially upsetting imagery that could trigger phobias.
+			Highly recommended if you are uncomfortable with body horror or have trypophobia.
 			'''
 	}
 
@@ -98,15 +107,6 @@ CalamityClientConfig: {
 			'''
 			Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
 			Enable this if the screen-flipping is distracting or induces motion sickness.
-			'''
-	}
-
-	EnableVanillaTextureEdits: {
-		Label: "[i:Paintbrush] Enable Vanilla Texture Edits"
-		Tooltip:
-			'''
-			Enables slight edits to vanilla boss textures to improve attack telegraphs.
-			Disable this for compatibility with texture packs.
 			'''
 	}
 
@@ -187,6 +187,15 @@ CalamityClientConfig: {
 			'''
 	}
 
+	MisophoniaSupport: {
+		Label: "[i:Megaphone] Disable Potentially Triggering Audio"
+		Tooltip:
+			'''
+			Disables or alters multiple repetitive and potentially distressing sound effects.
+			Highly recommended for those with misophonia.
+			'''
+	}
+
 	ParticleLimit: {
 		Label: "[i:FragmentStardust] Max Particle Limit"
 		Tooltip:
@@ -205,15 +214,6 @@ CalamityClientConfig: {
 			Reduces or disables the brightness and/or flashiness of certain visual effects.
 			Also disables all screenshake effects.
 			Highly recommended if you are photosensitive.
-			'''
-	}
-
-	BoCSpriteChange: {
-		Label: "[i:BrainOfConfusion] Remove Potentially Disturbing Imagery"
-		Tooltip:
-			'''
-			Replaces some boss sprites to remove potentially upsetting imagery that could trigger phobias.
-			Highly recommended if you are uncomfortable with body horror or have trypophobia.
 			'''
 	}
 

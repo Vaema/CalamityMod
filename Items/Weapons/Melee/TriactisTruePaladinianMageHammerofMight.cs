@@ -2,6 +2,7 @@
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -44,5 +45,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => new Color(227, 226, 180);
     }
 }

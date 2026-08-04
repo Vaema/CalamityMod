@@ -9,11 +9,11 @@ namespace CalamityMod.Items.Weapons.Summon
 {
     public class EnchantedKnifeStaff : ModItem, ILocalizedModType
     {
-        public static float SwingTime = 20f;
-        public static float SwingWait = 10f;
+        public static float SwingTime = 18f;
+        public static float SwingWait = 6f;
         public static float ProjectileSpeed = 15f;
-        public static float DashCooldown = 30f;
-        public static float DashSpeed = 16f;
+        public static float ChaseSpeed = 10f;
+        public static float RecoilSpeed = -4f;
 
         public new string LocalizationCategory => "Items.Weapons.Summon";
 

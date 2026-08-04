@@ -1,6 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,13 +15,17 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ElementalMix>()];
+        }
 
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 36;
-            Item.damage = 72;
+            Item.damage = 70;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 24;

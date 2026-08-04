@@ -1,5 +1,7 @@
 BabyCannonballJellyfish.DisplayName: Baby Cannonball Jellyfish
 Bloatfish.DisplayName: Bloatfish
+BrainIllusion.DisplayName: Brain Illusion
+BloodBomb.DisplayName: Blood Bomb
 BobbitWormHead.DisplayName: Bobbit Worm
 BoxJellyfish.DisplayName: Box Jellyfish
 Burrower.DisplayName: Burrower
@@ -11,7 +13,10 @@ TinySquid: Tiny Squid
 Cuttlefish.DisplayName: Cuttlefish
 DevilFish.DisplayName: Devil Fish
 DevilFishAlt.DisplayName: Devil Fish
+DraconicSwarmer.DisplayName: Draconic Swarmer
+Dragonfolly.DisplayName: Dragonfolly
 EidolonWyrmHead.DisplayName: Eidolon Wyrm
+FalseBrain.DisplayName: False Brain
 GiantSquid.DisplayName: Giant Squid
 GulperEelHead.DisplayName: Gulper Eel
 Laserfish.DisplayName: Laserfish
@@ -20,9 +25,11 @@ MirageJelly.DisplayName: Mirage Jelly
 MorayEel.DisplayName: Moray Eel
 OarfishHead.DisplayName: Oarfish
 ReaperShark.DisplayName: Reaper Shark
+Shoreskipper.DisplayName: Shoreskipper
 SlabCrab.DisplayName: Slab Crab
 ToxicMinnow.DisplayName: Toxic Minnow
 Viperfish.DisplayName: Viperfish
+WildBumblebirb.DisplayName: Draconic Swarmer
 AcidEel.DisplayName: Acid Eel
 BabyFlakCrab.DisplayName: Baby Flak Crab
 BloodwormNormal.DisplayName: Bloodworm
@@ -165,6 +172,7 @@ CrawlerTopaz.DisplayName: Topaz Crawler
 CrimulanBlightSlime.DisplayName: Crimulan Blight Slime
 Cryon.DisplayName: Cryon
 CryoSlime.DisplayName: Cryo Slime
+DivineSwine.DisplayName: Divine Swine
 EbonianBlightSlime.DisplayName: Ebonian Blight Slime
 Eidolist.DisplayName: Eidolist
 FearlessGoldfishWarrior.DisplayName: Fearless Goldfish Warrior
@@ -179,6 +187,7 @@ OverloadedSoldier.DisplayName: Overloaded Soldier
 PerennialSlime.DisplayName: Perennial Slime
 PhantomSpirit.DisplayName: Phantom Spirit
 Piggy.DisplayName: Piggy
+PiggyGold.DisplayName: Gold Piggy
 PlanterasFreeTentacle.DisplayName: Plantera's Tentacle
 ProfanedEnergyBody.DisplayName: Profaned Energy
 Rimehound.DisplayName: Rimehound
@@ -187,10 +196,8 @@ ScornEater.DisplayName: Scorn Eater
 ShockstormShuttle.DisplayName: Shockstorm Shuttle
 Shroomble.DisplayName: Shroomble
 Stormlion.DisplayName: Stormlion
-StormlionSentry.DisplayName: Stormlion Sentry
 Sunskater.DisplayName: Sunskater
 SuperDummyNPC.DisplayName: Super Dummy
-WildBumblebirb.DisplayName: Draconic Swarmer
 WulfrumAmplifier.DisplayName: Wulfrum Amplifier
 WulfrumDrone.DisplayName: Wulfrum Drone
 WulfrumGyrator.DisplayName: Wulfrum Gyrator
@@ -258,52 +265,18 @@ MicrobialCluster.DisplayName: Microbial Cluster
 Sulflounder.DisplayName: Sulflounder
 Toxicatfish.DisplayName: Toxicatfish
 Trasher.DisplayName: Trasher
-AlphaSeaMinnow.DisplayName: Alpha Sea Minnow
-AlphaSeaMinnowGold.DisplayName: Gold Alpha Sea Minnow
-MinnowPrime: Minnow Prime
 BabyGhostBell.DisplayName: Baby Ghost Bell
-CarrionSwallower.DisplayName: Carrion Swallower
+BlindedAngler.DisplayName: Blinded Angler
 Clam.DisplayName: Clam
 EutrophicRay.DisplayName: Eutrophic Ray
-FesteringRemains.DisplayName: Festering Remains
 GhostBell.DisplayName: Ghost Bell
 GiantClam.DisplayName: Giant Clam
 Clamitas: Clamitas
 SupremeClamitas: Supreme Clamitas
-GildedAxolotl.DisplayName: Gilded Axolotl
-GoldBabyGhostBell: Gold Baby Ghost Bell
-GoldPolypPanasea: Gold Polyp Panasea
-GoldPrismaticGuppy: Gold Prismatic Guppy
-HauntedChum.DisplayName: Haunted Chum
-Jellyghoul.DisplayName: Jellyghoul
-KelpieSeadragon.DisplayName: Kelpie Seadragon
-LazarusLampfish.DisplayName: Lazarus Lampfish
-Leerslug.DisplayName: Leerslug
-LostShoal.DisplayName: Lost Shoal
-PearlpodBlack.DisplayName: Pearlpod
-PearlpodPink.DisplayName: Pearlpod
-PearlpodWhite.DisplayName: Pearlpod
-PodobooKoi.DisplayName: Podoboo Koi
-PolypPanasea.DisplayName: Polyp Panasea
-Polyperil.DisplayName: Polyperil
 PrismBack.DisplayName: Prism-Back
-Probesnout.DisplayName: Probesnout
-ProbesnoutGold.DisplayName: Gold Probesnout
-PrismaticGuppy.DisplayName: Prismatic Guppy
-RadiantBabyGhostBell: Radiant Baby Ghost Bell
-RadiantPolypPanasea: Radiant Polyp Panasea
-RadiantPrismaticGuppy: Radiant Prismatic Guppy
-RadiantSlugbun: Radiant Slugbun
-SandProwler.DisplayName: Sand Prowler
-SandProwlerNested.DisplayName: Sand Prowler
-Scavenger.DisplayName: Scavenger
 SeaFloaty.DisplayName: Sea Floaty
 SeaMinnow.DisplayName: Sea Minnow
-SeaMinnowGold.DisplayName: Gold Sea Minnow
-Searslug.DisplayName: Searslug
-Sharkoon.DisplayName: Sharkoon
-Slugbun.DisplayName: Slugbun
-Steampod.DisplayName: Steampod
+SeaSerpent1.DisplayName: Sea Serpent
 BrimstoneHeart.DisplayName: Brimstone Heart
 SepulcherHead.DisplayName: Sepulcher
 SoulSeekerSupreme.DisplayName: Soul Seeker
@@ -314,9 +287,9 @@ SupremeCatastrophe.DisplayName: Catastrophe
 VolatileSlime.DisplayName: Volatile Slime
 Yharon.DisplayName: Yharon, Dragon of Rebirth
 YharonPhase2: Yharon, Resplendent Phoenix
-// Town NPCs, Pets, etc
 AndroombaFriendly.DisplayName: Androomba Pal
 
+// Town NPCs, Pets, etc
 Archmage: {
 	DisplayName: Archmage
 	Census.SpawnCondition: Defeat Cryogen
@@ -574,6 +547,34 @@ SeaKing: {
 	}
 }
 
+ShadySalesman: {
+	DisplayName: Shady Salesman
+	Census.SpawnCondition: Defeat a Horrible Hog
+
+	Chat: {
+		Normal1: Have you ever wondered why coins are shiny? Simple! It's to match my partner's dazzling products!
+		Normal2: Have you ever had a dream? If you have the cash, I can sell you several!
+		Normal3: Whatever you are thinking, I have the perfect thing for you, at a genuinely excessive discount!
+		Normal4: Is your life rapidly shrinking? Want to know this world's marvels before your time comes? Are the local merchants only showing you worthless hogwash?! Worry not, Hoggart and I have just the solution! Hogwash sold separately.
+		Normal5: There's a saying that goes "the grass is greener on the other side." It's absolute balderdash!! For 5 platinum coins, you can buy our Greener Paint and make your life the greenest!
+		Normal6: They say keeping an Angel Statue nearby is more dangerous than a loaded gun. That's why I own multiple guns - in case some hooligan tries to sell me an Angel Statue!
+		TownPigPresent1: You're searching for the lil' Piggy? Don't worry, chum! Hoggart and I gave it a Camo-Projector 2000 so it could disappear into the night. This way, not a single rotbrain will lay their nasty half-fingers on it, huehe!
+		TownPigPresent2: Rumors are runnin' around that I'm inexplicably two Pigg'ins stacked on top of each other. What shameless slander! Don't they know that, if that were true, I'd charge twice the price? Hahaha!
+		TownPigPresent3: You better take real good care of that piglet. Your sight gotta be good for something other than eyeballing my discounts! Otherwise, who knows what will happen to the swine stock market...
+		TownPigPresent4: Where the Piggy went? Could've sworn I saw it chasing down a four-legged carrot. Now's your chance to chase Fortune and Glory, pal, by buying these MARVELOUS wares!
+		Rain: People always say "rain, rain, go away! Come back another day!", but everyone knows it would be better if it came back never! To solve this, I intend to invest in Hoggart's Dome Program, we just need 500 platinum coins to get it off the ground!
+		WindyDay: Aren't you tired of your house being blown away by any shoddy gust of wind? Well, I have the solution to your problem! With my state-of-the-art industrial super glue (for only 5 gold coins a pack), you too may survive the attack of invaders with outstanding lung capacity!
+		Desert: Exhausted from this oven-like heat? Yearning for something to help you cool down? Check out our revolutionary new product: water! It comes in all flavors of flavorless! Any bottle shape is available, from round to triangular! Feel the chill of molten ice as it enters your guts! It even has healing properties! Sip our free sample for the low price of 50 gold!
+		Tundra: Did you ever hear the tragedy of Kevin Bacon the Wise? I thought not, It's not a story the Elumphants would tell you. Kevin Bacon was a Ham Lord of the Hogs, so powerful and so wise he could use his Hogtusk to influence metal to create gold... Unfortunately, he taught his apprentice everything he knew, then his apprentice out-cashed and deposed him. Ironic. He could save others from debt, but not himself.
+		Graveyard: Does that zombie look like a happy customer? No!! It's full of maggots!! It has no life savings!! While you still do, hurry up and spend yours on a funky edition, happiness-smelling Maggot Repellent!
+		BloodMoon1: These shambling deadheads are the worst! How am I supposed to rip people off when they're all either dead, broke or fighting for their lives?!
+		BloodMoon2: Like my partner always says, price makes the prize! Hire our Moon Doom Cannon, and enjoy a whole year without the meatsack invasion! Fund the construction of the Eclipse variant and get a deluxe model with a neat robotic decal! All for 5000 platinum coins!
+		BloodMoon3: Violence is at every corner tonight, huh? Remember these words, buddy: make deals, not war!
+		Hardmode: Those pesky merchants still want to sell you full-price, low quality copper tools?! Bird droppings!! Barter with me, and you'll receive Palladium at HOG-WILD prizes!
+		MoonLordDefeated: I've been told this land is ruled by three gnomes in a suit of armor. That's impossible! Gnomes are the most deplorable customers I've dealt with. They can't handle a spoon without snapping it in half!! It's always the halflings...
+	}
+}
+
 TownPiggy: {
 	DisplayName: Town Piggy
 	Census.SpawnCondition: Use The Housing Contract
@@ -598,6 +599,7 @@ TownPiggy: {
 		Techno: Techno
 		JohnPork: John Pork
 		Piglet: Piglet
+		Poogie: Poogie
 	}
 
 	Chat: {
@@ -607,9 +609,4 @@ TownPiggy: {
 	}
 }
 
-DraconicSwarmer.DisplayName: Draconic Swarmer
-Dragonfolly.DisplayName: Dragonfolly
-Shoreskipper.DisplayName: Shoreskipper
-BrainIllusion.DisplayName: Brain Illusion
-FalseBrain.DisplayName: False Brain
-BloodBomb.DisplayName: Blood Bomb
+HorribleHog.DisplayName: Horrible Hog

@@ -1,8 +1,10 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
+using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -14,13 +16,17 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 6f;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BurningBlood>(), ModContent.BuffType<Laceration>()];
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 6f;
+        }
 
         public override void SetDefaults()
         {
             Item.width = 64;
             Item.height = 62;
-            Item.damage = 215;
+            Item.damage = 222;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -47,7 +53,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BloodstoneCore>(12).
+                AddIngredient<Bloodstone>(25).
+                AddIngredient<BloodOrb>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

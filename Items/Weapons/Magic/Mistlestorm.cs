@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.Razorpine).
                 AddIngredient(ItemID.LeafBlower).
-                AddIngredient<UelibloomBar>(5).
+                AddIngredient<UelibloomBar>(10).
                 AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();

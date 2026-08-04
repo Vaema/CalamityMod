@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int SlotCount = 4;
 
-        public const int PunchCooldownTime = 36;
+        public const int PunchCooldownTime = 30;
 
         public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
 
@@ -56,9 +56,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.GolemFist).
-                AddIngredient<Lumenyl>(10).
-                AddIngredient<RuinousSoul>(5).
-                AddIngredient<ExodiumCluster>(5).
+                AddIngredient<Lumenyl>(8).
+                AddIngredient<RuinousSoul>(4).
+                AddIngredient<ExodiumCluster>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

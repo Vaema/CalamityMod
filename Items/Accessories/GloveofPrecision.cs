@@ -21,7 +21,6 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.gloveOfPrecision = true;
             player.GetDamage<RogueDamageClass>() += 0.10f;
             player.GetCritChance<RogueDamageClass>() += 10;
             modPlayer.rogueVelocity += 0.15f;

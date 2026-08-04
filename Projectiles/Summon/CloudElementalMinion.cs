@@ -1,7 +1,11 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -41,7 +45,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.cloudElemental && !modPlayer.allElementals && !modPlayer.cloudElementalVanity && !modPlayer.allElementalsVanity)
+            if (!modPlayer.cloudElemental.HasValue && modPlayer.allElementals is null && !modPlayer.cloudElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -142,6 +146,16 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+        }
+
         public override bool? CanDamage()
         {
             Player player = Main.player[Projectile.owner];
@@ -154,6 +168,29 @@ namespace CalamityMod.Projectiles.Summon
             {
                 return null;
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            SpriteEffects sp = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            var cplayer = Main.player[Projectile.owner].Calamity();
+
+            if ((cplayer.cloudElemental.HasValue && !cplayer.cloudElemental.Value) || (cplayer.allElementals.HasValue && !cplayer.allElementals.Value))
+            {
+                CalamityUtils.EnterShaderRegion(Main.spriteBatch);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(1f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseSaturation(0.25f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseColor(Color.White);
+                GameShaders.Misc["CalamityMod:BasicTint"].Apply();
+                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, sp);
+                CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+            }
+            else
+                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, sp);
+
+            return false;
         }
     }
 }

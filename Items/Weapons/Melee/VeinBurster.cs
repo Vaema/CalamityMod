@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,15 +11,18 @@ namespace CalamityMod.Items.Weapons.Melee
     public class VeinBurster : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BurningBlood>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 50;
-            Item.damage = 45;
+            Item.damage = 38;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 41;
+            Item.useAnimation = Item.useTime = 41;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 41;
             Item.useTurn = true;
             Item.knockBack = 4.25f;
             Item.UseSound = SoundID.Item1;

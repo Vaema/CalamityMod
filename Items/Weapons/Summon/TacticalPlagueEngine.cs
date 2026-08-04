@@ -1,5 +1,7 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,13 +13,13 @@ namespace CalamityMod.Items.Weapons.Summon
     public class TacticalPlagueEngine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public const int BulletShootRate = 125;
-
+        public const int BulletShootRate = 120;
+   
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 20;
-            Item.damage = 140;
+            Item.damage = 110;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;

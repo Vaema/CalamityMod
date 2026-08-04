@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -21,12 +22,16 @@ namespace CalamityMod.Items.Weapons.Melee
         public const float ProjectileFullyVisibleDurationIncreasePerAdditionalProjectile = 8f;
 
         public const float ShootSpeed = 16f;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3, BuffID.Venom];
+        }
 
         public override void SetDefaults()
         {
             Item.width = 102;
             Item.height = 102;
-            Item.damage = 119;
+            Item.damage = 111;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 28;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -132,8 +137,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<BlightedCleaver>().
-                AddIngredient<CoreofCalamity>().
-                AddIngredient<UelibloomBar>(15).
+                AddIngredient<UelibloomBar>(10).
+                AddIngredient<CoreofCalamity>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

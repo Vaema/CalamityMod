@@ -68,17 +68,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += Projectile.velocity.X * 0.04f;
             // Make the minion spin depending on how fast it is.
 
-            Projectile.ChargingMinionAI(1200f, 1500f, 2200f, 150f, 0, 24f, 15f, 4f, new Vector2(0f, -60f), 12f, 12f, false, false, 1);
+            Projectile.ChargingMinionAI(1200f, 1500f, 2200f, 150f, 0, 24f, 15f, 4f, new Vector2(0f, -60f), 18f, 12f, true, true, 1);
         }
 
         public override bool MinionContactDamage() => true;
-
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
-        {
-            fallThrough = true; // Should always be able to fly through platforms
-            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
-        }
-
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
     }
 }

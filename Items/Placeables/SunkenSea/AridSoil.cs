@@ -9,7 +9,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Dunesand>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Basalt>();
         }
 
         public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.AridSoil>());

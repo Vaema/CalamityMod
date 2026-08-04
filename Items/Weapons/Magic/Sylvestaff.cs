@@ -86,12 +86,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 13.5f;
         }
 
-        public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
-        {
-            if (player.ownedProjectileCounts[Item.shoot] <= 0)
-                mult *= 0;
-        }
-
         public override void AddRecipes()
         {
             CreateRecipe().
@@ -117,5 +111,7 @@ namespace CalamityMod.Items.Weapons.Magic
             spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             return false;
         }
+
+        public static Color RarityColor() => new Color(249, 197, 255);
     }
 }

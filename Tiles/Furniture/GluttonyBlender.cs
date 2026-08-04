@@ -156,6 +156,8 @@ namespace CalamityMod.Tiles.Furniture
             if (ItemLoader.ConsumeItem(item, player))
             {
                 item.stack--;
+                if (player.selectedItem == 58)
+                    Main.mouseItem.stack--;
                 if (item.stack <= 0)
                     item.TurnToAir();
             }
@@ -230,13 +232,14 @@ namespace CalamityMod.Tiles.Furniture
                 }
             }
 
-            if (Projectile.timeLeft == 1)
+            if (Projectile.timeLeft == 1 && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Item dummy = new Item();
                 dummy.SetDefaults(ItemType);
-                int goodPercent = (int)(dummy.buffTime * (dummy.buffType == BuffID.WellFed3 ? 2f : dummy.buffType == BuffID.WellFed2 ? 1.5f : 1f) / 3600);
+                // 0.1% per minute of duration, multiplied by 2x for T2 food and 10x for T3 food
+                float goodPercent = dummy.buffTime * (dummy.buffType == BuffID.WellFed3 ? 10f : dummy.buffType == BuffID.WellFed2 ? 2f : 1f) / 3600f / 10f;
 
-                int itemDrop = Main.rand.Next(100) < goodPercent ? ModContent.ItemType<QualitySlop>() : ModContent.ItemType<DisgustingSlop>();
+                int itemDrop = Main.rand.NextFloat(100f) < goodPercent ? ModContent.ItemType<QualitySlop>() : ModContent.ItemType<DisgustingSlop>();
                 int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, itemDrop);
                 Main.item[i].GetGlobalItem<GluttonyBlenderGlobalItem>().FromGluttonyBlender = true;
             }

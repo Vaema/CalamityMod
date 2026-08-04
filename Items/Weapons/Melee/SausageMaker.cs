@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Melee.Spears;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,20 +13,20 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetStaticDefaults()
         {
             ItemID.Sets.Spears[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BurningBlood>()];
         }
 
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 42;
-            Item.damage = 32;
+            Item.damage = 27;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 20;
             Item.knockBack = 6.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;

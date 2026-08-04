@@ -1,3 +1,4 @@
+AbyssalFire.DisplayName: Abyssal Fire
 AcidRocket.DisplayName: Acid Rocket
 AdamAcceleratorBeam.DisplayName: Adamantite Particle Beam
 AMR2.DisplayName: AMR
@@ -6,7 +7,7 @@ AngelicBeam.DisplayName: Angelic Beam
 AnimosityBullet.DisplayName: Brimstone Round
 AquaBlast.DisplayName: Aqua Blast
 AquaBlastToxic.DisplayName: Aqua Blast Toxic
-Aquashard.DisplayName: Aqua Crystal
+Aquashard.DisplayName: Aquashard
 AquashardSplit.DisplayName: Aquashard
 ArcherfishRing.DisplayName: Archerfish Ring
 ArcherfishShot.DisplayName: Water Round
@@ -19,7 +20,9 @@ AuralisBullet.DisplayName: Auralis Bullet
 AuricBullet.DisplayName: Auric Bullet
 AuroraFire.DisplayName: Aurora Blaze
 BallistaGreatArrow.DisplayName: Ballista Great Arrow
+BallistaShard.DisplayName: Ballista Shard
 BarinadeArrow.DisplayName: Fin Arrow
+BlahajBlast.DisplayName: Blahaj Blast
 BlightFlames.DisplayName: Blight Flames
 BlissfulBombardierSplitProjectile.DisplayName: Profaned Mini-Rocket
 BloodBoilerFire.DisplayName: Blood Fire
@@ -130,6 +133,7 @@ MagnomalyExplosion.DisplayName: Explosion
 MagnomalyRocket.DisplayName: Nuke
 MarksmanShot.DisplayName: Marksman Shot
 MechanicalBarracuda.DisplayName: Barracuda
+MegalodonRocket.DisplayName: Megalodon Rocket
 MegalodonShot.DisplayName: Megalodon Shot
 MeowCreature.DisplayName: the creature :3
 MeowFire.DisplayName: Purr Fire
@@ -148,6 +152,9 @@ NovaShot.DisplayName: Nova Bolt
 NukeOfBliss.DisplayName: Profaned Nuke
 NullFlash.DisplayName: Null Flash
 NullShot.DisplayName: Null
+OmniSniperShot.DisplayName: Omni Sniper Shot
+OmniGrenade.DisplayName: Omni Grenade
+OmniShotgunShot.DisplayName: Omni Shotgun Shot
 OntologicalDespoilerBeam.DisplayName: Null-Annihilation Beam
 OntoligicalDespoilerBurst.DisplayName: Disruption Blast
 OntologicalDespoilerGrenade.DisplayName: Disruption Sphere
@@ -201,7 +208,6 @@ SevensStrikerGrape.DisplayName: Grapes
 SevensStrikerOrange.DisplayName: Orange
 SevensStrikerPlatinumCoin.DisplayName: Platinum Coin
 ShadeFire.DisplayName: Shady Fire
-ShardshockerCrystal.DisplayName: Charged Aqua Crystal
 Shell.DisplayName: Shell
 Shockblast.DisplayName: Blast
 ShockblastRound.DisplayName: Round
@@ -260,14 +266,8 @@ VanquisherArrowMain.DisplayName: Vanquisher Arrow
 VanquisherArrowProj.DisplayName: Vanquisher Arrow Proj
 VeriumBoltProj.DisplayName: Verium Bolt
 VernalBolt.DisplayName: Vernal Bolt
+VoidBlast.DisplayName: Void Blast
 WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
-AbyssalFire.DisplayName: Abyssal Fire
-BlahajBlast.DisplayName: Blahaj Blast
-MegalodonRocket.DisplayName: Megalodon Rocket
-VoidBlast.DisplayName: Void Blast
-OmniSniperShot.DisplayName: Omni Sniper Shot
-OmniGrenade.DisplayName: Omni Grenade
-OmniShotgunShot.DisplayName: Omni Shotgun Shot

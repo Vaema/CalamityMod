@@ -1,6 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -18,13 +20,14 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.staff[Type] = true;
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
         }
 
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 52;
-            Item.damage = 42;
+            Item.damage = 38;
             Item.DamageType = DamageClass.Summon;
             Item.buffType = ModContent.BuffType<EntropysVigilBuff>();
             Item.shoot = ModContent.ProjectileType<Calamitamini>();

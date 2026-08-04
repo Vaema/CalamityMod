@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.Effects;
 using CalamityMod.Enums;
-using CalamityMod.NPCs.Providence;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
-using CalamityMod.Utilities.Daybreak;
-using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -18,13 +18,29 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class HolyLight : ModProjectile, ILocalizedModType
     {
+        private static Asset<Texture2D> TrailNoiseTexture;
+        private static Asset<Texture2D> TrailDistortionTexture;
+        private static Asset<Texture2D> GlowOrbTexture;
+
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/StarProj";
+
+        public override void Load()
+        {
+            if (!Main.dedServ)
+            {
+                TrailNoiseTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak");
+                TrailDistortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
+                GlowOrbTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle");
+            }
+        }
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 32;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 16;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
+
         public override void SetDefaults()
         {
             Projectile.localAI[1] = Main.rand.NextFloat(30f);
@@ -85,133 +101,6 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Main.spriteBatch.End(out var ss);
-            var device = Main.instance.GraphicsDevice;
-
-            using (ProvUtils.SecondaryLease.Scope(clearColor: Color.Transparent))
-            {
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-                var tex = GeneralParticleHandler.GetTexture(GeneralParticleHandler.particleIDsByTypes[typeof(BloomParticle)]);
-                var len = Math.Min(Projectile.oldPos.Length, 32);
-                for (var i = 0; i < len; i++)
-                {
-                    Vector2 drawPos = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-                    Color color = FireCoreColorFunction(i / (float)len, Projectile.oldPos[i]);
-                    var color2 = new Color(0, 25, 0);
-                    float width = FireWidthFunction(i / (float)len, Projectile.oldPos[i]);
-                    Main.spriteBatch.Draw(tex, drawPos, null, (color2 with { A = 0 }) * (1 - i / (float)len), 0f, tex.Size() * 0.5f, new Vector2(width) / tex.Width, SpriteEffects.None, 0f);
-                    Main.spriteBatch.Draw(tex, drawPos, null, (color with { A = 0 }) * (1 - i / (float)len), 0f, tex.Size() * 0.5f, new Vector2(width) / tex.Width * 0.25f, SpriteEffects.None, 0f);
-                }
-                Main.spriteBatch.End();
-            }
-
-            using (ProvUtils.PrimaryLease.Scope(clearColor: Color.Transparent))
-            {
-
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-                Main.spriteBatch.Draw(ProvUtils.SecondaryLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-
-
-                float vel = Projectile.velocity.Length() / 8;
-                Projectile.localAI[1] += vel;
-
-                Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-                Color brightGreen = new Color(54, 209, 54, 0);
-                Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-                Vector2 halfTextureSize = drawTexture.Size() / 2f;
-                Color halfBrightGreen = brightGreen * 0.5f;
-                float timeLeftColorScale = MathHelper.Lerp(0.5f, 1.5f, Math.Abs(MathF.Sin(Projectile.localAI[1] / 10f)));
-                Projectile.rotation += MathHelper.ToRadians(timeLeftColorScale * 2f);
-                Vector2 timeLeftDrawEffect = new Vector2(0.5f, 1f) * timeLeftColorScale;
-                Vector2 timeLeftDrawEffect2 = new Vector2(0.5f, 1f) * timeLeftColorScale;
-                brightGreen *= timeLeftColorScale;
-                halfBrightGreen *= timeLeftColorScale;
-
-                Vector2 position3 = projDirection + Projectile.velocity.SafeNormalize(Vector2.Zero) * Utils.GetLerpValue(0.5f, 1f, Projectile.localAI[0] / 60f, clamped: true) * 0;
-
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (Projectile.spriteDirection == -1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-
-                Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
-                Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
-                Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-                Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
-
-                Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-                Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
-                Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
-                Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
-                var scale = new Vector2(1f, 1f);
-                var texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle").Value;
-                using (Main.spriteBatch.Scope())
-                {
-
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-                    Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, new Color(54, 209, 54), 0, texture.Size() * 0.5f, 1f, 0, 0f);
-                    Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, 0, texture.Size() * 0.5f, 0.5f, 0, 0f);
-                    Main.spriteBatch.End();
-                }
-                Main.spriteBatch.End();
-            }
-
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-            Main.spriteBatch.Draw(ProvUtils.PrimaryLease.Target, Vector2.Zero, null, Color.White * Projectile.Opacity, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(ss);
-            return false;
-        }
-        public float FireWidthFunction(float completion, Vector2 pos)
-        {
-            float width;
-            float maxBodyWidth = 32f * Projectile.scale;
-            float curveRatio = 0.2f;
-            var positions = Projectile.oldPos.ToList();
-            positions.RemoveAll(x => x == Vector2.Zero);
-            // Crop the tip of the trail into a conic shape.
-            if (completion < curveRatio)
-                width = MathF.Pow(completion / curveRatio, 0.5f) * maxBodyWidth;
-            else
-                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
-
-            // Pulse inwards and outwards over time.
-            float pulseInterpolant = MathF.Cos(MathHelper.Pi * completion - Main.GlobalTimeWrappedHourly * 20f) * 0.5f + 0.5f;
-            float additionalPulseWidth = MathHelper.Lerp(0f, 12f, pulseInterpolant);
-            return (width + additionalPulseWidth) * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
-        }
-
-        public Color FireColorFunction(float completion, Vector2 pos)
-        {
-            Color mainColor = new Color(54, 209, 54) * 1.3f;
-            Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
-            return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
-        }
-
-        public float FireCoreWidthFunction(float completion, Vector2 pos)
-        {
-            float width;
-            float maxBodyWidth = Projectile.scale * 24;
-            float curveRatio = 0.25f;
-            var positions = Projectile.oldPos.ToList();
-            positions.RemoveAll(x => x == Vector2.Zero);
-
-            if (completion < curveRatio)
-                width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
-            else
-                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
-            return width * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
-        }
-
-        public Color FireCoreColorFunction(float completion, Vector2 pos)
-        {
-            Color mainColor = new Color(54, 209, 54);
-            Color tipColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
-            Color fullBodyColor = Color.Lerp(mainColor, tipColor, completion);
-            return Color.Lerp(fullBodyColor, Color.White, 0.175f) * Projectile.Opacity;
-        }
-
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14 with { Pitch = -0.3f, Volume = 0.7f }, Projectile.Center);
@@ -234,6 +123,111 @@ namespace CalamityMod.Projectiles.Boss
                 dust.color = particleColor;
                 dust.noLightEmittence = true;
             }
+        }
+
+        public float FireWidthFunction(float completion)
+        {
+            float width;
+            float maxBodyWidth = 56f * Projectile.scale;
+            float curveRatio = 0.2f;
+
+            // Crop the tip of the trail into a conic shape.
+            if (completion < curveRatio)
+                width = MathF.Pow(completion / curveRatio, 0.5f) * maxBodyWidth;
+            else
+                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
+
+            // Pulse inwards and outwards over time.
+            float pulseInterpolant = MathF.Cos(MathHelper.Pi * completion - Main.GlobalTimeWrappedHourly * 20f) * 0.5f + 0.5f;
+            float additionalPulseWidth = MathHelper.Lerp(0f, 12f, pulseInterpolant);
+            return (width + additionalPulseWidth);
+        }
+
+        public Color FireColorFunction(float completion)
+        {
+            Color mainColor = new Color(54, 209, 54) * 1.3f;
+            Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
+            return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
+        }
+
+        public void DrawTrail()
+        {
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -200f, 200f);
+            Vector2 basePosition = Projectile.Center - Main.screenPosition;
+            Rectangle screenBounds = new Rectangle(-40, -40, Main.screenWidth + 40, Main.screenHeight + 40);
+            if (screenBounds.Contains(basePosition.ToPoint()))
+            {
+                List<Vector3> path = [];
+                for (var i = 0; i < Projectile.oldPos.Length; i++)
+                {
+                    Vector2 trailDrawPosition = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
+                    path.Add(new Vector3(trailDrawPosition.X, trailDrawPosition.Y, 0f));
+                }
+
+                if (path.Count > 2 && Projectile.ai[0] > 6)
+                {
+                    Effect shader = CalamityShaders.ProvidenceHolyOrbTrailShader.Value;
+                    shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                    shader.Parameters["glowPower"].SetValue(1.48f);
+
+                    Main.graphics.GraphicsDevice.Textures[0] = TrailNoiseTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+                    Main.graphics.GraphicsDevice.Textures[1] = TrailDistortionTexture.Value;
+                    Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+
+                    using var shaderScope = SanePrimitiveRenderer.BeginShaderScope(shader, Matrix.Identity, Matrix.Identity, projection);
+                    using var trailMesh = TriangleStripBuilder.BuildStripPooled(path, progress => FireWidthFunction(progress), progress => FireColorFunction(progress), PrimitiveMeshCache.Shared, textured: true);
+                    shaderScope.Draw(trailMesh.View);
+                }
+            }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // Trail drawn by the HolyBurnOrbDrawer system.
+            DrawHealOrb();
+            DrawHealOrbAdditive();
+            return false;
+        }
+
+        private void DrawHealOrb()
+        {
+            float vel = Projectile.velocity.Length() / 8;
+            Projectile.localAI[1] += vel;
+
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Color brightGreen = new Color(54, 209, 54, 0);
+            Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            Vector2 halfTextureSize = drawTexture.Size() / 2f;
+            Color halfBrightGreen = brightGreen * 0.5f;
+            float timeLeftColorScale = MathHelper.Lerp(0.5f, 1.5f, Math.Abs(MathF.Sin(Projectile.localAI[1] / 10f)));
+            Projectile.rotation += MathHelper.ToRadians(timeLeftColorScale * 2f);
+            Vector2 timeLeftDrawEffect = new Vector2(0.5f, 1f) * timeLeftColorScale;
+            Vector2 timeLeftDrawEffect2 = new Vector2(0.5f, 1f) * timeLeftColorScale;
+            brightGreen *= timeLeftColorScale;
+            halfBrightGreen *= timeLeftColorScale;
+
+            Vector2 position3 = projDirection + Projectile.velocity.SafeNormalize(Vector2.Zero) * Utils.GetLerpValue(0.5f, 1f, Projectile.localAI[0] / 60f, clamped: true) * 0;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (Projectile.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 + Vector2.UnitX * 60f, null, halfBrightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 + Vector2.UnitX * 60f, null, halfBrightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitX * 60f, null, brightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitX * 60f, null, brightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitY * 60f, null, halfBrightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3 - Vector2.UnitY * 60f, null, halfBrightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
+        }
+
+        private void DrawHealOrbAdditive()
+        {
+            Main.spriteBatch.Draw(GlowOrbTexture.Value, Projectile.Center - Main.screenPosition, null, new Color(54, 209, 54) with { A = 0 }, 0, GlowOrbTexture.Size() * 0.5f, 1f, 0, 0f);
+            Main.spriteBatch.Draw(GlowOrbTexture.Value, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 }, 0, GlowOrbTexture.Size() * 0.5f, 0.5f, 0, 0f);
         }
     }
 }

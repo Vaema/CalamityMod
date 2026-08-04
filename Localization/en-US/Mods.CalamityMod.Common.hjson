@@ -24,6 +24,11 @@ AbyssBreathLevel2: Moderately reduces breath loss in the abyss
 AbyssBreathLevel3: Greatly reduces breath loss in the abyss
 AlcoholWarning: Drinking more than 3 different alcohols might not end well with your liver
 ArmorPenetration: Ignores {0} points of enemy Defense
+SalesmanShrinePitch:
+	'''
+	'You know that neat treasure you found when I was definitely not following you?'
+	'Turns out there was a whole pile of those trinkets, stashed conveniently close to the treasure chest! Finders keepers - or perhaps you wanna seal a deal?'
+	'''
 AverageDamageInfo: This weapon scales with the average of all your damage stats
 CanMineUelibloom: Can mine Uelibloom Ore
 NotConsumable: Not consumable

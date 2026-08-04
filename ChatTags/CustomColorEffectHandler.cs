@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
 using CalamityMod.Utilities.Daybreak;
@@ -35,6 +36,8 @@ namespace CalamityMod.ChatTags
                 return new CalamityRed.CustomTextSnippet(text);
             if (options.Equals("exo", StringComparison.OrdinalIgnoreCase))
                 return new ExoticRainbow.CustomTextSnippet(text);
+            if (options.Equals("doze", StringComparison.OrdinalIgnoreCase))
+                return new TiredTailTextEffects(text);
             return new TextSnippet(text);
         }
     }

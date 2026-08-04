@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             modPlayer.tarraThrowing = true;
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), CritsToActivateImmunity, ImmunityDuration.FramesToSeconds(), ImmunityCooldown.FramesToSeconds(), RogueDamageBoostWhileDebuffed.ToPercent());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), CritsToActivateImmunity, ImmunityDuration.FramesToSeconds(), ImmunityCooldown.FramesToSeconds());
         }
 
         public override void UpdateEquip(Player player)
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Armor.Tarragon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UelibloomBar>(7).
+                AddIngredient<UelibloomBar>(12).
                 AddIngredient<DivineGeode>(6).
                 AddTile(TileID.MythrilAnvil).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<TarragonBreastplate>()).

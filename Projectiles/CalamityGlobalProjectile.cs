@@ -95,6 +95,7 @@ namespace CalamityMod.Projectiles
         /// <br/>* Reducing projectile damage for Hardmode enemies and in Master Mode.
         /// <br/>* Adding armor penetration to rogue projectiles spawned while wearing Filthy Glove or its upgrades.
         /// <br/>* Increasing the damage of projectiles from the post-Moon Lord Dungeon, and from the post-DoG Pumpkin Moon, Frost Moon, and Solar Eclipse.
+        /// <br/>* Manually setting the extraUpdates fields of projectiles who use <see cref="extraUpdatesToSync"/>.
         /// </summary>
         private bool frameOneHacksExecuted = false;
 
@@ -228,6 +229,12 @@ namespace CalamityMod.Projectiles
         public int defExtraUpdates = -1;
 
         /// <summary>
+        /// Set this to a value higher than zero to have a projectile automatically have their extraUpdates field synced across all clients on a server when spawned. <br></br>
+        /// Please ensure <c>SyncProjectile</c> (or simply <see cref="Projectile.netUpdate"/> is called after setting this.
+        /// </summary>
+        public int extraUpdatesToSync = 0;
+
+        /// <summary>
         /// How many times this projectile has pierced an enemy which applies pierce resist.<br/>
         /// Used for calculating pierce resist damage reduction.
         /// </summary>
@@ -316,13 +323,15 @@ namespace CalamityMod.Projectiles
         /// <summary>
         /// Custom update priority.<br/>
         /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
-        /// Examples include Void Eater Marionette segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// Examples include Rancor's laser beam being offset from the magic circle.
         /// </summary>
         public float UpdatePriority = 0f;
 
         public int BloodstoneOrbValue = 0;
 
         public int HomingTarget = -1;
+
+        public int storedYoyoDamage = 0;
 
         /// <summary>
         /// Flag used during Rev+ Brain of Cthulhu to denote projectiles that were spawned prior to its Illusion Trick attack starting.
@@ -343,10 +352,7 @@ namespace CalamityMod.Projectiles
 
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
-            {
-                projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
                 projectile.Calamity().supercritHits = -1;
-            }
 
             if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
             {
@@ -457,10 +463,12 @@ namespace CalamityMod.Projectiles
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter)
         {
             binaryWriter.Write(ParentNPCIndex);
+            binaryWriter.Write(extraUpdatesToSync);
         }
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader)
         {
             ParentNPCIndex = binaryReader.ReadInt32();
+            extraUpdatesToSync = binaryReader.ReadInt32();
         }
         #endregion On Spawn
 
@@ -498,8 +506,10 @@ namespace CalamityMod.Projectiles
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
-            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
+            // 24DEC2025: Ozzatron: victide bobber culled with SSO 
+            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
                 return false;
+
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
             #region Vanilla Summons AI Changes
@@ -536,16 +546,16 @@ namespace CalamityMod.Projectiles
             if (Main.player[projectile.owner].yoyoGlove && projectile.aiStyle == ProjAIStyleID.Yoyo)
             {
                 // Store damage on first frame
-                if (projectile.localAI[2] == 0f)
-                    projectile.localAI[2] = projectile.damage;
+                if (storedYoyoDamage == 0f)
+                    storedYoyoDamage = projectile.damage;
 
                 var MainYoyo = Main.projectile.First(x => x.active && x.type == projectile.type && x.owner == projectile.owner).whoAmI;
 
                 // Halve damage if not the main yoyo
                 if (projectile.whoAmI != MainYoyo)
-                    projectile.damage = (int)(projectile.localAI[2] * 0.5f);
+                    projectile.damage = (int)(storedYoyoDamage * 0.5f);
                 else
-                    projectile.damage = (int)projectile.localAI[2];
+                    projectile.damage = storedYoyoDamage;
             }
 
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
@@ -3010,6 +3020,7 @@ namespace CalamityMod.Projectiles
         public float PersistentFishingData = -1;
         /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
         public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
+
         public bool RunFishingMinigames(Projectile projectile)
         {
             var owner = Main.player[projectile.owner];
@@ -3018,12 +3029,6 @@ namespace CalamityMod.Projectiles
             bool reelingIn = projectile.ai[0] == 1;
             bool lineSnapped = projectile.ai[0] == 2;
 
-            //Make sure Victide Snail actually fishes when using a minigame rod
-            foreach (var item in Main.ActiveProjectiles)
-            {
-                if (item.type == ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
-                    item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
-            }
             #region Utilities
             void SmallSplashAtOffset(Vector2 offset)
             {
@@ -3368,7 +3373,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }
@@ -3762,7 +3767,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }
@@ -3826,22 +3831,27 @@ namespace CalamityMod.Projectiles
             }
 
             bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+
             if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
             {
                 // Remove any item you would have fished up
                 projectile.ai[1] = 0;
                 // Get rarity of pull
-                int rarity = 0;
+                int rarity;
                 int roll = Main.rand.Next(1, 100 + 1);
                 if (roll == 1) rarity = 3; // UltraRare (1/100)
                 else if (roll <= 21) rarity = 2; // Rare ~(1/5)
                 else rarity = 1; // Common ~(4/5)
 
-                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
+                    TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+                else if(Main.netMode == NetmodeID.SinglePlayer)
+                    TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+
+                TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
                 projectile.ai[0] = 2; // snap line
                 return false;
             }
-
             return false;
         }
         #endregion
@@ -3854,6 +3864,9 @@ namespace CalamityMod.Projectiles
 
             if (!frameOneHacksExecuted)
             {
+                if (extraUpdatesToSync > 0)
+                    projectile.extraUpdates = extraUpdatesToSync;
+
                 if (projectile.hostile)
                 {
                     // Reduce Nail damage from Nailheads because they're stupid
@@ -3980,6 +3993,12 @@ namespace CalamityMod.Projectiles
             // Spectralstorm Cannon uses a custom flare projectile
             if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
                 projectile.localAI[1]--;
+
+            if (projectile.type == ProjectileID.BoneArrowFromMerchant) // Bone arrow no gravity before hitting tile
+            {
+                if (projectile.ai[2] != 1)
+                    projectile.ai[0] = 0;
+            }
 
             // Hack to allow Desert Tiger minion to fall through platforms while attacking
             if (projectile.type >= ProjectileID.StormTigerTier1 && projectile.type <= ProjectileID.StormTigerTier3)
@@ -4767,6 +4786,22 @@ namespace CalamityMod.Projectiles
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
+            if (projectile.type == ProjectileID.UnholyArrow) // damage falloff
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.75f / 0.95f); // Vanilla gives it 5% falloff, this cancels that out
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
+            if (projectile.type == ProjectileID.HellfireArrow) // damage falloff
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.8f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
             // Adamantite Throwing Axe's lightning has damage falloff
             if (projectile.type == ProjectileID.CultistBossLightningOrbArc && projectile.ai[2] == 1f)
             {
@@ -5098,6 +5133,26 @@ namespace CalamityMod.Projectiles
         #region TileCollide
         public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
         {
+            if (projectile.type == ProjectileID.BoneArrowFromMerchant) // Bone arrow bounce
+            {
+                if (projectile.velocity.X != oldVelocity.X)
+                {
+                    projectile.velocity.X = -oldVelocity.X;
+                }
+                if (projectile.velocity.Y != oldVelocity.Y)
+                {
+                    projectile.velocity.Y = -oldVelocity.Y;
+                }
+                projectile.timeLeft -= 120;
+                if (projectile.timeLeft < 1)
+                    projectile.timeLeft = 1;
+                
+                if (projectile.ai[2] != 1)
+                    SoundEngine.PlaySound(SoundID.NPCHit2 with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, 0.3f), MaxInstances = 10 }, projectile.Center);
+                projectile.ai[2] = 1;
+
+                return false;
+            }
             //Crystal Darts use -1 local that needs to reset whenever they bounce
             if (projectile.type == ProjectileID.CrystalDart)
             {
@@ -5183,8 +5238,7 @@ namespace CalamityMod.Projectiles
                     return initialColor;
             }
 
-            if (projectile.type == ProjectileID.SeedPlantera || projectile.type == ProjectileID.PoisonSeedPlantera ||
-                projectile.type == ProjectileID.CultistBossFireBallClone || projectile.type == ProjectileID.AncientDoomProjectile)
+            if (projectile.type == ProjectileID.SeedPlantera || projectile.type == ProjectileID.PoisonSeedPlantera)
             {
                 if (projectile.timeLeft < 85)
                 {

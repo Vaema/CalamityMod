@@ -5,6 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
+    [LegacyName("BloodstoneCore")]
     public class Bloodstone : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Materials";

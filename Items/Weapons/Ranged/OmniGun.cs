@@ -1,10 +1,8 @@
 ﻿using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -13,8 +11,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public static int AmmoSavedPercent = 66;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
         public override void SetDefaults()
         {
             Item.width = 118;
@@ -33,11 +29,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Yellow;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<OmniGunHoldout>(), damage, knockback, player.whoAmI);

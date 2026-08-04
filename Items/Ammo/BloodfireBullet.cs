@@ -34,7 +34,8 @@ namespace CalamityMod.Items.Ammo
         public override void AddRecipes()
         {
             CreateRecipe(333).
-                AddIngredient<BloodstoneCore>().
+                AddIngredient<Bloodstone>().
+                AddIngredient<BloodOrb>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

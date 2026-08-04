@@ -44,14 +44,14 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             float SpeedX = velocity.X + Main.rand.NextFloat(-0.5f, 0.5f);
             float SpeedY = velocity.Y + Main.rand.NextFloat(-0.5f, 0.5f);
-            int arrow = Projectile.NewProjectile(source, position, new Vector2(SpeedX, SpeedY), type, damage, knockback, player.whoAmI);
-            Main.projectile[arrow].noDropItem = true;
+            Projectile arrow = Projectile.NewProjectileDirect(source, position, new Vector2(SpeedX, SpeedY), type, damage, knockback, player.whoAmI);
+
             if (type == ProjectileID.JestersArrow)
             {
-                Main.projectile[arrow].localNPCHitCooldown = 12 * Main.projectile[arrow].MaxUpdates;
-                Main.projectile[arrow].usesLocalNPCImmunity = true;
-                Main.projectile[arrow].usesIDStaticNPCImmunity = false;
-                Main.projectile[arrow].tileCollide = false;
+                arrow.localNPCHitCooldown = 12 * arrow.MaxUpdates;
+                arrow.usesLocalNPCImmunity = true;
+                arrow.usesIDStaticNPCImmunity = false;
+                arrow.tileCollide = false;
             }
             return false;
         }
@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Ectoplasm, 31).
+                AddIngredient(ItemID.Ectoplasm, 13).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

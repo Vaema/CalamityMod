@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -20,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Laceration>(), ModContent.BuffType<BurningBlood>()];
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
         public override void SetDefaults()
@@ -62,7 +65,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BloodstoneCore>(6).
+                AddIngredient<Bloodstone>(25).
+                AddIngredient<BloodOrb>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

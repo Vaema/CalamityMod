@@ -1,5 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,6 +16,10 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
 
         internal const float ShootSpeed = 2f;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn2];
+        }
 
         public override void SetDefaults()
         {
@@ -56,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.CrystalStorm).
-                AddIngredient<CryonicBar>(6).
+                AddIngredient<CryonicBar>(12).
                 AddTile(TileID.Bookcases).
                 Register();
         }

@@ -22,14 +22,13 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.harpyRing = true;
-            player.moveSpeed += 0.1f;
+            player.moveSpeed += 0.2f;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(2).
-                AddIngredient(ItemID.SunplateBlock, 2).
+                AddIngredient<AerialiteBar>(5).
                 AddIngredient(ItemID.Feather, 5).
                 AddTile(TileID.Anvils).
                 Register();

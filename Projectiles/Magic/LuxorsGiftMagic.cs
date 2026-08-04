@@ -39,14 +39,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.velocity *= 0.1f;
             if (Projectile.velocity.Length() < 8)
                 Projectile.velocity *= 1.01f;
-            /*
-            Vector2 dustVel = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.5f) * Main.rand.NextFloat(0.8f, 1.3f);
-            Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), ModContent.DustType<LightDust>(), dustVel * Main.rand.NextFloat(0.5f, 1.2f));
-            dust.noGravity = !Main.rand.NextBool(3);
-            dust.scale = Main.rand.NextFloat(0.45f, 0.6f);
-            dust.color = Color.Gold;
-            dust.noLightEmittence = true;
-            */
+
             if (Projectile.timeLeft > 30)
             {
                 for (int i = 0; i < 2; i++)

@@ -38,8 +38,8 @@ namespace CalamityMod.Items.Potions
         {
             CreateRecipe(15).
                 AddIngredient(ItemID.SuperManaPotion, 15).
-                AddIngredient<StarblightSoot>(4).
                 AddIngredient<AureusCell>().
+                AddIngredient<StarblightSoot>(4).
                 AddTile(TileID.Bottles).
                 Register()
                 .DisableDecraft();

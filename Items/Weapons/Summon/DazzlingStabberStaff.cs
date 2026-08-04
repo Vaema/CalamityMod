@@ -1,7 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,19 +15,23 @@ namespace CalamityMod.Items.Weapons.Summon
     public class DazzlingStabberStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 56;
             Item.height = 60;
+            Item.damage = 69;
+            Item.useAnimation = Item.useTime = 24;
+            Item.mana = 10;
+            Item.knockBack = 2f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.DD2_DarkMageHealImpact;
             Item.DamageType = DamageClass.Summon;
-            Item.mana = 10;
-            Item.damage = 35; 
-            Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 24;
             Item.buffType = ModContent.BuffType<DazzlingStabberBuff>();
             Item.shoot = ModContent.ProjectileType<DazzlingStabber>();
 
@@ -45,21 +50,21 @@ namespace CalamityMod.Items.Weapons.Summon
                 if (minions.owner == player.whoAmI)
                     usedMinionSlots += minions.minionSlots;
             }
-            bool hasSlotsForSummon = true;
-            if (usedMinionSlots + 1 > player.maxMinions)
-                hasSlotsForSummon = false;
+
+            int minionsSummoned = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                if (usedMinionSlots + 1 + i > player.maxMinions)
+                    break;
+
+                var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
+                minion.originalDamage = Item.damage;
+                minionsSummoned++;
+            }
 
             player.AddBuff(Item.buffType, 2);
 
-            int projCount = player.ownedProjectileCounts[type] + (hasSlotsForSummon ? 3 : 0);
-            if (hasSlotsForSummon)
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
-                    minion.originalDamage = Item.damage;
-                }
-            }
+            int projCount = player.ownedProjectileCounts[type] + minionsSummoned;
             float angleMax = MathHelper.ToRadians(360f);
             if (projCount == 100)
                 angleMax = 0f;

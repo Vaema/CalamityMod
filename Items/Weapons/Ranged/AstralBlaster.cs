@@ -15,11 +15,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 40;
             Item.height = 24;
-            Item.damage = 120;
+            Item.damage = 150;
             Item.DamageType = DamageClass.Ranged;
             Item.crit = 25;
-            Item.useTime = 15;
-            Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.75f;
@@ -47,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AstralBar>(6).
+                AddIngredient<AstralBar>(12).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

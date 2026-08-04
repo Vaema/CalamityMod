@@ -16,10 +16,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 56;
             Item.height = 56;
 
-            Item.damage = 42;
+            Item.damage = 35;
             Item.knockBack = 3f;
-            Item.useTime = 53;
-            Item.useAnimation = 53;
+            Item.useAnimation = Item.useTime = 53;
             Item.shoot = ModContent.ProjectileType<BladecrestOathswordThrownBlade>();
             Item.shootSpeed = 6f;
 

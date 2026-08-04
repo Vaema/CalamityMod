@@ -1,10 +1,12 @@
-﻿using CalamityMod.CalPlayer.Dashes;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -50,6 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ElementalMix>(), ModContent.BuffType<Laceration>()];
         }
         public override void SetDefaults()
         {

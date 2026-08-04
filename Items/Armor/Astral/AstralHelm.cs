@@ -110,8 +110,7 @@ namespace CalamityMod.Items.Armor.Astral
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AstralBar>(8).
-                AddIngredient(ItemID.MeteoriteBar, 6).
+                AddIngredient<AstralBar>(12).
                 AddTile(TileID.LunarCraftingStation).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<AstralBreastplate>()).
                 Register();

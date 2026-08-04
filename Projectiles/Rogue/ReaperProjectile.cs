@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public int time = 0;
         public int ChargeupTime = 50;
-        public int Lifetime = 500;
+        public int Lifetime => 500;
         public bool spinning = false;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/TheOldReaper";
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;

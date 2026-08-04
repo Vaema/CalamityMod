@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 82;
             Item.height = 88;
-            Item.damage = 1000;
+            Item.damage = 700;
             Item.knockBack = 3.5f;
             Item.useAnimation = Item.useTime = 24;
             Item.autoReuse = true;
@@ -495,7 +495,6 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public static int lifetime => 1200;
-        Color? color = null;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;

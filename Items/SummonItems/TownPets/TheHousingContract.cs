@@ -29,7 +29,7 @@ namespace CalamityMod.Items.SummonItems.TownPets
             Item.width = 28;
             Item.height = 28;
             Item.maxStack = Item.CommonMaxStack;
-            Item.SetShopValues(ItemRarityColor.Green2, Item.buyPrice(0, 5));
+            Item.SetShopValues(ItemRarityColor.Green2, Item.buyPrice(gold: 5)); // Same price as other Pet Licenses; Sold by Shady Salesman
         }
 
         public override bool? UseItem(Player player)

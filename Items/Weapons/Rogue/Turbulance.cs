@@ -1,5 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -10,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Turbulance : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WindChilled>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 14;
@@ -45,8 +51,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(7).
-                AddIngredient(ItemID.SunplateBlock, 3).
+                AddIngredient<AerialiteBar>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }

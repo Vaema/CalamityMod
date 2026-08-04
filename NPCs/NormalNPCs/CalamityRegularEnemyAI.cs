@@ -663,7 +663,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     }
 
                     // Sea Minnows face away from the player
-                    if (npc.type == ModContent.NPCType<SeaMinnow>() || npc.type == ModContent.NPCType<SeaMinnowGold>())
+                    if (npc.type == ModContent.NPCType<SeaMinnow>())
                         npc.direction *= -1;
                 }
                 else

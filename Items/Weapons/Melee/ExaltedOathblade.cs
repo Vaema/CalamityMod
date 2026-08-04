@@ -1,8 +1,10 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -17,6 +19,10 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public int throwCount = 0;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<DemonicFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 88;
@@ -90,7 +96,6 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<ForbiddenOathblade>().
                 AddIngredient(ItemID.BrokenHeroSword).
-                AddIngredient<AshesofCalamity>(8).
                 AddIngredient<ScoriaBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();

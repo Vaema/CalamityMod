@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 20;
             Item.height = 24;
-            Item.damage = 85;
+            Item.damage = 110;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 28;
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<LemonNade>().
-                AddIngredient(ItemID.AncientCloth,5).
+                AddIngredient(ItemID.AncientCloth, 2).
                 AddIngredient<GrandScale>().
                 AddTile(TileID.MythrilAnvil).
                 Register();

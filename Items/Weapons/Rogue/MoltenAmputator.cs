@@ -1,6 +1,8 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -14,8 +16,11 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class MoltenAmputator : RogueWeapon
     {
         public float speed = 16;
-
         public static int FlurryCount => 30;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 92;

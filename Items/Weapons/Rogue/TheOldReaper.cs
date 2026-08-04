@@ -1,5 +1,7 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,11 +13,15 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("TheReaper")]
     public class TheOldReaper : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<SulphuricPoisoning>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 106;
             Item.height = 104;
-            Item.damage = 1520;
+            Item.damage = 1420;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 50;
@@ -31,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        public override float StealthDamageMultiplier => 0.65f;
+        public override float StealthDamageMultiplier => 0.50f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -41,7 +41,6 @@ namespace CalamityMod.Items.Accessories.Wings
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.cryogenSoul = true;
             if (modPlayer.wingProjectileCooldown <= 0)
             {
                 if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)

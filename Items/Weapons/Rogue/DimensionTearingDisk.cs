@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.NPCs.DevourerofGods;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -16,6 +15,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class DimensionTearingDisk : RogueWeapon
     {
         public static float Speed = 10.5f;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<GodSlayerInferno>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 62;

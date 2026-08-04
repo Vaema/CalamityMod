@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +18,10 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Earth : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<MiracleBlight>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 186;
@@ -69,6 +75,15 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<LifeAlloy>(5).
                 AddTile<DraedonsForge>().
                 Register();
+        }
+
+        public static Color RarityColor()
+        {
+            List<Color> earthColors = [ Color.OrangeRed, Color.MediumTurquoise, Color.LimeGreen ];
+            int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 2 % earthColors.Count);
+            Color currentColor = earthColors[colorIndex];
+            Color nextColor = earthColors[(colorIndex + 1) % earthColors.Count];
+            return Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 2f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
         }
     }
 }

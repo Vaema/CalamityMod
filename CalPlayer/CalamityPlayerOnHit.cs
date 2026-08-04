@@ -62,7 +62,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region On Hit NPC
-        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Item, consider using OnHitNPC instead */
+        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Player.whoAmI != Main.myPlayer)
                 return;
@@ -153,7 +153,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < BlackGlassBand.cooldown)
                         cooldown = BlackGlassBand.cooldown;
                 }
-                if (protolithBangle && item.DamageType == DamageClass.Ranged)
+                if (protolithBangle && item.DamageType.CountsAsClass(DamageClass.Ranged))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -161,7 +161,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < ProtolithBangle.cooldown)
                         cooldown = ProtolithBangle.cooldown;
                 }
-                if (batholithBangle && item.DamageType == DamageClass.Magic)
+                if (batholithBangle && item.DamageType.CountsAsClass(DamageClass.Magic))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -207,9 +207,14 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region On Hit NPC With Proj
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Projectile, consider using OnHitNPC instead */
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Player.whoAmI != Main.myPlayer)
+                return;
+
+            // Don't activate for non-friendly projectiles (obviously).
+            // Override CanHitNPC if you want a hostile projectile that can also damage enemies.
+            if (!proj.friendly)
                 return;
 
             //Undo raider crit after hit
@@ -363,7 +368,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < BlackGlassBand.cooldown)
                         cooldown = BlackGlassBand.cooldown;
                 }
-                if (protolithBangle && proj.DamageType == DamageClass.Ranged)
+                if (protolithBangle && proj.DamageType.CountsAsClass(DamageClass.Ranged))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -371,7 +376,7 @@ namespace CalamityMod.CalPlayer
                     if (cooldown < ProtolithBangle.cooldown)
                         cooldown = ProtolithBangle.cooldown;
                 }
-                if (batholithBangle && proj.DamageType == DamageClass.Magic)
+                if (batholithBangle && proj.DamageType.CountsAsClass(DamageClass.Magic))
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
@@ -613,7 +618,7 @@ namespace CalamityMod.CalPlayer
 
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
                 ProjOnHit(proj, target, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
-                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit, true, proj.noEnchantments);
+                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>() && /*This is for Pigion to not count as a whip*/!(proj.type == ModContent.ProjectileType<BasicBurst>() && proj.minion), hit.Crit, true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
                 if (targetIsDummy)
@@ -1235,11 +1240,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
-            if (ilSpark && Player.Calamity().countsAsAnyWet)
-            {
-                int duration = 60;
-                target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
             if (corrosiveSpine)
             {
                 target.AddBuff(BuffType<Irradiated>(), 120);

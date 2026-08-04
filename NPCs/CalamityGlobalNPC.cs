@@ -93,9 +93,6 @@ namespace CalamityMod.NPCs
     {
         #region Variables
 
-        /// <summary> Data structure used for storing Calamity's intended boss kill times. </summary>
-        public static SortedDictionary<int, int> BossKillTimes;
-
         /// <summary> Data structure used for storing the damage reduction values of NPCs. </summary>
         public static SortedDictionary<int, float> DRValues { get; set; }
 
@@ -270,16 +267,6 @@ namespace CalamityMod.NPCs
         public float manaBurn = 0f;
         public float manaBurnPeak = 0f;
         public float playerManaBurnIntensity = 0f;
-        /// <summary>
-        /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
-        /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
-        /// </summary>
-        public int pearlAuraCounter = 0;
-        /// <summary>
-        /// When an NPC is inflicted with Pearl Aura, this variable is set to index of the player who inflicted it.<br/>
-        /// Used for properly counting pearl shard amount and for giving pearl shards an owner.
-        /// </summary>
-        public int pearlAuraOwner = -1;
         public bool burningBlood = false;
         public bool brainRot = false;
         public bool heavyBleeding = false;
@@ -301,6 +288,7 @@ namespace CalamityMod.NPCs
         public bool crumble = false;
 
         public int antlionCloudDebuffTimer = 0;
+        public int caneInsanityTimer = 0;
         public bool scionsCurioEffected = false;
         public bool abaddonEffected = false;
         public bool apollyonEffected = false;
@@ -400,8 +388,6 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int ashesOnDeath = 0;
         #endregion
-
-        public bool fortunesFavor = false; // Buff which grants positive life regen. Given when near Gilded Axolotls.
 
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
@@ -563,7 +549,6 @@ namespace CalamityMod.NPCs
             myClone.webbed = webbed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
-            myClone.pearlAuraCounter = pearlAuraCounter;
             myClone.burningBlood = burningBlood;
             myClone.brainRot = brainRot;
             myClone.heavyBleeding = heavyBleeding;
@@ -585,6 +570,7 @@ namespace CalamityMod.NPCs
             myClone.crumble = crumble;
 
             myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
+            myClone.caneInsanityTimer = caneInsanityTimer;
             myClone.scionsCurioEffected = scionsCurioEffected;
             myClone.abaddonEffected = abaddonEffected;
             myClone.apollyonEffected = apollyonEffected;
@@ -646,8 +632,6 @@ namespace CalamityMod.NPCs
             myClone.wither = wither;
             myClone.windChilled = windChilled;
             myClone.ashesOnDeath = ashesOnDeath;
-
-            myClone.fortunesFavor = fortunesFavor;
 
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
@@ -815,10 +799,10 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
-            fortunesFavor = false;
-
             if (antlionCloudDebuffTimer > 0)
                 antlionCloudDebuffTimer--;
+            if (caneInsanityTimer > 0)
+                caneInsanityTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
             relicOfResilienceWeakness = false;
@@ -946,11 +930,6 @@ namespace CalamityMod.NPCs
             }
             #endregion
 
-            if (fortunesFavor)
-            {
-                npc.lifeRegen += 4; // 2 HP/s at base           
-            }
-
             //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Length; index++)
             {
@@ -1077,120 +1056,18 @@ namespace CalamityMod.NPCs
                 { NPCID.WallofFlesh, 0.15f },
             };
             #endregion
-
-            // Somehow the SetStatic is called few times before SetStaticDefaults
-            // So We Initialize the Dictionary first. And Push Data later (At SetStaticDefaults)
-            BossKillTimes = [];
         }
 
         public override void Unload()
         {
             DRValues?.Clear();
             DRValues = null;
-
-            BossKillTimes?.Clear();
-            BossKillTimes = null;
         }
         #endregion
 
         #region Set Defaults
         public override void SetStaticDefaults()
         {
-            #region Add Entries to BossKillTimes
-            BossKillTimes.AddRange<int, int>(new Dictionary<int, int>(){
-
-                //
-                // VANILLA BOSSES
-                //
-                { NPCID.KingSlime, 5400 }, // 1:30 (90 seconds)
-                { NPCID.EyeofCthulhu, 5400 }, // 1:30 (90 seconds)
-                { NPCID.EaterofWorldsHead, 7200 }, // 2:00 (120 seconds)
-                { NPCID.EaterofWorldsBody, 7200 },
-                { NPCID.EaterofWorldsTail, 7200 },
-                { NPCID.BrainofCthulhu, 7200 }, // 2:00 (120 seconds, total length of fight including Creepers phase)
-                { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
-                { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
-                { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
-                { NPCID.SkeletronHead, 7200 }, // 2:00 (120 seconds)
-                { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
-                { NPCID.WallofFleshEye, 7200 },
-                { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
-                { NPCID.Spazmatism, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Retinazer, 10800 },
-                { NPCID.TheDestroyer, 10800 }, // 3:00 (180 seconds)
-                { NPCID.TheDestroyerBody, 10800 },
-                { NPCID.TheDestroyerTail, 10800 },
-                { NPCID.SkeletronPrime, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Plantera, 10800 }, // 3:00 (180 seconds)
-                { NPCID.Golem, 9000 }, // 2:30 (150 seconds)
-                { NPCID.GolemHead, 3600 }, // 1:00 (60 seconds)
-                { NPCID.DukeFishron, 9000 }, // 2:30 (150 seconds)
-                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
-                { NPCID.CultistBoss, 9000 }, // 2:30 (150 seconds)
-                { NPCID.MoonLordCore, 14400 }, // 4:00 (240 seconds)
-                { NPCID.MoonLordHand, 7200 }, // 2:00 (120 seconds)
-                { NPCID.MoonLordHead, 7200 }, // 2:00 (120 seconds)
-
-                //
-                // CALAMITY BOSSES
-                //
-                { NPCType<DesertScourgeHead>(), 5400 }, // 1:30 (90 seconds)
-                { NPCType<DesertScourgeBody>(), 5400 },
-                { NPCType<DesertScourgeTail>(), 5400 },
-                { NPCType<Crabulon.Crabulon>(), 5400 }, // 1:30 (90 seconds)
-                { NPCType<HiveMind.HiveMind>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<PerforatorHive>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<SlimeGodCore>(), 9000 }, // 2:30 (150 seconds) -- total length of Slime God fight
-                { NPCType<EbonianPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { NPCType<CrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { NPCType<SplitEbonianPaladin>(), 4500 }, // 1:15 (75 seconds) -- split slimes should spawn at 1:15 and die at around 2:30
-                { NPCType<SplitCrimulanPaladin>(), 4500 }, // 1:15 (75 seconds)
-                { NPCType<Cryogen.Cryogen>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<AquaticScourgeHead>(), 9000 }, // 2:30 (150 seconds)
-                { NPCType<AquaticScourgeBody>(), 9000 },
-                { NPCType<AquaticScourgeBodyAlt>(), 9000 },
-                { NPCType<AquaticScourgeTail>(), 9000 },
-                { NPCType<BrimstoneElemental.BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<CalamitasClone>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<Leviathan.Leviathan>(), 10800 },
-                { NPCType<AstrumAureus.AstrumAureus>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<AstrumDeusHead>(), 7200 }, // 2:00 (120 seconds) -- first phase is 1:00
-                { NPCType<AstrumDeusBody>(), 7200 },
-                { NPCType<AstrumDeusTail>(), 7200 },
-                { NPCType<PlaguebringerGoliath.PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<ProfanedGuardianCommander>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<Dragonfolly>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<Providence.Providence>(), 14400 }, // 4:00 (240 seconds)
-                { NPCType<CeaselessVoid.CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<DarkEnergy>(), 1200 }, // 0:20 (20 seconds)
-                { NPCType<StormWeaverHead>(), 8100 }, // 2:15 (135 seconds)
-                { NPCType<StormWeaverBody>(), 8100 },
-                { NPCType<StormWeaverTail>(), 8100 },
-                { NPCType<Signus.Signus>(), 7200 }, // 2:00 (120 seconds)
-                { NPCType<Polterghast.Polterghast>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<OldDuke.OldDuke>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<DevourerofGodsHead>(), 14400 }, // 4:00 (240 seconds)
-                { NPCType<DevourerofGodsBody>(), 14400 }, // DoG Phase 1 is 1:30, DoG Phase 2 is 2:30
-                { NPCType<DevourerofGodsTail>(), 14400 },
-                { NPCType<Yharon.Yharon>(), 14400 }, // 4:00 (240 seconds)
-                { NPCType<Apollo>(), 21600 }, // 6:00 (360 seconds)
-                { NPCType<Artemis>(), 21600 },
-                { NPCType<AresBody>(), 21600 }, // 6:00 (360 seconds)
-                { NPCType<AresGaussNuke>(), 21600 },
-                { NPCType<AresLaserCannon>(), 21600 },
-                { NPCType<AresPlasmaFlamethrower>(), 21600 },
-                { NPCType<AresTeslaCannon>(), 21600 },
-                { NPCType<ThanatosHead>(), 21600 }, // 6:00 (360 seconds)
-                { NPCType<ThanatosBody1>(), 21600 },
-                { NPCType<ThanatosBody2>(), 21600 },
-                { NPCType<ThanatosTail>(), 21600 },
-                { NPCType<SupremeCalamitas.SupremeCalamitas>(), 18000 }, // 5:00 (300 seconds)
-                { NPCType<PrimordialWyrmHead>(), 18000 } // 5:00 (300 seconds)
-            });
-            #endregion
-
             // Set Plantera to be able to update oldPos[x]
             // This is only used for her Rev+ AI charge attacks
             NPCID.Sets.TrailingMode[NPCID.Plantera] = 1;
@@ -1217,8 +1094,8 @@ namespace CalamityMod.NPCs
             }
 
             // Aquatic Scourge sets kill time in AI, not here.
-            if (BossKillTimes.TryGetValue(npc.type, out int revKillTime) && !CalamityNPCTypeSets.AquaticScourge.Contains(npc.type))
-                KillTime = revKillTime;
+            if (!CalamityNPCTypeSets.AquaticScourge.Contains(npc.type))
+                KillTime = CalamityNPCSets.BossKillTimes[npc.type];
 
             // Fixing more red mistakes
             if (npc.type == NPCID.WallofFleshEye)
@@ -3331,36 +3208,6 @@ namespace CalamityMod.NPCs
                 laserBurnDamage = 0;
             }
 
-            // Pearl Aura shard spawning
-            // Slowing is handled in the general slowing code below
-            if (pearlAura)
-            {
-                pearlAuraCounter++;
-                if (pearlAuraCounter >= 45)
-                {
-                    pearlAuraCounter = 0;
-                    SoundEngine.PlaySound(SoundID.Item49, npc.Center);
-
-                    // Prevent things from getting too crazy
-                    // CIT 8MAR2025: It is assumed that pearlAuraOwner is always set to something other than -1 when this code is run.
-                    if (Main.player[pearlAuraOwner].ownedProjectileCounts[ProjectileType<PearlAuraShard>()] <= 3)
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Vector2 shardPos = npc.Center + new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-500f, -650f));
-                            Vector2 shardVel = Vector2.Normalize(npc.Center - shardPos).RotatedByRandom(MathHelper.Pi / 55f) * 20f;
-                            int damage = 20;
-                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, pearlAuraOwner);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                pearlAuraCounter = 0;
-                pearlAuraOwner = -1;
-            }
-
             if (demonSwordImpales > 0 && npc.CanBeMoved())
             {
                 npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.95f, 0.3f, true);
@@ -3521,9 +3368,6 @@ namespace CalamityMod.NPCs
 
             if (target.Calamity().sulphurSet)
                 npc.AddBuff(BuffID.Poisoned, 60);
-
-            if (target.Calamity().ilSpark)
-                shocked = 120;
 
             if (target.Transformation().Type == ItemType<Popo>())
             {
@@ -3710,7 +3554,7 @@ namespace CalamityMod.NPCs
                 modifiers.HideCombatText();
 
             // Block natural falling stars from killing boss spawners randomly
-            if (projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000 && (npc.type == NPCType<PerforatorCyst>() || npc.type == NPCType<HiveTumor>() || npc.type == NPCType<LeviathanStart>()))
+            if (projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000 && CalamityNPCSets.ProtectedHostileNPC[npc.type])
                 modifiers.SourceDamage *= 0f;
 
             // Supercrits
@@ -3941,19 +3785,6 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            //For the vanilla Monk/Shinobi armor critting with Lightning Auras. In vanilla it doesn't stack additively but frankly I do not care. It's not like aura is that good anyway.
-            if (proj.type == ProjectileID.DD2LightningAuraT1 || proj.type == ProjectileID.DD2LightningAuraT2 || proj.type == ProjectileID.DD2LightningAuraT3)
-            {
-                if (player.setMonkT3)
-                {
-                    critChance += 0.25f; // 1/4 chance to crit with Shinobi
-                }
-                else if (player.setMonkT2)
-                {
-                    critChance += 0.166f; // 1/6 chance to crit with Monk
-                }
-            }
-
             // Used to convert all multiplicative tag into crit chance and vice-versa. If both force tag crit and multiplicative are applied, chooses one at random.
             if (modPlayer.forceSummonTagCrit && !(modPlayer.forceSummonTagMultiplicative && Main.rand.NextBool()))
             {
@@ -3970,8 +3801,6 @@ namespace CalamityMod.NPCs
             // Currently doesn't support more than 100% crit chance, todo if something does more than +100% tag damage
             if (Main.rand.NextFloat() < critChance)
                 modifiers.SetCrit();
-            else
-                modifiers.DisableCrit(); // This is to prevent Morning Star and Kalei from critting with their vanilla tag effect. If you want a minion/sentry to crit, you *must* make sure to change critChance in this function.
         }
 
         // This is for whip tag effects that run on hit and don't modify the damage of the hit.
@@ -4382,7 +4211,7 @@ namespace CalamityMod.NPCs
             }
         }
 
-        public static void AttemptToSpawnLavaNPCs(Player player)
+        /*public static void AttemptToSpawnLavaNPCs(Player player)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
@@ -4414,7 +4243,6 @@ namespace CalamityMod.NPCs
 
                 WeightedRandom<int> pool = new WeightedRandom<int>();
                 pool.Add(NPCID.None, 1f);
-                pool.Add(NPCType<PodobooKoi>(), 0.05f);
 
                 int typeToSpawn = pool.Get();
                 if (typeToSpawn != NPCID.None)
@@ -4428,7 +4256,7 @@ namespace CalamityMod.NPCs
                     }
                 }
             }
-        }
+        }*/
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
@@ -4682,8 +4510,10 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
             {
                 if (Main.rand.NextBool(4))
-                    Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Main.rand.NextVector2Circular(2.75f, 6.5f), ProjectileType<RancorFog>(), 0, 0f, Main.myPlayer, 0f, 0.475f);
-
+                {
+                    RancorFog fog = new(npc.Center, Main.rand.NextVector2Circular(2.75f, 6.5f), 180, Main.rand.NextFloat(0.45f, 0.75f), Main.rand.NextFloat(MathHelper.TwoPi));
+                    GeneralParticleHandler.SpawnParticle(fog, false, Enums.GeneralDrawLayer.BeforeNPCs);
+                }
                 if (Main.rand.NextBool(6))
                 {
                     Vector2 randomPosition = new(npc.position.X + Main.rand.NextFloat(-10f, npc.width + 10f), npc.position.Y + Main.rand.NextFloat(-10f, npc.height + 10f));
@@ -4735,9 +4565,6 @@ namespace CalamityMod.NPCs
             // Eutrophication and Temporal Sadness share the same visual effects
             if (eutrophication || temporalSadness)
                 Eutrophication.DrawEffects(npc, ref drawColor);
-
-            if (fortunesFavor)
-                FortunesFavor.DrawEffects(npc, ref drawColor);
 
             if (godSlayerInferno)
                 GodSlayerInferno.DrawEffects(npc, ref drawColor);
@@ -4955,7 +4782,7 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.VileSpit || npc.type == NPCID.VileSpitEaterOfWorlds)
                 return new Color(150, 200, 0, npc.alpha);
 
-            if (npc.type == NPCID.AncientDoom || npc.type == NPCID.QueenSlimeMinionBlue || npc.type == NPCID.QueenSlimeMinionPink || npc.type == NPCID.QueenSlimeMinionPurple)
+            if (npc.type == NPCID.QueenSlimeMinionBlue || npc.type == NPCID.QueenSlimeMinionPink || npc.type == NPCID.QueenSlimeMinionPurple)
                 return new Color(255, 255, 255, npc.alpha);
 
             return null;
@@ -5044,6 +4871,29 @@ namespace CalamityMod.NPCs
                         return DrawVanillaBestiaryWorms(spriteBatch, npc, drawColor);
                 }
             }
+
+            if (caneInsanityTimer > 0)
+            {
+                Texture2D tex = TextureAssets.Npc[npc.type].Value;
+                Rectangle frame = npc.frame;
+                float fadeInAmt = caneInsanityTimer > 570 ? Utils.GetLerpValue(600, 570, caneInsanityTimer) : caneInsanityTimer < 30 ? Utils.GetLerpValue(0, 30, caneInsanityTimer) : 1f;
+                Vector2 origin = new Vector2(tex.Width / 2, tex.Height / Main.npcFrameCount[npc.type] / 2);
+                SpriteEffects sp = npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                Vector3 colorHSL = Main.rgbToHsl(Color.Violet);
+
+                CalamityUtils.EnterShaderRegion(spriteBatch);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(1f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseSaturation(fadeInAmt * 0.35f);
+                GameShaders.Misc["CalamityMod:BasicTint"].UseColor(Main.hslToRgb(1f - colorHSL.X, colorHSL.Y, colorHSL.Z));
+                GameShaders.Misc["CalamityMod:BasicTint"].Apply();
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector2 offset = Vector2.UnitX.RotatedBy(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi * 2f + (MathHelper.TwoPi * i / 4f)) * 6f * fadeInAmt;
+                    Main.EntitySpriteDraw(tex, npc.Center - screenPos - Vector2.UnitY * (npc.gfxOffY) + offset, frame, Color.Violet, npc.rotation, origin, npc.scale, sp);
+                }
+                CalamityUtils.ExitShaderRegion(spriteBatch);
+            }
+
             if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
             {
                 if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityNPCSets.ForceDrawDebuffDisplay[npc.type]))

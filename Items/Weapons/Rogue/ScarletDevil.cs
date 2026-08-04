@@ -48,10 +48,12 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<Wrathwing>().
                 AddIngredient<RealityRupture>().
                 AddIngredient<ShadowspecBar>(5).
-                AddIngredient<BloodstoneCore>(15).
+                AddIngredient<Bloodstone>(50).
                 AddIngredient(ItemID.SoulofNight, 15).
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => CalamityUtils.ColorSwap(new Color(191, 45, 71), new Color(185, 187, 253), 4f);
     }
 }

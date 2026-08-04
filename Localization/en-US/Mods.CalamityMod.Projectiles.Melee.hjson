@@ -4,12 +4,12 @@ AegisBeam.DisplayName: Aegis Beam
 AegisBlast.DisplayName: Aegis Blast
 AegisBlast2.DisplayName: Aegis Blast
 AegisFlame.DisplayName: Aegis Flame
-AmidiasTridentBoltProj.DisplayName: Trident Bolt
 AmidiasWhirlpool.DisplayName: Whirlpool
 AncientBeam.DisplayName: Ancient Beam
 AncientStar.DisplayName: Ancient Star
 AndromedasStride.DisplayName: Andromeda's Stride
 AndromedasStrideBoltSpawner.DisplayName: Andromeda Shock
+AquaStream.DisplayName: Aqua Stream
 AridGrandeur.DisplayName: Arid Grandeur
 AriesWrath.DisplayName: Aries's Wrath
 AriesWrathConstellation.DisplayName: Constellation
@@ -105,6 +105,7 @@ EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceScythe.DisplayName: Essence Scythe
+EvilSmasherProjectile.DisplayName: Evil Smasher
 ExaltedOathbladeThrownBlade.DisplayName: Exalted Oathblade Thrown Blade
 MawOfInfinityHoldout.DisplayName: Maw of Infinity
 MawOfInfinityJaws.DisplayName: Divinity Devourer
@@ -186,6 +187,8 @@ NeptuneOrb.DisplayName: Neptune's Trident
 NeptunesBountyProjectile.DisplayName: Neptune's Bounty
 NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
 OathswordFlame.DisplayName: Oathsword Flame
+OblivionFire.DisplayName: Oblivion Fire
+OblivionBolt.DisplayName: Oblivion Bolt
 Orbacle.DisplayName: Auric Orb
 OrderbringerBeam.DisplayName: Orderbringer Beam
 OrderbringerWaveProj.DisplayName: Order-bringing Wave
@@ -217,7 +220,6 @@ RemsRevengeExplosion.DisplayName: Blood Explosion
 RendingNeedle.DisplayName: Rending Needle
 RespiteblockBlood.DisplayName: Respiteblock Blood
 RespiteblockHoldout.DisplayName: Respiteblock
-RiptideWave.DisplayName: Wave
 Rox1.DisplayName: Rock
 RoxcaliburProj.DisplayName: Roxcalibur
 RSSolarFlare.DisplayName: Flare
@@ -231,6 +233,7 @@ ScorcherExplosion.DisplayName: Scorching Crystal Blast
 ScorpiusConstellation.DisplayName: Scorpius Constellation
 ScourgeoftheCosmosMini.DisplayName: Miniature Cosmic Scourge
 ScourgeoftheCosmosProj.DisplayName: Cosmic Scourge
+SeashineSwordProj.DisplayName: Seashine Beam
 SeekingScorcherProj.DisplayName: Scorching Seeker
 SolarNeedle.DisplayName: Solar Needle
 SolsticeBeam.DisplayName: Solstice Beam
@@ -311,4 +314,3 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-EvilSmasherProjectile.DisplayName: Evil Smasher

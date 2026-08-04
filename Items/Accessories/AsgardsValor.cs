@@ -23,8 +23,8 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 50;
             Item.height = 48;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
             Item.defense = 4;
             Item.accessory = true;
         }
@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<OrnateShield>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient(ItemID.HallowedBar, 5).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

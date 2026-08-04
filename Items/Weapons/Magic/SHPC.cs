@@ -55,8 +55,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<SHPB>();
             Item.shootSpeed = 20f;
 
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
+            Item.rare = ItemRarityID.LightPurple;
         }
 
         #region Weapon-Specific Functions

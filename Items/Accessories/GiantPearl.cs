@@ -7,7 +7,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [LegacyName("AmidiasPendant")]
     public class GiantPearl : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";

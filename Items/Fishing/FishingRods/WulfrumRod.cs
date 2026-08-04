@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(5).
+                AddIngredient<WulfrumMetalScrap>(8).
                 AddTile(TileID.Anvils).
                 Register();
         }

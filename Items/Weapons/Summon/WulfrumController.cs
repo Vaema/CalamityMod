@@ -15,13 +15,13 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
         public static float PartialRegenBoostPerBuffDroid = 0.5f;
-        public static int DefenseBoostPerBuffDroid = 3;
+        public static int DefenseBoostPerBuffDroid = 2;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(PartialRegenBoostPerBuffDroid.ToRegenPerSecond(), DefenseBoostPerBuffDroid);
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 20;
-            Item.damage = 16;
+            Item.damage = 19;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.HoldUp;

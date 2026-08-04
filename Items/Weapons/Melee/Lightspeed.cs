@@ -1,7 +1,9 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -16,11 +18,15 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
         public static int MaxEnergy = 100;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ElementalMix>()];
+        }
 
         public override void SetDefaults()
         {
-            Item.width = 74;
-            Item.height = 94;
+            Item.width = 94;
+            Item.height = 92;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.damage = 200;
             Item.DamageType = TrueMeleeDamageClass.Instance;

@@ -40,7 +40,6 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         {
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), SetBonusSubmergedSummonDamageBoost.ToPercent(), SetBonusSubmergedDefenseBoost, SetBonusSubmergedRegenBoost.ToRegenPerSecond());
             var modPlayer = player.Calamity();
-            modPlayer.fathomSwarmer = true;
             player.spikedBoots = 2;
             player.maxMinions += SetBonusMinionSlotBoost;
             player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
@@ -72,9 +71,9 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SeaRemains>(5).
-                AddIngredient<PlantyMush>(6).
-                AddIngredient<DepthCells>(3).
+                AddIngredient<SeaRemains>(6).
+                AddIngredient<PlantyMush>(25).
+                AddIngredient<DepthCells>(10).
                 AddTile(TileID.MythrilAnvil).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<FathomSwarmerBreastplate>()).
                 Register();

@@ -121,7 +121,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 modPlayer.angelTreads = true;
             }
             modPlayer.tracersDust = !hideVisual && toggleEnabled;
-            modPlayer.moonWalkers = true;
         }
 
         public override void AddRecipes()
@@ -129,7 +128,7 @@ namespace CalamityMod.Items.Accessories.Wings
             CreateRecipe().
                 AddIngredient<AngelTreads>().
                 AddIngredient(ItemID.SoulofFlight,20).
-                AddIngredient(ItemID.LunarBar, 5).
+                AddIngredient(ItemID.LunarBar, 10).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

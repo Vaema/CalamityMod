@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
@@ -12,6 +13,7 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -219,7 +221,7 @@ namespace CalamityMod.Items.Accessories
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 4));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
             base.SetStaticDefaults();
         }
 
@@ -635,5 +637,7 @@ namespace CalamityMod.Items.Accessories
                 AddDecraftCondition(CalamityConditions.DownedSupremeCalamitas, CalamityConditions.DownedExoMechs).
                 Register();
         }
+
+        public static Color RarityColor() => CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25), 6f); //alternates between emerald green and amber (BanditHueh)
     }
 }

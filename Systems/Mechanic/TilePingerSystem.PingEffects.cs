@@ -142,33 +142,6 @@ public class WulfrumPingTileEffect : IPingedTileEffect, ILoadable
         Main.spriteBatch.Draw(emptyFrame, pos.ToWorldCoordinates() - Main.screenPosition, null, Color.White, 0, new Vector2(emptyFrame.Width / 2f, emptyFrame.Height / 2f), 16f, 0, 0);
     }
 
-    // CIT 16JUL2025: Tile lighting override is now applied via an On edit; this code is duplicated there, and thus is no longer needed here.
-    /*public void EditDrawData(int i, int j, ref TileDrawInfo drawData)
-    {
-        float distanceFromCenter = (new Point(i, j).ToWorldCoordinates() - PingCenter).Length();
-        float currentExpansion = MathHelper.Clamp(PingProgress * MaxPingLife / (float)MaxPingTravelTime, 0f, 1f) * MaxPingRadius;
-
-        if (distanceFromCenter - 8 > currentExpansion)
-            return;
-
-        float brightness = 1f;
-        Tile tile = Framing.GetTileSafely(i, j);
-        //Counteracts slopes and half tiles being too bright
-        if (tile.Slope != SlopeType.Solid || tile.IsHalfBlock)
-            brightness = 0.64f;
-
-        //Fade on the edges
-        if (distanceFromCenter + 8 > currentExpansion)
-            brightness *= 1 - (distanceFromCenter - currentExpansion + 8f) / 16f;
-
-        //Fade away with the effect
-        brightness *= 1 - Math.Max(PingProgress - 0.9f, 0) / (0.1f);
-
-        if (drawData.tileLight.R < 200 * brightness) drawData.tileLight.R = (byte)(200 * brightness);
-        if (drawData.tileLight.G < 200 * brightness) drawData.tileLight.G = (byte)(200 * brightness);
-        if (drawData.tileLight.B < 200 * brightness) drawData.tileLight.B = (byte)(200 * brightness);
-    }*/
-
     public void UpdateEffect()
     {
         if (PingTimer > 0)

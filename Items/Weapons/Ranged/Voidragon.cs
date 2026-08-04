@@ -1,6 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,7 +22,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public int sharkGunDamageScaling = 0;
         public static int AmmoSavedPercent = 66;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
-
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<DemonicFlames>(), ModContent.BuffType<WhisperingDeath>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 96;

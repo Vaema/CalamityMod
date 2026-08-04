@@ -15,11 +15,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 86;
             Item.height = 86;
-            Item.damage = 300;
+            Item.damage = 235;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 16;
+            Item.useAnimation = Item.useTime = 16;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 16;
             Item.useTurn = true;
             Item.knockBack = 6.5f;
             Item.UseSound = SoundID.Item1;
@@ -76,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.BeamSword).
-                AddIngredient<AstralBar>(20).
+                AddIngredient<AstralBar>(18).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentSolar, 5).
                 AddIngredient(ItemID.FragmentStardust, 5).

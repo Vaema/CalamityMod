@@ -5,6 +5,7 @@ using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.NormalNPCs.HorribleHog;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
@@ -385,13 +386,13 @@ namespace CalamityMod.Tiles
                     npc = NPCType<SeaFloaty>();
                     break;
                 case 104:
-                    npc = NPCType<LazarusLampfish>();
+                    npc = NPCType<BlindedAngler>();
                     break;
                 case 105:
                     npc = NPCType<SeaMinnow>();
                     break;
                 case 106:
-                    npc = NPCType<SandProwler>();
+                    npc = NPCType<SeaSerpent1>();
                     break;
                 /*case 107:
                     npc = NPCType<Unused>(); - Formerly Giant Clam
@@ -459,75 +460,79 @@ namespace CalamityMod.Tiles
                 case 128:
                     npc = NPCType<BabyCannonballJellyfish>();
                     break;
-                case 129:
+                // Hello source code diver, here are a bunch of Sunken Sea enemy names, have fun
+                /*case 129:
                     npc = NPCType<Sharkoon>();
-                    break;
-                case 130:
-                    npc = NPCType<Probesnout>();
-                    break;
-                case 131:
-                    npc = NPCType<CarrionSwallower>();
-                    break;
-                case 132:
-                    npc = NPCType<GildedAxolotl>();
-                    break;
-                /* case 133:
-                    npc = NPCType<Grubbolt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
                     break; */
-                case 134:
+                /* case 130:
+                    npc = NPCType<Probesnout>();
+                    break; */
+                /* case 131:
+                    npc = NPCType<CarrionSwallower>();
+                    break; */
+                /* case 132:
+                    npc = NPCType<GildedAxolotl>();
+                    break; */
+                /* case 133:
+                    npc = NPCType<Grubbolt>();
+                    break; */
+                /* case 134:
                     npc = NPCType<HauntedChum>();
-                    break;
-                case 135:
+                    break; */
+                /* case 135:
                     npc = NPCType<Jellyghoul>();
-                    break;
-                case 136:
+                    break; */
+                /* case 136:
                     npc = NPCType<KelpieSeadragon>();
-                    break;
-                case 137:
+                    break; */
+                /* case 137:
                     npc = NPCType<Leerslug>();
-                    break;
-                case 138:
+                    break; */
+                /* case 138:
                     npc = NPCType<LostShoal>();
-                    break;
+                    break; */
                 /* case 139:
-                    npc = NPCType<MirageNewt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
+                    npc = NPCType<MirageNewt>();
                     break; */
                 /* case 140:
-                    npc = NPCType<Panasea>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
+                    npc = NPCType<Panasea>();
                     break; */
-                case 141:
+                /* case 141:
                     npc = NPCType<PearlpodWhite>(); // Logic should be applying to other variants
-                    break;
-                case 142:
-                    npc = NPCType<StormlionSentry>();
-                    break;
-                case 143:
-                    npc = NPCType<PodobooKoi>();
-                    break;
-                case 144:
-                    npc = NPCType<Polyperil>();
-                    break;
-                case 145:
-                    npc = NPCType<PrismaticGuppy>();
-                    break;
-                case 146:
-                    npc = NPCType<Scavenger>();
-                    break;
-                case 147:
-                    npc = NPCType<Searslug>();
-                    break;
-                case 148:
-                    npc = NPCType<Shoreskipper>();
-                    break;
-                case 149:
-                    npc = NPCType<Slugbun>();
-                    break;
-                case 150:
-                    npc = NPCType<Steampod>();
-                    break;
-                /* case 151:
-                    npc = NPCType<StormlionScout>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
                     break; */
+                /* case 142:
+                    npc = NPCType<StormlionSentry>();
+                    break; */
+                /* case 143:
+                    npc = NPCType<PodobooKoi>();
+                    break; */
+                /* case 144:
+                    npc = NPCType<Polyperil>();
+                    break; */
+                /* case 145:
+                    npc = NPCType<PrismaticGuppy>();
+                    break; */
+                /* case 146:
+                    npc = NPCType<Scavenger>();
+                    break; */
+                /* case 147:
+                    npc = NPCType<Searslug>();
+                    break; */
+                /* case 148:
+                    npc = NPCType<Shoreskipper>();
+                    break; */
+                /* case 149:
+                    npc = NPCType<Slugbun>();
+                    break; */
+                /* case 150:
+                    npc = NPCType<Steampod>();
+                    break; */
+                /* case 151:
+                    npc = NPCType<StormlionScout>();
+                    break; */
+                case 152:
+                    npc = NPCType<HorribleHog>();
+                    break;
                 default:
                     break;
             }

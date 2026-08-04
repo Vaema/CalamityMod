@@ -63,6 +63,7 @@ namespace CalamityMod.ILEditing
 
             // Mechanics / features
             On_NPC.ApplyTileCollision += AllowFusionFeederToDigThroughSand;
+            On_NPC.RerollVariation += AllowPatronNameRerollsOnLicenseUse;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
@@ -83,7 +84,6 @@ namespace CalamityMod.ILEditing
             On_Player.Teleport += TPOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
-            On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
             On_Projectile.AI_007_GrapplingHooks += AllowHooksToGrabArenabox;
             On_Collision.SolidCollision_Vector2_int_int += ArenaCollision_Vector2_int_int;
@@ -142,6 +142,8 @@ namespace CalamityMod.ILEditing
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
+            IL_WorldGen.IslandHouse += MakeFledgingWingsMoreCommon;
+            IL_WorldGen.AddBuriedChest_int_int_int_bool_int_bool_ushort += DisableFledglingWingsSecondary;
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
@@ -154,8 +156,6 @@ namespace CalamityMod.ILEditing
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
-            IL_Projectile.AI_061_FishingBobber += WhitelistVictideBobber;
-            On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;

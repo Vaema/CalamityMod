@@ -12,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Summon
     public class ResurrectionButterfly : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+        }
         public override void SetDefaults()
         {
             Item.width = 46;
@@ -53,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.ButterflyDust, 2).
                 AddIngredient(ItemID.Silk, 40).
-                AddIngredient(ItemID.Ectoplasm, 20).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.Loom).
                 Register();
         }

@@ -249,53 +249,6 @@ namespace CalamityMod.Projectiles.Pets
             }
         }
 
-        /*public override void PostDraw(Color lightColor)
-        {
-            if (!Main.gamePaused || Main.gameMenu)
-            {
-                Vector2 projDirect = projectile.position - Main.screenPosition;
-                if ((float)Main.mouseX > projDirect.X && (float)Main.mouseX < projDirect.X + (float)projectile.width && (float)Main.mouseY > projDirect.Y && (float)Main.mouseY < projDirect.Y + (float)projectile.height)
-                {
-                    int playerTileX = (int)(Main.player[projectile.owner].Center.X / 16f);
-                    int playerTileY = (int)(Main.player[projectile.owner].Center.Y / 16f);
-                    int projTileX = (int)projectile.Center.X / 16;
-                    int projTileY = (int)projectile.Center.Y / 16;
-                    int lastTileRangeX = Main.player[projectile.owner].lastTileRangeX;
-                    int lastTileRangeY = Main.player[projectile.owner].lastTileRangeY;
-                    if (playerTileX >= projTileX - lastTileRangeX && playerTileX <= projTileX + lastTileRangeX + 1 && playerTileY >= projTileY - lastTileRangeY && playerTileY <= projTileY + lastTileRangeY + 1)
-                    {
-                        Main.player[projectile.owner].noThrow = 2;
-                        Main.player[projectile.owner].cursorItemIconEnabled = true;
-                        Main.player[projectile.owner].cursorItemIconID = 3213;
-                        if (PlayerInput.UsingGamepad)
-                        {
-                            Main.player[projectile.owner].GamepadEnableGrappleCooldown();
-                        }
-                        if (Main.mouseRight && Main.mouseRightRelease && Player.StopMoneyTroughFromWorking == 0)
-                        {
-                            Main.mouseRightRelease = false;
-                            if (Main.player[projectile.owner].chest == -2)
-                            {
-                                Main.PlaySound(SoundID.Item11, -1, -1);
-                                Main.player[projectile.owner].chest = -1;
-                                Recipe.FindRecipes();
-                                return;
-                            }
-                            Main.player[projectile.owner].GetCalamityPlayer().trashManChest = projectile.type;
-                            Main.player[projectile.owner].chest = -2;
-                            Main.player[projectile.owner].chestX = (int)(projectile.Center.X / 16f);
-                            Main.player[projectile.owner].chestY = (int)(projectile.Center.Y / 16f);
-                            Main.player[projectile.owner].talkNPC = -1;
-                            Main.npcShop = 0;
-                            Main.playerInventory = true;
-                            Main.PlaySound(SoundID.Item10, -1, -1);
-                            Recipe.FindRecipes();
-                        }
-                    }
-                }
-            }
-        }*/
-
         private bool HoleBelow() //pretty much the same as the one used in mantis
         {
             int tileWidth = 4;

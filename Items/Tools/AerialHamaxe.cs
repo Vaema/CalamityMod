@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Tools
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -33,8 +33,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(6).
-                AddIngredient(ItemID.SunplateBlock, 5).
+                AddIngredient<AerialiteBar>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -204,8 +204,8 @@ namespace CalamityMod.Items
             stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
             stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
             stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
-            // (Spectre Wings) 1 -> 1.5 acceleration multiplier
-            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 1.5f;
+            // (Spectre Wings) 1 -> 2 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
 
             // 170 -> 210 flight time
             stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
@@ -479,6 +479,21 @@ namespace CalamityMod.Items
                     }
                 }
             }
+            if (modPlayer.victideSet)
+            {
+                if ((item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MagicDamageClass>() ||
+                    item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<SummonDamageClass>()) &&
+                    Main.rand.NextBool(10) && !item.channel)
+                {
+                    if (player.whoAmI == Main.myPlayer)
+                    {
+                        // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
+                        int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
+
+                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
+                    }
+                }
+            }
 
             return true;
         }
@@ -716,10 +731,6 @@ namespace CalamityMod.Items
 
             // Restrict behavior when reading Dreadon's Log.
             if (PopupGUIManager.AnyGUIsActive)
-                return false;
-
-            // Can't use anything while burrowing
-            if (player.ownedProjectileCounts[ProjectileType<VictideSpirit>()] > 0)
                 return false;
 
             if (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 &&
@@ -1122,32 +1133,7 @@ namespace CalamityMod.Items
                 modPlayer.volatileGelatinVisuals = !hideVisual;
             }
 
-            // The Frog Leg line is prevented from stacking.
-            // Additionally, Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
-            //
-            // 21MAY2024: Ozzatron: Disabled this code. Frog Leg is allowed to stack. Amphibian Boots specific nerf is applied below.
-            /*
-            switch (item.type)
-            {
-                default:
-                    break;
-                case ItemID.AmphibianBoots:
-                    if (modPlayer.alreadyHasFrogLeg)
-                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
-                    else
-                        player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
-                    modPlayer.alreadyHasFrogLeg = true;
-                    break;
-                case ItemID.FrogLeg:
-                case ItemID.FrogFlipper:
-                case ItemID.FrogGear:
-                case ItemID.FrogWebbing:
-                    if (modPlayer.alreadyHasFrogLeg)
-                        player.jumpSpeedBoost -= BalancingConstants.VanillaFrogLegJumpSpeedBoost;
-                    modPlayer.alreadyHasFrogLeg = true;
-                    break;
-            }
-            */
+            // Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
             if (item.type == ItemID.AmphibianBoots)
                 player.jumpSpeedBoost += BalancingConstants.AmphibianBootsJumpSpeedBoost - BalancingConstants.VanillaFrogLegJumpSpeedBoost;
 
@@ -1206,16 +1192,19 @@ namespace CalamityMod.Items
                 {
                     player.GetJumpState<GravityJump>().Available = true;
                 }
-                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8)
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 7)
                 {
-                    player.maxRunSpeed = 5f;
+                    player.maxRunSpeed = 7f;
                 }
-                player.jumpSpeedBoost += 1.6f;
+                player.jumpSpeedBoost += 2f;
                 if (player.controlDown)
-                    player.maxFallSpeed *= 1.5f;
+                    player.maxFallSpeed *= (player.Calamity().ironBoots || player.Calamity().gSabaton) ? 1.5f : 2f;
                 else
                     player.maxFallSpeed *= 1.2f;
             }
+
+            if (item.type == ItemID.EmpressFlightBooster)
+                player.wingTimeMax += 150;
 
             if (item.type == ItemID.DemonWings && !player.mount.Active)
                 player.maxFallSpeed *= 1.2f;
@@ -1286,7 +1275,6 @@ namespace CalamityMod.Items
             float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.06f;
 
             float flightSpeedMult = 1f +
-                (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
                 (modPlayer.reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0f) +
                 moveSpeedBoost;
 
@@ -1312,14 +1300,14 @@ namespace CalamityMod.Items
                     break;
                 case ItemID.FlameWings:
                     maxAscentMultiplier *= 1.1067f;
-                    constantAscend *= 1.25f;
+                    constantAscend *= 1.2f;
                     break;
                 case ItemID.ButterflyWings:
                     maxAscentMultiplier *= 0.6667f;
                     constantAscend *= 5f;
                     break;
                 case ItemID.GhostWings:
-                    maxAscentMultiplier *= 0.6025f;
+                    maxAscentMultiplier *= 0.6625f;
                     constantAscend *= 5f;
                     break;
                 default:
@@ -1338,8 +1326,6 @@ namespace CalamityMod.Items
             // Then, apply flat grab range boosts.
             if (player.Calamity().reaverExplore)
                 grabRange += ReaverHeadExplore.SetBonusGrabRangeBoost;
-            if (player.Calamity().victideSnailSet)
-                grabRange += VictideHeadSnail.SetBonusGrabRangeBoost;
 
             // Nebula boosters have greater pickup range while hovering with Nebula Mantle.
             if (player.wingsLogic == (int)VanillaWingID.WingsNebula && player.wingTime > 0f && player.controlJump && player.TryingToHoverDown && ItemID.Sets.NebulaPickup[item.type])

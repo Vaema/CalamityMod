@@ -36,18 +36,17 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 float SpeedX = velocity.X + (float)Main.rand.Next(-30, 31) * 0.05f;
                 float SpeedY = velocity.Y + (float)Main.rand.Next(-30, 31) * 0.05f;
-                int index = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
-                Main.projectile[index].noDropItem = true;
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             }
-            int projectile = Projectile.NewProjectile(source, position, velocity, ProjectileID.CrystalDart, damage / 2, knockback, player.whoAmI);
-            Main.projectile[projectile].penetrate = 3;
+            Projectile dart = Projectile.NewProjectileDirect(source, position, velocity, ProjectileID.CrystalDart, damage / 2, knockback, player.whoAmI);
+            dart.penetrate = 3;
             return false;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CryonicBar>(8).
+                AddIngredient<CryonicBar>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

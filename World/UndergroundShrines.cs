@@ -451,7 +451,6 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.Eggnog, WorldGen.genRand.Next(10, 12 + 1)),
-                new ChestItem(ItemType<DeliciousMeat>(), WorldGen.genRand.Next(200, 349 + 1)),
                 new ChestItem(Main.rand.NextBool() ? ItemID.GasTrap : ItemID.Marshmallow, 1)
             };
             }

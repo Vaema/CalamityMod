@@ -54,12 +54,15 @@ namespace CalamityMod.NPCs.TownNPCs
             AIType = NPCID.TownBunny;
             NPC.damage = 0;
             NPC.defense = 0;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 250;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.5f;
             NPC.housingCategory = 1;
             DrawOffsetY = -4;
+            NPC.Calamity().VulnerableToHeat = true;
+            NPC.Calamity().VulnerableToCold = true;
+            NPC.Calamity().VulnerableToSickness = true;
         }
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
@@ -72,7 +75,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override bool CanTownNPCSpawn(int numTownNPCs)
         {
-            if (CalamityWorld.unlockedTownPig)
+            if (CalamityWorld.unlockedTownPig && !NPC.AnyNPCs(ModContent.NPCType<ShadySalesman>()))
             {
                 return true;
             }
@@ -181,6 +184,7 @@ namespace CalamityMod.NPCs.TownNPCs
             this.GetLocalizedValue("Name.Techno"), // Technoblade
             this.GetLocalizedValue("Name.JohnPork"), // John Pork
             this.GetLocalizedValue("Name.Piglet"), // Winnie-the-Pooh
+            this.GetLocalizedValue("Name.Poogie"), // Monster Hunter
             
             // Dedicated names
         };

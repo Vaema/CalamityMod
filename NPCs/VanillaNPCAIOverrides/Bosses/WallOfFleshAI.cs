@@ -892,7 +892,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float eyeTelegraphGateValue = LaserShootGateValue - LaserShootTelegraphTime;
                 if (NPC.localAI[1] > eyeTelegraphGateValue || NPC.localAI[2] > 0f || enraged)
                 {
-                    Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[NPC.type].Value;
                     var halfSize = NPC.frame.Size() / 2;
                     SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
@@ -900,12 +899,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         NPC.localAI[2] > 0f ? 1f - ((NPC.localAI[2] - 1f) / TotalLasersPerBarrage) :
                         MathHelper.Clamp((NPC.localAI[1] - eyeTelegraphGateValue) / LaserShootTelegraphTime, 0f, 1f);
 
-                    Color drawColor2 = new Color(100, 0, 200, 192) * colorScale;
-                    for (int i = 0; i < 2; i++)
-                    {
-                        spriteBatch.Draw(glowTexture, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame,
-                            drawColor2, NPC.rotation, halfSize, NPC.scale, spriteEffects, 0f);
-                    }
+                    Color drawColor2 = new Color(128, 0, 255) * colorScale;
+                    spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame,
+                        drawColor2, NPC.rotation, halfSize, NPC.scale, spriteEffects, 0f);
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Spears;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn2];
             ItemID.Sets.Spears[Type] = true;
         }
 
@@ -18,14 +20,13 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 72;
             Item.height = 72;
-            Item.damage = 110;
+            Item.damage = 80;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 23;
+            Item.useAnimation = Item.useTime = 23;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 23;
             Item.knockBack = 6;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;

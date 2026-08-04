@@ -1,4 +1,8 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee.Spears;
 using CalamityMod.Systems.Collections;
 using Terraria;
@@ -13,6 +17,12 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override int ProjectileType => ModContent.ProjectileType<GildedProboscisProj>();
 
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<VermillionFlux>()];
+            base.SetStaticDefaults();
+            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
+        }
         public override bool SizeModifiers => false;
         public override void SetDefaults()
         {

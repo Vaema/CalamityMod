@@ -2,7 +2,7 @@ AbandonedSlimeStaff: {
 	DisplayName: Abandoned Slime Staff
 	Tooltip:
 		'''
-		Summons an astral slime that inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+		Summons an astral slime that spreads the [cbuff:CalamityMod/AstralInfectionDebuff]
 		Consumes all of the remaining minion slots on use
 		Must be used from the hotbar
 		Increased power and size based on the number of minion slots used
@@ -72,7 +72,7 @@ AtlasMunitionsBeacon: {
 
 BelladonnaSpiritStaff: {
 	DisplayName: Belladonna Spirit Staff
-	Tooltip: Summons a cute forest spirit that flings magical [cbuff:Poisoned] petals
+	Tooltip: Summons a cute forest spirit that flings magical petals
 }
 
 BlackHawkRemote: {
@@ -85,12 +85,17 @@ BlackHawkRemote: {
 		'''
 }
 
+BlightedSlimeStaff: {
+	DisplayName: Blighted Slime Staff
+	Tooltip: Summons a blighted slime to fight for you
+}
+
 BorealisBomber: {
 	DisplayName: Borealis Bomber
 	Tooltip:
 		'''
 		Summons aureus bombers to chase down your enemies
-		Aureus bombers explode violently on enemy impact, inflicting [cbuff:CalamityMod/AstralInfectionDebuff]
+		Aureus bombers explode violently on enemy impact, spreading the [cbuff:CalamityMod/AstralInfectionDebuff]
 		Does not consume minion slots
 		'''
 }
@@ -147,10 +152,10 @@ CausticStaff: {
 		'''
 	HoldShiftTooltip:
 		'''
-		Always inflicts [cbuff:OnFire3]
+		Always inflicts [cbuff:OnFire3] and [cbuff:Venom]
 		Inflicts [cbuff:CursedInferno] with 2 dragons summoned
-		Inflicts [cbuff:Venom] with 3 dragons summoned
-		Inflicts [cbuff:Ichor] and [cbuff:CalamityMod/MarkedforDeath] with 4 dragons summoned
+		Inflicts [cbuff:Ichor] with 3 dragons summoned
+		Inflicts [cbuff:CalamityMod/MarkedforDeath] with 4 dragons summoned
 		'''
 }
 
@@ -191,11 +196,6 @@ Cnidarian: {
 		'''
 }
 
-CorroslimeStaff: {
-	DisplayName: Corroslime Staff
-	Tooltip: Summons a corro slime to fight for you
-}
-
 CorvidHarbringerStaff: {
 	DisplayName: Corvid Harbinger Staff
 	Tooltip:
@@ -210,7 +210,8 @@ CosmicImmaterializer: {
 	Tooltip:
 		'''
 		Summons a cosmic energy spiral to fight for you
-		The orb will fire swarms of homing energy bolts that cause [cbuff:CalamityMod/MiracleBlight]
+		The spiral will fire swarms of homing energy bolts when enemies are detected by it
+		Struck enemies are cleansed by [cbuff:CalamityMod/MiracleBlight]
 		There can only be one energy spiral
 		'''
 }
@@ -230,11 +231,6 @@ CosmicViperEngine: {
 Cosmilamp: {
 	DisplayName: Cosmilamp
 	Tooltip: Summons a cosmic lantern above your head to fight for you
-}
-
-CrimslimeStaff: {
-	DisplayName: Crimslime Staff
-	Tooltip: Summons a crim slime to fight for you
 }
 
 CryogenicStaff: {
@@ -394,7 +390,7 @@ FleshOfInfidelity: {
 
 FlowersOfMortality: {
 	DisplayName: Flowers of Mortality
-	Tooltip: Summons five rainbow flowers over your head that inflict [cbuff:CalamityMod/ElementalMix]
+	Tooltip: Summons five rainbow flowers over your head
 }
 
 ForgottenApexWand: {
@@ -484,6 +480,7 @@ HivePod: {
 		'''
 		{$CommonItemTooltip.Sentry}
 		Summons an astraglomerate to spawn glomerings at your enemies
+		      Glomerings spread the [cbuff:CalamityMod/AstralInfectionDebuff] on impact
 		'''
 }
 
@@ -494,7 +491,7 @@ IgneousExaltation: {
 		Summons an Igneous blade that orbits around you
 		When your minion slots are full, <left> again to launch all blades towards the cursor
 		This ability has a two-second cooldown that requires holding this item
-		Shift-<right> this item in your inventory to change the rotation direction
+		Press [KEY] while holding this item to change the rotation direction
 		'''
 }
 
@@ -679,17 +676,6 @@ ScabRipper: {
 	Tooltip: Summons a baby blood crawler to protect you
 }
 
-SeashineHilt: {
-	DisplayName: Seashine Hilt
-	Tooltip:
-		'''
-		Summons a brilliant sea prism blade to slice your enemies
-		Blades will charge up while you hold this item
-		Pressing <right> will order all fully charged blades to swipe at your cursor
-		Each sword only consumes half a minion slot
-		'''
-}
-
 ShellfishStaff: {
 	DisplayName: Shellfish Staff
 	Tooltip: Summons a shellfish to latch onto enemies and inflict [cbuff:CalamityMod/ShellfishClaps]
@@ -745,16 +731,12 @@ SquirrelSquireStaff: {
 
 StaffOfNecrosteocytes: {
 	DisplayName: Staff of Necrosteocytes
-	Tooltip:
-		'''
-		Summons small skeletons to fight for you
-		The skeletons leave behind bone cells as they move
-		'''
+	Tooltip: Summons small skeletons to fight for you
 }
 
 StarspawnHelixStaff: {
 	DisplayName: Starspawn Helix Staff
-	Tooltip: Summons astral probes that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Summons astral probes that spread the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 StellarTorusStaff: {
@@ -780,7 +762,7 @@ TacticalPlagueEngine: {
 	DisplayName: Tactical Plague Engine
 	Tooltip:
 		'''
-		Summons a plague jet to pummel your enemies into submission
+		Summons a [cbuff:CalamityMod/Plague] jet to pummel your enemies into submission
 		Jets will fire bullets from your inventory
 		Sometimes shoots a missile instead of a bullet
 		50% chance to save ammo
@@ -865,7 +847,7 @@ ViridVanguard: {
 		All weapons inflict [cbuff:CalamityMod/SagePoison], which becomes more powerful the more weapons are summoned
 		When all minion slots are full, <left> again to spin up a flurry of slashes aimed at your cursor
 		This ability has a five-second cooldown that requires holding this item
-		Shift-<right> this item in your inventory to change the rotation direction
+		Press [KEY] while holding this item to change the rotation direction
 		'''
 }
 
@@ -873,7 +855,8 @@ VoidConcentrationStaff: {
 	DisplayName: Void Concentration Staff
 	Tooltip:
 		'''
-		Surrounds you with dark energy, which makes all attacks deal 15% less damage
+		Summons an endless darkness that surrounds you with orbiting dark energies
+		While the dark energies are orbiting you, you take 15% less damage from all attacks
 		<right> to condense the energy onto a target, focusing your minions on them and creating homing beams
 		When the focused enemy takes damage from any source, they will be struck by additional dark energies
 		These dark energy are twice as strong when the strike was from a minion or sentry
@@ -889,8 +872,10 @@ VoidEaterMarionette: {
 		Repeated summons increase the length and power of the Devourer
 		The Devourer attacks with [ceffect/dog:Divinity Devourer], [ceffect/dog:Faith Incinerator] and [ceffect/dog:Ultracosmic Maelstrom]
 		Can play fetch with dropped items 
-		Shift-<right> this item in your inventory when the Devourer has been spawned to prioritize fetching
+		Press [KEY] while holding this item when the Devourer has been spawned to prioritize fetching
 		'''
+	FetchStart: Go fetch!
+	FetchEnd: Get 'em!
 }
 
 WarloksMoonFist: {

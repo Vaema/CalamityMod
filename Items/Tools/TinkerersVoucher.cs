@@ -225,7 +225,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 7);  // Sold by Shady Salesman
             Item.maxStack = Item.CommonMaxStack;
         }
 
@@ -298,7 +298,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 7);  // Sold by Shady Salesman
             Item.maxStack = Item.CommonMaxStack;
         }
 
@@ -327,7 +327,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 7);  // Sold by Shady Salesman
             Item.maxStack = Item.CommonMaxStack;
         }
 
@@ -354,7 +354,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 7);  // Sold by Shady Salesman
             Item.maxStack = Item.CommonMaxStack;
         }
 
@@ -383,7 +383,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 7);  // Sold by Shady Salesman
             Item.maxStack = Item.CommonMaxStack;
         }
 
