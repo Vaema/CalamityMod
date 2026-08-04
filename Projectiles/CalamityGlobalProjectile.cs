@@ -214,6 +214,11 @@ namespace CalamityMod.Projectiles
         public bool grapeBeer = false;
 
         /// <summary>
+        /// If this proj was spawned from the Volatile Gelatin accessory
+        /// </summary>
+        public bool volatileGelatinSpawned = false;
+
+        /// <summary>
         /// How strong grape beer homing is on this. It speeds up the longer the target is targeted.
         /// </summary>
         public float grapeBeerHomingPower = 0.01f;
@@ -377,7 +382,7 @@ namespace CalamityMod.Projectiles
                     Player player = Main.player[projectile.owner];
                     projectile.ApplyStatsFromSource(player.GetSource_FromThis());
                     projectile.netUpdate = true;
-                    projectile.ai[2] = 5; // Mark them as Volatile Gelatin origin
+                    volatileGelatinSpawned = true; // Mark them as Volatile Gelatin origin
                 }
             }
 
@@ -603,7 +608,7 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.ai[2] == 5)
+            if (volatileGelatinSpawned)
             {
                 Player player = Main.player[projectile.owner];
                 if (projectile.timeLeft == 699 && projectile.FinalExtraUpdate() && player.Calamity().volatileGelatinVisuals)
@@ -4839,7 +4844,7 @@ namespace CalamityMod.Projectiles
             if (forcedCrit)
                 modifiers.SetCrit();
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.ai[2] == 5)
+            if (volatileGelatinSpawned)
             {
                 target.AddBuff(BuffID.GelBalloonBuff, 180);
 
@@ -5276,7 +5281,7 @@ namespace CalamityMod.Projectiles
             }
             #endregion
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.ai[2] == 5)
+            if (volatileGelatinSpawned)
             {
                 Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
                 float rate = (projectile.timeLeft * 0.05f);
@@ -5292,12 +5297,16 @@ namespace CalamityMod.Projectiles
 
                 float fade = Utils.GetLerpValue(600, 700, projectile.timeLeft, true);
                 int draws = 12;
-                for (int i = 0; i < draws; i++)
+                if (Main.player[projectile.owner].Calamity().volatileGelatinVisuals)
                 {
-                    float rotPoint = MathHelper.TwoPi / draws * i;
-                    float dist = 3.5f * fade;
-                    Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + rotPoint.ToRotationVector2().RotatedBy(Main.GlobalTimeWrappedHourly) * dist, null, finalColor with { A = 0 } * 0.6f * fade, MathF.Pow(projectile.rotation, 2), texture.Size() / 2f, projectile.scale * 1.2f, SpriteEffects.None);
+                    for (int i = 0; i < draws; i++)
+                    {
+                        float rotPoint = MathHelper.TwoPi / draws * i;
+                        float dist = 1.5f * fade;
+                        Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + rotPoint.ToRotationVector2().RotatedBy(Main.GlobalTimeWrappedHourly) * dist, null, finalColor with { A = 0 } * 0.6f * fade, MathF.Pow(projectile.rotation, 2), texture.Size() / 2f, projectile.scale * 1.2f, SpriteEffects.None);
+                    }
                 }
+                
                 Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition, null, Color.Lerp(lightColor, Color.White, fade), projectile.rotation, texture.Size() / 2f, projectile.scale, SpriteEffects.None);
 
                 shouldDrawBool = false;
