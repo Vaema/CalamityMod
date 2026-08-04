@@ -381,6 +381,7 @@ namespace CalamityMod.NPCs
             "Umbara", // <@!450062421294579712> (umbaraeclipse)
             "Reyloth Grey", // <@!255043013116428298> (pantyslack)
             "Jimbo Baggins", // <@!563358554388692992> (thekiller12325)
+            "Shaby Morbals", // <@!815237130401349632> (nogreatnameleft)
         ];
         private static readonly string[] ZoologistNames =
         [
