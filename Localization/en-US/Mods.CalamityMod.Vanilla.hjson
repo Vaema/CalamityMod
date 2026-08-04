@@ -201,9 +201,9 @@ EditedTooltip: {
 		'''
 	VolatileGelatin:
 		'''
-		Every 5 gelatin blobs that hit, a winged Volatile Slime will spawn, up to a max of 6
+		Every 5 volatile gelatins that hit, a winged Volatile Slime will spawn, up to a max of 6
 		Each Volatile Slime provides 5% increased jump speed and 0.3 seconds of flight time
-		Running out of flight time will remove the Volatile Slime's wings and detatch them from you
+		Running out of flight time will remove the Volatile Slime's wings and detach them from you
 		'''
 	/*
 	Armor

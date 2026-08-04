@@ -348,7 +348,7 @@ namespace CalamityMod.Projectiles
                 projectile.Calamity().supercritHits = -1;
             }
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall)
+            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
             {
                 projectile.DamageType = AverageDamageClass.Instance;
                 projectile.usesIDStaticNPCImmunity = false;
@@ -586,7 +586,7 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall)
+            if (projectile.type == ProjectileID.VolatileGelatinBall && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
             {
                 Player player = Main.player[projectile.owner];
                 if (projectile.timeLeft == 699 && projectile.FinalExtraUpdate() && player.Calamity().volatileGelatinVisuals)
@@ -4797,7 +4797,7 @@ namespace CalamityMod.Projectiles
             if (forcedCrit)
                 modifiers.SetCrit();
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && player.volatileGelatin)
+            if (projectile.type == ProjectileID.VolatileGelatinBall && player.volatileGelatin && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
             {
                 target.AddBuff(BuffID.GelBalloonBuff, 180);
 
@@ -5215,7 +5215,7 @@ namespace CalamityMod.Projectiles
             }
             #endregion
 
-            if (projectile.type == ProjectileID.VolatileGelatinBall && Main.player[projectile.owner].Calamity().volatileGelatinVisuals)
+            if (projectile.type == ProjectileID.VolatileGelatinBall && Main.player[projectile.owner].Calamity().volatileGelatinVisuals && projectile.GetSource_FromThis() == Main.player[projectile.owner].GetSource_Accessory(Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin)))
             {
                 Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
                 float rate = (projectile.timeLeft * 0.05f);
