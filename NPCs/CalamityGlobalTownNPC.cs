@@ -365,6 +365,7 @@ namespace CalamityMod.NPCs
             "Tequila", // <@!889175547744239677> (thecrispistofnuggets)
             "Bee Movie Script", // <@!407949998173454341> (literally_jesuschrist)
             "Which Doctor", // <@!746103484017016832> (sepulchre0001)
+            "Zecro", // <@!823582273004896268> (zecroexe)
         ];
         private static readonly string[] WizardNames =
         [
