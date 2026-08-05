@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.PurpleCandle>());
             Item.value = Item.buyPrice(gold: 25); // Sold by Wizard
-            Item.rare = ItemRarityID.Pink;
+            Item.rare = ItemRarityID.Purple;
         }
     }
 }

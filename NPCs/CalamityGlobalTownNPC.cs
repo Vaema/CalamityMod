@@ -1429,10 +1429,10 @@ namespace CalamityMod.NPCs
             {
                 shop.Add<HowlsHeart>()
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 25))
-                .Add<ResilientCandle>()
-                .Add<SpitefulCandle>()
-                .Add<VigorousCandle>()
-                .Add<WeightlessCandle>();
+                .Add<ResilientCandle>(Condition.DownedMoonLord)
+                .Add<SpitefulCandle>(Condition.DownedMoonLord)
+                .Add<VigorousCandle>(Condition.DownedMoonLord)
+                .Add<WeightlessCandle>(Condition.DownedMoonLord);
             }
 
             if (type == NPCID.WitchDoctor)
