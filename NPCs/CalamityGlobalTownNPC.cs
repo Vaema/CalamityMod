@@ -221,6 +221,7 @@ namespace CalamityMod.NPCs
             "Baggute", // <@!535140564174110720> (thebaggutegamer)
             "Jacob Bryson", // <@!879794107218817026> (.melongun)
             "ImaShoe", // <@!926957605056819261> (imashoe.)
+            "Exatron", // <@!291342874497515531> (diamondnife)
         ];
         private static readonly string[] MechanicNames =
         [
@@ -390,7 +391,6 @@ namespace CalamityMod.NPCs
             "Lacuna", // <@!790746689211203604> (_lacuna_)
             "Mae Borowski", //<@!219158690433990656> (justakkolite)
             "Fera", // <@!195850711567826945> (juneark_)
-            "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
             "Zora", // <@!752687500656640030> (oxytoxy365)
             "Summer", // <@!608455754093035521> (haefer)
