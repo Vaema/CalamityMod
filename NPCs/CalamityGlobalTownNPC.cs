@@ -509,6 +509,7 @@ namespace CalamityMod.NPCs
             "Archie", // <@!303022375191183360> (jackshiz)
             "Starkey", // <@!133327709236494337> (scraak)
             "Cortana", // <@!336320956798599168> (sersupremo)
+            "Mario", // <@!1348497527359541248> (tsuki.hoshihime)
         ];
         private static readonly string[] TownCatWhiteNames = null;
 
