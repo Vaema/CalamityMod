@@ -358,8 +358,6 @@ namespace CalamityMod.CalPlayer
             if (generalBandCooldown == 0)
             {
                 int cooldown = 0;
-                // NOTE: Apparently Pulse Pistol/Pulse Rifle projectiles will set spawned projectiles here to inherit the proj ID???
-                // No clue why this happens or how to fix it, but it just breaks using multiple band types together on these two weapons
                 if (bGlassBand) 
                 {
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
