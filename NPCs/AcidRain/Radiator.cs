@@ -8,6 +8,7 @@ using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +18,7 @@ namespace CalamityMod.NPCs.AcidRain
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 4;
+            Main.npcFrameCount[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -52,7 +53,6 @@ namespace CalamityMod.NPCs.AcidRain
             AIType = NPCID.GlowingSnail;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<RadiatorBanner>();
-            NPC.catchItem = (short)ModContent.ItemType<RadiatingCrystal>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
@@ -68,8 +68,24 @@ namespace CalamityMod.NPCs.AcidRain
             });
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            if (Main.rand.NextBool(10))
+            {
+                NPC.frame.Y = NPC.height * 4;
+                NPC.catchItem = (short)ModContent.ItemType<RadiatingCrystal>();
+                NPC.damage = 0;
+            }
+        }
+
         public override void AI()
         {
+            if (NPC.damage == 0)
+            {
+                Lighting.AddLight(NPC.Center, 0.7f, 0.7f, 0.7f);
+                return;
+            }
+
             Lighting.AddLight(NPC.Center, 0.3f, 1.5f, 0.3f);
 
             if (!Main.dedServ)
@@ -96,7 +112,11 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y > frameHeight * 2)
+                if (NPC.frame.Y > frameHeight * 6)
+                {
+                    NPC.frame.Y = frameHeight * 4;
+                }
+                else if (NPC.frame.Y > frameHeight * 2 && NPC.frame.Y < frameHeight * 4)
                 {
                     NPC.frame.Y = 0;
                 }
