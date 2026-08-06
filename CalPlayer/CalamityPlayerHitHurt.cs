@@ -498,7 +498,7 @@ namespace CalamityMod.CalPlayer
             //
             // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
-            if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
+            if (yellowCandle && cgn.DR < 0.9f && target.takenDamageMultiplier > 0.05f)
                 modifiers.ModifyHitInfo += YellowCandleBuff.ModifyHitInfo_Spite;
 
             if (Player.Calamity().scionsCurio && item.CountsAsClass<RangedDamageClass>())

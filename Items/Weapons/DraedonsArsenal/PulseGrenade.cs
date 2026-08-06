@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 30;
             Item.height = 40;
-            Item.damage = 59;
+            Item.damage = 123;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -40,6 +40,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.shootSpeed = 16f;
             Item.shoot = ModContent.ProjectileType<PulseGrenadeProjectile>();
         }
+
+        public override float StealthDamageMultiplier => 0.85f;
         public override bool CanUseItem(Player player)
         {
             return (player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<PulseGrenadeOrb>()] <= 0);
