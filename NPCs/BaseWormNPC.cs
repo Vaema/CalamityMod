@@ -645,6 +645,11 @@ namespace CalamityMod.NPCs
     //The segments near a player spawn a hitbox NPC to allow damaging players and taking damage
     public abstract class BaseWormHitboxNPC : ModNPC
     {
+        public override void SetStaticDefaults()
+        {
+            this.HideFromBestiary();
+        }
+
         public override void SetDefaults()
         {
             NPC.width = 200;

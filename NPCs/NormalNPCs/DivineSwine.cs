@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public Vector2 IdleMovementVector;
 
-        public SlotId SwineSpeakSoundSlot;
+        public SlotId SwineSpeakSoundSlot = SlotId.Invalid;
 
         public static float MaxSpeed => 0.38f;
         public static float MaxAcceleration => 0.06f;
@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Main.npcFrameCount[Type] = 14;
             NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
-            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.GoldBunny) + 1, Type);
+            NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
             NPCID.Sets.ImmuneToAllBuffs[Type] = true;
             NPCID.Sets.ShimmerImmunity[Type] = true;
         }
@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 0;
             NPC.width = 32;
             NPC.height = 34;
-            NPC.lifeMax = 5;
+            NPC.lifeMax = 99999999;
             NPC.defense = 99999999;
             NPC.rarity = 5;
             NPC.aiStyle = -1;
@@ -305,6 +305,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
                     swineSpeakInstance.Stop();
+                if (SwineSpeakSoundSlot.IsValid)
+                    SwineSpeakSoundSlot = SlotId.Invalid;
 
                 NPC.Transform(ModContent.NPCType<Piggy>());
             }
@@ -443,6 +445,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
                     swineSpeakInstance.Stop();
+                if (SwineSpeakSoundSlot.IsValid)
+                    SwineSpeakSoundSlot = SlotId.Invalid;
 
                 // Despawn immediately afterwards.
                 NPC.checkDead();
@@ -482,6 +486,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
                     swineSpeakInstance.Stop();
+                if (SwineSpeakSoundSlot.IsValid)
+                    SwineSpeakSoundSlot = SlotId.Invalid;
 
                 NPC.checkDead();
                 NPC.active = false;
@@ -614,6 +620,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
                 else
                     SwineSpeakSoundSlot = SoundEngine.PlaySound(MisophoniaSwineSpeakLoopingSound, NPC.Center, SoundCallbackMethod);
+            }
+
+            if (!NPC.active)
+            {
+                if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
+                    swineSpeakInstance.Stop();
+                if (SwineSpeakSoundSlot.IsValid)
+                    SwineSpeakSoundSlot = SlotId.Invalid;
             }
 
             // Fade the music depending on the distance between the player and Divine Swine.
@@ -812,6 +826,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Effect tintShader = CalamityShaders.BasicTintShader.Value;
             tintShader.Parameters["uColor"].SetValue(Color.White.ToVector3());
             tintShader.Parameters["uOpacity"].SetValue(DivineSwineTintStrength);
+            tintShader.Parameters["uSaturation"].SetValue(NPC.Opacity);
 
             spriteBatch.EnterShaderRegion(effect: tintShader);
             spriteBatch.Draw(baseTexture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, NPC.frame.Size() * 0.5f, SquashVector * NPC.scale, spriteEffects, 0f);

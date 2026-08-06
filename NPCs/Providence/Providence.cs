@@ -111,10 +111,14 @@ namespace CalamityMod.NPCs.Providence
 
         public static readonly SoundStyle NearBurnSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceSizzle");
         public static readonly SoundStyle BurnStartSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
-        public static readonly SoundStyle BurnLoopSound = new SoundStyle("CalamityMod/Sounds/Custom/Providence/ProvidenceBurnLoop") with { IsLooped = true };
+        public static readonly SoundStyle BurnLoopSound = new SoundStyle("CalamityMod/Sounds/Custom/Providence/ProvidenceBurnLoop")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+        };
 
         // Sound slot for the burning damage over time effect
-        public SlotId BurningSoundSlot;
+        public SlotId BurningSoundSlot = SlotId.Invalid;
 
         // Level of sound playing
         public float SoundWarningLevel = -1f;
@@ -374,7 +378,10 @@ namespace CalamityMod.NPCs.Providence
         {
             //ensure projectiles all despawn when she does
             if (NPC.timeLeft == 1)
+            {
                 DespawnSpecificProjectiles(true);
+                StopHolyInfernoSounds();
+            }
 
             // Set the border drawing to true if it isn't set to true
             // Can happen when another mod sets to false for a difficulty and that difficulty is then toggled off.
@@ -493,7 +500,8 @@ namespace CalamityMod.NPCs.Providence
                     {
                         // Initialize sound
                         SoundEngine.PlaySound(BurnStartSound, player.Center);
-                        BurningSoundSlot = SoundEngine.PlaySound(BurnLoopSound, player.Center);
+                        if (!SoundEngine.TryGetActiveSound(BurningSoundSlot, out _))
+                            BurningSoundSlot = SoundEngine.PlaySound(BurnLoopSound, player.Center, HolyInfernoSoundCallback);
                         SoundWarningLevel = 2f;
                     }
                     player.AddBuff(ModContent.BuffType<HolyInferno>(), 2);
@@ -525,17 +533,12 @@ namespace CalamityMod.NPCs.Providence
                 SoundWarningLevel -= 1 / 50f;
 
             // Updating the looping sound
-            if (SoundEngine.TryGetActiveSound(BurningSoundSlot, out var burningSound) && burningSound.IsPlaying)
+            if (SoundEngine.TryGetActiveSound(BurningSoundSlot, out var burningSound))
                 burningSound.Position = player.Center;
 
-            // Adjust the volume or break the loop accordingly
-            if (burningSound is not null)
-            {
-                if (SoundWarningLevel <= 1f)
-                    burningSound?.Stop();
-                else if (SoundWarningLevel <= 2f)
-                    burningSound.Volume = SoundWarningLevel - 1f;
-            }
+            // Stop the sounds when necessary.
+            if (!NPC.active || SoundWarningLevel <= 1f)
+                StopHolyInfernoSounds();
 
             // Count the remaining Guardians, healer especially because it allows the boss to heal
             int guardianAmt = 0;
@@ -1892,10 +1895,26 @@ namespace CalamityMod.NPCs.Providence
             }
         }
 
+        private void StopHolyInfernoSounds()
+        {
+            if (SoundEngine.TryGetActiveSound(BurningSoundSlot, out ActiveSound infernoSound))
+                infernoSound.Stop();
+            if (BurningSoundSlot.IsValid)
+                BurningSoundSlot = SlotId.Invalid;
+        }
+
+        private bool HolyInfernoSoundCallback(ActiveSound sound)
+        {
+            if (SoundWarningLevel <= 2f)
+                sound.Volume = SoundWarningLevel - 1f;
+            return NPC.active;
+        }
+
         public override bool CheckDead()
         {
             NPC.life = 1;
             DespawnSpecificProjectiles(true);
+            StopHolyInfernoSounds();
             Dying = true;
             NPC.active = true;
             NPC.dontTakeDamage = true;

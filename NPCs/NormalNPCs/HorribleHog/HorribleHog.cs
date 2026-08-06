@@ -128,11 +128,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         public Color TintColorTarget;
 
-        public SlotId DeathLaughSoundSlot;
+        public SlotId DeathLaughSoundSlot = SlotId.Invalid;
 
-        public SlotId DiggingSoundSlot;
+        public SlotId DiggingSoundSlot = SlotId.Invalid;
 
-        public SlotId DevilsTongueSlot;
+        public SlotId DevilsTongueSlot = SlotId.Invalid;
 
         #region Static Behavior Properties
         public static int MaxAttacks_ChasePlayer => 2;
@@ -437,6 +437,25 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     break;
             }
 
+            // Disable all active sounds if Hog despawns.
+            if (!NPC.active)
+            {
+                if (SoundEngine.TryGetActiveSound(DevilsTongueSlot, out ActiveSound devilsTongue))
+                    devilsTongue.Stop();
+                if (DevilsTongueSlot.IsValid)
+                    DevilsTongueSlot = SlotId.Invalid;
+
+                if (SoundEngine.TryGetActiveSound(DiggingSoundSlot, out ActiveSound digging))
+                    digging.Stop();
+                if (DiggingSoundSlot.IsValid)
+                    DiggingSoundSlot = SlotId.Invalid;
+
+                if (SoundEngine.TryGetActiveSound(DeathLaughSoundSlot, out ActiveSound deathLaugh))
+                    deathLaugh.Stop();
+                if (DeathLaughSoundSlot.IsValid)
+                    DeathLaughSoundSlot = SlotId.Invalid;
+            }
+
             SquashVector = Vector2.Lerp(SquashVector, SquashVectorTarget, 0.125f);
             EyeGlintScale = MathHelper.Lerp(EyeGlintScale, 0f, 0.125f);
             TintColor = Color.Lerp(TintColor, TintColorTarget, 0.125f);
@@ -647,6 +666,7 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             {
                 if (SoundEngine.TryGetActiveSound(DevilsTongueSlot, out ActiveSound sound))
                     sound.Stop();
+                DevilsTongueSlot = SlotId.Invalid;
                 return;
             }
 

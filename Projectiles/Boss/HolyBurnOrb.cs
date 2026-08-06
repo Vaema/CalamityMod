@@ -163,6 +163,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public void DrawTrail()
         {
+            if (Projectile.oldPos.Length <= 0)
+                return;
+
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -200f, 200f);
             Vector2 basePosition = Projectile.Center - Main.screenPosition;
             Rectangle screenBounds = new Rectangle(-40, -40, Main.screenWidth + 40, Main.screenHeight + 40);
@@ -187,7 +190,7 @@ namespace CalamityMod.Projectiles.Boss
                     Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
                     using var shaderScope = SanePrimitiveRenderer.BeginShaderScope(shader, Matrix.Identity, Matrix.Identity, projection);
-                    using var trailMesh = TriangleStripBuilder.BuildStripPooled(path, progress => FireWidthFunction(progress), progress => FireColorFunction(progress), PrimitiveMeshCache.Shared, textured: true);
+                    using var trailMesh = TriangleStripBuilder.BuildStripPooled(path, progress => FireWidthFunction(progress), progress => FireColorFunction(progress), PrimitiveMeshCache.Shared, textured: true, smoothingCurve: StripCurveType.Hermite);
                     shaderScope.Draw(trailMesh.View);
                 }
             }

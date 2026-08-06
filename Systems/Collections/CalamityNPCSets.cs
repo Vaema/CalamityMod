@@ -12,8 +12,10 @@ using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Cryogen;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.DevourerofGods;
+using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
@@ -336,6 +338,35 @@ namespace CalamityMod.Systems.Collections
                 NPCType<SupremeCalamitas>(), 18000, // 5:00 (300 seconds)
                 NPCType<PrimordialWyrmHead>(), 18000 // 5:00 (300 seconds)
              );
+
+
+        /// <summary>
+        /// Allows an NPC to be automatically registered as a critter in the Bestiary when the player is near them. <br/>
+        /// Should only be used in cases where an NPC does NOT follow the Vanilla definition of a critter. See <see cref="NPC.CountsAsACritter"/>.
+        /// </summary>
+        public static List<int> ForciblyRegisterAsCritterInBestiary = new List<int>
+        {
+            NPCType<Androomba>(),
+            NPCType<RepairUnitCritter>(),
+            NPCType<Burrower>(),
+            NPCType<BurrowerHitbox>(),
+            NPCType<DivineSwine>(),
+            NPCType<Piggy>(),
+            NPCType<PiggyGold>(),
+            NPCType<Shroomble>()
+        };
+
+        /// <summary>
+        /// Allows a variant of an NPC to count as credits towards another in the Bestiary. <br/>
+        /// This exists to prevent cases where dupilcate entries are made for two variants of the same creature, such as worms and their segments.
+        /// </summary>
+        public static Dictionary<int, int> CountVariantsAsTheSameInBestiary = new Dictionary<int, int>
+        {
+            { NPCType<AstralachneaGround>(), NPCType<AstralachneaWall>() },
+            { NPCType<DevilFishAlt>(), NPCType<DevilFish>() },
+            { NPCType<ScryllarRage>(), NPCType<Scryllar>() },
+            { NPCType<BurrowerHitbox>(), NPCType<Burrower>() },
+        };
 
         /// <summary>
         /// Associates an NPC type with the base value of their max health in Boss Rush.<br/>
