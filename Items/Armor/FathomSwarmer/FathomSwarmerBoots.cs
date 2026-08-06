@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         {
             CreateRecipe().
                 AddIngredient<SeaRemains>(9).
-                AddIngredient<PlantyMush>(8).
-                AddIngredient<DepthCells>(4).
+                AddIngredient<PlantyMush>(50).
+                AddIngredient<DepthCells>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

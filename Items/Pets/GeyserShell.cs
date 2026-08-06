@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<FlakPet>(), ModContent.BuffType<FlakHermitBuff>());
             Item.value = Item.sellPrice(gold: 2);
-            Item.rare = ItemRarityID.Pink;
+            Item.rare = ItemRarityID.Orange;
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)

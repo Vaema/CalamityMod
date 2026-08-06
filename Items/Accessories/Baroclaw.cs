@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<CrawCarapace>().
-                AddIngredient<DepthCells>(12).
+                AddIngredient<DepthCells>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

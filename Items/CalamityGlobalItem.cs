@@ -204,8 +204,8 @@ namespace CalamityMod.Items
             stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
             stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
             stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
-            // (Spectre Wings) 1 -> 1.5 acceleration multiplier
-            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 1.5f;
+            // (Spectre Wings) 1 -> 2 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
 
             // 170 -> 210 flight time
             stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
@@ -1128,6 +1128,10 @@ namespace CalamityMod.Items
             {
                 modPlayer.magmaStoneVisuals = !hideVisual; // hides the fire dust when hiding the accessory
             }
+            if (item.type == ItemID.VolatileGelatin)
+            {
+                modPlayer.volatileGelatinVisuals = !hideVisual;
+            }
 
             // Amphibian boots are directly nerfed so they aren't the best in slot boots at all times.
             if (item.type == ItemID.AmphibianBoots)
@@ -1188,16 +1192,19 @@ namespace CalamityMod.Items
                 {
                     player.GetJumpState<GravityJump>().Available = true;
                 }
-                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8)
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 7)
                 {
-                    player.maxRunSpeed = 5f;
+                    player.maxRunSpeed = 7f;
                 }
-                player.jumpSpeedBoost += 1.6f;
+                player.jumpSpeedBoost += 2f;
                 if (player.controlDown)
-                    player.maxFallSpeed *= 1.5f;
+                    player.maxFallSpeed *= (player.Calamity().ironBoots || player.Calamity().gSabaton) ? 1.5f : 2f;
                 else
                     player.maxFallSpeed *= 1.2f;
             }
+
+            if (item.type == ItemID.EmpressFlightBooster)
+                player.wingTimeMax += 150;
 
             if (item.type == ItemID.DemonWings && !player.mount.Active)
                 player.maxFallSpeed *= 1.2f;
@@ -1268,7 +1275,6 @@ namespace CalamityMod.Items
             float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.06f;
 
             float flightSpeedMult = 1f +
-                (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
                 (modPlayer.reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0f) +
                 moveSpeedBoost;
 
@@ -1294,14 +1300,14 @@ namespace CalamityMod.Items
                     break;
                 case ItemID.FlameWings:
                     maxAscentMultiplier *= 1.1067f;
-                    constantAscend *= 1.25f;
+                    constantAscend *= 1.2f;
                     break;
                 case ItemID.ButterflyWings:
                     maxAscentMultiplier *= 0.6667f;
                     constantAscend *= 5f;
                     break;
                 case ItemID.GhostWings:
-                    maxAscentMultiplier *= 0.6025f;
+                    maxAscentMultiplier *= 0.6625f;
                     constantAscend *= 5f;
                     break;
                 default:

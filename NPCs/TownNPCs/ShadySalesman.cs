@@ -77,6 +77,7 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = true;
+            NPC.housingCategory = 1; // Prevent the Salesman from being instantly evicted when housed with existing Town NPCs as Town Piggy
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -112,9 +113,24 @@ namespace CalamityMod.NPCs.TownNPCs
                 {
                     if (CalamityWorld.unlockedTownPig)
                     {
+                        int oldHomeTileX = -1;
+                        int oldHomeTileY = -1;
+                        if (NPC.homeTileX != -1 && NPC.homeTileY != -1 && !NPC.homeless)
+                        {
+                            oldHomeTileX = NPC.homeTileX;
+                            oldHomeTileY = NPC.homeTileY;
+                        }
+
                         string name = NPC.GivenName;
                         NPC.Transform(ModContent.NPCType<TownPiggy>());
                         NPC.GivenName = name;
+                        // Transform will force all these back to their unset values, so we need to set them back
+                        if (oldHomeTileX != -1 && oldHomeTileY != -1)
+                        {
+                            NPC.homeTileX = oldHomeTileX;
+                            NPC.homeTileY = oldHomeTileY;
+                            NPC.homeless = false;
+                        }
                     }
                     else
                     {
@@ -277,17 +293,18 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<TheElixir>(Condition.MoonPhasesOdd)
                 .Add<BaconOil>(Condition.MoonPhasesHalf0)
                 .Add<TheSandwich>(Condition.MoonPhasesHalf1)
-                .Add<RageBait>()
+                .Add<RageBait>(Condition.MoonPhasesEven)
+                .Add<TrustyOldRod>(Condition.MoonPhasesOdd)
                 .Add<CombatVoucher>(Condition.DownedGoblinArmy)
-                .Add<AggressiveVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhases04)
-                .Add<OddVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhases15)
-                .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhases26)
-                .Add<HurriedVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhases37)
-                .Add<TrustyOldRod>()
+                .Add<AggressiveVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesOdd)
+                .Add<OddVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesOdd)
+                .Add<UnbreakableVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesEven)
+                .Add<HurriedVoucher>(Condition.DownedGoblinArmy, Condition.MoonPhasesEven)
                 .Add<GluttonyBlender>()
                 .Add<GreedPot>()
                 .Add<FishStocks>()
                 .Add<TheGift>()
+                .Add<ThePact>(CalamityConditions.DownedDreadnautilus, Condition.BloodMoon)
                 .Add<TheMonument>(Condition.Hardmode)
                 .Add<TheHousingContract>(Condition.Hardmode)
                 .Add<OmniGun>(Condition.DownedGolem)
@@ -597,11 +614,25 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                string name = Main.npc[petPig].GivenName;
-                Main.npc[petPig].Transform(ModContent.NPCType<ShadySalesman>());
-                Main.npc[petPig].GivenName = name;
+                NPC pig = Main.npc[petPig];
+                int oldHomeTileX = -1;
+                int oldHomeTileY = -1;
+                if (pig.homeTileX != -1 && pig.homeTileY != -1 && !pig.homeless)
+                {
+                    oldHomeTileX = pig.homeTileX;
+                    oldHomeTileY = pig.homeTileY;
+                }
 
-                string fullName = Main.npc[petPig].FullName;
+                string name = pig.GivenName;
+                pig.Transform(ModContent.NPCType<ShadySalesman>());
+                pig.GivenName = name;
+                // Transform will force all these back to their unset values, so we need to set them back
+                if (oldHomeTileX != -1 && oldHomeTileY != -1)
+                {
+                    pig.homeTileX = oldHomeTileX;
+                    pig.homeTileY = oldHomeTileY;
+                    pig.homeless = false;
+                }
             }
             CanSpawnTonight = false;
         }
@@ -670,7 +701,7 @@ namespace CalamityMod.NPCs.TownNPCs
             for (var i = 0; i < tooltips.Count; i++)
             {
                 var line = tooltips[i];
-                if (!ExemptFromSmall.Contains(line.Name))
+                if (!ExemptFromSmall.Contains(line.Name) && line.Visible)
                 {
                     if (placetoMove < 0)
                         placetoMove = i;
@@ -681,6 +712,15 @@ namespace CalamityMod.NPCs.TownNPCs
                     for (int i2 = 0; i2 < snippets.Length; i2++)
                     {
                         lineText += snippets[i2].Text;
+
+                        if (snippets[i2] is BuffTagPlayerEffectHandler.Snippet snip)
+                        {
+                            lineText += Lang.GetBuffName(snip.BuffId);
+                        }
+                        else if (snippets[i2] is BuffTagEnemyEffectHandler.Snippet snip2)
+                        {
+                            lineText += Lang.GetBuffName(snip2.BuffId);
+                        }
                     }
 
                     if (string.IsNullOrWhiteSpace(lineText))

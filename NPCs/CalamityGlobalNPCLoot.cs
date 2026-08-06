@@ -104,10 +104,10 @@ namespace CalamityMod.NPCs
 
                 #region Sky / Space
                 // Harpy
-                // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
+                // Sky Glaze @ 3.33%
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
-                    postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
+                    npcLoot.Add(ModContent.ItemType<SkyGlaze>(), 30);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
 
@@ -538,8 +538,6 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<StaffOfNecrosteocytes>(), 15, 10));
                     break;
 
-                // The ectoplasm extra drops got moved to the list section; just like moss hornets
-
                 // Hardmode Dungeon Melee Skeletons
                 // Wisp in a Bottle @ 0.5% INSTEAD OF 0.25%
                 case NPCID.RustyArmoredBonesAxe:
@@ -604,10 +602,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Fire Imp
-                // Ashen Stalactite @ 4%, 14.28% after defeating EoW/BoC
+                // Ashen Stalactite @ 4%, 8.33% after defeating EoW/BoC
                 case NPCID.FireImp:
                     npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 25);
-                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 7);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<AshenStalactite>(), 12);
                     break;
 
                 // Demon, Voodoo Demon
@@ -621,10 +619,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Bone Serpent
-                // Old Lord Oathsword @ 4% Normal, 14.29% after defeating EoW/BoC
+                // Old Lord Oathsword @ 4% Normal, 12.5% after defeating EoW/BoC
                 case NPCID.BoneSerpentHead:
                     npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 25);
-                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 4);
+                    npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<OldLordClaymore>(), 8);
                     break;
 
                 // Red Devil
@@ -1833,11 +1831,6 @@ DukeEditFailed:
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
             if (CalamityNPCTypeSets.Skeleton[npc.type])
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
-
-            // All Hardmode Dungeon Enemies
-            // Ectoplasm @ 20%
-            if (CalamityNPCSets.IsBuffedDungeonEnemy[npc.type])
-                npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
         }
         #endregion

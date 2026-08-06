@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public Projectile OwnerProjectile => CalamityUtils.FindProjectileByIdentity((int)Projectile.ai[1], Projectile.owner);
 
-        public const int LifetimeConst = 75;
+        public const int LifetimeConst = 90;
         public override float MaxScale => 0.5f + (float)Math.Cos(Main.GlobalTimeWrappedHourly * 10f) * 0.07f;
         public override float MaxLaserLength => 1560f;
         public override float Lifetime => LifetimeConst;

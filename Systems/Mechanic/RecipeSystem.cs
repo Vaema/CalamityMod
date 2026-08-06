@@ -755,13 +755,13 @@ namespace CalamityMod.Systems
 
                 // Tier lock various items to a higher tier (sorted by progression)
                 { Vanilla(ItemID.Trimarang), AddIngredient(ItemType<PearlShard>(), 5) },
-                { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 5) },
+                { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 10) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
                 { Vanilla(ItemID.FairyBell), RemoveIngredient(ItemID.SoulofSight) },
                 { Vanilla(ItemID.HellfireTreads), AddIngredient(ItemType<EssenceofHavoc>(), 4) },
                 { Vanilla(ItemID.SpiritFlame), AddGroup(AnyAdamantiteBar, 2) },
                 { Vanilla(ItemID.TerraBlade), AddIngredient(ItemType<LivingShard>(), 12) },
-                { Vanilla(ItemID.FireGauntlet), AddIngredient(ItemType<ScoriaBar>(), 5) },
+                { Vanilla(ItemID.FireGauntlet), AddIngredient(ItemType<ScoriaBar>(), 8) },
                 { Vanilla(ItemID.Zenith), ZenithRecipeEdit },
 
                 // Tier unlock various items to a lower tier (sorted by progression)
@@ -1540,14 +1540,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
-
-            // Fledgling Wings
-            r = Recipe.Create(ItemID.CreativeWings);
-            r.AddIngredient<AncientBoneDust>(2);
-            r.AddIngredient(ItemID.Cloud, 5);
-            r.AddIngredient(ItemID.Feather, 10);
-            r.AddTile(TileID.Anvils);
-            r.Register();
 
             // Flying Carpet
             r = Recipe.Create(ItemID.FlyingCarpet);

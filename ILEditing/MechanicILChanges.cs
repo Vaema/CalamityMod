@@ -653,8 +653,14 @@ namespace CalamityMod.ILEditing
         {
             if (self.Calamity().ChaosStone)
             {
+                if (amount <= -1)
+                    amount = self.GetManaCost(item);
+
                 if (pay)
+                {
                     self.statMana -= item.mana;
+                    CombinedHooks.OnConsumeMana(self, item, amount);
+                }
                 if (self.statMana < -self.statManaMax2)
                     self.statMana = -self.statManaMax2;
                 return true;
@@ -709,7 +715,10 @@ namespace CalamityMod.ILEditing
                     ref FluidField calamityFireDrawer = ref player.Calamity().CalamityFireDrawer;
                     ref Vector2 firePosition = ref player.Calamity().FireDrawerPosition;
                     if (calamityFireDrawer is null || calamityFireDrawer.Size != size)
+                    {
+                        calamityFireDrawer?.Dispose();
                         calamityFireDrawer = FluidFieldManager.CreateField(size, scale, 0.1f, 50f, 0.992f);
+                    }  
 
                     // Update the fire draw position.
                     firePosition = new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;

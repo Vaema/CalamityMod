@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             float idealRotation = Main.myPlayer != Projectile.owner ? Projectile.rotation : Projectile.AngleTo(Main.MouseWorld);
 
-            NPC potentialTarget = Projectile.Center.ClosestNPCAt(AresExoskeleton.TargetingDistance);
+            NPC potentialTarget = Projectile.Center.MinionHoming(AresExoskeleton.TargetingDistance, Owner);
             if (potentialTarget != null)
             {
                 Projectile.ai[1] = 1f;

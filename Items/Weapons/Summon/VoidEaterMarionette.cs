@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;
@@ -41,22 +43,25 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.DamageType = DamageClass.Summon;
             Item.shootSpeed = 8;
         }
-        public override bool CanRightClick()
+
+        public override void HoldItem(Player player)
         {
-            if (!Main.keyState.PressingShift())
-                return false;
-            return true;
-        }
-        public override void RightClick(Player player)
-        {
-            if (player.ownedProjectileCounts[Item.shoot] > 0)
+            if (Main.myPlayer == player.whoAmI && player.ownedProjectileCounts[Item.shoot] > 0 && Item.JustPressedKeybind())
             {
                 var p = Main.projectile.First(x => x.active && x.type == Item.shoot && x.owner == player.whoAmI);
-                p.ModProjectile<VoidEaterMarionetteProjectile>().FocusOnFetching = !p.ModProjectile<VoidEaterMarionetteProjectile>().FocusOnFetching;
-                p.netUpdate = true;
+                if (p.ModProjectile is VoidEaterMarionetteProjectile vem)
+                {
+
+                    vem.FocusOnFetching = !vem.FocusOnFetching;
+                    p.netUpdate = true;
+                    if (vem.FocusOnFetching)
+                        CombatText.NewText(player.Hitbox, Color.White, this.GetLocalizedValue("FetchStart"),true);
+                    else
+                        CombatText.NewText(player.Hitbox, Color.White, this.GetLocalizedValue("FetchEnd"), true);
+                }
             }
         }
-        public override bool ConsumeItem(Player player) => false;
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateDynamicHotkey(Item);
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.ownedProjectileCounts[type] > 0)

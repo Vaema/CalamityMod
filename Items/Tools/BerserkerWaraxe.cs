@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PerennialBar>(9).
+                AddIngredient<PerennialBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

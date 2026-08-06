@@ -73,8 +73,8 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<MirageMirror>().
                 AddIngredient<InkBomb>().
-                AddIngredient<DepthCells>(5).
-                AddIngredient<Lumenyl>(5).
+                AddIngredient<DepthCells>(20).
+                AddIngredient<Lumenyl>(15).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

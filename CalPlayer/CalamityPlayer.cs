@@ -842,7 +842,7 @@ namespace CalamityMod.CalPlayer
         public int theBeeCooldown = 0;
         public bool aFossil = false;
         public bool fallingBlockProtection = false;
-        public bool trapProtection = false;
+        public bool archaicPowder = false;
         public bool alluringBait = false;
         public bool enchantedPearl = false;
         public bool rBrain = false;
@@ -877,6 +877,7 @@ namespace CalamityMod.CalPlayer
         public bool eGauntlet = false;
         /// <summary> <inheritdoc cref="magmaStoneVisuals"/> </summary>
         public bool eGauntletVisuals = true;
+        public bool volatileGelatinVisuals = true;
         /// <summary>
         /// Used to prevent melee speed stacking with Feral Claws and its upgrades.<br/>
         /// Feral Claws = 1, Power Glove = 2, Mechanical Glove = 3, Fire Gauntlet = 4, Elemental Gauntlet = 5
@@ -981,6 +982,7 @@ namespace CalamityMod.CalPlayer
         public bool fleshTotemVisual = false;
         public int fleshTotemManaStorage = 0;
         public bool bloodPact = false;
+        public bool CanBeCritByThePact = false;
         public bool bloodflareCore = false;
         public int bloodflareCoreRemainingHealOverTime = 0;
 
@@ -1069,10 +1071,10 @@ namespace CalamityMod.CalPlayer
         public bool dynamoStemCells = false;
         public bool etherealExtorter = false;
         public Item AccessoryParryItem = null;
-        public bool blazingCore = false;
-        public int blazingCoreParry = 0;
-        public int blazingCoreSuccessfulParry = 0;
-        public bool blazingCoreEmpoweredParry = false;
+        public bool divineProvidence = false;
+        public int divineProvParry = 0;
+        public int divineProvSuccessfulParry = 0;
+        public bool divineProvEmpoweredParry = false;
         public bool voltaicJelly = false;
         public bool jellyChargedBattery = false;
         /// <summary> General cooldown for accessories which spawn projectiles on minion hits. </summary>
@@ -1151,6 +1153,7 @@ namespace CalamityMod.CalPlayer
         public int voidFrameCounter = 0;
         /// <summary> <inheritdoc cref="voidFrameCounter"/> </summary>
         public int voidFrame = 0;
+        public int volatileGelHits = 0;
         public bool rottenDogTooth = false;
         public bool angelicAlliance = false;
         public int angelicActivate = -1;
@@ -2122,6 +2125,9 @@ namespace CalamityMod.CalPlayer
             if (crimEffigy)
                 Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1f - CrimsonEffigy.MaxHealthLossPercent));
 
+            if (CanBeCritByThePact)
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * ThePact.MaxLifeMult);
+
             ResetRogueStealth();
 
             calamityBonusLuck = 0f;
@@ -2359,7 +2365,7 @@ namespace CalamityMod.CalPlayer
             protolithBangleVisual = false;
             aFossil = false;
             fallingBlockProtection = false;
-            trapProtection = false;
+            archaicPowder = false;
             alluringBait = false;
             enchantedPearl = false;
             rBrain = false;
@@ -2400,6 +2406,7 @@ namespace CalamityMod.CalPlayer
             ascendantInsignia = false;
             fishStocks = false;
             magmaStoneVisuals = true;
+            volatileGelatinVisuals = true;
             eGauntlet = false;
             eGauntletVisuals = true;
             gloveLevel = 0;
@@ -2430,6 +2437,7 @@ namespace CalamityMod.CalPlayer
             fleshTotemVisual = false;
             fleshTotemMinion = false;
             bloodPact = false;
+            CanBeCritByThePact = false;
             bloodflareCore = false;
             chaliceOfTheBloodGod = false;
             chaliceHeartStyle = false;
@@ -2473,7 +2481,7 @@ namespace CalamityMod.CalPlayer
             dynamoStemCells = false;
             etherealExtorter = false;
             AccessoryParryItem = null;
-            blazingCore = false;
+            divineProvidence = false;
             voltaicJelly = false;
             jellyChargedBattery = false;
             starbusterCore = false;
@@ -2974,6 +2982,9 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Screen Position Movements
+
+        float HalleyScopeLerp = 0;
+        bool HalleyToggle = false;
         public override void ModifyScreenPosition()
         {
             // CIT 08FEB2025: Photosensitivity config also disables screenshake
@@ -2983,6 +2994,19 @@ namespace CalamityMod.CalPlayer
                 Main.screenPosition += Main.rand.NextVector2Circular(GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower, GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower);
 
             GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityClientConfig.Instance.ScreenshakePower);
+
+            if (Player.HeldItem.type != ModContent.ItemType<HalleysInferno>())
+                HalleyToggle = false;
+            else if (Player.HeldItem.JustPressedKeybind())
+                HalleyToggle = !HalleyToggle;
+            
+            HalleyScopeLerp = MathHelper.Clamp(HalleyScopeLerp + (HalleyToggle ? 0.05f : -0.05f), 0, 1);
+            if (HalleyScopeLerp > 0)
+            {
+                var screenSize = new Vector2(Main.screenWidth, Main.screenHeight);
+                Vector2 center = Main.screenPosition + screenSize * 0.5f;
+                Main.screenPosition -= (Vector2.Clamp((center - Main.MouseWorld) / screenSize, new(-0.5f), new(0.5f)) / Main.GameZoomTarget * MathHelper.SmoothStep(0, 1, HalleyScopeLerp)) * new Vector2(1920, 1200) * 0.9f;
+            }
         }
         #endregion
 
@@ -3378,9 +3402,9 @@ namespace CalamityMod.CalPlayer
             xerocSet = false;
             tracersDust = false;
             GemTechState.OnDeathEffects();
-            blazingCoreParry = 0;
-            blazingCoreEmpoweredParry = false;
-            blazingCoreSuccessfulParry = 0;
+            divineProvParry = 0;
+            divineProvEmpoweredParry = false;
+            divineProvSuccessfulParry = 0;
             flameLickedShellParry = 0;
             flameLickedShellEmpoweredParry = false;
             profanedCrystalAnim = -1;
@@ -3733,7 +3757,7 @@ namespace CalamityMod.CalPlayer
 
             if (AccessoryParryItem != null && AccessoryParryItem.JustPressedKeybind())
             {
-                if (blazingCore && blazingCoreParry == 0 && blazingCoreSuccessfulParry == 0)
+                if (divineProvidence && divineProvParry == 0 && divineProvSuccessfulParry == 0)
                 {
                     //minor cheese prevention with standing on a spike with later game gear spamming parry :skull:
                     //because of ordering, if they do not have the cooldown, it will not check the projectile array. Likewise if there are no bosses alive.
@@ -3741,8 +3765,8 @@ namespace CalamityMod.CalPlayer
                     if (!Player.HasCooldown(ParryCooldown.ID) || Player.ownedProjectileCounts[ProjectileType<BlazingStarHeal>()] == 0)
                     {
                         Player.SetScreenshake(3.5f);
-                        blazingCoreParry = 30;
-                        SoundEngine.PlaySound(BlazingCore.ParryActivateSound, Player.Center);
+                        divineProvParry = 30;
+                        SoundEngine.PlaySound(DivineProvidence.ParryActivateSound, Player.Center);
                         var mySourceIsIMadeItUp = Player.GetSource_FromThis();
                         int blazingSun = Projectile.NewProjectile(mySourceIsIMadeItUp, Player.Center, Vector2.Zero, ProjectileType<BlazingSun>(), 0, 0f, Player.whoAmI, 0f, 0f);
                         Main.projectile[blazingSun].Center = Player.Center;
@@ -4812,7 +4836,7 @@ namespace CalamityMod.CalPlayer
                         Player.velocity.Y = 0.5f;
                 }
                 else
-                    Player.velocity.Y = 0f;
+                    Player.velocity.Y = 1E-05f;
 
                 if (CalamityKeybinds.ExoChairSlowdownHotkey.Current)
                     Player.velocity *= 0.5f;
@@ -5197,6 +5221,15 @@ namespace CalamityMod.CalPlayer
             // Ancient Chisel nerf (also affects Hand of Creation)
             if (Player.chiselSpeed)
                 Player.pickSpeed += 0.1f;
+
+            // Prevent Archaic Powder mining speed from stacking with Ancient Chisel or Ancient Fossil
+            if (archaicPowder)
+            {
+                if (Player.chiselSpeed)
+                    Player.pickSpeed += 0.15f;
+                if (aFossil)
+                    Player.pickSpeed += AncientFossil.MiningSpeedBoost;
+            }
 
             if (oceanCrest)
             {
@@ -6053,7 +6086,10 @@ namespace CalamityMod.CalPlayer
 
                 float scale = MathHelper.Max(Main.screenWidth, Main.screenHeight) / size * 0.4f;
                 if (ProfanedMoonlightAuroraDrawer is null || ProfanedMoonlightAuroraDrawer.Size != size)
+                {
+                    ProfanedMoonlightAuroraDrawer?.Dispose();
                     ProfanedMoonlightAuroraDrawer = FluidFieldManager.CreateField(size, scale, 0.1f, 50f, 0.992f);
+                }  
 
                 int sourceArea = (int)Math.Ceiling(6f / ProfanedMoonlightAuroraDrawer.Scale) + 1;
                 ProfanedMoonlightAuroraDrawer.ShouldUpdate = Player.miscCounter % 2 == 0;

@@ -38,12 +38,12 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.GoldenShower).
-                AddIngredient<PerennialBar>(3).
+                AddIngredient<PerennialBar>(10).
                 AddTile(TileID.Bookcases).
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.CursedFlames).
-                AddIngredient<PerennialBar>(3).
+                AddIngredient<PerennialBar>(10).
                 AddTile(TileID.Bookcases).
                 Register();
         }

@@ -40,11 +40,6 @@ namespace CalamityMod.Buffs
             {
                 player.GetDamage<MagicDamageClass>() -= 0.1f;
             }
-            else if (type == BuffID.Clairvoyance)
-            {
-                player.GetDamage<MagicDamageClass>() -= 0.02f;
-                player.GetCritChance<MagicDamageClass>() -= 2;
-            }
             else if (type == BuffID.SugarRush)
             {
                 player.moveSpeed -= 0.1f;

@@ -32,8 +32,8 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PurifiedGel>(12).
-                AddIngredient<BlightedGel>(12).
+                AddIngredient<PurifiedGel>(18).
+                AddIngredient<BlightedGel>(18).
                 AddTile(TileID.Solidifier).
                 Register();
         }

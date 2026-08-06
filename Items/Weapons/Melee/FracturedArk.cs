@@ -140,13 +140,13 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.EnchantedSword).
-                AddIngredient<PurifiedGel>(5).
+                AddIngredient<PurifiedGel>(10).
                 AddRecipeGroup("AnyCopperBar", 10).
                 AddTile(TileID.Anvils).
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.Terragrim).
-                AddIngredient<PurifiedGel>(5).
+                AddIngredient<PurifiedGel>(10).
                 AddRecipeGroup("AnyCopperBar", 10).
                 AddTile(TileID.Anvils).
                 Register();

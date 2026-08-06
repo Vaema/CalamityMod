@@ -15,13 +15,13 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         // These values override Soaring Insignia's
-        public static double FlightTimeBoost = 0.5D; 
+        public static int FlightTimeBoostFlat = CalamityUtils.SecondsToFrames(4);
         public static float MoveSpeedBoost = 0.15f;
-        public static float JumpSpeedBoost = 0.75f; // NOTE: Tooltip shares this number with move speed % as they're equal
+        public static float JumpSpeedBoost = 1f;
         public static float AccelerationBoost = 0.5f;
         public static int AbilityDuration = CalamityUtils.SecondsToFrames(4);
         public static int AbilityCooldown = CalamityUtils.SecondsToFrames(40);
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoost.ToPercent(), MoveSpeedBoost.ToPercent(), (1f + AccelerationBoost).Round(), AbilityDuration.FramesToSeconds(), AbilityCooldown.FramesToSeconds());
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoostFlat.FramesToSeconds(), MoveSpeedBoost.ToPercent(), JumpSpeedBoost.ToJumpSpeedPercent(), (1f + AccelerationBoost).Round(), AbilityDuration.FramesToSeconds(), AbilityCooldown.FramesToSeconds());
 
         public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
         public override void SetDefaults()
@@ -41,6 +41,7 @@ namespace CalamityMod.Items.Accessories
             player.empressBrooch = true;
             player.moveSpeed += MoveSpeedBoost;
             player.jumpSpeedBoost += JumpSpeedBoost - 0.5f;
+            player.wingTimeMax += FlightTimeBoostFlat;
         }
 
         public override void AddRecipes()

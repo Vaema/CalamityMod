@@ -110,15 +110,6 @@ CalamityClientConfig: {
 			'''
 	}
 
-	EnableVanillaTextureEdits: {
-		Label: "[i:Paintbrush] Enable Vanilla Texture Edits"
-		Tooltip:
-			'''
-			Enables slight edits to vanilla boss textures to improve attack telegraphs.
-			Disable this for compatibility with texture packs.
-			'''
-	}
-
 	EnergyShieldOpacity: {
 		Label: "[i:CalamityMod/TheSponge] Energy Shield Opacity"
 		Tooltip:

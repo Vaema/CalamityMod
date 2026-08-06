@@ -12,29 +12,16 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Item.damage = 10;
-            Item.DamageType = DamageClass.Ranged;
+            Item.CloneDefaults(ItemID.ShadewoodBow); // Driftwood (base) = Shadewood
             Item.width = 22;
             Item.height = 42;
-            Item.useTime = 28;
-            Item.useAnimation = 28;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 0f;
-            Item.value = CalamityGlobalItem.RarityWhiteBuyPrice;
-            Item.rare = ItemRarityID.White;
-            Item.UseSound = SoundID.Item5;
-            Item.autoReuse = true;
-            Item.shoot = ProjectileID.WoodenArrowFriendly;
-            Item.shootSpeed = 6.6f;
-            Item.useAmmo = AmmoID.Arrow;
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
             if (player.Calamity().countsAsAnyWet)
             {
-                velocity *= 1.3f;
+                velocity *= 1.2f;
                 knockback += 1f;
 
                 for (int i = 0; i <= 18; i++)

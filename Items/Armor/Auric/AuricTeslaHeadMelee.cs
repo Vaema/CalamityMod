@@ -103,7 +103,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<GodSlayerHeadMelee>().
                 AddIngredient<BloodflareHeadMelee>().
                 AddIngredient<TarragonHeadMelee>().
-                AddIngredient<AuricBar>(12).
+                AddIngredient<AuricBar>(10).
                 AddTile<CosmicAnvil>().
                 SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaHeadMagic>()).
                 Register();

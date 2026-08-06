@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Ranged;
@@ -20,13 +21,13 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/HalleysInfernoShoot") { Volume = 0.68f };
         public static readonly SoundStyle Hit = new("CalamityMod/Sounds/Item/HalleysInfernoHit") { Volume = 0.75f };
         public static float MaxStarburstPerComet => 1;
-        public static float MaxStarburstPerStar => 0.5f;
+        public static float MaxStarburstPerStar => 0.25f;
         public static float LostAccuracyPerMiss => 4;
         public static float MaxAccuracy => 50;
 
-        public static float StarburstDmgMult => 2.5f;
+        public static float StarburstDmgMult => 2f;
 
-        public static float StarburstVelMult => 0.75f;
+        public static float StarburstVelMult => 1f;
         public override void SetDefaults()
         {
             Item.width = 84;
@@ -59,6 +60,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateDynamicHotkey(Item);
+
         public override void HoldItem(Player player)
         {
             if (player.mount.Type == MountID.Drill)
@@ -84,9 +87,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.ElfMelter).
-                AddIngredient<Lumenyl>(6).
+                AddIngredient<Lumenyl>(8).
                 AddIngredient<RuinousSoul>(4).
-                AddIngredient<ExodiumCluster>(12).
+                AddIngredient<ExodiumCluster>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

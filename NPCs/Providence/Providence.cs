@@ -2021,7 +2021,7 @@ namespace CalamityMod.NPCs.Providence
 
                 // Equipment
                 // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
-                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlazingCore>()));
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DivineProvidence>()));
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 50, 60);
@@ -2694,7 +2694,7 @@ namespace CalamityMod.NPCs.Providence
                 // Equipment
                 ModContent.ItemType<ElysianWings>(),
                 ModContent.ItemType<ElysianAegis>(),
-                ModContent.ItemType<BlazingCore>(),
+                ModContent.ItemType<DivineProvidence>(),
                 ModContent.ItemType<ProfanedSoulCrystal>(),
 
                 // Vanity

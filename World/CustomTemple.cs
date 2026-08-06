@@ -921,6 +921,53 @@ namespace CalamityMod.World
                 }
             }
 
+            // Places the "Lizard King" painting
+            int paintingAmt = Main.maxTilesX > 6400 ? Main.rand.Next(2, 4) : Main.maxTilesX > 4200 ? 2 : 1;
+            int paintingAttempts = 0; // Give up if all paintings cannot be placed after 10000 attempts
+            while (paintingAmt > 0 && paintingAttempts <= 10000)
+            {
+                paintingAttempts++;
+                int spotX = WorldGen.genRand.Next(templeLeft, templeRight);
+                int spotY = WorldGen.genRand.Next(templeTop, templeBottom);
+                if (Main.tile[spotX, spotY].WallType == WallID.LihzahrdBrickUnsafe && !Main.tile[spotX, spotY].HasTile)
+                {
+                    bool abortPlacement = false;
+                    for (int i = -70; i <= 70; i++)
+                    {
+                        for (int j = -70; j <= 70; j++)
+                        {
+                            int checkSpotX = spotX + i;
+                            int checkSpotY = spotY + j;
+                            if (!WorldGen.InWorld(checkSpotX, checkSpotY, 5))
+                                continue;
+
+                            Tile tile = Main.tile[checkSpotX, checkSpotY];
+                            if (tile.HasTile)
+                            {
+                                if (tile.TileType == TileID.Painting3X3)
+                                {
+                                    abortPlacement = true;
+                                    break;
+                                }
+                                if (i >= -4 && i <= 4 && j >= -4 && j <= 4 && tile.TileType == TileID.LihzahrdBrick)
+                                {
+                                    abortPlacement = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (abortPlacement)
+                            break;
+                    }
+                    if (abortPlacement)
+                        continue;
+
+                    if (WorldGen.PlaceTile(spotX, spotY, TileID.Painting3X3, true, false, -1, 88))
+                        paintingAmt--;
+                }
+            }
+
             // Return wood spikes back to normal after the above placements are done.
             Main.tileSolid[TileID.WoodenSpikes] = true;
         }

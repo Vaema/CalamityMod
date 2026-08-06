@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Armor.Reaver
 
         // Set Bonus
         public static int SetBonusAggroBoost = 600;
-        public static float SetBonusDebuffDamageReduction = 0.2f;
+        public static float SetBonusDebuffDamageReduction = 0.5f;
         public static float SetBonusMobilityReduction = 0.3f;
         public static int ReaverRageDuration = CalamityUtils.SecondsToFrames(5);
         public static int ReaverRageDefenseBoost = 5;
@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Armor.Reaver
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PerennialBar>(7).
+                AddIngredient<PerennialBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<ReaverHeadMobility>()).
                 Register();

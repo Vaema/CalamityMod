@@ -96,14 +96,14 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient(ItemID.MagicMirror).
-                AddIngredient<CosmiliteBar>(10).
+                AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DivineGeode>(10).
                 AddCondition(Condition.NearShimmer).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.IceMirror).
-                AddIngredient<CosmiliteBar>(10).
+                AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DivineGeode>(10).
                 AddCondition(Condition.NearShimmer).
                 Register();

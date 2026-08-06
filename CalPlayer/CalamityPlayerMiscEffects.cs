@@ -2026,8 +2026,8 @@ namespace CalamityMod.CalPlayer
                     if (Player.velocity.Y == 0 && fallingBootVelCheckTimer > 10)
                     {
                         float power = Utils.Remap(fallingBootVelCheckTimer, 10, 40, 0.1f, 1);
-                        float scaledPower = (float)Math.Pow(power, 3);
-                        int damage = (int)Player.GetBestClassDamage().ApplyTo(1500 * scaledPower); // Damage scales down thrice
+                        float scaledPower = (float)Math.Pow(power, 2);
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(300 * scaledPower); // Damage scales down thrice
                         Vector2 playerFeet = Player.Center + Vector2.UnitY * 26 * Player.gravDir;
 
                         float blastSize = 120 * power;
@@ -2535,15 +2535,15 @@ namespace CalamityMod.CalPlayer
             if (auralisAuroraCooldown > 0)
                 auralisAuroraCooldown--;
 
-            if (blazingCore)
+            if (divineProvidence)
             {
-                if (blazingCoreSuccessfulParry > 0)
-                    BlazingCore.HandleStars(Player);
-                else if (blazingCoreParry > 0)
-                    BlazingCore.HandleParryCountdown(Player);
+                if (divineProvSuccessfulParry > 0)
+                    DivineProvidence.HandleStars(Player);
+                else if (divineProvParry > 0)
+                    DivineProvidence.HandleParryCountdown(Player);
             }
-            else if (blazingCoreParry > 0)
-                blazingCoreParry--;
+            else if (divineProvParry > 0)
+                divineProvParry--;
             else if (flameLickedShellParry > 0)
             {
                 if (flameLickedShell)
@@ -2940,6 +2940,29 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (Player.volatileGelatin)
+            {
+                Player.volatileGelatinCounter++;
+
+                int npcCount = 0;
+                int npcType = ModContent.NPCType<VolatileSlime>();
+                for (int x = 0; x < Main.maxNPCs; x++)
+                {
+                    NPC npc = Main.npc[x];
+                    if (npc.active && npc.type == npcType && npc.ai[1] == Player.whoAmI && npc.ai[3] == 0)
+                        npcCount++;
+                }
+                int wingFlatBoost = 15; // 0.3 seconds of flight
+                float jumpSpeedBoost = 0.25f; // 5% jump speed
+
+                if (Player.wingTimeMax > 0)
+                    Player.wingTimeMax += (wingFlatBoost * npcCount);
+                Player.jumpSpeedBoost += (jumpSpeedBoost * npcCount);
+            }
+            else
+                volatileGelHits = 0;
+            
 
             // Vortex Armor nerf
             if (Player.vortexStealthActive && Player.HeldItem.type != ItemID.PsychoKnife)
@@ -3752,10 +3775,9 @@ namespace CalamityMod.CalPlayer
                 (reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0D) +
                 (angelTreads ? AngelTreads.FlightTimeBoost : 0D) +
                 (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
-                (soaring ? SoaringPotion.FlightBoost : 0D) +
+                (soaring ? SoaringPotion.FlightTimeBoost : 0D) +
                 (prismaticGreaves ? PrismaticGreaves.FlightTimeBoost : 0D) +
                 (plagueReaper ? PlagueReaperMask.SetBonusFlightTimeBoost : 0D) +
-                (ascendantInsignia ? AscendantInsignia.FlightTimeBoost : Player.empressBrooch ? 0.33D : 0D) +
                 externalFlightTimeMultBoost;
 
             if (community)
@@ -4139,9 +4161,9 @@ namespace CalamityMod.CalPlayer
                     Player.lavaImmune = true;
                     Player.fireWalk = true;
                     Player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
+                    Player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
                     Player.buffImmune[BuffID.OnFire] = true;
                     Player.buffImmune[BuffID.Burning] = true;
-                    Player.buffImmune[BuffID.Daybreak] = true;
 
                     if (Player.wingTimeMax > 0)
                         Player.wingTimeMax = (int)(Player.wingTimeMax * 1.1D);

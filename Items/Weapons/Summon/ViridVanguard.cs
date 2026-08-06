@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Summon;
@@ -92,21 +93,17 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<ViridVanguardBlade>();
             Item.rare = ModContent.RarityType<Turquoise>();
         }
-
-        public override bool CanRightClick()
+        public override void HoldItem(Player player)
         {
-            if (!Main.keyState.PressingShift())
-                return false;
-            return true;
-        }
-        public override void RightClick(Player player)
-        {
-            Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
-            if (Main.netMode != NetmodeID.SinglePlayer)
-                ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
+            if (Main.myPlayer == player.whoAmI && Item.JustPressedKeybind())
+            {
+                Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
+            }
         }
 
-        public override bool ConsumeItem(Player player) => false;
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateDynamicHotkey(Item);
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
@@ -171,7 +168,7 @@ namespace CalamityMod.Items.Weapons.Summon
             CreateRecipe().
                 AddIngredient<IgneousExaltation>().
                 AddIngredient<ViralSprout>().
-                AddIngredient<UelibloomBar>(15).
+                AddIngredient<UelibloomBar>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

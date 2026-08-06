@@ -146,7 +146,8 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int b = 0; b < 2; b++)
                 {
                     Vector2 velocity = (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 7 * (tileTouched ? -1 : 1)).RotatedByRandom(0.5f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)Math.Max(Projectile.originalDamage * 0.05f, 1), 0, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
+                    Projectile split = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)Math.Max(Projectile.originalDamage * 0.05f, 1), 0, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
+                    split.DamageType = Projectile.DamageType;
                 }
             }
         }

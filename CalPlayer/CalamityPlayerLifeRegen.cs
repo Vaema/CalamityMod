@@ -275,7 +275,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
-                totalNegativeLifeRegen -= Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana;
+                totalNegativeLifeRegen -= (Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana) + Items.Accessories.ChaosStone.BaseLostRegen;
             }
 
             //
@@ -707,6 +707,9 @@ namespace CalamityMod.CalPlayer
                 regen *= LivingDew.NaturalRegenPower;
             else if (honeyDew)
                 regen *= HoneyDew.NaturalRegenPower;
+
+            if (Player.HasBuff<FulfilledContract>())
+                regen *= ThePact.NaturalRegenBoost;
             // The Camper counteracts the regen loss while moving horizontally
             if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
             {
@@ -738,7 +741,6 @@ namespace CalamityMod.CalPlayer
                     finalRegen += 4f;
 
                 regeneratorDamage = finalRegen * Regenerator.RegenToDamageRatio;
-                Player.GetDamage<GenericDamageClass>() += regeneratorDamage;
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;

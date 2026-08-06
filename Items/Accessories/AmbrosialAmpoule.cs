@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
         public static int MinRegenBoost => 2;
         public static int MaxRegenBoost => 6;
         public static float RegenTimeBoost => 1;
-        public static float NaturalRegenPower => 1.5f;
+        public static float NaturalRegenPower => 1.75f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinRegenBoost.ToRegenPerSecond(), MaxRegenBoost.ToRegenPerSecond(), (NaturalRegenPower - 1f).ToPercent(), RegenTimeBoost.ToPercent());
 
         public override void SetDefaults()

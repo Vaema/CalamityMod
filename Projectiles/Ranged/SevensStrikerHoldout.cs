@@ -52,24 +52,17 @@ namespace CalamityMod.Projectiles.Ranged
             // Consumes a coin, stores it, then calculates what effect will be executed
             if (Projectile.ai[1] == 0)
             {
-                // These checks are here so that the weapon doesn't consume two coins when first used
-                if (shotonce)
+                // Ensure the method doesn't consumes ammo on first shot to avoid consuming two coins
+                if (player.PickAmmo(player.HeldItem, out shot, out scaleFactor, out weaponDamage, out weaponKnockback, out _, !shotonce))
                 {
-                    if (player.PickAmmo(player.HeldItem, out shot, out scaleFactor, out weaponDamage, out weaponKnockback, out _))
-                    {
-                        Projectile.ai[0] = shot;
-                        Projectile.ai[1] = CalculateOutcome();
-                    }
-                    else
-                    {
-                        Projectile.Kill();
-                    }
+                    Projectile.ai[0] = shot;
+                    Projectile.ai[1] = CalculateOutcome();
                 }
                 else
                 {
-                    Projectile.ai[1] = CalculateOutcome();
-                    shotonce = true;
+                    Projectile.Kill();
                 }
+                shotonce = true;
             }
 
             rolltimer--;

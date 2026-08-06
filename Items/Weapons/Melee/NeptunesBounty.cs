@@ -21,10 +21,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 122;
             Item.height = 122;
-            Item.damage = 444;
+            Item.damage = 420;
             Item.knockBack = 9f;
-            Item.useTime = 65;
-            Item.useAnimation = 65;
+            Item.useAnimation = Item.useTime = 65;
             Item.shoot = ModContent.ProjectileType<NeptunesBountyProjectile>();
             Item.shootSpeed = 3f;
 

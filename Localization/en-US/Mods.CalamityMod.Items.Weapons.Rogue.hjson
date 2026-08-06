@@ -683,6 +683,19 @@ LeadTomahawk: {
 		'''
 }
 
+LemonNade: {
+	DisplayName: Lemon 'nade
+	Tooltip:
+		'''
+		Disables normal stealth generation
+		Hold <left> to pull the pin and generate stealth, and release to throw
+		The longer it is held, the shorter the fuse once the 'nade is thrown
+		Will explode in your hand if the fuse is held too long
+		Stealth strikes explode into exploding lemon seeds
+		'Burn their house down!'
+		'''
+}
+
 LeonidProgenitor: {
 	DisplayName: Leonid Progenitor
 	Tooltip:
@@ -887,6 +900,15 @@ ProfanedPartisan: {
 		Throws a profaned spear that splits into miniature spears upon hitting an enemy
 		Stealth strikes remain impaled in an enemy for 10 seconds
 		While an enemy is impaled, all spears that strike them instead shatter into exploding stars
+		'''
+}
+
+Pumpkaboom: {
+	DisplayName: Pumpkaboom
+	Tooltip:
+		'''
+		Throws a pumpkin which sticks to enemies and explodes after a delay
+		Stealth strikes throw larger pumpkins which pull enemies in before releasing a larger explosion
 		'''
 }
 
@@ -1406,27 +1428,5 @@ WulfrumKnife: {
 		Stealth strikes make the knife fly further and hit several times at once
 		<right> to magnetize all stuck knives back to you, restoring stealth
 		Returning knives also temporarily allows using stealth strikes without rogue armor
-		'''
-}
-
-Pumpkaboom: {
-	DisplayName: Pumpkaboom
-	Tooltip:
-		'''
-		Throws a pumpkin which sticks to enemies and explodes after a delay
-		Stealth strikes throw larger pumpkins which pull enemies in before releasing a larger explosion
-		'''
-}
-
-LemonNade: {
-	DisplayName: Lemon 'nade
-	Tooltip:
-		'''
-		Disables normal stealth generation
-		Hold <left> to pull the pin and generate stealth, and release to throw
-		The longer it is held, the shorter the fuse once the 'nade is thrown
-		Will explode in your hand if the fuse is held too long
-		Stealth strikes explode into exploding lemon seeds
-		'Burn their house down!'
 		'''
 }

@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Weapons.Summon
             CreateRecipe().
                 AddIngredient(ItemID.TheAxe).
                 AddIngredient(ItemID.Frog).
-                AddIngredient<CoreofCalamity>(3).
                 AddIngredient<LivingShard>(8).
+                AddIngredient<CoreofCalamity>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 14;
             Item.height = 28;
-            Item.damage = 368;
+            Item.damage = 315;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.PaladinsHammer).
                 AddIngredient<Pwnagehammer>().
-                AddIngredient<ScoriaBar>(5).
-                AddIngredient<AshesofCalamity>(5).
+                AddIngredient<ScoriaBar>(8).
+                AddIngredient<AshesofCalamity>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

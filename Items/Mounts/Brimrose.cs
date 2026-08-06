@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Mounts
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UnholyCore>(5).
+                AddIngredient<UnholyCore>(10).
                 AddIngredient<Bloodstone>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();

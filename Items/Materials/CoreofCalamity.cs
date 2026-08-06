@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Materials
                 AddIngredient<EssenceofHavoc>().
                 AddIngredient<EssenceofEleum>().
                 AddIngredient<AshesofCalamity>().
-                AddIngredient(ItemID.Ectoplasm, 3).
+                AddIngredient(ItemID.Ectoplasm).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -876,27 +876,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         rumbleSound.Stop();
 
                     canDespawn = true;
-                    for (int x = 0; x < Main.maxProjectiles; x++)
-                    {
-                        Projectile projectile = Main.projectile[x];
-                        if (projectile.active)
-                        {
-                            if (projectile.type == bulletHellblast ||
-                                projectile.type == barrage ||
-                                projectile.type == wave)
-                            {
-                                if (projectile.timeLeft > 60)
-                                    projectile.timeLeft = 60;
-                            }
-                            else if (projectile.type == fireblast || projectile.type == gigablast)
-                            {
-                                projectile.ai[2] = 1f;
-
-                                if (projectile.timeLeft > 15)
-                                    projectile.timeLeft = 15;
-                            }
-                        }
-                    }
+                    DespawnProjectiles();
 
                     NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0f, 0.065f);
                     NPC.velocity = Vector2.Lerp(Vector2.UnitY * -4f, Vector2.Zero, (float)Math.Sin(MathHelper.Pi * NPC.Opacity));
@@ -1883,32 +1863,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (!gettingTired5 && IsAtHp_Acceptance)
                 {
-                    for (int x = 0; x < Main.maxProjectiles; x++)
-                    {
-                        Projectile projectile = Main.projectile[x];
-                        if (projectile.active)
-                        {
-                            if (projectile.type == ModContent.ProjectileType<BrimstoneMonster>())
-                            {
-                                if (projectile.timeLeft > 90)
-                                    projectile.timeLeft = 90;
-                            }
-                            if (projectile.type == bulletHellblast ||
-                                projectile.type == barrage ||
-                                projectile.type == wave)
-                            {
-                                if (projectile.timeLeft > 60)
-                                    projectile.timeLeft = 60;
-                            }
-                            else if (projectile.type == fireblast || projectile.type == gigablast)
-                            {
-                                projectile.ai[2] = 1f;
-
-                                if (projectile.timeLeft > 15)
-                                    projectile.timeLeft = 15;
-                            }
-                        }
-                    }
+                    DespawnProjectiles(true);
 
                     if (!BossRushEvent.BossRushActive)
                     {
@@ -1989,6 +1944,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         castFire.noGravity = true;
                     }
 
+                    DespawnProjectiles();
                     SoundEngine.PlaySound(SoundID.DD2_DarkMageCastHeal, player.Center);
                     gettingTired = true;
                     return;
@@ -1998,27 +1954,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             #region DespawnProjectiles
             if (bulletHellCounter2 % BulletHellDuration == 0 && despawnProj)
             {
-                for (int x = 0; x < Main.maxProjectiles; x++)
-                {
-                    Projectile projectile = Main.projectile[x];
-                    if (projectile.active)
-                    {
-                        if (projectile.type == bulletHellblast ||
-                            projectile.type == barrage ||
-                            projectile.type == wave)
-                        {
-                            if (projectile.timeLeft > 60)
-                                projectile.timeLeft = 60;
-                        }
-                        else if (projectile.type == fireblast || projectile.type == gigablast)
-                        {
-                            projectile.ai[2] = 1f;
-
-                            if (projectile.timeLeft > 15)
-                                projectile.timeLeft = 15;
-                        }
-                    }
-                }
+                DespawnProjectiles();
                 despawnProj = false;
             }
             #endregion
@@ -3184,6 +3120,30 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 dashVisualCounter = 0;
             }
             #endregion
+        }
+
+        private static void DespawnProjectiles(bool despawnMaelstrom = false)
+        {
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (despawnMaelstrom && p.type == ModContent.ProjectileType<BrimstoneMonster>())
+                {
+                    if (p.timeLeft > 90)
+                        p.timeLeft = 90;
+                }
+                if (p.type == ModContent.ProjectileType<BrimstoneHellblast2>() || p.type == ModContent.ProjectileType<BrimstoneBarrage>() || p.type == ModContent.ProjectileType<BrimstoneWave>())
+                {
+                    if (p.timeLeft > 60)
+                        p.timeLeft = 60;
+                }
+                else if (p.type == ModContent.ProjectileType<SCalBrimstoneFireblast>() || p.type == ModContent.ProjectileType<SCalBrimstoneGigablast>())
+                {
+                    p.ai[2] = 1f;
+
+                    if (p.timeLeft > 15)
+                        p.timeLeft = 15;
+                }
+            }
         }
 
         public void DoHeartsSpawningCastAnimation(Player target, bool death)

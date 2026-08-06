@@ -66,7 +66,12 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Laceration>(), 60);
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (Owner.Center.X < target.Center.X).ToDirectionInt();
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float damageMult = MathHelper.Clamp(Utils.GetLerpValue(3, 0, Projectile.numHits), 0.1f, 1);
+            modifiers.SourceDamage *= damageMult;
+            modifiers.HitDirectionOverride = (Owner.Center.X < target.Center.X).ToDirectionInt();
+        }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CircularHitboxCollision(Projectile.Center, Projectile.width * Projectile.scale, targetHitbox);
     }

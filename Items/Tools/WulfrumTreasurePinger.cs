@@ -282,7 +282,7 @@ namespace CalamityMod.Items.Tools
         {
             //Intentionally craftable anywhere.
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(5).
+                AddIngredient<WulfrumMetalScrap>(10).
                 Register()
                 .DisableDecraft();
         }
