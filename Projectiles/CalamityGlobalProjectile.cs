@@ -485,7 +485,7 @@ namespace CalamityMod.Projectiles
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
             // 24DEC2025: Ozzatron: victide bobber culled with SSO 
-            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
+            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingChanges(projectile) && !Main.LocalPlayer.dead)
                 return false;
 
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
@@ -2958,7 +2958,7 @@ namespace CalamityMod.Projectiles
         /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
         public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
 
-        public bool RunFishingMinigames(Projectile projectile)
+        public bool RunFishingChanges(Projectile projectile)
         {
             var owner = Main.player[projectile.owner];
             var cplayer = owner.Calamity();

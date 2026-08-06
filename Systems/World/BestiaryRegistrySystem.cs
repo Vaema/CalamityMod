@@ -38,9 +38,10 @@ namespace CalamityMod.Systems
                     if (CalamityNPCSets.ForciblyRegisterAsCritterInBestiary.Contains(pair.Value.type))
                     {
                         if (BestiaryDatabaseNPCsPopulator._currentDatabase._byNpcId.TryGetValue(pair.Value.netID, out BestiaryEntry enemyEntry) && enemyEntry.UIInfoProvider is not CritterUICollectionInfoProvider)
+                        {
                             BestiaryDatabaseNPCsPopulator._currentDatabase.Entries.Remove(enemyEntry);
-
-                        NPCLoader.SetBestiary(pair.Value, BestiaryDatabaseNPCsPopulator._currentDatabase, self.Register(BestiaryEntry.Critter(pair.Key)));
+                            NPCLoader.SetBestiary(pair.Value, BestiaryDatabaseNPCsPopulator._currentDatabase, self.Register(BestiaryEntry.Critter(pair.Key)));
+                        }
                     }
                 }
             }
