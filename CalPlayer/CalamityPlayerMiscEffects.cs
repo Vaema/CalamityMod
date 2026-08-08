@@ -1060,9 +1060,9 @@ namespace CalamityMod.CalPlayer
                 // Create a direct strike to hit this specific NPC.
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Calamity>()));
                 Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI, 255f);
-
-                // Enable crits by setting the sigil's damage class to be whatever the player's strongest damage class is.
-                sigilStrike.DamageType = Player.GetBestClass();
+                //Set crit chance so Calamity can crit with the proper chance, but don't make it count as those classes.
+                sigilStrike.CritChance = (int)Player.GetTotalCritChance(Player.GetBestClass());
+                sigilStrike.DamageType = AverageDamageClass.Instance;
 
                 // Incinerate the target with either Vulnerability Hex or True Vulnerability Hex, depending on current cursor focus.
                 // This adds 8 to the buff duration, which results in a net increase of 3 frames every time damage is dealt, due to damage occurring every 5 frames.
