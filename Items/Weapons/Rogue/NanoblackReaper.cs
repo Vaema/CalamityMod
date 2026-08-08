@@ -56,7 +56,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 78;
             Item.height = 64;
-            Item.damage = 315;
+            Item.damage = 555;
             Item.knockBack = Knockback;
             Item.ArmorPenetration = ArmorPenetration;
             Item.useTime = Item.useAnimation = 19;
