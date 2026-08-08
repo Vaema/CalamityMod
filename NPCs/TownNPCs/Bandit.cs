@@ -124,7 +124,7 @@ namespace CalamityMod.NPCs.TownNPCs
             "Yuhru", // <@!194276252452913154> (yuhru_)
 
             // Original names
-            this.GetLocalizedValue("Name.Laura"),
+            this.GetLocalizedValue("Name.Taylor"),
             this.GetLocalizedValue("Name.Mie"),
             this.GetLocalizedValue("Name.Bonnie"),
             this.GetLocalizedValue("Name.Sarah"),
@@ -178,8 +178,8 @@ namespace CalamityMod.NPCs.TownNPCs
             if (armsDealerIndex != -1 && nurseIndex != -1)
                 dialogue.Add(this.GetLocalization("Chat.NurseArmsDealer").Format(Main.npc[nurseIndex].GivenName, Main.npc[armsDealerIndex].GivenName));
 
-            if (NPC.GivenName == this.GetLocalizedValue("Name.Laura"))
-                dialogue.Add(this.GetLocalizedValue("Chat.NamedLaura"));
+            if (NPC.GivenName == this.GetLocalizedValue("Name.Taylor"))
+                dialogue.Add(this.GetLocalizedValue("Chat.NamedTaylor"));
 
             if (NPC.GivenName == this.GetLocalizedValue("Name.Penelope"))
                 dialogue.Add(this.GetLocalizedValue("Chat.NamedPenelope"));
