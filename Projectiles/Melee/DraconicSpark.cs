@@ -30,9 +30,9 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         // ai[0] controls what type of Draconic Spark this is.
-        // 0 = Orange spark (inflicts Daybroken)
-        // 1 = Red spark (inflicts Abyssal Flames)
-        // 2 = Yellow spark (inflicts Holy Flames)
+        // 0 = Orange spark
+        // 1 = Red spark
+        // 2 = Yellow spark
         public override void AI()
         {
             DrawProjectile();

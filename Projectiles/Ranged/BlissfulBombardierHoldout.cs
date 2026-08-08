@@ -96,8 +96,14 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void HoldoutAI()
         {
-            // If there's no player, or the player is the server, or the owner's stunned, there'll be no holdout.
-            if (Owner.CantUseHoldout() && PostFireCooldown <= 0 && shootingTimer < (int)(Owner.itemAnimationMax * 0.8f))
+            // If there's no player, or the player isn't holding fire, or the player's stunned, there'll be no holdout.
+            // The holdout will persist if on cooldown, but it is absolutely imperative that it can disappear if dead, CCed, etc.
+            if (Owner == null || !Owner.active || Owner.dead || Owner.CCed || Owner.noItems)
+            {
+                Projectile.Kill();
+                return;
+            }
+            if (!Owner.channel && PostFireCooldown <= 0 && shootingTimer < (int)(Owner.itemAnimationMax * 0.8f))
             {
                 Projectile.Kill();
                 return;

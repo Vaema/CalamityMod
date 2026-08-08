@@ -23,12 +23,12 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().elementalHeart;
+        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().allElementals.HasValue;
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.sandElemental = true;
+            modPlayer.sandElemental = !hideVisual;
             SpawnElemental(player);
         }
 

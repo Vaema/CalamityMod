@@ -35,8 +35,6 @@ namespace CalamityMod.Items.Armor.Statigel
         public override void UpdateArmorSet(Player player)
         {
             player.setBonus = this.GetLocalization("SetBonus").Format(StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
-            var modPlayer = player.Calamity();
-            modPlayer.statigelSet = true;
             player.GetJumpState<StatigelJump>().Enable();
             Player.jumpHeight += (int)(StatigelArmor.SetBonusJumpHeightPercentBoost * 15);
             player.jumpSpeedBoost += StatigelArmor.SetBonusJumpSpeedBoost;
@@ -53,8 +51,8 @@ namespace CalamityMod.Items.Armor.Statigel
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PurifiedGel>(5).
-                AddIngredient<BlightedGel>(5).
+                AddIngredient<PurifiedGel>(8).
+                AddIngredient<BlightedGel>(8).
                 AddTile(TileID.Solidifier).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelHeadMagic>()).
                 Register();

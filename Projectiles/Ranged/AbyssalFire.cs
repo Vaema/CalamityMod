@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
-using CalamityMod.Dusts;
-using CalamityMod.Effects;
 using CalamityMod.Enums;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -22,7 +16,6 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -153,15 +146,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
-            float width;
             float maxBodyWidth = Projectile.scale * MaxLaserWidth * (1 + MathF.Pow(Utils.GetLerpValue(450, 500, VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer, true), 3.5f) * 4);
-            float shrinkRatio = 0.018f;
-
-            //if (completionRatio < shrinkRatio)
-            //    width = MathF.Sin(completionRatio / shrinkRatio * MathHelper.PiOver2) * maxBodyWidth + shrinkRatio;
-            //else
-            //    width = Utils.Remap(completionRatio, shrinkRatio, 1f, maxBodyWidth, 0f);
-
             return maxBodyWidth * Utils.GetLerpValue(0f, 0.05f, completionRatio, true) * Utils.GetLerpValue(LaserLength, LaserLength - 0.1f, completionRatio, true);
         }
 

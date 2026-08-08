@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -15,7 +16,7 @@ namespace CalamityMod.Items.Accessories
     public class SpringStool : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.SpringStoolJumpHotKey);
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((JumpCooldown).FramesToSeconds(), (CritRateBoostAboveTargets));
 
         public static int JumpCooldown = CalamityUtils.SecondsToFrames(20);
@@ -32,7 +33,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetModPlayer<SpringStoolPlayer>().springStool = true;
+            player.GetModPlayer<SpringStoolPlayer>().springStoolItem = Item;
         }
 
         public override void AddRecipes()
@@ -48,7 +49,8 @@ namespace CalamityMod.Items.Accessories
 
     public class SpringStoolPlayer : ModPlayer
     {
-        public bool springStool = false;
+        public bool springStool { get => springStoolItem != null; }
+        public Item springStoolItem = null;
         public int springStoolTimer = 0;
         public bool hasGroundedSinceJump = true;
 
@@ -73,7 +75,7 @@ namespace CalamityMod.Items.Accessories
         public override void PostUpdateEquips()
         {
             // Ensures the special jump initiates only works when unmounted, not grappled to a surface, and the ability is off cooldown
-            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active && hasGroundedSinceJump && !(Player.grappling[0] >= 0))
+            if (springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && springStoolItem.JustPressedKeybind() && !Player.mount.Active && hasGroundedSinceJump && !(Player.grappling[0] >= 0))
             {
                 springStoolTimer = 12;
 
@@ -214,13 +216,13 @@ namespace CalamityMod.Items.Accessories
 
         public override void ResetEffects()
         {
-            springStool = false;
+            springStoolItem = null;
             springStoolTimer = 0;
         }
 
         public override void UpdateDead()
         {
-            springStool = false;
+            springStoolItem = null;
             springStoolTimer = 0;
             hasGroundedSinceJump = true;
         }

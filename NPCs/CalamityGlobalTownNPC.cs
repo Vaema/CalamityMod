@@ -145,6 +145,7 @@ namespace CalamityMod.NPCs
             "The Cooler Arthur", // <@!568263512523014154> (gokuartillery)
             "Shark", // <@!874464051697172492> (congratsistrash)
             "Sagi", // <@!508233115781693441> (sagittariod)
+            "Jongler", // <@!373778045317808129> (madnard)
         ];
         private static readonly string[] ClothierNames =
         [
@@ -153,6 +154,8 @@ namespace CalamityMod.NPCs
             "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
             "Perrin", // <@!253764551139393537> (easyperrin)
             "Spud McGee", // <@!727111000658018326> (starchman)
+            "Lumen Lucille", // <@!529392083136413696> (raiden_ii)
+            "Soup", // <@!100329863541444608> (djsnj20)
         ];
         private static readonly string[] CyborgNames =
         [
@@ -191,7 +194,6 @@ namespace CalamityMod.NPCs
             "Tooshiboots", // <@!333532730593771522> (ulmod)
             "Neesh", // <@!175803493464932352> (xjetty)
             "Bars Boldia", // <@!332989575708540939> (careless_imp)
-            "Basel Raiden John Clive Fantasy 16", // <@!529392083136413696> (raiden_ii)
             "Gobby, Destroyer of Wallets", // <@!429024941296582658> (bwlstorm)
             "Potential Man", // <@!320787277007552512> (veruze)
             "Donny G", // <@!308736236523225088> (donnyg66)
@@ -219,6 +221,7 @@ namespace CalamityMod.NPCs
             "Baggute", // <@!535140564174110720> (thebaggutegamer)
             "Jacob Bryson", // <@!879794107218817026> (.melongun)
             "ImaShoe", // <@!926957605056819261> (imashoe.)
+            "Exatron", // <@!291342874497515531> (diamondnife)
         ];
         private static readonly string[] MechanicNames =
         [
@@ -235,6 +238,7 @@ namespace CalamityMod.NPCs
             "Morshu", // <@!194931581826236416> (uberransy)
             "Spamton G. Spamton", // <@!497146350438318101> (j.u.n.e.s)
             "Goldluna", // <@!442449102857568257> (goldluna)
+            "Vegetable", // <@!1416248900385247344> (kiwisourlemons)
         ];
         private static readonly string[] NurseNames =
         [
@@ -256,6 +260,7 @@ namespace CalamityMod.NPCs
             "Typhäne", // <@!222064016107896832> (typhane.)
             "Charlotte Linlin", // <@!563406464522125323> (vixcalibur)
             "Shmizzle Dizzle", // <@!1070551501283528724> (shmizzledizzle)
+            "Daitaku Helios", // <@!700900181872345121> (_ichigoism)
         ];
         private static readonly string[] PirateNames =
         [
@@ -280,6 +285,7 @@ namespace CalamityMod.NPCs
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
             "Vela", // <@!208719047146209281> (nyxxynightstar)
             "Misako Drevis", // <@!1103067115386323065> (threadsofmemory)
+            "Embrylix", // <@!909842922910937099> (_necrotix_)
         ];
         private static readonly string[] SantaClausNames =
         [
@@ -295,6 +301,7 @@ namespace CalamityMod.NPCs
             "Bone Cold Steve Austin", // <@!282704860992897024> (raendrag_of_rovan)
             "Them Bones", // <@!322208584534589450> (dogvtf)
             "Deep-Vein Thrombonesis", // <@!557473830457704458> (thessyll)
+            "Wing Gaster", // <@!1504946198136750135> (tkktkash)
         ];
         private static readonly string[] SteampunkerNames =
         [
@@ -359,6 +366,7 @@ namespace CalamityMod.NPCs
             "Tequila", // <@!889175547744239677> (thecrispistofnuggets)
             "Bee Movie Script", // <@!407949998173454341> (literally_jesuschrist)
             "Which Doctor", // <@!746103484017016832> (sepulchre0001)
+            "Zecro", // <@!823582273004896268> (zecroexe)
         ];
         private static readonly string[] WizardNames =
         [
@@ -374,6 +382,8 @@ namespace CalamityMod.NPCs
             "Derin", // <@!466703979695308820> (god_15)
             "Umbara", // <@!450062421294579712> (umbaraeclipse)
             "Reyloth Grey", // <@!255043013116428298> (pantyslack)
+            "Jimbo Baggins", // <@!563358554388692992> (thekiller12325)
+            "Shaby Morbals", // <@!815237130401349632> (nogreatnameleft)
         ];
         private static readonly string[] ZoologistNames =
         [
@@ -381,7 +391,6 @@ namespace CalamityMod.NPCs
             "Lacuna", // <@!790746689211203604> (_lacuna_)
             "Mae Borowski", //<@!219158690433990656> (justakkolite)
             "Fera", // <@!195850711567826945> (juneark_)
-            "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
             "Zora", // <@!752687500656640030> (oxytoxy365)
             "Summer", // <@!608455754093035521> (haefer)
@@ -420,6 +429,7 @@ namespace CalamityMod.NPCs
             "Miss Throws a Lot", // <@!799345607847182400> (oakhamsam)
             "Brikwilla", // <@!543803736909414438> (lavendercobra)
             "Melody", // <@!1030635650963214446> (weisslerren)
+            "Lord Foog the 2st", // <@!564984607200641024> (dominusx165)
         ];
         private static readonly string[] TownDogLabradorNames =
         [
@@ -464,6 +474,7 @@ namespace CalamityMod.NPCs
             "Octo", // <@!796112889353994281> (octolinggrimm)
             "Kreska", // <@!130037366852157440> (nuclearnecro)
             "Meokei", // <@!230839680076218378> (azurlia)
+            "Kyubey", // <@!899044218167771146> (thewetsock7)
         ];
         private static readonly string[] TownCatSiameseNames =
         [
@@ -496,6 +507,9 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSilverNames =
         [
             "Archie", // <@!303022375191183360> (jackshiz)
+            "Starkey", // <@!133327709236494337> (scraak)
+            "Cortana", // <@!336320956798599168> (sersupremo)
+            "Mario", // <@!1348497527359541248> (tsuki.hoshihime)
         ];
         private static readonly string[] TownCatWhiteNames = null;
 
@@ -509,6 +523,7 @@ namespace CalamityMod.NPCs
         [
             "Poco", // <@!1192261996146593872> (tostitomuncher33)
             "Puffer", // <@!181103507711983616> (piky)
+            "W53 Nuclear Bomb", // <@!555779410788089861> (t_syrin_t)
         ];
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
@@ -1234,8 +1249,8 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.DoGDefeated");
                     else if (Main.rand.NextBool(5) && !DownedBossSystem.downedBrimstoneElemental)
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.PreBrimmy");
-                    else if (Main.rand.NextBool(10) && CalamityUtils.InventoryHas(Main.LocalPlayer, ItemType<SlickCane>()))
-                        chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.HasSlickCane");
+                    else if (Main.rand.NextBool(10) && CalamityUtils.InventoryHas(Main.LocalPlayer, ItemType<WalkingCane>()))
+                        chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.HasWalkingCane");
                     else if (Main.rand.NextBool(5) && platinumCoins >= 500)
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.Has500Plat");
                     else if (Main.rand.NextBool(5) && platinumCoins >= 100)
@@ -1315,14 +1330,6 @@ namespace CalamityMod.NPCs
                 defense += 20;
             }
         }
-
-        public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
-        {
-            // Not an axe but close enough
-            if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
-                return true;
-            return base.CanBeHitByProjectile(npc, projectile);
-        }
         #endregion
 
         #region Shop Stuff
@@ -1332,7 +1339,6 @@ namespace CalamityMod.NPCs
 
             Condition spelunkerGlowCondition = new(Language.GetText("Conditions.NightDayFullMoon"), () => !Main.dayTime || Main.GetMoonPhase() == MoonPhase.Full); // Identical to the one in NPCShopDatabase
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
-            Condition bestiaryProgressLacewing = new(CalamityUtils.GetText("Condition.LacewingBestiary"), () => Main.GetBestiaryProgressReport().CompletionPercent >= 0.4f);
             Condition crescentMoons = new(CalamityUtils.GetText("Condition.CrescentMoons"), () => Main.GetMoonPhase() == MoonPhase.QuarterAtLeft || Main.GetMoonPhase() == MoonPhase.QuarterAtRight); // for Craw Carapace
             Condition gibbousMoons = new(CalamityUtils.GetText("Condition.GibbousMoons"), () => Main.GetMoonPhase() == MoonPhase.ThreeQuartersAtLeft || Main.GetMoonPhase() == MoonPhase.ThreeQuartersAtRight); // for Giant Shell
 
@@ -1360,7 +1366,7 @@ namespace CalamityMod.NPCs
             {
                 shop.Add<M1Garand>(Condition.DownedSkeletron)
                 .Add<P90>(Condition.Hardmode)
-                .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
+                .AddWithCustomValue(ItemID.Revolver, Item.buyPrice(gold: 35), Condition.Hardmode)
                 .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera);
             }
 
@@ -1438,10 +1444,10 @@ namespace CalamityMod.NPCs
             {
                 shop.Add<HowlsHeart>()
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 25))
-                .Add<ResilientCandle>()
-                .Add<SpitefulCandle>()
-                .Add<VigorousCandle>()
-                .Add<WeightlessCandle>();
+                .Add<ResilientCandle>(Condition.DownedMoonLord)
+                .Add<SpitefulCandle>(Condition.DownedMoonLord)
+                .Add<VigorousCandle>(Condition.DownedMoonLord)
+                .Add<WeightlessCandle>(Condition.DownedMoonLord);
             }
 
             if (type == NPCID.WitchDoctor)
@@ -1486,7 +1492,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.BestiaryGirl)
             {
-                shop.Add(ItemID.EmpressButterfly, bestiaryProgressLacewing);
+                shop.Add(ItemID.EmpressButterfly, Condition.BestiaryFilledPercent(40));
             }
 
             if (type == NPCID.Truffle)

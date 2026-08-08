@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PolarStar>();

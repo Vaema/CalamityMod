@@ -31,7 +31,7 @@ EyeofMagnus: {
 	Tooltip:
 		'''
 		Fires seeking cosmic masses that restore health and mana on hit
-		Explodes into a nebula cloud that cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
+		Explodes into a nebula cloud that causes enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		{$Common.AverageDamageInfo}
 		'''
 }
@@ -49,14 +49,11 @@ RelicOfDeliverance: {
 	DisplayName: Relic of Deliverance
 	Tooltip:
 		'''
-		Using <left> mounts you on the spear; holding <left> revvs the spear, slowing you down
-		Release to launch yourself at high speeds, halved while a boss is alive
-		Losing too much speed while charging will bust the charge, resetting your speed
-		The dash allows you to ram through enemies and travel through tiles
-		Being inside tiles for too long will warp you back to where you entered
+		Hold <left> to mount and charge the spear, dashing towards your mouse when the button is released
+		The speed of the dash depends on the charge amount, and is reduced while a boss is alive
+		The dash can ram through enemies and travel through tiles
 		Press <right> to dismount
 		Holding out the spear heavily reduces the damage of all summons
-		{$Common.AverageDamageInfo}
 		[c/FF8C00:Vengeance fueled me, I had no thought other than exactment.]
 		[c/FF8C00:The dragon took everything from me, leaving my broken pieces strewn on the ground.]
 		[c/FF8C00:But when I danced by Her side, I knew there was still something worth fighting for.]

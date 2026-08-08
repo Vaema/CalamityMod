@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories.Wings
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(5).
+                AddIngredient<AerialiteBar>(10).
                 AddIngredient(ItemID.Feather, 5).
                 AddTile(TileID.Anvils).
                 Register();

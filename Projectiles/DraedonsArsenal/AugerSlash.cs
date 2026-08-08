@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
             float launchPower = (Projectile.ai[2] == 5 ? 35 : 14);
-            target.MoveNPC(launchVel, launchPower, true, Owner);
+            target.MoveNPC(launchVel, launchPower, Projectile.ai[2] == 5, Owner);
 
             if (Projectile.ai[2] == 5)
                 modifiers.ApplyScalingForcedCrit(Projectile);

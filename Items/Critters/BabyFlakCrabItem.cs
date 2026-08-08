@@ -16,8 +16,8 @@ namespace CalamityMod.Items.Critters
         public override void SetDefaults()
         {
             Item.DefaultToCapturedCritter(ModContent.NPCType<BabyFlakCrab>());
-            Item.value = Item.sellPrice(silver: 10);
-            Item.rare = ItemRarityID.LightPurple;
+            Item.value = Item.sellPrice(silver: 5);
+            Item.rare = ItemRarityID.White;
         }
     }
 }

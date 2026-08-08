@@ -30,6 +30,7 @@ using CalamityMod.Tiles;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -236,14 +237,6 @@ namespace CalamityMod.ILEditing
                 dir = self.direction;
                 dashing = true;
 
-                // CIT 16OCT2024: Commented this code out, as there's no reason for custom dash hotkey to use Player.dashTime
-                // and was causing the return of Celestial Starboard's dash bug from early 1.4 versions
-                /*if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
-                {
-                    self.dashTime = 15;
-                    return;
-                }*/
-
                 dashing = true;
                 self.dashTime = 0;
                 self.timeSinceLastDashStarted = 0;
@@ -251,7 +244,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count == 0)
+            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count == 0)
                 orig(self, out dir, out dashing, dashStartAction);
             else
             {
@@ -323,6 +316,27 @@ namespace CalamityMod.ILEditing
                 return;
             }
             orig(self, fall, cPosition, cWidth, cHeight);
+        }
+        #endregion
+
+        #region Allow Patron Name Rerolls on License Use
+        private static bool AllowPatronNameRerollsOnLicenseUse(On_NPC.orig_RerollVariation orig, NPC self)
+        {
+            bool success = orig(self);
+            if (success)
+            {
+                if (self.type == NPCID.TownBunny)
+                    CalamityWorld.bunnyName = false;
+                if (self.type == NPCID.TownCat)
+                    CalamityWorld.catName = false;
+                if (self.type == NPCID.TownDog)
+                    CalamityWorld.dogName = false;
+
+                if (!self.TryGetGlobalNPC<CalamityGlobalTownNPC>(out var calGlobalTownNPC))
+                    return success;
+                calGlobalTownNPC.setNewName = true;
+            }
+            return success;
         }
         #endregion
 
@@ -639,8 +653,14 @@ namespace CalamityMod.ILEditing
         {
             if (self.Calamity().ChaosStone)
             {
+                if (amount <= -1)
+                    amount = self.GetManaCost(item);
+
                 if (pay)
+                {
                     self.statMana -= item.mana;
+                    CombinedHooks.OnConsumeMana(self, item, amount);
+                }
                 if (self.statMana < -self.statManaMax2)
                     self.statMana = -self.statManaMax2;
                 return true;
@@ -695,7 +715,10 @@ namespace CalamityMod.ILEditing
                     ref FluidField calamityFireDrawer = ref player.Calamity().CalamityFireDrawer;
                     ref Vector2 firePosition = ref player.Calamity().FireDrawerPosition;
                     if (calamityFireDrawer is null || calamityFireDrawer.Size != size)
+                    {
+                        calamityFireDrawer?.Dispose();
                         calamityFireDrawer = FluidFieldManager.CreateField(size, scale, 0.1f, 50f, 0.992f);
+                    }  
 
                     // Update the fire draw position.
                     firePosition = new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
@@ -1118,19 +1141,92 @@ namespace CalamityMod.ILEditing
                 {
                     // If an Abyss wall is detected, try to find another teleportation location
                     bool canSpawn = false;
-                    int teleportStartX = 100;
+                    int halfWorldWidth = Main.maxTilesX / 2;
+
+                    int teleportStartX = Abyss.AtLeftSideOfWorld ? halfWorldWidth - (halfWorldWidth - 175) + 35 : halfWorldWidth + (halfWorldWidth - 175) - 35;
                     int teleportRangeX = Main.maxTilesX - 200;
                     int teleportStartY = 100;
-                    int underworldLayer = Main.UnderworldLayer;
-                    Vector2 newerPos = self.CheckForGoodTeleportationSpot(ref canSpawn, teleportStartX, teleportRangeX, teleportStartY, underworldLayer, new Player.RandomTeleportationAttemptSettings
+                    int teleportRangeY = Main.UnderworldLayer;
+
+                    int attempts = 0;
+                    int maxAttempts = 1000;
+                    int teleportPositionX = 0;
+                    int teleportPositionY = 0;
+                    Vector2 teleportPosition = new Vector2(teleportPositionX, teleportPositionY) * 16f - new Vector2(self.width * 0.5f + 8, self.height);
+                    while (!canSpawn && attempts < maxAttempts)
                     {
-                        avoidLava = true,
-                        avoidHurtTiles = true,
-                        maximumFallDistanceFromOrignalPoint = 100,
-                        attemptsBeforeGivingUp = 1000
-                    });
+                        attempts++;
+
+                        if (Abyss.AtLeftSideOfWorld)
+                            teleportPositionX = teleportStartX + Main.rand.Next(teleportRangeX);
+                        else
+                            teleportPositionX = teleportStartX - Main.rand.Next(teleportRangeX);
+                        teleportPositionY = teleportStartY + Main.rand.Next(teleportRangeY);
+
+                        teleportPositionX = MathHelper.Clamp(teleportPositionX, 5, Main.maxTilesX - 5);
+                        teleportPositionY = MathHelper.Clamp(teleportPositionY, 5, Main.maxTilesY - 5);
+                        teleportPosition = new Vector2(teleportPositionX, teleportPositionY) * 16f - new Vector2(self.width * 0.5f + 8, self.height);
+
+                        if (Collision.SolidCollision(teleportPosition, self.width, self.height))
+                            continue;
+
+                        Tile tile = Framing.GetTileSafely(new Point(teleportPositionX, teleportPositionY));
+                        bool behindTempleWalls = tile.WallType == WallID.LihzahrdBrickUnsafe && teleportPositionY > Main.worldSurface && !NPC.downedPlantBoss;
+                        bool behindDungeonWalls = Main.wallDungeon[tile.WallType] && teleportPositionY > Main.worldSurface && !NPC.downedBoss3;
+                        if (behindTempleWalls || behindDungeonWalls)
+                            continue;
+
+                        int distanceToGround = 0;
+                        int maxFallDistance = 100;
+                        while (distanceToGround < maxFallDistance)
+                        {
+                            Tile groundTile = Framing.GetTileSafely(new Point(teleportPositionX, teleportPositionY + distanceToGround));
+                            teleportPosition = new Vector2(teleportPositionX, teleportPositionY + distanceToGround) * 16f - new Vector2(self.width * 0.5f + 8, self.height);
+                            Collision.SlopeCollision(teleportPosition, self.velocity, self.width, self.height, self.gravDir);
+                            if (!Collision.SolidCollision(teleportPosition, self.width, self.height))
+                            {
+                                distanceToGround++;
+                                continue;
+                            }
+
+                            if (groundTile.HasUnactuatedTile && Main.tileSolid[groundTile.TileType])
+                                break;
+
+                            distanceToGround++;
+                        }
+
+                        teleportPosition.Y -= 16f;
+                        bool inLava = Collision.LavaCollision(teleportPosition, self.width, self.height);
+                        bool onHurtingTile = Collision.AnyHurtingTiles(teleportPosition, self.width, self.height);
+                        bool insideBlocks = Collision.SolidCollision(teleportPosition, self.width, self.height);
+                        bool reachedMaxFallDistance = distanceToGround >= maxFallDistance;
+                        if (inLava || onHurtingTile || insideBlocks || reachedMaxFallDistance)
+                            continue;
+
+                        Vector2 checkDirection = Vector2.UnitX * 16f;
+                        if (Collision.TileCollision(teleportPosition - checkDirection, checkDirection, self.width, self.height, false, false, (int)self.gravDir) != checkDirection)
+                            continue;
+
+                        checkDirection = Vector2.UnitX * -16f;
+                        if (Collision.TileCollision(teleportPosition - checkDirection, checkDirection, self.width, self.height, false, false, (int)self.gravDir) != checkDirection)
+                            continue;
+
+                        checkDirection = Vector2.UnitY * 16f;
+                        if (Collision.TileCollision(teleportPosition - checkDirection, checkDirection, self.width, self.height, false, false, (int)self.gravDir) == checkDirection)
+                        {
+                            checkDirection = Vector2.UnitY * -16f;
+                            if (Collision.TileCollision(teleportPosition - checkDirection, checkDirection, self.width, self.height, false, false, (int)self.gravDir) == checkDirection)
+                            {
+                                canSpawn = true;
+                                teleportPositionY += distanceToGround;
+                                teleportPosition = new Vector2(teleportPositionX, teleportPositionY) * 16f - new Vector2(self.width * 0.5f + 8, self.height);
+                                break;
+                            }
+                        }
+                    }
+
                     // Attempt teleporting again with the new location
-                    orig(self, newerPos, Style, extraInfo);
+                    orig(self, teleportPosition, Style, extraInfo);
                 }
                 else
                 {

@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.nucleogenesis = true;
             modPlayer.shadowMinions = true; //shadowflame
-            modPlayer.holyMinions = true; //holy flames
+            modPlayer.statisMinions = true;
             modPlayer.voltaicJelly = true; //static discharge
             modPlayer.starTaintedGenerator = true; //astral infection and irradiated
             player.GetKnockback<SummonDamageClass>() += 3f;

@@ -177,9 +177,7 @@ namespace CalamityMod.Tiles.Crags
         #region 'Extra Drapes' Drawing
         private void DrawExtraTop(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
         {
-            /*
-                If the tile directly above this tile is not otherworldly stone, or if it is, there is air to both sides of that tile, draw the Extra surface
-            */
+            // If the tile directly above this tile is not otherworldly stone, or if it is, there is air to both sides of that tile, draw the Extra surface
             if (
                 CheckTile(Type, false, 0, 1, i, j) ||
                 (CheckTile(Type, true, 0, 1, i, j) && CheckTile(Type, false, 1, 1, i, j) && CheckTile(Type, false, -1, 1, i, j) && CheckTile(Type, true, 1, 0, i, j) && CheckTile(Type, true, -1, 0, i, j))
@@ -194,9 +192,7 @@ namespace CalamityMod.Tiles.Crags
 
         private void DrawExtraWallEnds(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
         {
-            /*
-                Ending the Extra when a wall is reached
-            */
+            // Ending the Extra when a wall is reached
 
             //Left
             if (
@@ -220,9 +216,7 @@ namespace CalamityMod.Tiles.Crags
 
         private void DrawExtraOverhang(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
         {
-            /*
-                Called from DrawExtraTop(). Ending the Extra when the edge of the tile is reached
-            */
+            // Called from DrawExtraTop(). Ending the Extra when the edge of the tile is reached
 
             //Left
             if (
@@ -244,9 +238,7 @@ namespace CalamityMod.Tiles.Crags
 
         private void DrawExtraDrapes(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
         {
-            /*
-                Hanging 'drapes' of the extra element
-            */
+            // Hanging 'drapes' of the extra element
 
             //Base
             if (
@@ -325,113 +317,6 @@ namespace CalamityMod.Tiles.Crags
         {
             return Main.tile[i, j].TileFrameNumber * extraFrameWidth;
         }
-
-        /*
-        private int GetTileVariant(int i, int j)
-        {
-            int variant = 0; //Default to using variant 1
-            Tile sourceTile = Main.tile[i, j];
-            //Now to get the particular 'variant group' to use, which is used to take the frameX/frameY of the tile and convert it to the variant the tile is using
-            int frameX = sourceTile.frameX / 18;
-            int frameY = sourceTile.frameY / 18;
-            if (frameY < 3 && !(frameX >= 6 && frameX < 9))
-            {
-                int group = 0;
-                int[] group1XPos = new int[] { 1, 2, 3 };
-                int[] group2XPos = new int[] { 0, 4, 5, 9, 10, 11, 12 };
-                foreach (int k in group1XPos)
-                {
-                    if (frameX < k + 1 && frameX >= k)
-                    {
-                        group = 1;
-                    }
-                }
-                foreach (int k in group2XPos)
-                {
-                    if (frameX < k + 1 && frameX >= k)
-                    {
-                        group = 2;
-                    }
-                }
-                if (group == 1)
-                {
-                    if (frameX < 2)
-                    {
-                        variant = 0;
-                    }
-                    else if (frameX < 3)
-                    {
-                        variant = 1;
-                    }
-                    else
-                    {
-                        variant = 2;
-                    }
-                }
-                else if (group == 2)
-                {
-                    if (frameY < 1)
-                    {
-                        variant = 0;
-                    }
-                    else if (frameY < 2)
-                    {
-                        variant = 1;
-                    }
-                    else
-                    {
-                        variant = 2;
-                    }
-                }
-            }
-            else if (frameX < 6 && frameY >= 3)
-            {
-                if (frameX < 2)
-                {
-                    variant = 0;
-                }
-                else if (frameX < 4)
-                {
-                    variant = 1;
-                }
-                else
-                {
-                    variant = 2;
-                }
-            }
-            else if (frameX >= 6 && frameX < 9)
-            {
-                if (frameX < 7)
-                {
-                    variant = 0;
-                }
-                else if (frameX < 8)
-                {
-                    variant = 1;
-                }
-                else
-                {
-                    variant = 2;
-                }
-            }
-            else if (frameX >= 9 && frameY >= 3)
-            {
-                if (frameX < 10)
-                {
-                    variant = 0;
-                }
-                else if (frameX < 11)
-                {
-                    variant = 1;
-                }
-                else
-                {
-                    variant = 2;
-                }
-            }
-            return (variant);
-        }
-        */
         #endregion
     }
 }

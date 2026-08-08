@@ -144,5 +144,7 @@ namespace CalamityMod.Items.Tools
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor() => new Color(129, 29, 149);
     }
 }

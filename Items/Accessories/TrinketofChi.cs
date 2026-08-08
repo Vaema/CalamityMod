@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetDefaults()
         {
-            Item.width = 34;
-            Item.height = 32;
+            Item.width = 36;
+            Item.height = 54;
             Item.value = Item.buyPrice(gold: 10); // Sold by Shady Salesman
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;

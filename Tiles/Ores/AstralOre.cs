@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -29,7 +27,7 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
 
-            MinPick = 110;
+            MinPick = 210;
             DustType = DustID.ShadowbeamStaff;
             AddMapEntry(new Color(255, 153, 255), CreateMapEntryName());
             MineResist = 3f;
@@ -37,7 +35,7 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
-            // TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
+            TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
             TileID.Sets.AvoidedByMeteorLanding[Type] = true;
 
             this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
@@ -72,19 +70,15 @@ namespace CalamityMod.Tiles.Ores
             }
         }
 
-        public override IEnumerable<Item> GetItemDrops(int i, int j)
+        public override bool CanKillTile(int i, int j, ref bool blockDamaged)
         {
-            if (!DownedBossSystem.downedAstrumDeus)
-            {
-                if (Main.rand.NextBool())
-                    yield return new Item(ModContent.ItemType<StarblightSoot>());
-                else
-                    yield return new Item(0);
-            }
-            else
-                yield return new Item(ModContent.ItemType<Items.Placeables.Ores.AstralOre>());
+            return DownedBossSystem.downedAstrumDeus;
         }
 
+        public override bool CanExplode(int i, int j)
+        {
+            return false;
+        }
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;

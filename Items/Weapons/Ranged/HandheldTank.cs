@@ -52,7 +52,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.RocketLauncher).
                 AddRecipeGroup("IronBar", 50).
                 AddIngredient<DivineGeode>(5).
-                AddIngredient(ItemID.TigerSkin).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

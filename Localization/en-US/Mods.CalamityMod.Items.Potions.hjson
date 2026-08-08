@@ -140,7 +140,7 @@ ShadowPotion: {
 
 SoaringPotion: {
 	DisplayName: Soaring Potion
-	Tooltip: "{0}% increased flight time and horizontal flight speed"
+	Tooltip: "{0}% increased flight time"
 }
 
 SulphurskinPotion: {
@@ -164,7 +164,7 @@ TheConcoction: {
 	Tooltip:
 		'''
 		Restores 9999 life
-		Can even be used while you have potion sickness if Quick Heal is repeatedly pressed
+		Can even be used while you have [cbuffplr:PotionSickness] if Quick Heal is repeatedly pressed
 		'''
 	SalesPitch:
 		'''

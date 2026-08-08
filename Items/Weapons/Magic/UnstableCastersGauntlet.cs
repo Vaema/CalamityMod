@@ -26,8 +26,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+            Item.rare = ItemRarityID.Purple;
             Item.Calamity().donorItem = true;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<UnstableCastersGauntletHoldout>();

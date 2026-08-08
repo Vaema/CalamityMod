@@ -1405,26 +1405,25 @@ namespace CalamityMod.NPCs.OldDuke
                     if (NPC.ai[2] >= idlePhaseTimer)
                     {
                         int phase3AttackPicker = 0;
-                        switch ((int)NPC.ai[3])
+                        switch ((int)NPC.ai[3] % 11)
                         {
                             case 0:
                             case 2:
                             case 3:
-                            case 5:
                             case 6:
                             case 7:
+                            case 8:
                                 phase3AttackPicker = 1;
                                 break;
                             case 1:
-                            case 8:
+                            case 5:
+                            case 10:
                                 phase3AttackPicker = 2;
                                 break;
                             case 4:
-                                NPC.ai[3] = 1f;
                                 phase3AttackPicker = 3;
                                 break;
                             case 9:
-                                NPC.ai[3] = 6f;
                                 phase3AttackPicker = 4;
                                 break;
                         }
@@ -1549,7 +1548,7 @@ namespace CalamityMod.NPCs.OldDuke
                     NPC.ai[0] = 10f;
                     NPC.ai[1] = 0f;
                     NPC.ai[2] = 0f;
-                    NPC.ai[3] += 2f;
+                    NPC.ai[3]++;
                     NPC.TargetClosest();
                     NPC.netUpdate = true;
                 }
@@ -1611,11 +1610,7 @@ namespace CalamityMod.NPCs.OldDuke
                     NPC.ai[0] = 10f;
                     NPC.ai[1] = 0f;
                     NPC.ai[2] = 0f;
-
-                    NPC.ai[3] += 2f;
-                    if (NPC.ai[3] >= 9f)
-                        NPC.ai[3] = 0f;
-
+                    NPC.ai[3]++;
                     NPC.netUpdate = true;
                 }
             }
@@ -1682,6 +1677,7 @@ namespace CalamityMod.NPCs.OldDuke
                     NPC.ai[0] = 10f;
                     NPC.ai[1] = 0f;
                     NPC.ai[2] = 0f;
+                    NPC.ai[3]++;
                     NPC.TargetClosest();
                     NPC.netUpdate = true;
                 }
@@ -1762,6 +1758,7 @@ namespace CalamityMod.NPCs.OldDuke
                     NPC.ai[0] = 10f;
                     NPC.ai[1] = 0f;
                     NPC.ai[2] = 0f;
+                    NPC.ai[3]++;
                     NPC.TargetClosest();
                     NPC.netUpdate = true;
                 }

@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 102;
             Item.height = 102;
-            Item.damage = 119;
+            Item.damage = 111;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 28;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -137,8 +137,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<BlightedCleaver>().
-                AddIngredient<CoreofCalamity>().
-                AddIngredient<UelibloomBar>(15).
+                AddIngredient<UelibloomBar>(10).
+                AddIngredient<CoreofCalamity>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ScoriaBar>(7).
+                AddIngredient<ScoriaBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<HydrothermicHeadMagic>()).
                 Register();

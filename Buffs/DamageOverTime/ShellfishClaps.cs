@@ -30,11 +30,6 @@ namespace CalamityMod.Buffs.DamageOverTime
                 {
                     owner = p.owner;
                     projectileCount++;
-                    if (projectileCount >= 5)
-                    {
-                        projectileCount = 5;
-                        break;
-                    }
                 }
             }
 

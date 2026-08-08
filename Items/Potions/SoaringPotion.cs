@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Potions
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float FlightBoost = 0.1f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightBoost.ToPercent());
+        public static float FlightTimeBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoost.ToPercent());
 
         public override void SetStaticDefaults()
         {

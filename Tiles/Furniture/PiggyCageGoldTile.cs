@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Items.Placeables.Furniture;
+﻿using CalamityMod.Items.Placeables.Furniture;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,8 +12,14 @@ namespace CalamityMod.Tiles.Furniture
 {
     public class PiggyCageGoldTile : ModTile
     {
+        public static Asset<Texture2D> topTexture;
+
         public override void SetStaticDefaults()
         {
+            if (!Main.dedServ)
+            {
+                topTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/TransparentGoldCageTile_Top");
+            }
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileSolidTop[Type] = true;
@@ -89,7 +91,7 @@ namespace CalamityMod.Tiles.Furniture
                 drawRectangle = rect;
                 drawRectangle.Y = 0;
                 drawRectangle.Height = 10;
-                spriteBatch.Draw(BabyFlakCrabCageTile.topTexture.Value, position, drawRectangle, finalColor, 0f, zero, 1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(topTexture.Value, position, drawRectangle, finalColor, 0f, zero, 1f, SpriteEffects.None, 0f);
             }
             else
             {

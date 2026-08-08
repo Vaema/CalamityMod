@@ -38,6 +38,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void AI()
         {
+            if (timesItCanHit <= 0)
+                return;
+
             Lighting.AddLight(Projectile.Center, Effects.ArsenalEffects.ArsenalPulseColor.ToVector3() * 0.5f);
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
@@ -194,7 +197,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     pulseOrb2.penetrate = 1;
                     pulseOrb2.scale = 0.7f;
                 }
-                Projectile.Kill();
+                Projectile.timeLeft = 1; // Stagger the kill to allow band accessories to work. There's a separate check that prevents AI from running while timesItCanHit is 0
             }
         }
         public override bool PreDraw(ref Color lightColor)

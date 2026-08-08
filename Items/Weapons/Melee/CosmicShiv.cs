@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<Lightspeed>().
-                AddIngredient<CosmiliteBar>(8).
+                AddIngredient<CosmiliteBar>(10).
                 AddTile<CosmicAnvil>().
                 Register();
         }

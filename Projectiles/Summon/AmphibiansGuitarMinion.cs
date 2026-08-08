@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             float oscillation = MathHelper.Clamp(Math.Abs((float)Math.Sin(Time * 5f / MathHelper.Pi)), 0f, 1f);
-            Vector2 intendedPosition = RotationPosition - Vector2.UnitY.RotatedBy(IntendedRotationAngle) * (Target == null ? 100f : (Target.Size.Length() / 2f) + (600f - 350f * oscillation));
+            Vector2 intendedPosition = RotationPosition - Vector2.UnitY.RotatedBy(IntendedRotationAngle) * (Target == null ? 100f : (Target.Size.Length() / 2f) + (250f - 150f * oscillation));
             Projectile.Center = Vector2.Lerp(Projectile.Center, intendedPosition, Utils.Remap(Projectile.DistanceSQ(intendedPosition), 6400f, 0f, 0.1f, 0.3f));
             Projectile.rotation = IntendedRotationAngle;
 
@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(horizontalFrames: 8, frameX: GuitarSprite);
 
-            Projectile.DrawProjectileWithBackglow(_effectsColor with { A = 0 }, lightColor, Target == null ? 0 : 8, texture, frame);
+            Projectile.DrawProjectileWithBackglow(_effectsColor with { A = 0 }, lightColor, Target == null ? 0 : 3, texture, frame);
 
             Main.EntitySpriteDraw(
                 texture,

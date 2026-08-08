@@ -51,9 +51,9 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(5).
+                AddIngredient<WulfrumMetalScrap>(10).
                 AddIngredient<EnergyCore>().
-                AddIngredient(ItemID.Chain, 2).
+                AddIngredient(ItemID.Chain, 3).
                 AddTile(TileID.Anvils).
                 Register();
         }

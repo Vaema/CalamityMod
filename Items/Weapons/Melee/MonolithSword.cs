@@ -18,18 +18,11 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            Item.damage = 30;
+            Item.CloneDefaults(ItemID.PearlwoodSword); // Monolith >= Pearlwood
             Item.width = 40;
             Item.height = 46;
-            Item.DamageType = DamageClass.Melee;
+            Item.damage = 30;
             Item.useAnimation = Item.useTime = 7;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 4f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
             Item.ArmorPenetration = ArmorPenetration;
         }
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)

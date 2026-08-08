@@ -15,7 +15,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
         }
         public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.FrontAccFront); //me when the player layer is called front acc front :skull:
 
-        public EncasementType GetEncasementTypeFor(CalamityPlayer modPlayer) => modPlayer.blazingCore ? EncasementType.BlazingCore : EncasementType.FlameLickedShell;
+        public EncasementType GetEncasementTypeFor(CalamityPlayer modPlayer) => modPlayer.divineProvidence ? EncasementType.BlazingCore : EncasementType.FlameLickedShell;
 
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
@@ -25,7 +25,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
             bool visible = drawInfo.shadow == 0f && !drawPlayer.dead;
             visible = encasement switch
             {
-                EncasementType.BlazingCore => visible && modPlayer.blazingCoreParry > 0,
+                EncasementType.BlazingCore => visible && modPlayer.divineProvParry > 0,
                 EncasementType.FlameLickedShell => visible && modPlayer.flameLickedShellParry > 0,
                 _ => false
             };
@@ -45,7 +45,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
             {
                 case EncasementType.BlazingCore:
                     tex += "BlazingCoreCrystal";
-                    currentParry = calPlayer.blazingCoreParry;
+                    currentParry = calPlayer.divineProvParry;
                     defaultOpacity = 0.725f;
                     scale = 1.15f;
                     break;

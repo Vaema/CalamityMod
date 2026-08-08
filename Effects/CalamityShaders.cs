@@ -129,10 +129,10 @@ namespace CalamityMod.Effects
         // Used by Devourer of Gods. Renders the portal that he escapes through at the end of phase 1.
         internal static Asset<Effect> DoGPortalShader;
 
-        // Used to render all-encompassing fog in the Floral Paradise biome.
+        // Unused, renders all-encompassing fog.
         internal static Asset<Effect> FogShader;
 
-        // Used to render background water features in the Floral Paradise biome.
+        // Unused, renders background water features.
         internal static Asset<Effect> WaterfallShader;
 
         // Metaballs. See the MetaballManager class for comments on how this system works.
@@ -219,10 +219,6 @@ namespace CalamityMod.Effects
         /// </summary>
         internal static Asset<Effect> DozeLightingShader;
         /// <summary>
-        /// Flips the screen. Used for Gravity Globe.
-        /// </summary>
-        internal static Asset<Effect> FlipScreenShader;
-        /// <summary>
         /// Distorts a texture towards the center based on a provided noisemap. Meant to emulate the Terraria Otherworld barrier effects.
         /// Opacity is the intensity of this distortion, and Saturation is the speed the noisemap moves at.
         /// </summary>
@@ -266,6 +262,9 @@ namespace CalamityMod.Effects
 
         // The swirling aura effect seen around Horrible Hog while its idling.
         internal static Asset<Effect> HorribleHogAuraShader;
+
+        // The shader effect for the primitive trails drawn for Providence's HolyBurnOrb/HolyLight projectiles.
+        internal static Asset<Effect> ProvidenceHolyOrbTrailShader;
         #endregion
 
         #region Big E's Shaders
@@ -273,6 +272,7 @@ namespace CalamityMod.Effects
 
         internal static Asset<Effect> SeaPrismColorBlendingShader;
         internal static Asset<Effect> Dissolve;
+        internal static Asset<Effect> PaletteSwap;
 
         internal static Asset<Effect> BrainOfCthulhuForcefield;
         #endregion
@@ -497,9 +497,6 @@ namespace CalamityMod.Effects
             DozeLightingShader = LoadShader("DozeLightingShader");
             RegisterMiscShader(DozeLightingShader, "ShadowPass", "DozeLightingShader");
 
-            FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
-            RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
-
             OtherworldBarrierDistortionShader = LoadShader("OtherworldBarrierDistortion");
             RegisterMiscShader(OtherworldBarrierDistortionShader, "DistortionPass", "OtherworldBarrierDistortion");
             #endregion
@@ -537,6 +534,9 @@ namespace CalamityMod.Effects
 
             HorribleHogAuraShader = LoadShader("HorribleHogAuraShader");
             RegisterMiscShader(HorribleHogAuraShader, "ScaryAuraPass", "HorribleHogAura");
+
+            ProvidenceHolyOrbTrailShader = LoadShader("ProvidenceHolyOrbTrailShader");
+            RegisterMiscShader(ProvidenceHolyOrbTrailShader, "TrailPass", "ProvidenceHolyOrbTrail");
             #endregion
 
             #region Loading Big E's Shaders
@@ -548,6 +548,9 @@ namespace CalamityMod.Effects
 
             Dissolve = LoadShader("Dissolve");
             RegisterMiscShader(Dissolve, "DissolvePass", "Dissolve");
+
+            PaletteSwap = LoadShader("PaletteSwap");
+            RegisterMiscShader(PaletteSwap, "PaletteSwapPass", "PaletteSwap");
 
             BrainOfCthulhuForcefield = LoadShader("ScreenShaders/BrainOfCthulhuForcefield");
             RegisterScreenShader(BrainOfCthulhuForcefield, "BoCShieldPass", "BrainOfCthulhuForcefield");

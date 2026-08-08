@@ -52,9 +52,8 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareMelee = true;
             modPlayer.godSlayer = true;
-            modPlayer.godSlayerDamage = true;
+            modPlayer.godSlayerMelee = true;
             modPlayer.auricSet = true;
-            modPlayer.auricSetMelee = true;
             player.aggro += SetBonusAggroBoost;
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
@@ -104,7 +103,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<GodSlayerHeadMelee>().
                 AddIngredient<BloodflareHeadMelee>().
                 AddIngredient<TarragonHeadMelee>().
-                AddIngredient<AuricBar>(12).
+                AddIngredient<AuricBar>(10).
                 AddTile<CosmicAnvil>().
                 SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaHeadMagic>()).
                 Register();

@@ -60,5 +60,22 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddTile<DraedonsForge>().
                 Register();
         }
+
+        public static Color RarityColor()
+        {
+            List<Color> colorSet = [
+                new Color(188, 192, 193), // white
+                new Color(157, 100, 183), // purple
+                new Color(249, 166, 77), // honey-ish orange
+                new Color(255, 105, 234), // pink
+                new Color(67, 204, 219), // sky blue
+                new Color(249, 245, 99), // bright yellow
+                new Color(236, 168, 247), // purplish pink
+            ];
+            int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 2 % colorSet.Count);
+            Color currentColor = colorSet[colorIndex];
+            Color nextColor = colorSet[(colorIndex + 1) % colorSet.Count];
+            return Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 2f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
+        }
     }
 }

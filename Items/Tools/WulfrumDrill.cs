@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.value = Item.sellPrice(silver: 5);
             Item.rare = ItemRarityID.Blue;
         }
 
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Tools
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(5).
+                AddIngredient<WulfrumMetalScrap>(15).
                 AddTile(TileID.Anvils).
                 Register();
         }

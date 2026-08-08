@@ -65,9 +65,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<VengefulSunStaff>().
-                AddIngredient<Lumenyl>(5).
-                AddIngredient<RuinousSoul>(2).
-                AddIngredient<ExodiumCluster>(12).
+                AddIngredient<Lumenyl>(8).
+                AddIngredient<RuinousSoul>(4).
+                AddIngredient<ExodiumCluster>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

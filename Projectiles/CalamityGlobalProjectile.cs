@@ -24,8 +24,10 @@ using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.OldDuke;
+using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.Packets;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
@@ -212,6 +214,11 @@ namespace CalamityMod.Projectiles
         public bool grapeBeer = false;
 
         /// <summary>
+        /// If this proj was spawned from the Volatile Gelatin accessory
+        /// </summary>
+        public bool volatileGelatinSpawned = false;
+
+        /// <summary>
         /// How strong grape beer homing is on this. It speeds up the longer the target is targeted.
         /// </summary>
         public float grapeBeerHomingPower = 0.01f;
@@ -350,9 +357,33 @@ namespace CalamityMod.Projectiles
 
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
-            {
-                projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
                 projectile.Calamity().supercritHits = -1;
+
+            IEntitySource sourceItemAcc = source as EntitySource_ItemUse;
+
+
+            if (projectile.type == ProjectileID.VolatileGelatinBall && source is EntitySource_ItemUse { Item: Item acc })
+            {
+                if (acc == Main.player[projectile.owner].Calamity().FindAccessory(ItemID.VolatileGelatin))
+                {
+                    projectile.DamageType = AverageDamageClass.Instance;
+                    projectile.usesIDStaticNPCImmunity = false;
+                    projectile.usesLocalNPCImmunity = true;
+                    projectile.localNPCHitCooldown = -1;
+                    if (projectile.extraUpdates == 0)
+                        projectile.extraUpdates = 1;
+                    if (projectile.timeLeft > 700)
+                        projectile.timeLeft = 700;
+                    projectile.damage = (int)(projectile.damage * 0.60f); // 40% damage nerf
+                    NPC closeTarget = projectile.Center.ClosestNPCAt(640);
+                    Vector2 velocity = (projectile.Center.DirectionTo(closeTarget.Center) + closeTarget.velocity * 0.03f).SafeNormalize(Vector2.UnitX);
+                    projectile.velocity = velocity * 12;
+                    projectile.penetrate = 6; // this is for bounces, actually has pierce 4
+                    Player player = Main.player[projectile.owner];
+                    projectile.ApplyStatsFromSource(player.GetSource_FromThis());
+                    projectile.netUpdate = true;
+                    volatileGelatinSpawned = true; // Mark them as Volatile Gelatin origin
+                }
             }
 
             void ApplyGrapeBeer()
@@ -488,7 +519,7 @@ namespace CalamityMod.Projectiles
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
             // 24DEC2025: Ozzatron: victide bobber culled with SSO 
-            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
+            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingChanges(projectile) && !Main.LocalPlayer.dead)
                 return false;
 
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
@@ -577,6 +608,47 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            if (volatileGelatinSpawned)
+            {
+                Player player = Main.player[projectile.owner];
+                if (projectile.timeLeft == 699 && projectile.FinalExtraUpdate() && player.Calamity().volatileGelatinVisuals)
+                {
+                    for (int i = 0; i <= 14; i++)
+                    {
+                        float variance = Main.rand.NextFloat(-0.4f, 0.4f);
+                        Vector2 vel = projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(variance) * Main.rand.NextFloat(12f, 17f) * (1 - Math.Abs(variance * 1.5f));
+
+                        Dust dust2 = Dust.NewDustPerfect(player.Center, ModContent.DustType<LightDustPixelated>(), vel);
+                        dust2.scale = Main.rand.NextFloat(1.7f, 2.5f) * (1 - Math.Abs(variance * 1.5f));
+                        bool gravity = !Main.rand.NextBool(5);
+                        dust2.noGravity = gravity;
+                        if (!gravity)
+                            dust2.velocity /= 2;
+                        dust2.alpha = Main.rand.Next(70, 150 + 1);
+                        dust2.color = Main.rand.NextBool() ? Color.BlueViolet : Color.SlateBlue;
+                        dust2.noLight = true;
+                        dust2.noLightEmittence = true;
+                    }
+                    
+                }
+                if (projectile.timeLeft > 600 && projectile.numHits == 0)
+                    projectile.velocity.Y -= 0.065f;
+                else if (projectile.velocity.Y < 14)
+                    projectile.velocity.Y += 0.15f;
+
+                float fade = Utils.GetLerpValue(600, 700, projectile.timeLeft, true);
+                if (fade > 0 && projectile.timeLeft < 695 && Main.player[projectile.owner].Calamity().volatileGelatinVisuals)
+                {
+                    Particle spark = new CustomSpark(projectile.Center, -projectile.velocity * 0.05f, "CalamityMod/Particles/BloomCircle", false, 11, 0.52f, Color.BlueViolet * 0.5f * fade, new Vector2(0.7f, 1.2f), true, true, glowCenterScale: 0.7f, glowOpacity: 0.5f * fade, shrinkSpeed: 0.14f);
+                    GeneralParticleHandler.SpawnParticle(spark, false, GeneralDrawLayer.BeforeProjectiles);
+                }
+
+                if (projectile.numHits > 4)
+                    projectile.Kill();
+                if (projectile.timeLeft % 5 == 0)
+                    projectile.netUpdate = true;
+            }
+            
             if (projectile.type == ProjectileID.Skull)
             {
                 bool fromRevSkeletron = projectile.ai[0] < 0f;
@@ -2961,13 +3033,35 @@ namespace CalamityMod.Projectiles
         /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
         public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
 
-        public bool RunFishingMinigames(Projectile projectile)
+        public bool RunFishingChanges(Projectile projectile)
         {
             var owner = Main.player[projectile.owner];
             var cplayer = owner.Calamity();
             owner.Fishing_GetBait(out Item baitItem);
             bool reelingIn = projectile.ai[0] == 1;
             bool lineSnapped = projectile.ai[0] == 2;
+
+            // When using rage bait, gives a chance that your items turn to junk
+            bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
+            bool canRageBaitThePlayer = Main.rand.NextBool(RageBait.junkChance.Item1, RageBait.junkChance.Item2);
+            if (baitItem?.type == ModContent.ItemType<RageBait>() && reelingIn && !alreadyJunk && canRageBaitThePlayer && projectile.localAI[1] != 0)
+            {
+                Fishing_DoRageBaitEffects(projectile, owner);
+                return false;
+            }
+
+            // Trusty Old Rod functionality.
+            bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
+            {
+                Fishing_DoTrustyOldRodEffects(projectile, owner);
+                return false;
+            }
+
+            // For allowing Rage Bait and TOR to function correctly while using custom bobbers.
+            // See the ReelTheBobberChecks function.
+            bool canLetRageBaitRunForMinigame = baitItem?.type == ModContent.ItemType<RageBait>() && !alreadyJunk && canRageBaitThePlayer;
+            bool canLetTrustyOldRodRunForMinigame = owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && pulledNPC;
 
             #region Utilities
             void SmallSplashAtOffset(Vector2 offset)
@@ -3004,7 +3098,15 @@ namespace CalamityMod.Projectiles
             }
             void ReelTheBobberChecks()
             {
-                if (projectile.localAI[1] == 1)
+                if (canLetRageBaitRunForMinigame)
+                {
+                    Fishing_DoRageBaitEffects(projectile, owner);
+                }
+                else if (canLetTrustyOldRodRunForMinigame)
+                {
+                    Fishing_DoTrustyOldRodEffects(projectile, owner);
+                }
+                else if (projectile.localAI[1] == 1)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -3738,61 +3840,59 @@ namespace CalamityMod.Projectiles
 
             }
 
-            bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
-            // When using rage bait, gives a chance that your items turn to junk
-            if (baitItem?.type == ModContent.ItemType<RageBait>() && reelingIn && !alreadyJunk && Main.rand.NextBool(RageBait.junkChance.Item1, RageBait.junkChance.Item2) && projectile.localAI[1] != 0)
-            {
-                var junk = Main.rand.Next(3) switch
-                {
-                    0 => ItemID.OldShoe,
-                    1 => ItemID.FishingSeaweed,
-                    _ => ItemID.TinCan,
-                };
-
-                SoundStyle epicFail = new("CalamityMod/Sounds/Item/Swine", 2);
-                SoundEngine.PlaySound(epicFail with { Volume = 0.9f, Pitch = 0.3f }, projectile.Center);
-                if (CalamityWorld.revenge)
-                    owner.Calamity().rage += 25;
-
-                for (int i = 0; i < 12; i++)
-                {
-                    Particle spray = new CustomSpark(projectile.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10), -Vector2.UnitY * Main.rand.NextFloat(3, 8), "CalamityMod/Particles/BloomCircle", true, Main.rand.Next(18, 24) * 5, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0, 0.7f)) * 0.3f, new Vector2(0.8f, 1f), true, false, 0, false, false);
-                    GeneralParticleHandler.SpawnParticle(spray);
-
-                    if (i % 2 == 0)
-                    {
-                        Particle rage = new CustomSpark(owner.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10) + -Vector2.UnitY * 7.5f, -Vector2.UnitY * Main.rand.NextFloat(0.5f, 2f), "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(12, 18) * 4, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.7f, new Vector2(0.7f, 1f), true, false, 0, false, false);
-                        GeneralParticleHandler.SpawnParticle(rage);
-                    }
-                }
-
-                projectile.ai[1] = junk;
-                return false;
-            }
-
-            bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
-
-            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
-            {
-                // Remove any item you would have fished up
-                projectile.ai[1] = 0;
-                // Get rarity of pull
-                int rarity;
-                int roll = Main.rand.Next(1, 100 + 1);
-                if (roll == 1) rarity = 3; // UltraRare (1/100)
-                else if (roll <= 21) rarity = 2; // Rare ~(1/5)
-                else rarity = 1; // Common ~(4/5)
-
-                if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
-                    TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
-                else if(Main.netMode == NetmodeID.SinglePlayer)
-                    TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
-
-                TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
-                projectile.ai[0] = 2; // snap line
-                return false;
-            }
             return false;
+        }
+
+        private void Fishing_DoRageBaitEffects(Projectile projectile, Player owner)
+        {
+            var junk = Main.rand.Next(3) switch
+            {
+                0 => ItemID.OldShoe,
+                1 => ItemID.FishingSeaweed,
+                _ => ItemID.TinCan,
+            };
+
+            SoundStyle epicFail = new("CalamityMod/Sounds/Item/Swine", 2);
+            SoundEngine.PlaySound(epicFail with { Volume = 0.9f, Pitch = 0.3f }, projectile.Center);
+            if (CalamityWorld.revenge)
+                owner.Calamity().rage += 25;
+
+            for (int i = 0; i < 12; i++)
+            {
+                Particle spray = new CustomSpark(projectile.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10), -Vector2.UnitY * Main.rand.NextFloat(3, 8), "CalamityMod/Particles/BloomCircle", true, Main.rand.Next(18, 24) * 5, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0, 0.7f)) * 0.3f, new Vector2(0.8f, 1f), true, false, 0, false, false);
+                GeneralParticleHandler.SpawnParticle(spray);
+
+                if (i % 2 == 0)
+                {
+                    Particle rage = new CustomSpark(owner.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10) + -Vector2.UnitY * 7.5f, -Vector2.UnitY * Main.rand.NextFloat(0.5f, 2f), "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(12, 18) * 4, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat(0, 0.7f)) * 0.7f, new Vector2(0.7f, 1f), true, false, 0, false, false);
+                    GeneralParticleHandler.SpawnParticle(rage);
+                }
+            }
+
+            projectile.ai[1] = junk;
+            CaughtItemID = junk;
+        }
+
+        private void Fishing_DoTrustyOldRodEffects(Projectile projectile, Player owner)
+        {
+            // Remove any item you would have fished up
+            projectile.ai[1] = 0;
+            CaughtItemID = 0;
+
+            // Get rarity of pull
+            int rarity;
+            int roll = Main.rand.Next(1, 100 + 1);
+            if (roll == 1) rarity = 3; // UltraRare (1/100)
+            else if (roll <= 21) rarity = 2; // Rare ~(1/5)
+            else rarity = 1; // Common ~(4/5)
+
+            if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == owner.whoAmI)
+                TrustyOldRodEnemyPacket.Send(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+            else if (Main.netMode == NetmodeID.SinglePlayer)
+                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+
+            TrustyOldRodEnemySystem.DoTrustyOldRodVFX(owner, projectile.identity, rarity, projectile.lavaWet, projectile.honeyWet);
+            projectile.ai[0] = 2; // snap line
         }
         #endregion
 
@@ -3933,6 +4033,12 @@ namespace CalamityMod.Projectiles
             // Spectralstorm Cannon uses a custom flare projectile
             if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
                 projectile.localAI[1]--;
+
+            if (projectile.type == ProjectileID.BoneArrowFromMerchant) // Bone arrow no gravity before hitting tile
+            {
+                if (projectile.ai[2] != 1)
+                    projectile.ai[0] = 0;
+            }
 
             // Hack to allow Desert Tiger minion to fall through platforms while attacking
             if (projectile.type >= ProjectileID.StormTigerTier1 && projectile.type <= ProjectileID.StormTigerTier3)
@@ -4720,6 +4826,22 @@ namespace CalamityMod.Projectiles
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
+            if (projectile.type == ProjectileID.UnholyArrow) // damage falloff
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.75f / 0.95f); // Vanilla gives it 5% falloff, this cancels that out
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
+            if (projectile.type == ProjectileID.HellfireArrow) // damage falloff
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.8f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
             // Adamantite Throwing Axe's lightning has damage falloff
             if (projectile.type == ProjectileID.CultistBossLightningOrbArc && projectile.ai[2] == 1f)
             {
@@ -4749,6 +4871,48 @@ namespace CalamityMod.Projectiles
             // If this projectile is forced to crit, simply set the crit bool
             if (forcedCrit)
                 modifiers.SetCrit();
+
+            if (volatileGelatinSpawned)
+            {
+                target.AddBuff(BuffID.GelBalloonBuff, 180);
+
+                float minMult = 0.2f;
+                int hitsToMinMult = 5;
+                float damageMult = Utils.Remap(projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+                modifiers.SourceDamage *= damageMult;
+
+                if (projectile.numHits == 0)
+                    player.Calamity().volatileGelHits++;
+                if (player.Calamity().volatileGelHits == 5)
+                {
+                    player.Calamity().volatileGelHits = 0;
+                    Vector2 spawnPosition = player.Center;
+                    int npcType = ModContent.NPCType<VolatileSlime>();
+
+                    int slimeCap = 6;
+                    int npcCount = 0;
+                    for (int x = 0; x < Main.maxNPCs; x++)
+                    {
+                        NPC npc = Main.npc[x];
+                        if (npc.active && npc.type == npcType && npc.ai[1] == player.whoAmI && npc.ai[3] == 0)
+                            npcCount++;
+                    }
+
+                    if (npcCount < slimeCap && player.wingTime > 0)
+                    {
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                        {
+                            SpawnNPCOnPlayerPacket.Send(player, (int)spawnPosition.X, (int)spawnPosition.Y, npcType);
+                        }
+                        else if (Main.netMode == NetmodeID.SinglePlayer)
+                        {
+                            NPC slime = NPC.NewNPCDirect(player.GetSource_FromThis(), (int)spawnPosition.X, (int)spawnPosition.Y, npcType, ai1: player.whoAmI, ai2: npcCount);
+                        }
+                    }
+                }
+
+                projectile.netUpdate = true;
+            }
 
             if (modPlayer.rottenDogTooth && projectile.Calamity().stealthStrike && !modPlayer.vampiricTalisman)
                 target.AddBuff(BuffType<Crumbling>(), RottenDogtooth.ArmorCrunchDebuffTime);
@@ -5009,6 +5173,26 @@ namespace CalamityMod.Projectiles
         #region TileCollide
         public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
         {
+            if (projectile.type == ProjectileID.BoneArrowFromMerchant) // Bone arrow bounce
+            {
+                if (projectile.velocity.X != oldVelocity.X)
+                {
+                    projectile.velocity.X = -oldVelocity.X;
+                }
+                if (projectile.velocity.Y != oldVelocity.Y)
+                {
+                    projectile.velocity.Y = -oldVelocity.Y;
+                }
+                projectile.timeLeft -= 120;
+                if (projectile.timeLeft < 1)
+                    projectile.timeLeft = 1;
+                
+                if (projectile.ai[2] != 1)
+                    SoundEngine.PlaySound(SoundID.NPCHit2 with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, 0.3f), MaxInstances = 10 }, projectile.Center);
+                projectile.ai[2] = 1;
+
+                return false;
+            }
             //Crystal Darts use -1 local that needs to reset whenever they bounce
             if (projectile.type == ProjectileID.CrystalDart)
             {
@@ -5094,8 +5278,7 @@ namespace CalamityMod.Projectiles
                     return initialColor;
             }
 
-            if (projectile.type == ProjectileID.SeedPlantera || projectile.type == ProjectileID.PoisonSeedPlantera ||
-                projectile.type == ProjectileID.CultistBossFireBallClone || projectile.type == ProjectileID.AncientDoomProjectile)
+            if (projectile.type == ProjectileID.SeedPlantera || projectile.type == ProjectileID.PoisonSeedPlantera)
             {
                 if (projectile.timeLeft < 85)
                 {
@@ -5125,6 +5308,37 @@ namespace CalamityMod.Projectiles
                 shouldDrawBool = false;
             }
             #endregion
+
+            if (volatileGelatinSpawned)
+            {
+                Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
+                float rate = (projectile.timeLeft * 0.05f);
+                List<Color> eColors = new List<Color>()
+                {
+                    Color.SlateBlue,
+                    Color.BlueViolet
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                Color finalColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
+
+                float fade = Utils.GetLerpValue(600, 700, projectile.timeLeft, true);
+                int draws = 12;
+                if (Main.player[projectile.owner].Calamity().volatileGelatinVisuals)
+                {
+                    for (int i = 0; i < draws; i++)
+                    {
+                        float rotPoint = MathHelper.TwoPi / draws * i;
+                        float dist = 1.5f * fade;
+                        Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition + rotPoint.ToRotationVector2().RotatedBy(Main.GlobalTimeWrappedHourly) * dist, null, finalColor with { A = 0 } * 0.6f * fade, MathF.Pow(projectile.rotation, 2), texture.Size() / 2f, projectile.scale * 1.2f, SpriteEffects.None);
+                    }
+                }
+                
+                Main.EntitySpriteDraw(texture, projectile.Center - Main.screenPosition, null, Color.Lerp(lightColor, Color.White, fade), projectile.rotation, texture.Size() / 2f, projectile.scale, SpriteEffects.None);
+
+                shouldDrawBool = false;
+            }
 
             if (projectile.type == ProjectileID.DeerclopsIceSpike && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
             {

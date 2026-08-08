@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.harpyRing = true;
-            player.moveSpeed += 0.1f;
+            player.moveSpeed += 0.2f;
         }
 
         public override void AddRecipes()

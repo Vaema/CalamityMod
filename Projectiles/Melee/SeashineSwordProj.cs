@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
 
-        private const int TimeLeft = 600;
+        private const int TimeLeft = 120;
 
         private const int MaxAlpha = 255;
 

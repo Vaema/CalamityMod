@@ -34,16 +34,16 @@ namespace CalamityMod.Items.Weapons.Melee
         #region stats
         public static int BaseDamage = 38;
 
-        public static int DefaultAttunement_BaseDamage = 38;
+        public static int DefaultAttunement_BaseDamage = 34;
 
-        public static int EvilAttunement_BaseDamage = 50;
+        public static int EvilAttunement_BaseDamage = 45;
         public static int EvilAttunement_Lifesteal = 2;
         public static int EvilAttunement_BounceIFrames = 10;
 
-        public static int ColdAttunement_BaseDamage = 40;
+        public static int ColdAttunement_BaseDamage = 38;
         public static float ColdAttunement_ThirdSwingBoost = 1.15f;
 
-        public static int HotAttunement_BaseDamage = 42;
+        public static int HotAttunement_BaseDamage = 38;
         public static int HotAttunement_ShredPlayerIFrames = 6;
         public static int HotAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static float HotAttunement_ShredDecayRate = 1f; //How much charge is lost per frame.
@@ -183,7 +183,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
         {
-            damage += (mainAttunement?.DamageMultiplier ?? 1f) - 1f;
+            damage *= (mainAttunement?.DamageMultiplier ?? 1f);
         }
 
         public void SafeCheckAttunements()

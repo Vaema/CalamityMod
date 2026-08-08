@@ -161,9 +161,6 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.owner == Main.myPlayer)
             {
                 int totalProjectiles = !ProvUtils.StandardAI() ? 8 : 6;
-                if (Main.getGoodWorld)
-                    totalProjectiles *= 2;
-
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<HolyBlastFrags>();
                 float velocity = 5f;

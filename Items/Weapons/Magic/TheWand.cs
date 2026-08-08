@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 40;
             Item.height = 36;
-            Item.damage = 14; // same as 1.4 Wand of Sparking
+            Item.damage = 1;
             Item.mana = 200;
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 0.5f;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 15); // Sold by Shady Salesman
             Item.shoot = ModContent.ProjectileType<SparkInfernal>();
             Item.shootSpeed = 24f;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
@@ -56,15 +56,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (Main.rand.NextBool(3))
                 Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.WandofSparking).
-                AddIngredient<YharonSoulFragment>(8).
-                AddTile<CosmicAnvil>().
-                Register();
         }
     }
 }

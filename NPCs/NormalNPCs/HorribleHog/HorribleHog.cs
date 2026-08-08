@@ -81,6 +81,12 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             PauseBehavior = PauseBehavior.PauseWithGame,
             MaxInstances = 0
         };
+        private static SoundStyle MisophoniaDevilsTongueLoopingSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneMonsterDrone")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0
+        };
 
         public Dictionary<BehaviorState, int> PreviousAttackCounters = [];
 
@@ -122,11 +128,11 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         public Color TintColorTarget;
 
-        public SlotId DeathLaughSoundSlot;
+        public SlotId DeathLaughSoundSlot = SlotId.Invalid;
 
-        public SlotId DiggingSoundSlot;
+        public SlotId DiggingSoundSlot = SlotId.Invalid;
 
-        public SlotId DevilsTongueSlot;
+        public SlotId DevilsTongueSlot = SlotId.Invalid;
 
         #region Static Behavior Properties
         public static int MaxAttacks_ChasePlayer => 2;
@@ -431,6 +437,25 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                     break;
             }
 
+            // Disable all active sounds if Hog despawns.
+            if (!NPC.active)
+            {
+                if (SoundEngine.TryGetActiveSound(DevilsTongueSlot, out ActiveSound devilsTongue))
+                    devilsTongue.Stop();
+                if (DevilsTongueSlot.IsValid)
+                    DevilsTongueSlot = SlotId.Invalid;
+
+                if (SoundEngine.TryGetActiveSound(DiggingSoundSlot, out ActiveSound digging))
+                    digging.Stop();
+                if (DiggingSoundSlot.IsValid)
+                    DiggingSoundSlot = SlotId.Invalid;
+
+                if (SoundEngine.TryGetActiveSound(DeathLaughSoundSlot, out ActiveSound deathLaugh))
+                    deathLaugh.Stop();
+                if (DeathLaughSoundSlot.IsValid)
+                    DeathLaughSoundSlot = SlotId.Invalid;
+            }
+
             SquashVector = Vector2.Lerp(SquashVector, SquashVectorTarget, 0.125f);
             EyeGlintScale = MathHelper.Lerp(EyeGlintScale, 0f, 0.125f);
             TintColor = Color.Lerp(TintColor, TintColorTarget, 0.125f);
@@ -641,13 +666,22 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
             {
                 if (SoundEngine.TryGetActiveSound(DevilsTongueSlot, out ActiveSound sound))
                     sound.Stop();
+                DevilsTongueSlot = SlotId.Invalid;
                 return;
             }
 
             // "Devil's Tongue" looping sound.
             // Similar to Divine Swine; gets louder and lowers music volume based on proximity.
+
             if (!SoundEngine.TryGetActiveSound(DevilsTongueSlot, out _))
-                DevilsTongueSlot = SoundEngine.PlaySound(DevilsTongueLoopingSound, NPC.Center, DevilsTongueLoopCallback);
+            {
+                if (!CalamityClientConfig.Instance.MisophoniaSupport)
+                {
+                    DevilsTongueSlot = SoundEngine.PlaySound(DevilsTongueLoopingSound, NPC.Center, DevilsTongueLoopCallback);
+                }
+                else
+                    DevilsTongueSlot = SoundEngine.PlaySound(MisophoniaDevilsTongueLoopingSound, NPC.Center, DevilsTongueLoopCallback);
+            }
 
             float idealVolume = Utils.Remap(NPC.Distance(Main.LocalPlayer.Center), 800f, 400f, 1f, 0.05f, true);
             Main.musicFade[Main.curMusic] = MathHelper.Lerp(1f, idealVolume, DevilsTongueVolumeMultiplier);
@@ -761,11 +795,17 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
 
         private void SpawnFloorMist(int x, int y)
         {
+            //the particles are all just visual
+            //also, calling lighting check on a server breaks
+            if (Main.netMode == NetmodeID.Server)
+                return;
+
             int textureIndex = Main.rand.Next(GoreID.AmbientFloorCloud1, GoreID.AmbientFloorCloud4 + 1);
 
             Vector2 position = new Point(x, y - 1).ToWorldCoordinates();
             Vector2 velocity = Vector2.UnitX * Main.rand.NextFloat(0.2f, 0.4f) * Main.WindForVisuals;
             Color mistColor = Color.Lerp(new(30, 30, 30), Color.Crimson, Main.rand.NextBool(3) ? Main.rand.NextFloat(0.2f, 0.8f) : Main.rand.Next(2));
+            var point = new Point(x, y);
             Color color = Color.Lerp(Lighting.GetColor(new Point(x, y)), mistColor, 0.5f);
 
             float yOffset = 16f * Main.rand.NextFloat();

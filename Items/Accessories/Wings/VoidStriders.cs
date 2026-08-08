@@ -123,7 +123,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 modPlayer.angelTreads = true;
             }
             modPlayer.tracersDust = !hideVisual && toggleEnabled;
-            modPlayer.voidStriders = true;
         }
 
         public override void AddRecipes()

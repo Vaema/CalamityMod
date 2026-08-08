@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Tools.ClimateChange
             CreateRecipe().
                 AddIngredient<Bakidon>().
                 AddIngredient(ItemID.Sundial).
-                AddIngredient<AstralBar>(3).
+                AddIngredient<AstralBar>(12).
                 AddIngredient(ItemID.FragmentSolar, 15).
                 AddTile(TileID.DemonAltar).
                 Register();
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Tools.ClimateChange
             CreateRecipe().
                 AddIngredient<Bakidon>().
                 AddIngredient(ItemID.Moondial).
-                AddIngredient<AstralBar>(3).
+                AddIngredient<AstralBar>(12).
                 AddIngredient(ItemID.FragmentSolar, 15).
                 AddTile(TileID.DemonAltar).
                 Register();

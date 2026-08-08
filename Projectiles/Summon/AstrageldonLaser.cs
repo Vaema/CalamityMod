@@ -23,11 +23,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.alpha = 255;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -2;
-            Projectile.extraUpdates = 1;
+            Projectile.MaxUpdates = 4;
+            Projectile.timeLeft = 180 * Projectile.MaxUpdates;
             Projectile.DamageType = DamageClass.Summon;
         }
 

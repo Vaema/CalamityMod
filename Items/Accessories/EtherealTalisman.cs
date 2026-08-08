@@ -73,9 +73,6 @@ namespace CalamityMod.Items.Accessories
         #endregion
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.eTalisman = true;
-
             player.manaMagnet = true;
             if (manaFlowerEnabled)
                 player.manaFlower = true;

@@ -30,7 +30,6 @@ namespace CalamityMod.Items.Fishing
             CreateRecipe().
                 AddIngredient(ItemID.FishingBobber).
                 AddIngredient<AerialiteBar>(5).
-                AddIngredient(ItemID.Feather).
                 AddTile(TileID.Anvils).
                 Register();
         }

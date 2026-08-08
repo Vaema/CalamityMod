@@ -38,11 +38,11 @@ Drops: {
 	DownedClamHM: After defeating the Giant Clam in Hardmode
 	DownedGSS: After defeating the Great Sand Shark
 	DownedBetsy: After defeating Betsy
+	DownedDreadnautilus: After defeating Dreadnautilus
 	DownedT1AR: After defeating the first tier of Acid Rain
 	DownedT2AR: After defeating the second tier of Acid Rain
 	FirstKill: Drops only on the first kill
 	MechBoss: Drops on the first kill of the final Mechanical Boss
-	ProvidenceEnraged: Drops if Providence has been enraged
 	ProvidenceChallenge:
 		'''
 		Drops if Providence was defeated only with the [i:CalamityMod/ProfanedSoulArtifact] Profaned Soul Artifact
@@ -52,7 +52,6 @@ Drops: {
 
 // Other conditions
 HasFlareGun: While holding a Flare Gun upgrade
-LacewingBestiary: When at least 40% of the Bestiary has been completed
 CrescentMoons: During a crescent moon
 GibbousMoons: During a gibbous moon
 HasRogueArmor: While wearing rogue armor

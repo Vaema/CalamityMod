@@ -149,6 +149,8 @@ namespace CalamityMod.NPCs.NormalNPCs.HorribleHog
                 Effect tintShader = CalamityShaders.BasicTintShader.Value;
                 tintShader.Parameters["uColor"].SetValue(TintColor.ToVector3());
                 tintShader.Parameters["uOpacity"].SetValue(TintStrength);
+                tintShader.Parameters["uSaturation"].SetValue(NPC.Opacity);
+
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, tintShader, Main.GameViewMatrix.TransformationMatrix);
                 spriteBatch.Draw(lease.Target, Vector2.Zero, Color.White);
                 spriteBatch.End();

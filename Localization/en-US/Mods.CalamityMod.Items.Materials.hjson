@@ -58,11 +58,6 @@ Bloodstone: {
 	Tooltip: ""
 }
 
-BloodstoneCore: {
-	DisplayName: Bloodstone Core
-	Tooltip: ""
-}
-
 CoreofCalamity: {
 	DisplayName: Core of Calamity
 	Tooltip: ""
@@ -218,7 +213,7 @@ PlagueCellCanister: {
 }
 
 PlasmaDriveCore: {
-	DisplayName: Prototype Plasma Drive Core
+	DisplayName: Prototype Plasma Drive
 	Tooltip: Despite all the time it spent in storage, its furnace still burns strong
 }
 

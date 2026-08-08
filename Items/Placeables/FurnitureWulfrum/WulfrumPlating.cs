@@ -27,6 +27,11 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
                 AddTile(TileID.WorkBenches).
                 DisableDecraft().
                 Register();
+            CreateRecipe().
+                AddIngredient<WulfrumComplexPanelWall>(4).
+                AddTile(TileID.WorkBenches).
+                DisableDecraft().
+                Register();
         }
     }
 }

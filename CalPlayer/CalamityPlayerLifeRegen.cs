@@ -73,9 +73,9 @@ namespace CalamityMod.CalPlayer
 
                 if (Player.electrified)
                 {
-                    totalVanillaDoT += eleResist ? 4 : 8;
+                    totalVanillaDoT += 8;
                     if (Player.controlLeft || Player.controlRight)
-                        totalVanillaDoT += eleResist ? 16 : 32;
+                        totalVanillaDoT += 32;
                 }
 
                 // Tally up total current vanilla DoT so it can be added as extra DoT from Death Mode
@@ -109,7 +109,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(burningBlood, 8);
             ApplyDoTDebuff(brainRot, 8);
             ApplyDoTDebuff(vaporfied, 8);
-            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
+            int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3);
             ApplyDoTDebuff(staticDischarge, staticDoT);
             ApplyDoTDebuff(heavybleeding, 16);
             ApplyDoTDebuff(crushDepth, 18);
@@ -130,7 +130,7 @@ namespace CalamityMod.CalPlayer
 
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
             ApplyDoTDebuff(godSlayerInferno, profanedCrystalBuffs ? 50 : 40);
-            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
+            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
             ApplyDoTDebuff(elementalMix, 50); // Never inflicted on the player
             ApplyDoTDebuff(trueVHex, 50);
@@ -138,7 +138,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(dragonFire, dragonfireDoT);
             ApplyDoTDebuff(miracleBlight, 60);
             ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
-            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16) / (eleResist ? 2 : 1);
+            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
@@ -275,7 +275,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
-                totalNegativeLifeRegen -= Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana;
+                totalNegativeLifeRegen -= (Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana) + Items.Accessories.ChaosStone.BaseLostRegen;
             }
 
             //
@@ -677,7 +677,7 @@ namespace CalamityMod.CalPlayer
                 {
                     Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), auraDamage, 0f, Player.whoAmI, 0, 0, 0);
                     pulseCounter = 0;
-                    if (toxicHeartVisuals)
+                    if (toxicHeartVisuals && !CalamityClientConfig.Instance.MisophoniaSupport)
                     {
                         float soundVolume = Utils.Remap(Player.lifeRegen, minLifeRegen, maxLifeRegen, 1f, 0.3f, true);
                         SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
@@ -694,6 +694,10 @@ namespace CalamityMod.CalPlayer
 
         public override void NaturalLifeRegen(ref float regen)
         {
+
+            if (Player.HasBuff<SmashedEvil>())
+                regen *= 1.5f;
+
             // Honey Dew and its upgrades make natural regen more powerful
             if (purity)
                 regen *= Radiance.NaturalRegenPower;
@@ -704,6 +708,8 @@ namespace CalamityMod.CalPlayer
             else if (honeyDew)
                 regen *= HoneyDew.NaturalRegenPower;
 
+            if (Player.HasBuff<FulfilledContract>())
+                regen *= ThePact.NaturalRegenBoost;
             // The Camper counteracts the regen loss while moving horizontally
             if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
             {
@@ -735,7 +741,6 @@ namespace CalamityMod.CalPlayer
                     finalRegen += 4f;
 
                 regeneratorDamage = finalRegen * Regenerator.RegenToDamageRatio;
-                Player.GetDamage<GenericDamageClass>() += regeneratorDamage;
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;

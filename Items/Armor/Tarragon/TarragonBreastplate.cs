@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Armor.Tarragon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UelibloomBar>(15).
+                AddIngredient<UelibloomBar>(24).
                 AddIngredient<DivineGeode>(18).
                 AddTile(TileID.MythrilAnvil).
                 Register();

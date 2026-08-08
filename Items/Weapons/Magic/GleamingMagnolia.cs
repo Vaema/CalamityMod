@@ -24,8 +24,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
+            Item.rare = ItemRarityID.LightPurple;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<GleamingBolt>();

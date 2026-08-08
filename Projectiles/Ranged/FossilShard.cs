@@ -1,5 +1,8 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
@@ -7,6 +10,10 @@ namespace CalamityMod.Projectiles.Ranged
     public class FossilShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[Type] = 5;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -21,6 +28,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            if (Projectile.timeLeft == 120)
+                Projectile.frame = Main.rand.Next(5);
+
             if (Projectile.ai[1] != 1f)
             {
                 if (Projectile.velocity.Y <= -2f)
@@ -41,6 +51,14 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Sand, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+            return false;
         }
     }
 }

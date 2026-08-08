@@ -20,9 +20,9 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<Items.Placeables.Astral.AstralStone>(30).
                 AddIngredient<AureusCell>(5).
                 AddIngredient<StarblightSoot>(20).
-                AddIngredient<Items.Placeables.Astral.AstralStone>(30).
                 AddTile(TileID.HeavyWorkBench).
                 Register();
         }

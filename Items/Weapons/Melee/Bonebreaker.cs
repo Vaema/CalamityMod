@@ -21,8 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 32;
             Item.height = 32;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 23;
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.knockBack = 7f;

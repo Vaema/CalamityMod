@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Pets
                     Projectile.frame = 0;
                 }
             }
-            Lighting.AddLight(Projectile.Center, 0.4f, 1f, 0.5f);
+            Lighting.AddLight(Projectile.Center, 0.6f, 0.6f, 0.6f);
             Vector2 vector46 = Projectile.position;
             if (!fly)
             {

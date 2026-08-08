@@ -190,7 +190,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.getGoodWorld)
                             NPC.ai[1] += 100f;
 
-                        if (enrage || death)
+                        if (enrage)
                         {
                             NPC.ai[1] += 18f;
                         }
@@ -239,8 +239,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (!jump)
                                 return;
 
-                            float velocityBoost = (death ? 5f : 3.8f) * (1f - (lifeRatio / 2));
-                            float velocityX = (death ? 6f : 4f) + velocityBoost;
+                            float velocityBoost = (death ? 3f : 2f) * (1f - (lifeRatio / 2));
+                            float velocityX = 4f + velocityBoost;
                             if (enrage)
                                 velocityX *= 1.5f;
 
@@ -280,7 +280,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             NPC.noTileCollide = true;
 
                             NPC.ai[2] += 1f;
-                            float jumpVelocity = death ? 26f : 21f;
+                            float jumpVelocity = death ? 21f : 18f;
                             if (enrage)
                                 jumpVelocity *= 1.25f;
                             if (turboEnrage)
@@ -393,7 +393,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        float projectileVelocity = death ? 7.5f : 4.75f;
+                        float projectileVelocity = 4.75f;
                         if (enrage)
                             projectileVelocity *= 1.5f;
                         if (turboEnrage)
@@ -1060,7 +1060,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (NPC.ai[1] % 10f == 0f)
                             SoundEngine.PlaySound(SoundID.Item33, spawnLocation);
 
-                        float laserFireAngle = MathHelper.ToRadians((NPC.ai[1] - telegraphTime + 20) * (death ? 2.45f : 2f));
+                        float laserFireAngle = MathHelper.ToRadians((NPC.ai[1] - telegraphTime + 20) * (death ? 2.35f : 2f));
                         Vector2 laserVelocity = Vector2.UnitY.RotatedBy(laserFireAngle * -NPC.localAI[1]) * (death ? 15f : 12f);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -1300,7 +1300,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         for (int i = -1; i <= 1; i += 2)
                         {
                             Vector2 spawnLocation = new Vector2(NPC.Center.X + 14f * NPC.scale * i, NPC.Center.Y - 20f * NPC.scale);
-                            float laserFireAngle = MathHelper.ToRadians((NPC.ai[1] - telegraphTime + 20) * (death ? 2.1f : 2f));
+                            float laserFireAngle = MathHelper.ToRadians((NPC.ai[1] - telegraphTime + 20) * 2f);
                             Vector2 laserVelocity = -Vector2.UnitY.RotatedBy(laserFireAngle * i) * (death ? 15f : 12f);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {

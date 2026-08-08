@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 48;
             Item.height = 56;
-            Item.damage = 71;
+            Item.damage = 60;
             Item.knockBack = 2f;
             Item.mana = 10;
 
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<ForgottenApexWand>().
-                AddIngredient(ItemID.AncientCloth, 5).
+                AddIngredient(ItemID.AncientCloth, 2).
                 AddIngredient<GrandScale>().
                 AddTile(TileID.MythrilAnvil).
                 Register();

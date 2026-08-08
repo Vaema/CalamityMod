@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<FlareBolt>().
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().
-                AddIngredient<UelibloomBar>(5).
+                AddIngredient<UelibloomBar>(10).
                 AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<FlareBolt>().
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().
-                AddIngredient<UelibloomBar>(5).
+                AddIngredient<UelibloomBar>(10).
                 AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();

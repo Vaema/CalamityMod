@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             player.AddBuff(Item.buffType, 2);
             CalamityUtils.KillShootProjectiles(true, type, player);
-            float damageMult = ((float)Math.Log(slimeSlots, 8f)) + 1f;
+            float damageMult = 0.8f + slimeSlots * 0.2f;
             var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, (int)(damage * damageMult), knockback, player.whoAmI);
             minion.originalDamage = (int)(Item.damage * damageMult);
             minion.minionSlots = slimeSlots;

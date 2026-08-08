@@ -27,15 +27,8 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.pickSpeed -= MiningSpeedBoost;
-            player.Calamity().aPowder = true;
             player.Calamity().fallingBlockProtection = true;
-            player.Calamity().trapProtection = true;
-
-            // Doesn't stack with downgrades
-            if (player.chiselSpeed)
-                player.pickSpeed += 0.15f;
-            if (player.Calamity().aFossil)
-                player.pickSpeed += AncientFossil.MiningSpeedBoost;
+            player.Calamity().archaicPowder = true;
         }
 
         public override void AddRecipes()

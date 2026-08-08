@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -71,14 +70,12 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Owner = Main.player[Projectile.owner];
-            target.AddBuff(BuffID.Frostburn2, 120);
             if (hit.Crit)
             {
                 SoundStyle crit = new("CalamityMod/Sounds/NPCHit/CryogenPhaseTransitionCrack");
                 SoundEngine.PlaySound(crit with { Volume = 0.35f, Pitch = 1f }, Projectile.Center);
 
-                if (!target.boss)
-                    target.AddBuff(BuffID.Frozen, 120);
+                target.AddBuff(BuffID.Frozen, 120);
 
                 int points = 6;
                 float radians = MathHelper.TwoPi / points;
@@ -98,7 +95,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             // This is about equivalent to the previous direct strike extra damage but can't also crit itself obviously
             // Also it's not as impacted by defense, which is why it's a bit weaker, rather than being a full 1f
-            modifiers.CritDamage += 0.85f;
+            Player Owner = Main.player[Projectile.owner];
+            modifiers.CritDamage += 0.65f + (Owner.GetTotalCritChance(DamageClass.Ranged) * 0.004f); // .4% crit damage per 1% crit chance
 
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.5f);
@@ -108,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.localAI[0] > 15f)
+            if (Projectile.localAI[0] > 16f)
                 CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, lightColor);
             return false;
         }

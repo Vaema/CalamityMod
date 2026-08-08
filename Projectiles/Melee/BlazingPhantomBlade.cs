@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1; // Blazing blades and hyper blades hit four times, sunlight blades hit ten times.
+            Projectile.penetrate = -1; // Blazing blades and hyper blades hit four times, sunlight blades hit eleven times.
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 20;
@@ -158,8 +158,8 @@ namespace CalamityMod.Projectiles.Melee
             bool hyperBlade = fullyVisibleDuration == DefiledGreatsword.ProjectileFullyVisibleDuration + DefiledGreatsword.ProjectileFullyVisibleDurationIncreasePerAdditionalProjectile;
             bool sunlightBlade = fullyVisibleDuration == DefiledGreatsword.ProjectileFullyVisibleDuration + DefiledGreatsword.ProjectileFullyVisibleDurationIncreasePerAdditionalProjectile * 2f;
 
-            Texture2D asset = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Microsoft.Xna.Framework.Rectangle rectangle = asset.Frame(1, 4);
+            Texture2D asset = TextureAssets.Projectile[Type].Value;
+            Rectangle rectangle = asset.Frame(1, 4);
             Vector2 origin = rectangle.Size() / 2f;
             float num = Projectile.scale * 1.1f;
             SpriteEffects effects = ((!(Projectile.ai[0] >= 0f)) ? SpriteEffects.FlipVertically : SpriteEffects.None);

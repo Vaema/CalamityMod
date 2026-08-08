@@ -71,7 +71,7 @@ namespace CalamityMod
 
         // Vanilla
         public static readonly Condition DownedBetsy                    = Create("Drops.DownedBetsy",    () => DownedBossSystem.downedBetsy);
-
+        public static readonly Condition DownedDreadnautilus            = Create("Drops.DownedDreadnautilus", () => DownedBossSystem.downedDreadnautilus);
         //
         // Calamity Biome conditions
         //

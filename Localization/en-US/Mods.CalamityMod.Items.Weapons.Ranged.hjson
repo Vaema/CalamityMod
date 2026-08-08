@@ -65,6 +65,11 @@ AntiMaterielRifle: {
 		'''
 }
 
+AquashardShotgun: {
+	DisplayName: Aquashard Shotgun
+	Tooltip: Converts musket balls into aquashards that split upon hitting an enemy
+}
+
 Arbalest: {
 	DisplayName: Arbalest
 	Tooltip:
@@ -73,11 +78,6 @@ Arbalest: {
 		Arrows start off small and grow in size with continuous fire
 		Arrow damage, spread and knockback scale with arrow size
 		'''
-}
-
-AquashardShotgun: {
-	DisplayName: Aquashard Shotgun
-	Tooltip: Converts musket balls into aquashards that split upon hitting an enemy
 }
 
 Archerfish: {
@@ -132,7 +132,7 @@ Auralis: {
 	DisplayName: Auralis
 	Tooltip:
 		'''
-		Fires a high speed glowing bullet that cause enemies to become [cbuff:CalamityMod/MarkedforDeath]
+		Fires a high speed glowing bullet that causes enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		Press <right> to zoom out
 		Standing still provides increasing damage bonuses up to 25%
 		Standing still for 5 or more seconds while using the scope ability will summon an aurora
@@ -547,6 +547,7 @@ HalleysInferno: {
 		Fires a burst of intensely concentrated lunar fire jets
 		<right> to rapid-fire Starbursts that inflict [cbuff:CalamityMod/Voidfrost]
 		Generates Starbursts when hitting enemies, depending on your accuracy
+		Press [KEY] to toggle long-range scope mode
 		Uses gel for ammo
 		'Halley arrived sooner than expected'
 		'''
@@ -819,6 +820,23 @@ NullificationPistol: {
 		'''
 }
 
+OmniGun: {
+	DisplayName: The Omnigun
+	Tooltip:
+		'''
+		A multipurpose weapon with several modes which are used in sequence
+		The first shot is a sniper round which gains damage over time and always critically strikes
+		The second shot is a burst of 10 standard bullets
+		The third shot is a devastating point blank spread
+		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
+		'''
+	SalesPitch:
+		'''
+		'Why carry four different guns when you can carry just one? That's what I used to ask myself!'
+		'With this thing-a-beauty, even a bumbling moron can become invincible - and for the right price, it can be yours!'
+		'''
+}
+
 OntologicalDespoiler: {
 	DisplayName: Ontological Despoiler
 	Tooltip:
@@ -849,23 +867,6 @@ Onyxia: {
 		'''
 		Fires a storm of bullets and onyx shards
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
-		'''
-}
-
-OmniGun: {
-	DisplayName: The Omnigun
-	Tooltip:
-		'''
-		A multipurpose weapon with several modes which are used in sequence
-		The first shot is a sniper round which gains damage over time and always critically strikes
-		The second shot is a burst of 10 standard bullets
-		The third shot is a devastating point blank spread
-		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
-		'''
-	SalesPitch:
-		'''
-		'Why carry four different guns when you can carry just one? That's what I used to ask myself!'
-		'With this thing-a-beauty, even a bumbling moron can become invincible - and for the right price, it can be yours!'
 		'''
 }
 

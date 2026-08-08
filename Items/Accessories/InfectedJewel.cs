@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int RegenBoost = 2;
-        public static int ReducedDoTAmount = 8;
-        public static int PostDebuffRegenTimeBoost = CalamityUtils.SecondsToFrames(10);
+        public static int ReducedDoTAmount = 12;
+        public static int PostDebuffRegenTimeBoost = CalamityUtils.SecondsToFrames(15);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), ReducedDoTAmount.ToRegenPerSecond(), PostDebuffRegenTimeBoost.FramesToSeconds());
         public override void SetDefaults()
         {

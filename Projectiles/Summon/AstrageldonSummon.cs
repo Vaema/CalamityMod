@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Summon
             CalamityGlobalProjectile modProj = Projectile.Calamity();
 
             //hitbox size scaling
-            float scale = (float)Math.Log(Projectile.minionSlots, 10f) + 1f;
+            float scale = 0.8f + Projectile.minionSlots * 0.2f;
             if (Projectile.scale != scale)
                 Projectile.scale = scale;
             Projectile.width = (int)(64f * Projectile.scale);
@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     attackCounter += Main.rand.Next(1, 4);
                 }
-                if (attackCounter > 300)
+                if (attackCounter > 240)
                 {
                     attackCounter = 0;
                     Projectile.netUpdate = true;
@@ -202,9 +202,24 @@ namespace CalamityMod.Projectiles.Summon
                     attackCounter += 2;
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        Vector2 laserVel = Projectile.SafeDirectionTo(objectivepos) * laserSpeed;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, laserVel, projType, Projectile.damage, 0f, Projectile.owner);
-                        Projectile.netUpdate = true;
+                        if (Main.rand.NextBool())
+                        {
+                            for (int i = 0; i < 8; i++)
+                            {
+                                Vector2 circleVel = ((MathHelper.TwoPi * i / 8f) - MathHelper.ToRadians(67.5f)).ToRotationVector2() * laserSpeed;
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, circleVel, projType, Projectile.damage, 0f, Projectile.owner);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Vector2 direction = Projectile.SafeDirectionTo(objectivepos);
+                                Vector2 spreadPos = Projectile.Center + direction * Main.rand.NextFloat(1f, 4f) + direction.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-16f, 16f);
+                                Vector2 laserVel = direction * laserSpeed;
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spreadPos, laserVel, projType, Projectile.damage, 0f, Projectile.owner);
+                            }
+                        }
                     }
                 }
             }

@@ -12,8 +12,10 @@ using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Cryogen;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.DevourerofGods;
+using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
@@ -77,6 +79,15 @@ namespace CalamityMod.Systems.Collections
         public static bool[] BoundTownNPC = Factory.CreateNamedSet("BoundTownNPC")
             .Description("Labels this NPC as a bound town NPC, to prevent them from taking hostile damage.")
             .RegisterBoolSet(NPCID.BoundGoblin, NPCID.BoundWizard, NPCID.BoundMechanic, NPCID.SleepingAngler, NPCID.BartenderUnconscious, NPCID.WebbedStylist, NPCID.GolferRescue);
+
+        /// <summary>
+        /// If <see langword="true"/> for an NPC type, this NPC will not be targeted by various sources of 'unpredicatable' damage.<br/>
+        /// Primarily used for NPCs which summon bosses when killed.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] ProtectedHostileNPC = Factory.CreateNamedSet("ProtectedHostileNPC")
+            .Description("Prevents this NPC from being targeted by various sources of 'unpredictable' damage.")
+            .RegisterBoolSet(NPCID.CultistArcherBlue, NPCID.CultistDevote, NPCType<PerforatorCyst>(), NPCType<HiveTumor>(), NPCType<LeviathanStart>());
 
         /// <summary>
         /// If <see langword="true"/> for an NPC type, then that NPC will not provide increased Rage generation despite being considered a boss.<br/>
@@ -147,13 +158,12 @@ namespace CalamityMod.Systems.Collections
                 NPCID.ZombieElfGirl, NPCID.BloodEelHead, NPCID.GoblinShark, NPCID.EyeballFlyingFish, NPCID.ZombieMerman);
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, then that NPC is a post-Plantera Dungeon enemy. This causes two separate changes to the enemy.<br/>
-        /// First, it grants them a 20% chance to drop Ectoplasm upon death.<br/>
-        /// Second, it multiplies their max health by 2.5x and increases their damage by a flat 30 if Moon Lord has been defeated.<br/>
+        /// If <see langword="true"/> for an NPC type, then that NPC is a post-Plantera Dungeon enemy.<br/>
+        /// This will multiply their max health by 2.5x and increase their damage by a flat 30 if Moon Lord has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] IsBuffedDungeonEnemy = Factory.CreateNamedSet("IsBuffedDungeonEnemy")
-            .Description("Makes this NPC directly drop Ectoplasm on death, and buffs its health and damage after defeating Moon Lord.")
+            .Description("Makes this Dungeon enemy have buffed health and damage after defeating Moon Lord.")
             .RegisterBoolSet(NPCID.SkeletonSniper, NPCID.TacticalSkeleton, NPCID.SkeletonCommando, NPCID.Paladin, NPCID.GiantCursedSkull, NPCID.BoneLee, NPCID.DiabolistWhite,
                 NPCID.DiabolistRed, NPCID.NecromancerArmored, NPCID.Necromancer, NPCID.RaggedCasterOpenCoat, NPCID.RaggedCaster, NPCID.HellArmoredBonesSword, NPCID.HellArmoredBonesMace,
                 NPCID.HellArmoredBonesSpikeShield, NPCID.HellArmoredBones, NPCID.BlueArmoredBonesSword, NPCID.BlueArmoredBonesNoPants, NPCID.BlueArmoredBonesMace, NPCID.BlueArmoredBones,
@@ -218,7 +228,8 @@ namespace CalamityMod.Systems.Collections
                 NPCType<EidolonWyrmHead>(), NPCType<NuclearTerror>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<SupremeCataclysm>(), NPCType<SupremeCatastrophe>(), NPCType<SoulSeekerSupreme>());
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, <see cref="ModNPC.CheckDead"/> or <see cref="GlobalNPC.CheckDead(NPC)"/> will be called on this NPC even if <see cref="NPC.realLife"/> is set.
+        /// If <see langword="true"/> for an NPC type, <see cref="ModNPC.CheckDead"/> or <see cref="GlobalNPC.CheckDead(NPC)"/> will be called on this NPC, even if <see cref="NPC.realLife"/> is set.<br/>
+        /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateNamedSet("DoCheckDeadRegardlessRealLife")
             .Description("Makes this NPC always call CheckDead, even if it sets realLife.")
@@ -233,10 +244,12 @@ namespace CalamityMod.Systems.Collections
             .RegisterBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
 
         /// <summary>
-        /// The intended kill times of Calamity bosses, in frames
+        /// Associates an NPC type with its intended boss kill time, in frames.<br/>
+        /// Used for calculating enraged Providence's RDR and Yharon's bullet hell self-damage, as well as controlling making an NPC apply Boss Effects.<br/>
+        /// Defaults to 0, meaning the NPC has no defined kill time.
         /// </summary>
         public static int[] BossKillTimes = Factory.CreateNamedSet("BossKillTimes")
-            .Description("The intended kill times of Calamity bosses, in frames")
+            .Description("Defines this NPC's intended boss kill time, in frames.")
             .RegisterIntSet(0,
                 NPCID.KingSlime, 5400, // 1:30 (90 seconds)
                 NPCID.EyeofCthulhu, 5400, // 1:30 (90 seconds)
@@ -325,6 +338,35 @@ namespace CalamityMod.Systems.Collections
                 NPCType<SupremeCalamitas>(), 18000, // 5:00 (300 seconds)
                 NPCType<PrimordialWyrmHead>(), 18000 // 5:00 (300 seconds)
              );
+
+
+        /// <summary>
+        /// Allows an NPC to be automatically registered as a critter in the Bestiary when the player is near them. <br/>
+        /// Should only be used in cases where an NPC does NOT follow the Vanilla definition of a critter. See <see cref="NPC.CountsAsACritter"/>.
+        /// </summary>
+        public static List<int> ForciblyRegisterAsCritterInBestiary = new List<int>
+        {
+            NPCType<Androomba>(),
+            NPCType<RepairUnitCritter>(),
+            NPCType<Burrower>(),
+            NPCType<BurrowerHitbox>(),
+            NPCType<DivineSwine>(),
+            NPCType<Piggy>(),
+            NPCType<PiggyGold>(),
+            NPCType<Shroomble>()
+        };
+
+        /// <summary>
+        /// Allows a variant of an NPC to count as credits towards another in the Bestiary. <br/>
+        /// This exists to prevent cases where dupilcate entries are made for two variants of the same creature, such as worms and their segments.
+        /// </summary>
+        public static Dictionary<int, int> CountVariantsAsTheSameInBestiary = new Dictionary<int, int>
+        {
+            { NPCType<AstralachneaGround>(), NPCType<AstralachneaWall>() },
+            { NPCType<DevilFishAlt>(), NPCType<DevilFish>() },
+            { NPCType<ScryllarRage>(), NPCType<Scryllar>() },
+            { NPCType<BurrowerHitbox>(), NPCType<Burrower>() },
+        };
 
         /// <summary>
         /// Associates an NPC type with the base value of their max health in Boss Rush.<br/>

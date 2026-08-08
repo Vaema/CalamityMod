@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Compute the gem position, which is needed for visual effects
             float angle = Projectile.rotation - MathHelper.PiOver2;
-            Vector2 gemOffset = Vector2.One * ValkyrieRay.GemDistance * 1.4142f; // distance to gem on staff
+            Vector2 gemOffset = Vector2.One * ValkyrieRay.GemDistance; // distance to gem on staff
             Vector2 gemPos = Projectile.Center + gemOffset.RotatedBy(angle);
 
             // Firing or charging?

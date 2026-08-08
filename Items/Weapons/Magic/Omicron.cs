@@ -69,8 +69,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<Genesis>().
                 AddIngredient<Wingman>().
-                AddIngredient<CosmiliteBar>(10).
-                AddIngredient(ItemID.FragmentNebula, 5).
+                AddIngredient<CosmiliteBar>(8).
+                AddIngredient<EndothermicEnergy>(20).
                 AddTile<CosmicAnvil>().
                 Register();
         }

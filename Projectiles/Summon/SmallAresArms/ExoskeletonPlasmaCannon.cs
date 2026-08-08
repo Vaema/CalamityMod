@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
@@ -21,6 +22,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true; // Item.shoot assigns this as the minion
         }
 
         public override void PostAI()

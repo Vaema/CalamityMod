@@ -284,6 +284,7 @@ SupremeCalamitas.DisplayName: Supreme Witch, Calamitas
 SupremePermafrost: Supreme Ultramage, Permafrost
 SupremeCataclysm.DisplayName: Cataclysm
 SupremeCatastrophe.DisplayName: Catastrophe
+VolatileSlime.DisplayName: Volatile Slime
 Yharon.DisplayName: Yharon, Dragon of Rebirth
 YharonPhase2: Yharon, Resplendent Phoenix
 AndroombaFriendly.DisplayName: Androomba Pal
@@ -336,7 +337,7 @@ Bandit: {
 	Census.SpawnCondition: Have a {$ItemName.PlatinumCoin} [i:PlatinumCoin] in your inventory after defeating Skeletron
 
 	Name: {
-		Laura: Laura
+		Taylor: Taylor
 		Mie: Mie
 		Bonnie: Bonnie
 		Sarah: Sarah
@@ -373,7 +374,7 @@ Bandit: {
 		BrimstoneWitch: Hey, hey, has {0} seriously moved in here with us? Why???
 		Merchant: Don't tell {0}, but I took some of his stuff and replaced it with Angel Statues.
 		NurseArmsDealer: Don't tell {0} that I was responsible for {1}'s injuries.
-		NamedLaura: The nice thing about maps is I can track anything that has fallen.
+		NamedTaylor: The nice thing about maps is I can track anything that has fallen.
 		NamedPenelope: Imagine how fast you could throw if you just had more hands.
 		NamedValerie: I also take food for currency.
 		NamedRowan: Usually I only think of animals as food or target practice, but dragons are an exception.
@@ -598,6 +599,7 @@ TownPiggy: {
 		Techno: Techno
 		JohnPork: John Pork
 		Piglet: Piglet
+		Poogie: Poogie
 	}
 
 	Chat: {

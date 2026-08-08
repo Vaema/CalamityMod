@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 44;
             Item.height = 62;
             Item.mana = 10;
-            Item.damage = 187;
+            Item.damage = 175;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.buffType = ModContent.BuffType<KingofConstellationsBuff>();
             Item.shoot = ModContent.ProjectileType<BlackDragonHead>();

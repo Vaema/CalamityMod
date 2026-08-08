@@ -121,7 +121,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[1] % 4 == 0)
             {
                 int type = ModContent.ProjectileType<DraconicSpark>();
-                int damage = Projectile.damage / 8;
+                int damage = Projectile.damage / 2;
                 float kb = 3f;
                 float speed = DragonPow.SparkSpeed;
                 Vector2 vel = new Vector2(speed, 0f).RotatedByRandom(MathHelper.TwoPi);
@@ -196,7 +196,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             int type = ModContent.ProjectileType<Waterfall>();
             int numWaterfalls = 12;
-            int waterfallDamage = Projectile.damage / 6;
+            int waterfallDamage = Projectile.damage / 4;
             float waterfallKB = 0f;
             for (int i = 0; i < numWaterfalls; ++i)
             {

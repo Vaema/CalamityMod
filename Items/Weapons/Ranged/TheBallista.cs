@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.Marrow).
                 AddIngredient(ItemID.AncientBattleArmorMaterial).
-                AddIngredient(ItemID.Ectoplasm, 10).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

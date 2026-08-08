@@ -111,10 +111,14 @@ namespace CalamityMod.NPCs.Providence
 
         public static readonly SoundStyle NearBurnSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceSizzle");
         public static readonly SoundStyle BurnStartSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
-        public static readonly SoundStyle BurnLoopSound = new SoundStyle("CalamityMod/Sounds/Custom/Providence/ProvidenceBurnLoop") with { IsLooped = true };
+        public static readonly SoundStyle BurnLoopSound = new SoundStyle("CalamityMod/Sounds/Custom/Providence/ProvidenceBurnLoop")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+        };
 
         // Sound slot for the burning damage over time effect
-        public SlotId BurningSoundSlot;
+        public SlotId BurningSoundSlot = SlotId.Invalid;
 
         // Level of sound playing
         public float SoundWarningLevel = -1f;
@@ -290,7 +294,7 @@ namespace CalamityMod.NPCs.Providence
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
 
-            if (Main.getGoodWorld)
+            if (Main.zenithWorld)
                 NPC.scale *= 0.25f;
         }
 
@@ -374,7 +378,10 @@ namespace CalamityMod.NPCs.Providence
         {
             //ensure projectiles all despawn when she does
             if (NPC.timeLeft == 1)
+            {
                 DespawnSpecificProjectiles(true);
+                StopHolyInfernoSounds();
+            }
 
             // Set the border drawing to true if it isn't set to true
             // Can happen when another mod sets to false for a difficulty and that difficulty is then toggled off.
@@ -400,8 +407,7 @@ namespace CalamityMod.NPCs.Providence
             Player player = Main.player[NPC.target];
 
             // Enraged bool and Color shifting
-            bool getFuckedAI = Main.zenithWorld;
-            if (getFuckedAI)
+            if (Main.zenithWorld)
                 NPC.localAI[1] = (float)BossMode.Rainbow;
             else if (hasBeenGivenFullPower) // Enraged behavior
                 NPC.localAI[1] = (float)BossMode.Enraged;
@@ -426,29 +432,15 @@ namespace CalamityMod.NPCs.Providence
             // Is in spawning animation
             float spawnAnimationTime = 180f;
             bool spawnAnimation = calamityGlobalNPC.newAI[3] < spawnAnimationTime;
-
             if (!spawnAnimation)
-            {
                 NPC.Opacity = 1f;
-            }
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            // Play enrage animation if she gets angy
-            if (!getFuckedAI && fullPowerAI && calamityGlobalNPC.newAI[3] == spawnAnimationTime)
+            // Sync "enrage" status in FTW
+            if (NPC.localAI[1] == (float)BossMode.Enraged && calamityGlobalNPC.newAI[3] == 0f)
             {
-                AIState = (int)Phase.HolyBlast;
-                NPC.ai[1] = 0f;
-                NPC.ai[2] = 0f;
-                NPC.ai[3] = 0f;
-                calamityGlobalNPC.newAI[1] = 0f;
-                calamityGlobalNPC.newAI[2] = 0f;
-                calamityGlobalNPC.newAI[3] = 0f;
-
-                // Despawn existing projectiles and summon the aura again
-                DespawnSpecificProjectiles(true);
-                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HolyAura>(), 0, 0f, -1);
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     ProvidenceDyeConditionSyncPacket.Send(this);
                 NPC.ForceNetUpdate(false);
@@ -508,7 +500,8 @@ namespace CalamityMod.NPCs.Providence
                     {
                         // Initialize sound
                         SoundEngine.PlaySound(BurnStartSound, player.Center);
-                        BurningSoundSlot = SoundEngine.PlaySound(BurnLoopSound, player.Center);
+                        if (!SoundEngine.TryGetActiveSound(BurningSoundSlot, out _))
+                            BurningSoundSlot = SoundEngine.PlaySound(BurnLoopSound, player.Center, HolyInfernoSoundCallback);
                         SoundWarningLevel = 2f;
                     }
                     player.AddBuff(ModContent.BuffType<HolyInferno>(), 2);
@@ -540,17 +533,12 @@ namespace CalamityMod.NPCs.Providence
                 SoundWarningLevel -= 1 / 50f;
 
             // Updating the looping sound
-            if (SoundEngine.TryGetActiveSound(BurningSoundSlot, out var burningSound) && burningSound.IsPlaying)
+            if (SoundEngine.TryGetActiveSound(BurningSoundSlot, out var burningSound))
                 burningSound.Position = player.Center;
 
-            // Adjust the volume or break the loop accordingly
-            if (burningSound is not null)
-            {
-                if (SoundWarningLevel <= 1f)
-                    burningSound?.Stop();
-                else if (SoundWarningLevel <= 2f)
-                    burningSound.Volume = SoundWarningLevel - 1f;
-            }
+            // Stop the sounds when necessary.
+            if (!NPC.active || SoundWarningLevel <= 1f)
+                StopHolyInfernoSounds();
 
             // Count the remaining Guardians, healer especially because it allows the boss to heal
             int guardianAmt = 0;
@@ -810,11 +798,8 @@ namespace CalamityMod.NPCs.Providence
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = AIState == (int)Phase.FlameCocoon || AIState == (int)Phase.SpearCocoon || AIState == (int)Phase.Laser || spawnAnimation;
 
-            // Providence fires predictive holy/molten blasts if she is ahead of her target's movement
-            bool predictiveShots = false;
-
             // Movement
-            if (getFuckedAI || (AIState != (int)Phase.FlameCocoon && AIState != (int)Phase.SpearCocoon))
+            if (Main.zenithWorld || (AIState != (int)Phase.FlameCocoon && AIState != (int)Phase.SpearCocoon))
             {
                 // Slowly drift down when spawning
                 if (spawnAnimation)
@@ -868,11 +853,6 @@ namespace CalamityMod.NPCs.Providence
                         }
                     }
 
-
-                    // Predictive shot checks
-                    if ((NPC.velocity.X > 0f && (NPC.Center.X - player.Center.X) > 0f && player.velocity.X > 0f) || (NPC.velocity.X < 0f && (NPC.Center.X - player.Center.X) < 0f && player.velocity.X < 0f))
-                        predictiveShots = true;
-
                     // Velocity and acceleration
                     float speedIncreaseTimer = fullPowerAI ? 75f : death ? 120f : 150f;
                     float accelerationBoost = death ? 0.3f * (1f - lifeRatio) : 0.2f * (1f - lifeRatio);
@@ -886,14 +866,8 @@ namespace CalamityMod.NPCs.Providence
                     }
                     if (laserPhaseSlow)
                     {
-                        acceleration *= getFuckedAI ? 0.6f : 0.2f;
-                        velocity *= getFuckedAI ? 0.6f : 0.2f;
-                    }
-
-                    if (Main.getGoodWorld)
-                    {
-                        velocity *= 1.2f;
-                        acceleration *= 1.2f;
+                        acceleration *= Main.zenithWorld ? 0.6f : 0.2f;
+                        velocity *= Main.zenithWorld ? 0.6f : 0.2f;
                     }
 
                     if (!targetDead)
@@ -906,14 +880,11 @@ namespace CalamityMod.NPCs.Providence
 
                         float moveUpThreshold = player.position.Y - (NPC.position.Y + NPC.height);
                         if (moveUpThreshold < (laserPhaseSlow ? 150f : 200f)) // 150
-                            NPC.velocity.Y -= Main.getGoodWorld ? 0.4f : 0.2f;
+                            NPC.velocity.Y -= fullPowerAI ? 0.4f : 0.2f;
                         if (moveUpThreshold > (laserPhaseSlow ? 200f : 250f)) // 200
-                            NPC.velocity.Y += Main.getGoodWorld ? 0.4f : 0.2f;
+                            NPC.velocity.Y += fullPowerAI ? 0.4f : 0.2f;
 
                         float speedCap = laserPhaseSlow ? 2f : 6f;
-                        if (Main.getGoodWorld)
-                            speedCap *= 1.5f;
-
                         if (NPC.velocity.Y > speedCap)
                             NPC.velocity.Y = speedCap;
                         if (NPC.velocity.Y < -speedCap)
@@ -1129,29 +1100,7 @@ namespace CalamityMod.NPCs.Providence
                             GeneralParticleHandler.SpawnParticle(new SparkParticle(startPos, startPos.DirectionTo(destination) * (startPos.Distance(destination) / 10), false, 10, Main.rand.NextFloat(0.2f, 0.5f) * (sc * 2), medColor));
                         }
 
-                        // Used to heal her back to full HP during enrage animation
-                        if (fullPowerAI && calamityGlobalNPC.newAI[3] % 9f == 0f)
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int healAmt = NPC.lifeMax / 400;
-                                if (healAmt > NPC.lifeMax - NPC.life)
-                                    healAmt = NPC.lifeMax - NPC.life;
-
-                                if (healAmt > 0)
-                                {
-                                    NPC.life += healAmt;
-                                    NPC.HealEffect(healAmt, true);
-                                    NPC.ForceNetUpdate(false);
-                                }
-                            }
-                        }
-
                         calamityGlobalNPC.newAI[3] += 1f;
-
-                        if (fullPowerAI && calamityGlobalNPC.newAI[3] >= spawnAnimationTime)
-                            calamityGlobalNPC.newAI[3] += 1f;
-
                         return;
                     }
 
@@ -1179,10 +1128,8 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 predictionAmount = player.velocity * 100f;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? predictionAmount : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
-                            Vector2 explodePosition = predictiveShots ? (player.position + predictionAmount) : player.position;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), HolyBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, explodePosition.X, explodePosition.Y);
+                            Vector2 projectileVelocity = (player.Center - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<HolyBlast>(), HolyBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
@@ -1248,7 +1195,7 @@ namespace CalamityMod.NPCs.Providence
                     borderPosition ??= NPC.Center;
                     borderPosition = Vector2.Lerp(borderPosition.Value, NPC.Center, 0.02f);
                     Vector2 fireSparklesFrom = fireFrom + new Vector2(0, -30);
-                    if (!targetDead && !getFuckedAI)
+                    if (!targetDead && !Main.zenithWorld)
                     {
                         if (NPC.velocity.Length() <= 2f)
                             NPC.velocity = Vector2.Zero;
@@ -1454,10 +1401,8 @@ namespace CalamityMod.NPCs.Providence
                             Vector2 projectileFirePosition = new Vector2(NPC.Center.X + NPC.velocity.SafeNormalize(Vector2.UnitX).X * 120f, NPC.Center.Y);
                             float velocityBoost = death ? 4f * (1f - lifeRatio) : 2.5f * (1f - lifeRatio);
                             float projSpeed = (revenge ? 12f : expertMode ? 10.5f : 9f) + velocityBoost;
-                            Vector2 predictionAmount = player.velocity * 100f;
-                            Vector2 projectileVelocity = (player.Center + (predictiveShots ? predictionAmount : Vector2.Zero) - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
-                            Vector2 explodePosition = predictiveShots ? (player.position + predictionAmount) : player.position;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), MoltenBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, explodePosition.X, explodePosition.Y);
+                            Vector2 projectileVelocity = (player.Center - projectileFirePosition).SafeNormalize(Vector2.UnitY) * projSpeed * 0.1f;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileFirePosition, projectileVelocity, ModContent.ProjectileType<MoltenBlast>(), MoltenBlastDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                     }
                     else if (NPC.ai[3] < 0f)
@@ -1521,7 +1466,7 @@ namespace CalamityMod.NPCs.Providence
                     borderPosition ??= NPC.Center;
                     borderPosition = Vector2.Lerp(borderPosition.Value, NPC.Center, 0.02f);
 
-                    if (!targetDead && !getFuckedAI)
+                    if (!targetDead && !Main.zenithWorld)
                     {
                         if (NPC.velocity.Length() <= 2f)
                             NPC.velocity = Vector2.Zero;
@@ -1566,9 +1511,6 @@ namespace CalamityMod.NPCs.Providence
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, vector2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer);
-
-                                    if (Main.getGoodWorld)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, -vector2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer);
                                 }
                             }
 
@@ -1593,9 +1535,6 @@ namespace CalamityMod.NPCs.Providence
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, velocity2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, 1f, 0f);
-
-                            if (Main.getGoodWorld)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, -velocity2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, 1f, 0f);
                         }
                     }
 
@@ -1613,7 +1552,7 @@ namespace CalamityMod.NPCs.Providence
 
                 case (int)Phase.Crystal:
 
-                    if (!targetDead && !getFuckedAI)
+                    if (!targetDead && !Main.zenithWorld)
                         NPC.velocity *= 0.9f;
 
                     NPC.ai[1] += 1f;
@@ -1685,7 +1624,7 @@ namespace CalamityMod.NPCs.Providence
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float timeLeft = fullPowerAI ? (float)(getFuckedAI ? gfbCrystalTime : enragedCrystalTime) : 0f;
+                                float timeLeft = fullPowerAI ? (float)(Main.zenithWorld ? gfbCrystalTime : enragedCrystalTime) : 0f;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), crystalSpawnPos, Vector2.Zero, ModContent.ProjectileType<ProvidenceCrystal>(), CrystalDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, lifeRatio, 0f, timeLeft);
                             }
                         }
@@ -1956,10 +1895,26 @@ namespace CalamityMod.NPCs.Providence
             }
         }
 
+        private void StopHolyInfernoSounds()
+        {
+            if (SoundEngine.TryGetActiveSound(BurningSoundSlot, out ActiveSound infernoSound))
+                infernoSound.Stop();
+            if (BurningSoundSlot.IsValid)
+                BurningSoundSlot = SlotId.Invalid;
+        }
+
+        private bool HolyInfernoSoundCallback(ActiveSound sound)
+        {
+            if (SoundWarningLevel <= 2f)
+                sound.Volume = SoundWarningLevel - 1f;
+            return NPC.active;
+        }
+
         public override bool CheckDead()
         {
             NPC.life = 1;
             DespawnSpecificProjectiles(true);
+            StopHolyInfernoSounds();
             Dying = true;
             NPC.active = true;
             NPC.dontTakeDamage = true;
@@ -2045,12 +2000,6 @@ namespace CalamityMod.NPCs.Providence
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.hasBeenGivenFullPower;
-            }, ModContent.ItemType<ProfanedMoonlightDye>(), 1, 4, 4, desc: DropHelper.ProvidenceEnragedText);
-
-            npcLoot.AddIf(info =>
-            {
-                Providence prov = info.npc.ModNPC<Providence>();
-                return prov.hasBeenGivenFullPower;
             }, ModContent.ItemType<DivineGeode>(), 1, 75, 90);
 
             // Normal drops: Everything that would otherwise be in the bag
@@ -2072,7 +2021,7 @@ namespace CalamityMod.NPCs.Providence
 
                 // Equipment
                 // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
-                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlazingCore>()));
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DivineProvidence>()));
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 50, 60);
@@ -2106,7 +2055,7 @@ namespace CalamityMod.NPCs.Providence
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            bool offColor = NPC.localAI[1] != (float)BossMode.Normal && (NPC.Calamity().newAI[3] >= 180f || Main.zenithWorld);
+            bool offColor = NPC.localAI[1] != (float)BossMode.Normal;
 
             Texture2D texture = offColor ? TextureNight.Value : TextureAssets.Npc[Type].Value;
             Texture2D textureGlow = offColor ? TextureNight_Glow.Value : Texture_Glow.Value;
@@ -2745,7 +2694,7 @@ namespace CalamityMod.NPCs.Providence
                 // Equipment
                 ModContent.ItemType<ElysianWings>(),
                 ModContent.ItemType<ElysianAegis>(),
-                ModContent.ItemType<BlazingCore>(),
+                ModContent.ItemType<DivineProvidence>(),
                 ModContent.ItemType<ProfanedSoulCrystal>(),
 
                 // Vanity
@@ -2873,14 +2822,6 @@ namespace CalamityMod.NPCs.Providence
     // These will be used for almost every single one of her projectiles, so it's useful to have.
     public static class ProvUtils
     {
-        /// <summary>
-        /// This lease should be used to draw all of a projectile's effects onto directly, then be drawn onto the screen as one. This is for opacity reasons
-        /// </summary>
-        public static RenderTargetLease PrimaryLease { get => field ??= ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice); set; }
-        /// <summary>
-        /// This should be used for secondary effects like trails, then drawn to PrimaryLease. This is for opacity reasons.
-        /// </summary>
-        public static RenderTargetLease SecondaryLease { get => field ??= ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice); set; }
         public static bool StandardAI() => (CalamityGlobalNPC.holyBoss == -1 || !Main.npc[CalamityGlobalNPC.holyBoss].Calamity().CurrentlyEnraged) && !Main.zenithWorld;
 
         public static int CalculateProvidenceDamage(this int damage)

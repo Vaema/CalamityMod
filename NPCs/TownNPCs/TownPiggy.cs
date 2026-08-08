@@ -35,9 +35,6 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.TownNPCBestiaryPriority.Add(Type);
             NPCID.Sets.PlayerDistanceWhilePetting[Type] = 32;
             NPCID.Sets.IsPetSmallForPetting[Type] = true;
-            NPC.Calamity().VulnerableToHeat = true;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToSickness = true;
 
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new()
             {
@@ -63,6 +60,9 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.knockBackResist = 0.5f;
             NPC.housingCategory = 1;
             DrawOffsetY = -4;
+            NPC.Calamity().VulnerableToHeat = true;
+            NPC.Calamity().VulnerableToCold = true;
+            NPC.Calamity().VulnerableToSickness = true;
         }
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
@@ -184,6 +184,7 @@ namespace CalamityMod.NPCs.TownNPCs
             this.GetLocalizedValue("Name.Techno"), // Technoblade
             this.GetLocalizedValue("Name.JohnPork"), // John Pork
             this.GetLocalizedValue("Name.Piglet"), // Winnie-the-Pooh
+            this.GetLocalizedValue("Name.Poogie"), // Monster Hunter
             
             // Dedicated names
         };

@@ -63,6 +63,7 @@ namespace CalamityMod.ILEditing
 
             // Mechanics / features
             On_NPC.ApplyTileCollision += AllowFusionFeederToDigThroughSand;
+            On_NPC.RerollVariation += AllowPatronNameRerollsOnLicenseUse;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
@@ -141,6 +142,8 @@ namespace CalamityMod.ILEditing
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
+            IL_WorldGen.IslandHouse += MakeFledgingWingsMoreCommon;
+            IL_WorldGen.AddBuriedChest_int_int_int_bool_int_bool_ushort += DisableFledglingWingsSecondary;
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
@@ -169,11 +172,6 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
             //On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
-
-            On_Player.UpdateControlHolds += DelayGravity;
-            On_PlayerInput.SetZoom_MouseInWorld += GravityMouse;
-            On_Main.DrawPlayerChatBubbles += UI_Unflip_Start;
-            On_Main.DrawInterface += UI_Unflip_End;
 
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;

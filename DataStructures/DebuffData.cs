@@ -289,6 +289,24 @@ namespace CalamityMod.DataStructures
         /// </summary>
         public static void OiledNPCMethod(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
+            // Exclude Oiled itself from counting as an applicable debuff
+            bool valid = false;
+            for (int i = 0; i < npc.buffType.Length; i++)
+            {
+                int activeBuff = npc.buffType[i];
+                if (activeBuff > 0 && activeBuff != BuffID.Oiled)
+                {
+                    var data = CalamityBuffSets.DebuffDataset[activeBuff];
+                    if (data != null && data.HeatDebuffScaling > 0)
+                    {
+                        valid = true;
+                        break;
+                    }
+                }
+            }
+            if (!valid && !(npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame))
+                return;
+
             var cnpc = npc.Calamity();
             double totalDPS = ApplyScalingToStatModifer(cnpc.ActiveHeatDebuffMultiplier, Oiled.HeatDebuffScaling).ApplyTo(Oiled.EnemyLostRegen);
             if (totalDPS <= 0)
