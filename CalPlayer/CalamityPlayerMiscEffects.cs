@@ -1060,7 +1060,7 @@ namespace CalamityMod.CalPlayer
                 // Create a direct strike to hit this specific NPC.
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Calamity>()));
                 Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI, 255f);
-                //Set crit chance so Calamtiy can crit with the proper chance, but don't make it count as those classes.
+                //Set crit chance so Calamity can crit with the proper chance, but don't make it count as those classes.
                 sigilStrike.CritChance = (int)Player.GetTotalCritChance(Player.GetBestClass());
                 sigilStrike.DamageType = AverageDamageClass.Instance;
 
