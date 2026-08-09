@@ -44,9 +44,9 @@ namespace CalamityMod.Items.Armor.Silva
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PlantyMush>(12).
-                AddIngredient<EffulgentFeather>(10).
-                AddIngredient<AscendantSpiritEssence>(3).
+                AddIngredient<PlantyMush>(90).
+                AddIngredient<EffulgentFeather>(12).
+                AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

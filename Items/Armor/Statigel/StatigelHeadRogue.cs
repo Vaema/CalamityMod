@@ -36,7 +36,6 @@ namespace CalamityMod.Items.Armor.Statigel
         {
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
-            modPlayer.statigelSet = true;
             player.GetJumpState<StatigelJump>().Enable();
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
@@ -54,8 +53,8 @@ namespace CalamityMod.Items.Armor.Statigel
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PurifiedGel>(5).
-                AddIngredient<BlightedGel>(5).
+                AddIngredient<PurifiedGel>(8).
+                AddIngredient<BlightedGel>(8).
                 AddTile(TileID.Solidifier).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelArmor>()).
                 Register();

@@ -90,7 +90,6 @@ namespace CalamityMod.Items.Weapons.Summon
             float barScale = 1/(32f/TextureAssets.Item[Type].Width()) * 0.9f;
 
             Vector2 barOrigin = barBG.Size() * 0.5f;
-            float yOffset = 0f;
             Vector2 drawPos = position + new Vector2(0, (float)TextureAssets.Item[Type].Height() * 0.5f) * scale;
             Rectangle frameCrop = new Rectangle(0, 0, (int)((fill) * barFG.Width), barFG.Height);
             Color colorBG = Color.Black;

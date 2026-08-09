@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Terragrim).
-                AddIngredient<BloodstoneCore>(25).
+                AddIngredient<Bloodstone>(50).
                 AddIngredient<ScorchedBone>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();

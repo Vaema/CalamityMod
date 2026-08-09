@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 64;
             Item.height = 66;
             Item.damage = 200;
-            Item.DamageType = AverageDamageClass.Instance;
+            Item.DamageType = AllClassDamageClass.Instance; //Allow it to proc all class on hit effects
             Item.useAnimation = Item.useTime = 120;
             Item.channel = true;
             Item.knockBack = 6f;

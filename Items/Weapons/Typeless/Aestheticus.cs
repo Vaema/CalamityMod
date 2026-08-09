@@ -16,9 +16,8 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.width = 58;
             Item.height = 58;
             Item.DamageType = AverageDamageClass.Instance;
-            Item.damage = 8;
-            Item.useAnimation = 25;
-            Item.useTime = 25;
+            Item.damage = 11;
+            Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item109;
@@ -39,12 +38,12 @@ namespace CalamityMod.Items.Weapons.Typeless
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Vaporfied>(), 120);
+            target.AddBuff(ModContent.BuffType<Vaporfied>(), 600);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(ModContent.BuffType<Vaporfied>(), 120);
+            target.AddBuff(ModContent.BuffType<Vaporfied>(), 600);
         }
 
         public override void AddRecipes()

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 22;
             Item.height = 36;
-            Item.damage = 15;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;

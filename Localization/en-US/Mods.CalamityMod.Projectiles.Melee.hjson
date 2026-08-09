@@ -105,6 +105,7 @@ EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceScythe.DisplayName: Essence Scythe
+EvilSmasherProjectile.DisplayName: Evil Smasher
 ExaltedOathbladeThrownBlade.DisplayName: Exalted Oathblade Thrown Blade
 MawOfInfinityHoldout.DisplayName: Maw of Infinity
 MawOfInfinityJaws.DisplayName: Divinity Devourer
@@ -186,6 +187,8 @@ NeptuneOrb.DisplayName: Neptune's Trident
 NeptunesBountyProjectile.DisplayName: Neptune's Bounty
 NeptunesBountySplitProjectile.DisplayName: Neptune's Bounty Jet
 OathswordFlame.DisplayName: Oathsword Flame
+OblivionFire.DisplayName: Oblivion Fire
+OblivionBolt.DisplayName: Oblivion Bolt
 Orbacle.DisplayName: Auric Orb
 OrderbringerBeam.DisplayName: Orderbringer Beam
 OrderbringerWaveProj.DisplayName: Order-bringing Wave
@@ -311,4 +314,3 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-EvilSmasherProjectile.DisplayName: Evil Smasher

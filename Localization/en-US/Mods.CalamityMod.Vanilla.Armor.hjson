@@ -16,7 +16,7 @@ SetBonus: {
 			{0}% increased max speed and acceleration
 			You gain a damage and critical strike chance boost relative to your current movement speed, up to {0}%
 			'''
-		Melee: 10% increased melee damage
+		Melee: 10% increased melee speed
 	}
 
 	Copper: Increases all damage by {0}
@@ -48,11 +48,7 @@ SetBonus: {
 		{0}% increased damage which scales based on how far the target is from you
 		Closer range grants melee damage, while farther range grants ranged damage
 		'''
-	Gladiator:
-		'''
-		+60 maximum stealth
-		5% increased rogue damage and 10% increased velocity
-		'''
+	Gladiator: +{0} maximum stealth
 	Gold:
 		'''
 		All enemies have a {0}% chance to drop 1 extra gold

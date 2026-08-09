@@ -78,15 +78,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity.X *= 0.995f;
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
-            // commented out sound because it was way too loud
-            /*
-            if (projectile.localAI[0] == 0f)
-            {
-                projectile.localAI[0] = 1f;
-                Main.PlayTrackedSound(SoundID.DD2_BetsyFireballShot, projectile.Center);
-            }
-            */
-
             if (Projectile.ai[0] >= 2f)
             {
                 Projectile.alpha -= 25;

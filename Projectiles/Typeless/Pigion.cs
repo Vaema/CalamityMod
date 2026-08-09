@@ -41,13 +41,16 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.width = 42;
             Projectile.height = 28;
             Projectile.friendly = true;
-            Projectile.DamageType = AverageDamageClass.Instance;
+            highestSpeed = 18;
+            //Allow it to proc all class on hit effects. Pigion is spawned using a fixed damage, and applies best-class damage when it spawns the burst
+            Projectile.DamageType = AllClassDamageClass.Instance; 
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.minion = true; //note: costs 0 minion slots. This allows it to benefit from "minion" effects
         }
         public void Frames()
         {
@@ -295,10 +298,11 @@ namespace CalamityMod.Projectiles.Typeless
                 float blastSize = 100;
                 float minMultiplier = 0.1f;
                 int hitsToMinMult = 4;
-                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage*pigNum), -15, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Owner.GetBestClassDamage().ApplyTo(Projectile.originalDamage*pigNum)), -15, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                 blast.timeLeft = 5;
-                blast.DamageType = AverageDamageClass.Instance;
+                blast.DamageType = AllClassDamageClass.Instance; //Proc effects for all classes, but has no effect on the dmg itself
                 blast.CritChance = 100;
+                blast.minion = true; //note: costs 0 minion slots. This allows it to benefit from "minion" effects
             }
 
             Owner.SetScreenshake(3);

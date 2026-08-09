@@ -37,7 +37,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 1f;
         public override void HoldItem(Player player)
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
@@ -91,9 +90,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<ProfanedPartisan>().
-                AddIngredient<Lumenyl>(7).
+                AddIngredient<Lumenyl>(8).
                 AddIngredient<RuinousSoul>(4).
-                AddIngredient<ExodiumCluster>(12).
+                AddIngredient<ExodiumCluster>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

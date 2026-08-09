@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
@@ -23,6 +24,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.Deconstructors
 {
+    [LongDistanceNetSync(SyncWith = typeof(Burrower))]
     public class BurrowerHitbox : BaseWormHitboxNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.Burrower.DisplayName");
@@ -58,13 +60,19 @@ namespace CalamityMod.NPCs.Deconstructors
         public override void AI()
         {
             base.AI();
-            var headNPC = Main.npc[(int)NPC.ai[0]];
-            NPC.Calamity().DR = headNPC.Calamity().DR;
-            NPC.HitSound = headNPC.HitSound;
+            if (Main.npc.IndexInRange((int)NPC.ai[0]))
+            {
+                NPC headNPC = Main.npc[(int)NPC.ai[0]];
+                NPC.Calamity().DR = headNPC.Calamity().DR;
+                NPC.HitSound = headNPC.HitSound;
+            }
+            
             NPC.width = 38;
             NPC.height = 38;
         }
     }
+
+    [LongDistanceNetSync]
     public class Burrower : BaseWormNPC
     {
         public override string Texture => "CalamityMod/NPCs/Deconstructors/DeconstructorMK1Head";
@@ -110,8 +118,6 @@ namespace CalamityMod.NPCs.Deconstructors
         }
         public override void SetDefaults()
         {
-
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 0;
             NPC.width = 38;
             NPC.height = 38;
@@ -176,22 +182,21 @@ namespace CalamityMod.NPCs.Deconstructors
             set { NPC.ai[2] = value; }
         }
 
-        public float StateChangeCounter
-        {
-            get { return NPC.ai[3]; }
-            set { NPC.ai[3] = value; }
-        }
-        public float VelocityRotation
-        {
-
-            get { return NPC.velocity.ToRotation(); }
-            set { NPC.velocity = value.ToRotationVector2() * NPC.velocity.Length(); }
-        }
-
         public Vector2 TargetVector = Vector2.Zero;
         public Vector2 SecondaryVector = Vector2.Zero;
-        public float StoredValue = 0;
         #endregion
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(TargetVector);
+            writer.WriteVector2(SecondaryVector);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            TargetVector = reader.ReadVector2();
+            SecondaryVector = reader.ReadVector2();
+        }
 
         public void SwitchAttackState(AttackState State, float Substate = 0, bool resetVector = true)
         {
@@ -200,15 +205,11 @@ namespace CalamityMod.NPCs.Deconstructors
             MainTimer = 0;
             if (resetVector)
                 TargetVector = Vector2.Zero;
+            NPC.ForceNetUpdate();
         }
 
         public override void AI()
         {
-            //Force burrower bestiary to unlock
-            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
-            {
-                Main.BestiaryTracker.Kills.RegisterKill(NPC);
-            }
             HandleAIStates();
             MainTimer++;
             UpdateSegments();
@@ -318,9 +319,12 @@ namespace CalamityMod.NPCs.Deconstructors
 
         public void HandleAIStates()
         {
-            NPC.CalamityTargeting(CalamityTargetingParameters.BossDefaults);
             if (!NPC.HasValidTarget)
+            {
+                NPC.CalamityTargeting(CalamityTargetingParameters.BossDefaults);
                 return;
+            }
+
             Player player = Main.player[NPC.target];
             SegmentMaxRotation = 0.65f;
             SegmentRigidity = 0.2f;
@@ -358,9 +362,11 @@ namespace CalamityMod.NPCs.Deconstructors
                                         veins.Remove(targetVein);
                                 }
                             }
+
                             TargetVector = player.Center + Main.rand.NextVector2Circular(800, 800);
                             LowerTargetToGround();
                             MainTimer = 0;
+                            NPC.netUpdate = true;
                         }
                         if (AttackSubstate <= 0 && noGravity)
                         {

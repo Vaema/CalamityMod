@@ -138,8 +138,8 @@ namespace CalamityMod.Projectiles.Melee
         public void StickToOwner()
         {
             // Glue the sword to its owner. This applies a handful of offsets to make the blade look like it's roughly inside of the owner's hand.
-            Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter, true) + SwordDirection * new Vector2(7f, 16f) * Projectile.scale;
-            Projectile.Center -= Projectile.velocity.SafeNormalize(Vector2.UnitY) * new Vector2(66f, 54f + Projectile.scale * 8f);
+            Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter, true) + SwordDirection * new Vector2(7f, 7f) * Projectile.scale;
+            Projectile.Center -= Projectile.velocity.SafeNormalize(Vector2.UnitY) * new Vector2(44f, 54f + Projectile.scale * 8f);
 
             // Set the owner's held projectile to this and register a false item time calculation.
             Owner.heldProj = Projectile.whoAmI;

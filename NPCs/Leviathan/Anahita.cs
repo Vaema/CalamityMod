@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -117,6 +118,7 @@ namespace CalamityMod.NPCs.Leviathan
             writer.Write(NPC.Calamity().newAI[0]);
             writer.Write(HasBegunSummoningLeviathan);
             writer.Write(DrawProjectileTelegraphTimer);
+            writer.Write(NPC.wet);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -132,6 +134,13 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().newAI[0] = reader.ReadSingle();
             HasBegunSummoningLeviathan = reader.ReadBoolean();
             DrawProjectileTelegraphTimer = reader.ReadInt32();
+            NPC.wet = reader.ReadBoolean();
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            // Fix weird case where NewNPC sets NPC.wet based on position regardless of noTileCollide
+            NPC.wet = false;
         }
 
         public override void AI()

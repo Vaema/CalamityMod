@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.UseSound = SoundID.Item34;
+            Item.UseSound = SoundID.DD2_BetsyFireballShot;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.autoReuse = true;
@@ -38,9 +38,9 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i <= 2; i++)
+            for (int i = 0; i <= 3; i++)
             {
-                Projectile.NewProjectile(source, position + velocity * 4f, velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.9f, 1.25f), type, damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.9f, 1.25f), type, damage, knockback, player.whoAmI);
             }
             return false;
         }

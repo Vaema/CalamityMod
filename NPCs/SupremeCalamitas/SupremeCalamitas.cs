@@ -876,27 +876,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         rumbleSound.Stop();
 
                     canDespawn = true;
-                    for (int x = 0; x < Main.maxProjectiles; x++)
-                    {
-                        Projectile projectile = Main.projectile[x];
-                        if (projectile.active)
-                        {
-                            if (projectile.type == bulletHellblast ||
-                                projectile.type == barrage ||
-                                projectile.type == wave)
-                            {
-                                if (projectile.timeLeft > 60)
-                                    projectile.timeLeft = 60;
-                            }
-                            else if (projectile.type == fireblast || projectile.type == gigablast)
-                            {
-                                projectile.ai[2] = 1f;
-
-                                if (projectile.timeLeft > 15)
-                                    projectile.timeLeft = 15;
-                            }
-                        }
-                    }
+                    DespawnProjectiles();
 
                     NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0f, 0.065f);
                     NPC.velocity = Vector2.Lerp(Vector2.UnitY * -4f, Vector2.Zero, (float)Math.Sin(MathHelper.Pi * NPC.Opacity));
@@ -1805,83 +1785,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             NPC.noTileCollide = false;
                             NPC.noGravity = false;
                             NPC.damage = 0;
-
-                            /*
-                            // Teleport back to the arena on defeat
-                            if (giveUpCounter == GiveUpCounterMax)
-                            {
-                                Dust.QuickDustLine(NPC.Center, initialRitualPosition + new Vector2(0, -30), 500f, permafrost ? Color.Cyan : Color.Red);
-                                NPC.Center = initialRitualPosition + new Vector2(0, -30);
-                                NPC.noTileCollide = false;
-                                NPC.noGravity = false;
-                                NPC.damage = 0;
-                                SoundEngine.PlaySound(GiveUpSound with { Volume = 1.7f }, NPC.Center);
-                            }
-                            if (giveUpCounter == 1010)
-                            {
-                                Particle pulse2 = new StaticPulseRing(NPC.Center, Vector2.Zero, Color.Red * 0.55f, new Vector2(1f, 1f), 0f, 5f, 0f, 47);
-                                GeneralParticleHandler.SpawnParticle(pulse2);
-                            }
-
-                            if (shieldOpacity > 0f)
-                                shieldOpacity = 0;
-                            if (giveUpCounter > 1000)
-                                forcefieldScale = MathHelper.Lerp(forcefieldScale, 1.55f, 0.045f);
-                            else if (giveUpCounter > 960)
-                                forcefieldScale = MathHelper.Lerp(forcefieldScale, 0.4f, 0.085f);
-
-                            if (giveUpCounter > 960)
-                            {
-                                for (int i = 0; i < 2; i++)
-                                {
-                                    Vector2 sparkVel = new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.1f);
-                                    GlowOrbParticle orb = new GlowOrbParticle(NPC.Center + sparkVel * (8 * forcefieldScale), sparkVel * Utils.GetLerpValue(1200, 960, giveUpCounter, true), false, 60, Main.rand.NextFloat(0.7f, 1.7f) * Utils.GetLerpValue(1200, 960, giveUpCounter), Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f), true, true);
-                                    GeneralParticleHandler.SpawnParticle(orb);
-                                }
-
-                                float vibrate = 15 * Utils.GetLerpValue(1200, 960, giveUpCounter, true);
-                                NPC.Center = (initialRitualPosition + new Vector2(0, -30)) + Main.rand.NextVector2Circular(vibrate, vibrate);
-                            }
-                            else
-                            {
-                                if (giveUpCounter == 960)
-                                {
-                                    NPC.Center = initialRitualPosition + new Vector2(0, -30);
-
-                                    Vector2 BurstFXDirection = new Vector2(0, 15);
-                                    for (int i = 0; i < 4; i++)
-                                    {
-                                        SparkParticle spark = new SparkParticle(NPC.Center, (BurstFXDirection) * (i + 1), false, 11, (5f - i * 0.6f) * 3, Color.Lerp(Color.Red, Color.Magenta, Utils.GetLerpValue(-3, 3, i)) * 0.8f);
-                                        GeneralParticleHandler.SpawnParticle(spark);
-                                    }
-                                    for (int i = 0; i < 4; i++)
-                                    {
-                                        SparkParticle spark = new SparkParticle(NPC.Center, (-BurstFXDirection) * (i + 1), false, 11, (5f - i * 0.6f) * 3, Color.Lerp(Color.Red, Color.Magenta, Utils.GetLerpValue(-3, 3, i)) * 0.8f);
-                                        GeneralParticleHandler.SpawnParticle(spark);
-                                    }
-
-                                    Particle orb = new CustomPulse(NPC.Center, Vector2.Zero, Color.Red, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 1.2f, 1.1f, 13);
-                                    GeneralParticleHandler.SpawnParticle(orb);
-                                    Particle orb2 = new CustomPulse(NPC.Center, Vector2.Zero, Color.Lerp(Color.Red, Color.Magenta, 0.5f), "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 1f, 0.9f, 13);
-                                    GeneralParticleHandler.SpawnParticle(orb2);
-                                    for (int i = 0; i < 4; i++)
-                                    {
-                                        Particle orb3 = new CustomPulse(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.9f, 0.8f, 13);
-                                        GeneralParticleHandler.SpawnParticle(orb3);
-                                    }
-
-                                    for (int i = 0; i < 30; i++)
-                                    {
-                                        GlowOrbParticle burst = new GlowOrbParticle(NPC.Center, (new Vector2(30, 30).RotatedByRandom(100) + new Vector2(0, -2)) * Main.rand.NextFloat(0.1f, 1.2f), true, 120, Main.rand.NextFloat(1.7f, 2.7f), Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f), true, true);
-                                        GeneralParticleHandler.SpawnParticle(burst);
-                                    }
-
-                                    NPC.velocity = new Vector2(18 * NPC.spriteDirection, -12);
-                                    giveUpCounter = GiveUpCounterMax;
-                                    hasDoneDeathAnim = true;
-                                }
-                            }
-                            */
                         }
                         else
                         {
@@ -1960,32 +1863,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (!gettingTired5 && IsAtHp_Acceptance)
                 {
-                    for (int x = 0; x < Main.maxProjectiles; x++)
-                    {
-                        Projectile projectile = Main.projectile[x];
-                        if (projectile.active)
-                        {
-                            if (projectile.type == ModContent.ProjectileType<BrimstoneMonster>())
-                            {
-                                if (projectile.timeLeft > 90)
-                                    projectile.timeLeft = 90;
-                            }
-                            if (projectile.type == bulletHellblast ||
-                                projectile.type == barrage ||
-                                projectile.type == wave)
-                            {
-                                if (projectile.timeLeft > 60)
-                                    projectile.timeLeft = 60;
-                            }
-                            else if (projectile.type == fireblast || projectile.type == gigablast)
-                            {
-                                projectile.ai[2] = 1f;
-
-                                if (projectile.timeLeft > 15)
-                                    projectile.timeLeft = 15;
-                            }
-                        }
-                    }
+                    DespawnProjectiles(true);
 
                     if (!BossRushEvent.BossRushActive)
                     {
@@ -2066,6 +1944,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         castFire.noGravity = true;
                     }
 
+                    DespawnProjectiles();
                     SoundEngine.PlaySound(SoundID.DD2_DarkMageCastHeal, player.Center);
                     gettingTired = true;
                     return;
@@ -2075,27 +1954,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             #region DespawnProjectiles
             if (bulletHellCounter2 % BulletHellDuration == 0 && despawnProj)
             {
-                for (int x = 0; x < Main.maxProjectiles; x++)
-                {
-                    Projectile projectile = Main.projectile[x];
-                    if (projectile.active)
-                    {
-                        if (projectile.type == bulletHellblast ||
-                            projectile.type == barrage ||
-                            projectile.type == wave)
-                        {
-                            if (projectile.timeLeft > 60)
-                                projectile.timeLeft = 60;
-                        }
-                        else if (projectile.type == fireblast || projectile.type == gigablast)
-                        {
-                            projectile.ai[2] = 1f;
-
-                            if (projectile.timeLeft > 15)
-                                projectile.timeLeft = 15;
-                        }
-                    }
-                }
+                DespawnProjectiles();
                 despawnProj = false;
             }
             #endregion
@@ -3261,6 +3120,30 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 dashVisualCounter = 0;
             }
             #endregion
+        }
+
+        private static void DespawnProjectiles(bool despawnMaelstrom = false)
+        {
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (despawnMaelstrom && p.type == ModContent.ProjectileType<BrimstoneMonster>())
+                {
+                    if (p.timeLeft > 90)
+                        p.timeLeft = 90;
+                }
+                if (p.type == ModContent.ProjectileType<BrimstoneHellblast2>() || p.type == ModContent.ProjectileType<BrimstoneBarrage>() || p.type == ModContent.ProjectileType<BrimstoneWave>())
+                {
+                    if (p.timeLeft > 60)
+                        p.timeLeft = 60;
+                }
+                else if (p.type == ModContent.ProjectileType<SCalBrimstoneFireblast>() || p.type == ModContent.ProjectileType<SCalBrimstoneGigablast>())
+                {
+                    p.ai[2] = 1f;
+
+                    if (p.timeLeft > 15)
+                        p.timeLeft = 15;
+                }
+            }
         }
 
         public void DoHeartsSpawningCastAnimation(Player target, bool death)

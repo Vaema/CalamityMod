@@ -25,14 +25,14 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 124;
             Item.height = 124;
-            Item.damage = 760;
+            Item.damage = 570;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = Item.useTime = 71;
             Item.useTurn = true;
             Item.knockBack = 13f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
 
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<HellkiteHoldout>();

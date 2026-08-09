@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.holyMinions = true;
+            modPlayer.statisMinions = true;
             player.GetKnockback<SummonDamageClass>() += 2.5f;
             player.GetDamage<SummonDamageClass>() += 0.12f;
         }

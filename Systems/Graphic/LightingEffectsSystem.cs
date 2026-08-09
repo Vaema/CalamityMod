@@ -14,15 +14,11 @@ namespace CalamityMod.Systems
     {
         public const float MaxSignusDarkness = -0.4f;
         public const float MaxGFBSignusDarkness = MaxSignusDarkness * 2f;
-        public const float MaxAbyssDarkness = -0.7f;
+
         public override void ModifyLightingBrightness(ref float scale)
         {
             // Apply the calculated darkness value for the local player.
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
-            float darkRatio = MathHelper.Clamp(modPlayer.caveDarkness, 0f, 1f);
-
-            if (modPlayer.ZoneAbyss)
-                scale += MaxAbyssDarkness * darkRatio;
 
             if (CalamityWorld.revenge)
             {
@@ -34,11 +30,8 @@ namespace CalamityMod.Systems
                         {
                             float signusLifeRatio = 1f - (Main.npc[CalamityGlobalNPC.signus].life / Main.npc[CalamityGlobalNPC.signus].lifeMax);
 
-                            float multiplier = 1f;
-
                             // Total darkness
-                            float signusDarkness = signusLifeRatio * multiplier;
-                            darkRatio = MathHelper.Clamp(signusDarkness, 0f, 1f);
+                            float darkRatio = MathHelper.Clamp(signusLifeRatio, 0f, 1f);
                             scale += (Main.zenithWorld ? MaxGFBSignusDarkness : MaxSignusDarkness) * darkRatio;
                         }
                     }

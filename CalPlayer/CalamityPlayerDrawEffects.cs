@@ -431,7 +431,7 @@ namespace CalamityMod.CalPlayer
 
             #region Armor Visuals
             // Demonshade Armor
-            if (calamityPlayer.dsSetBonus && drawInfo.shadow == 0f)
+            if (calamityPlayer.demonshadeSet && drawInfo.shadow == 0f)
             {
                 if (Player != null && !Player.dead)
                 {

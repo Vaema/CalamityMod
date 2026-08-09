@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ScoriaBar>(7).
+                AddIngredient<ScoriaBar>(10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -21,8 +21,6 @@ namespace CalamityMod.Items.Armor.Bloodflare
 
         // Set Bonus
         public static float SetBonusRogueStealth = 1.2f;
-        public static int DefenseBoostAboveHealthThreshold = 30;
-        public static float DefenseBoostHealthThreshold = 0.8f;
 
         public override void SetDefaults()
         {
@@ -41,10 +39,9 @@ namespace CalamityMod.Items.Armor.Bloodflare
         {
             var modPlayer = player.Calamity();
             modPlayer.bloodflareSet = true;
-            modPlayer.bloodflareThrowing = true;
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), DefenseBoostAboveHealthThreshold, DefenseBoostHealthThreshold.ToPercent());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth());
         }
 
         public override void UpdateEquip(Player player)
@@ -58,7 +55,8 @@ namespace CalamityMod.Items.Armor.Bloodflare
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BloodstoneCore>(11).
+                AddIngredient<Bloodstone>(25).
+                AddIngredient<BloodOrb>(10).
                 AddIngredient<RuinousSoul>(2).
                 AddTile(TileID.MythrilAnvil).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<BloodflareBodyArmor>()).

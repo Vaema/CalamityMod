@@ -17,8 +17,8 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void SetDefaults()
         {
-            Item.width = 64;
-            Item.height = 66;
+            Item.width = 82;
+            Item.height = 90;
             Item.damage = 125;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 29;
@@ -67,9 +67,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CryonicBar>(8).
-                AddIngredient(ItemID.HellstoneBar, 8).
-                AddIngredient(ItemID.SoulofLight, 3).
+                AddIngredient<CryonicBar>(10).
+                AddIngredient(ItemID.HellstoneBar, 10).
+                AddIngredient(ItemID.SoulofLight, 10).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

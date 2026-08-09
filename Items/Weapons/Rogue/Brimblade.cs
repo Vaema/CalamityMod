@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UnholyCore>(4).
+                AddIngredient<UnholyCore>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -12,15 +12,11 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FrostBlossomStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn];
-        }
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 24;
-            Item.damage = 10;
+            Item.damage = 15;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Swing;

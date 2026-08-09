@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class PristineSecondary : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Magic/RancorFog";
+        public override string Texture => "CalamityMod/Particles/RancorFog";
 
         public ref float ScaleFactor => ref Projectile.ai[0];
         public float LightPower = 0;

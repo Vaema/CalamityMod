@@ -24,8 +24,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item1;
 
             Item.shootSpeed = 13f;

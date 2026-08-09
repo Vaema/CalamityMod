@@ -683,6 +683,19 @@ LeadTomahawk: {
 		'''
 }
 
+LemonNade: {
+	DisplayName: Lemon 'nade
+	Tooltip:
+		'''
+		Disables normal stealth generation
+		Hold <left> to pull the pin and generate stealth, and release to throw
+		The longer it is held, the shorter the fuse once the 'nade is thrown
+		Will explode in your hand if the fuse is held too long
+		Stealth strikes explode into exploding lemon seeds
+		'Burn their house down!'
+		'''
+}
+
 LeonidProgenitor: {
 	DisplayName: Leonid Progenitor
 	Tooltip:
@@ -890,6 +903,15 @@ ProfanedPartisan: {
 		'''
 }
 
+Pumpkaboom: {
+	DisplayName: Pumpkaboom
+	Tooltip:
+		'''
+		Throws a pumpkin which sticks to enemies and explodes after a delay
+		Stealth strikes throw larger pumpkins which pull enemies in before releasing a larger explosion
+		'''
+}
+
 RadiantStar: {
 	DisplayName: Radiant Star
 	Tooltip:
@@ -1066,17 +1088,6 @@ SkyfinBombers: {
 		Launches a skyfin nuke that homes in on enemies below it
 		Stealth strikes rapidly home in regardless of enemy position
 		'Fishy bombers inbound!'
-		'''
-}
-
-SlickCane: {
-	DisplayName: Slick Cane
-	Tooltip:
-		'''
-		Swipes a cane that steals money from enemies
-		Stealth strikes give a 1 in 20 chance for enemies to drop 1-2 gold coins when hit
-		Stealth strikes boost damage in proportion to money in the inventory, up to 1 Platinum
-		'Economy at its finest'
 		'''
 }
 
@@ -1262,7 +1273,7 @@ TimeBolt: {
 		'''
 		Throws a temporal knife that causes [cbuff:CalamityMod/TimeDistortion] around enemies
 		Stealth strikes can hit more enemies and create a larger time field
-		'There should be no boundary to human endeavor'
+		'Every maid needs a knife, and every knife needs a cutting board'
 		'''
 }
 
@@ -1359,6 +1370,17 @@ Vega: {
 		'''
 }
 
+WalkingCane: {
+	DisplayName: Walking Cane
+	Tooltip:
+		'''
+		Swipes a pointed walking cane
+		Stealth strikes drain the sanity of foes, causing shadow hands to be summoned when attacked
+		While held, increases movement speed by {0}%
+		'Is it walking me, or am I walking it?'
+		'''
+}
+
 WaveSkipper: {
 	DisplayName: Wave Skipper
 	Tooltip:
@@ -1406,27 +1428,5 @@ WulfrumKnife: {
 		Stealth strikes make the knife fly further and hit several times at once
 		<right> to magnetize all stuck knives back to you, restoring stealth
 		Returning knives also temporarily allows using stealth strikes without rogue armor
-		'''
-}
-
-Pumpkaboom: {
-	DisplayName: Pumpkaboom
-	Tooltip:
-		'''
-		Throws a pumpkin which sticks to enemies and explodes after a delay
-		Stealth strikes throw larger pumpkins which pull enemies in before releasing a larger explosion
-		'''
-}
-
-LemonNade: {
-	DisplayName: Lemon 'nade
-	Tooltip:
-		'''
-		Disables normal stealth generation
-		Hold <left> to pull the pin and generate stealth, and release to throw
-		The longer it is held, the shorter the fuse once the 'nade is thrown
-		Will explode in your hand if the fuse is held too long
-		Stealth strikes explode into exploding lemon seeds
-		'Burn their house down!'
 		'''
 }

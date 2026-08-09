@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(8).
+            CreateRecipe(4).
                 AddIngredient<Items.Placeables.FurnitureWulfrum.RoundedAnodizedWulfrumPanels>().
                 AddTile(TileID.WorkBenches).
                 Register();

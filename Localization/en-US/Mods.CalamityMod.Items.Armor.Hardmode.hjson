@@ -306,7 +306,7 @@ LunicCorpsHelmet: {
 	DisplayName: Lunic Corps Helmet
 	Tooltip:
 		'''
-		Increases non-bow damage by {0}%
+		Increases non-bow ranged damage by {0}%
 		Improves vision and shows the location of enemies
 		'''
 	SetBonus:

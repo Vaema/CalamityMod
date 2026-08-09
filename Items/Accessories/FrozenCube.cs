@@ -14,13 +14,13 @@ namespace CalamityMod.Items.Accessories
 {
     public class FrozenCube : ModItem, ILocalizedModType
     {
-        public static int mistBaseDamage = 1;
-        public static int slamBaseDamage = 20;
-        public static int baseAttackSpeed = 90;
-        public static int baseAttackCooldown = 180;
+        public static int mistBaseDamage => 5;
+        public static int slamBaseDamage => 20;
+        public static int baseAttackSpeed => 90;
+        public static int baseAttackCooldown => 180;
 
-        public static int usedDefenseDivide = 3;
-        public static int debuff = ModContent.BuffType<WindChilled>();
+        public static int usedDefenseDivide => 3;
+        public static int debuff => ModContent.BuffType<WindChilled>();
 
         public static readonly SoundStyle noise = new("CalamityMod/Sounds/Item/ElumphantSound") { Volume = 0.6f };
         public static readonly SoundStyle cry = new("CalamityMod/Sounds/Item/ElumphantCry") { Volume = 0.6f };
@@ -56,7 +56,7 @@ namespace CalamityMod.Items.Accessories
             if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
             {
                 int damage = (int)player.GetTotalDamage<GenericDamageClass>().ApplyTo(slamBaseDamage);
-                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
         public override void UpdateVanity(Player player)
@@ -68,8 +68,8 @@ namespace CalamityMod.Items.Accessories
             int projectile = ProjectileType<Elumphant>();
             if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
             {
-                int damage = 0;
-                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
+                int damage = (int)player.GetTotalDamage<GenericDamageClass>().ApplyTo(slamBaseDamage);
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
 

@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
                 } 
                 else
                 {
-                    Projectile.damage = (int)(Projectile.damage * 1.3f); // damage boost
+                    Projectile.damage = (int)(Projectile.damage * 1.2f); // damage boost
                     player.statLife -= 1;
                     if (player.statLife <= 0)
                     {

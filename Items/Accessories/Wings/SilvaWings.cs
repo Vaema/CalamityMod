@@ -55,9 +55,9 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient(ItemID.SoulofFlight, 20).
-                AddIngredient<PlantyMush>(3).
-                AddIngredient<EffulgentFeather>(15).
-                AddIngredient<AscendantSpiritEssence>(2).
+                AddIngredient<PlantyMush>(45).
+                AddIngredient<EffulgentFeather>(10).
+                AddIngredient<AscendantSpiritEssence>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

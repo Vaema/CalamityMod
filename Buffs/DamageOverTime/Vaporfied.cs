@@ -1,12 +1,10 @@
 ﻿using CalamityMod.DataStructures;
-using CalamityMod.NPCs;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {

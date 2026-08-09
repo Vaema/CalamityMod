@@ -96,7 +96,6 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<ForbiddenOathblade>().
                 AddIngredient(ItemID.BrokenHeroSword).
-                AddIngredient<AshesofCalamity>(8).
                 AddIngredient<ScoriaBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();

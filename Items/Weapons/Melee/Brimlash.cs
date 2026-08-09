@@ -55,8 +55,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AshesofCalamity>(12).
-                AddIngredient<UnholyCore>(4).
+                AddIngredient<UnholyCore>(8).
+                AddIngredient<AshesofCalamity>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

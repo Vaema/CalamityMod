@@ -27,7 +27,7 @@ namespace CalamityMod.Systems.Collections
 
         /// <summary>
         /// If <see langword="true"/> for a projectile type, then that projectile is spawned by a post-Plantera Dungeon enemy.<br/>
-        /// This increases the projectile's damage by a flat 30 if Moon Lord has been defeated.<br/>
+        /// This increases the projectile's damage by a flat 60 if Moon Lord has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] IsBuffedDungeonProjectile = Factory.CreateNamedSet("IsBuffedDungeonProjectile")
@@ -37,7 +37,7 @@ namespace CalamityMod.Systems.Collections
 
         /// <summary>
         /// If <see langword="true"/> for a projectile type, then that projectile is spawned by a Solar Eclipse, Pumpkin Moon, or Frost Moon enemy.<br/>
-        /// This increases the projectile's damage by a flat 15 during those events if Devourer of Gods has been defeated.<br/>
+        /// This increases the projectile's damage by a flat 30 during those events if Devourer of Gods has been defeated.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] IsBuffedEventProjectile = Factory.CreateNamedSet("IsBuffedEventProjectile")

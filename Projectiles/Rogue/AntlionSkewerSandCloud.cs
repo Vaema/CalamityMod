@@ -8,7 +8,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class AntlionSkewerSandCloud : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Magic/RancorFog";
+        public override string Texture => "CalamityMod/Particles/RancorFog";
         public ref float CloudHue => ref Projectile.ai[0];
 
         public override void SetDefaults()

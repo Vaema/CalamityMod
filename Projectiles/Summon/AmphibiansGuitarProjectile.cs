@@ -78,11 +78,6 @@ namespace CalamityMod.Projectiles.Summon
                 dust.color = noteColor;
                 dust.noLightEmittence = true;
             }
-            if (Projectile.ai[2] == 5 && time % 2 == 0)
-            {
-                Particle spark = new GlowSparkParticle(Projectile.Center + Projectile.velocity * Main.rand.NextFloat(-2, -1), -Projectile.velocity * 0.3f, false, 8, 0.065f, noteColor * 0.75f, new Vector2(1, 0.3f), true, false, 1f);
-                GeneralParticleHandler.SpawnParticle(spark);
-            }
 
             time++;
         }
@@ -115,7 +110,7 @@ namespace CalamityMod.Projectiles.Summon
             if (IsHatNote)
             {
                 for (int i = 0; i < 3; i++)
-                    Main.EntitySpriteDraw(tex2.Value, generalDrawPos, null, noteColor with { A = 0 }, Main.GlobalTimeWrappedHourly * 7.3f + i * 2, tex2.Size() * 0.5f, Projectile.scale * (0.7f + i * 0.7f) * 0.9f, SpriteEffects.None);
+                    Main.EntitySpriteDraw(tex2.Value, generalDrawPos, null, (noteColor * 0.5f) with { A = 0 }, Main.GlobalTimeWrappedHourly * 7.3f + i * 2, tex2.Size() * 0.5f, Projectile.scale * (0.6f + i * 0.6f), SpriteEffects.None);
             }
             return false;
         }

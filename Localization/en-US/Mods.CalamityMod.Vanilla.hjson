@@ -128,11 +128,7 @@ EditedTooltip: {
 	*/
 	Campfires: Life regen is increased by 0.5 HP/s when near a campfire
 	HeartLantern: Grants +1 HP/s life regeneration when placed nearby
-	BottledHoney:
-		'''
-		Grants +1 HP/s life regen for a short time
-		Grants an additional +1 HP/s life regen while inflicted with a damaging debuff
-		'''
+	BottledHoney: Grants the [cbuffplr:Honey] buff for 15 seconds
 	ShinyStone: Grants +2 HP/s life regen and accelerates natural life regen when not moving
 	BandofRegeneration: Grants +1 HP/s life regeneration
 	CharmofMyths: Grants +1 HP/s life regeneration and reduces the cooldown of healing potions by 25%
@@ -183,13 +179,13 @@ EditedTooltip: {
 		'''
 	FrogLeg: Increases jump speed by {0}% and allows auto-jump
 	// Soaring Insignia
-	EmpressFlightBooster1: Increases wing flight time by 33%
+	EmpressFlightBooster1: Grants 2.5 additional seconds of flight time
 	EmpressFlightBooster2: Increases movement speed by 7.5%, jump speed by 10%, and acceleration by 1.25x
 	GravityGlobe:
 		'''
-		Provides 32% increased jump speed and increased fall speed
+		Provides 40% increased jump speed and increased fall speed
 		Provides a gravitational boost jump, which recharges whenever gravity is flipped
-		Slightly improves wingless air movement speed
+		Improves wingless air movement speed
 		Press {$Key.UP} to change gravity
 		Press {$Key.DOWN} to fall faster
 		'''
@@ -198,6 +194,12 @@ EditedTooltip: {
 		25% increased Heat debuff damage
 		All attacks light enemies on fire
 		'Never get cold feet again'
+		'''
+	VolatileGelatin:
+		'''
+		Every 5 volatile gelatins that hit, a winged Volatile Slime will spawn, up to a max of 6
+		Each Volatile Slime provides 5% increased jump speed and 0.3 seconds of flight time
+		Running out of flight time will remove the Volatile Slime's wings and detach them from you
 		'''
 	/*
 	Armor
@@ -400,7 +402,7 @@ TavernkeepChat.FullMoon: Care for a little Moonshine?
 TaxCollectorChat: {
 	DoGDefeated: Devourer of what, you said? Devourer of Funds, if its payroll is anything to go by!
 	PreBrimmy: So those punks on Azafure think they can live for free on my lands? Tell you what, do my job there and I might give you a bonus.
-	HasSlickCane: Goodness! That cane has swagger!
+	HasWalkingCane: Goodness! That cane has swagger!
 	Has100Plat: BAH! Doesn't seem like I'll ever be able to quarrel with the debts of the town again!
 	Has500Plat: Where and how are you getting all of this money?! Scram, you have no need for me!
 }
@@ -523,7 +525,7 @@ TownNPCMood: {
 	PartyGirl: {
 		Monument: Yeeesh, we're gonna have an ugly statue of big money around? That like, totally kills the party mood around here.
 		GiftPositive: PARTY GIFTS? FOR ME? Oh just you wait, I'm gonna throw the BIGGEST party this town has ever seen, forever and always!
-		GiftNegative: I knew you were trouble when you walked in that suspicious looking box! It's too late now to say sorry!
+		GiftNegative: I knew you were trouble when you walked in with that suspicious looking box! It's too late now to say sorry!
 	}
 
 	Pirate: {

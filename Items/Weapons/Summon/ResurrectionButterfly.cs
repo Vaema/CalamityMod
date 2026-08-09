@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.ButterflyDust, 2).
                 AddIngredient(ItemID.Silk, 40).
-                AddIngredient(ItemID.Ectoplasm, 20).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.Loom).
                 Register();
         }

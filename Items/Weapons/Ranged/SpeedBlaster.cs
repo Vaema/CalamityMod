@@ -110,6 +110,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.PainterPaintballGun).
+                AddIngredient(ItemID.IllegalGunParts).                
                 AddRecipeGroup("AnyMythrilBar", 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();

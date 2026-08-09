@@ -23,11 +23,6 @@ AethersWhisper: {
 	Tooltip: Fires void beams that gain damage as they travel and split on tile hits
 }
 
-AlulaAustralis: {
-	DisplayName: Alula Australis
-	Tooltip: Fires a beautiful aurora that spreads the [cbuff:CalamityMod/AstralInfectionDebuff] and is trailed by a star shower
-}
-
 AlphaDraconis: {
 	DisplayName: Alpha Draconis
 	Tooltip:
@@ -39,6 +34,11 @@ AlphaDraconis: {
 		Draco inflicts [cbuff:CalamityMod/Voidfrost]
 		'An imitation of insanity'
 		'''
+}
+
+AlulaAustralis: {
+	DisplayName: Alula Australis
+	Tooltip: Fires a beautiful aurora that spreads the [cbuff:CalamityMod/AstralInfectionDebuff] and is trailed by a star shower
 }
 
 AnahitasArpeggio: {
@@ -493,7 +493,7 @@ LashesofChaos: {
 	DisplayName: Lashes of Chaos
 	Tooltip:
 		'''
-		Alternates between exploding hellfireballs and piercing hellblasts
+		Alternates between exploding hellfire bursts and piercing brimstone darts
 		'Watch the world burn...'
 		'''
 }
@@ -919,6 +919,11 @@ TheSwarmer: {
 TheWand: {
 	DisplayName: The Wand
 	Tooltip: The ultimate wand
+	SalesPitch:
+		'''
+		'Hey buddy. I know we've had our differences, but you've been a real pal to me. This is a special offer, just for you!'
+		'Apparently this stick is from the Dragon Aerie, and I've heard that even the tiniest branches there have unfathomable power! This is literally a steal!'
+		'''
 }
 
 ThornBlossom: {

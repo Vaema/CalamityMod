@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Tools.ClimateChange
             CreateRecipe().
                 AddRecipeGroup("Sand", 50).
                 AddRecipeGroup("AnyAdamantiteBar", 10).
-                AddIngredient(ItemID.AncientCloth, 5).
+                AddIngredient(ItemID.AncientCloth, 3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

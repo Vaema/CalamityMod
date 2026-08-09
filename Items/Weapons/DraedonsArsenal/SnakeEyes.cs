@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             Item.width = 38;
             Item.height = 24;
-            Item.damage = 200;
+            Item.damage = 160;
             Item.mana = 12;
             Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;

@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<UnholyCore>(6).
+                AddIngredient<UnholyCore>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

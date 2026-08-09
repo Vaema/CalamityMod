@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AerialiteBar>(7).
+                AddIngredient<AerialiteBar>(8).
                 AddTile(TileID.Anvils).
                 Register();
         }

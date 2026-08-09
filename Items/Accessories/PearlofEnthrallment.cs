@@ -29,20 +29,12 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.elementalHeart)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().allElementals.HasValue;
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.waterElemental = true;
+            modPlayer.waterElemental = !hideVisual;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);

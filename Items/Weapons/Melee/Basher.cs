@@ -34,8 +34,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
-            Item.rare = ItemRarityID.Blue;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Green;
         }
         public override bool MeleePrefix() => true;
         public override bool CanUseItem(Player player) => false;

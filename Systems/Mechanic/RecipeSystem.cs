@@ -745,8 +745,6 @@ namespace CalamityMod.Systems
                 { Vanilla(ItemID.Leather), ChangeIngredientStack(ItemID.RottenChunk, 2) },
                 { Vanilla(ItemID.JestersArrow), JesterArrowRecipeEdit },
                 { Vanilla(ItemID.TeleportationPotion), TeleportationPotionRecipeEdit },
-                { Vanilla(ItemID.WormFood), WormFoodRecipeEdit },
-                { Vanilla(ItemID.BloodySpine), BloodySpineRecipeEdit },
                 { Vanilla(ItemID.GoblinBattleStandard), ChangeIngredientStack(ItemID.TatteredCloth, 5) },
                 { Vanilla(ItemID.Beenade), BeenadeRecipeEdit },
                 { Vanilla(ItemID.ChlorophyteBar), ChangeIngredientStack(ItemID.ChlorophyteOre, 4) },
@@ -757,13 +755,13 @@ namespace CalamityMod.Systems
 
                 // Tier lock various items to a higher tier (sorted by progression)
                 { Vanilla(ItemID.Trimarang), AddIngredient(ItemType<PearlShard>(), 5) },
-                { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 5) },
+                { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 10) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
                 { Vanilla(ItemID.FairyBell), RemoveIngredient(ItemID.SoulofSight) },
                 { Vanilla(ItemID.HellfireTreads), AddIngredient(ItemType<EssenceofHavoc>(), 4) },
                 { Vanilla(ItemID.SpiritFlame), AddGroup(AnyAdamantiteBar, 2) },
                 { Vanilla(ItemID.TerraBlade), AddIngredient(ItemType<LivingShard>(), 12) },
-                { Vanilla(ItemID.FireGauntlet), AddIngredient(ItemType<ScoriaBar>(), 5) },
+                { Vanilla(ItemID.FireGauntlet), AddIngredient(ItemType<ScoriaBar>(), 8) },
                 { Vanilla(ItemID.Zenith), ZenithRecipeEdit },
 
                 // Tier unlock various items to a lower tier (sorted by progression)
@@ -842,18 +840,6 @@ namespace CalamityMod.Systems
             r.ChangeIngredientStack(ItemID.SoulofSight, intendedStack);
             r.ChangeIngredientStack(ItemID.SoulofMight, intendedStack);
             r.ChangeIngredientStack(ItemID.SoulofFright, intendedStack);
-        }
-
-        private static void WormFoodRecipeEdit(Recipe r)
-        {
-            r.ChangeIngredientStack(ItemID.VilePowder, 20);
-            r.ChangeIngredientStack(ItemID.RottenChunk, 10);
-        }
-
-        private static void BloodySpineRecipeEdit(Recipe r)
-        {
-            r.ChangeIngredientStack(ItemID.ViciousPowder, 20);
-            r.ChangeIngredientStack(ItemID.Vertebrae, 10);
         }
 
         private static void ZenithRecipeEdit(Recipe r)
@@ -1229,7 +1215,6 @@ namespace CalamityMod.Systems
         #region Cooked Food
         private static void AddCookedFood()
         {
-            #region Alternative Recipes
             #region Cooked Fish
             Recipe r = Recipe.Create(ItemID.CookedFish);
             r.AddIngredient<TwinklingPollox>();
@@ -1338,19 +1323,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedShrimp);
-            r.DisableDecraft();
-            #endregion
-
-            r = Recipe.Create(ItemID.Bacon);
-            r.AddIngredient<PiggyItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.Bacon);
-            r.AddIngredient<PiggyGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
@@ -1513,7 +1485,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.IceSkates);
             r.AddIngredient(ItemID.FlinxFur, 3);
             r.AddRecipeGroup("IronBar", 5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
 
             // Water Walking Boots
@@ -1568,14 +1540,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
-
-            // Fledgling Wings
-            r = Recipe.Create(ItemID.CreativeWings);
-            r.AddIngredient<AncientBoneDust>(2);
-            r.AddIngredient(ItemID.Cloud, 5);
-            r.AddIngredient(ItemID.Feather, 10);
-            r.AddTile(TileID.Anvils);
-            r.Register();
 
             // Flying Carpet
             r = Recipe.Create(ItemID.FlyingCarpet);

@@ -226,11 +226,11 @@ ProfanedCore: {
 	DisplayName: Profaned Core
 	Tooltip:
 		'''
-		Summons Providence when used in the Hallow or Underworld
-		Use again while Providence is at high health to unleash Her perfect fury
+		Summons Providence when used in the Hallow or Underworld[ENRAGE]
 		{$Common.NotConsumable}
 		'The heart of Her Guardians, Her wicked wrath shall burn upon whoever now wields it.'
 		'''
+	EnrageText: "[c/64c8fa:The nature of this world will unleash Her perfect fury, beware!]"
 }
 
 ProfanedShard: {

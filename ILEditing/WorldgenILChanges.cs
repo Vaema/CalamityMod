@@ -208,5 +208,72 @@ namespace CalamityMod.ILEditing
         }
 
         #endregion Prevent Abyss/Dungeon Interactions
+
+        #region Fledgling Wings Loot Changes
+        /// <summary>
+        /// Changes the primary loot of Floating Island chests to include Fledging Wings
+        /// </summary>
+        private static void MakeFledgingWingsMoreCommon(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // How the code we are moving to works:
+            // Set num13 equal to the number of islands generated. If greater than 3, set to a random number between 0-3 inclusive. Then use that value in a 4-branch switch statement.
+            // This makes num13 always be a value between 0-3, for the 4 primary items in island loot.
+            // To accomodate for Fledgling Wings, we must change this to check for being greater than 4, then to set to a random number between 0-4 inclusive, then make the switch have 5 branches.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc(13)))
+            {
+                LogFailure("Fledgling Wings", "Could not move to the location of determining Floating Island primary loot 1.");
+                return;
+            }
+
+            // Emit a delegate which reimplements the logic for choosing the primary loot of floating islands with Fledgling Wings, then return the ID of the item.
+            var label = il.DefineLabel();
+            cursor.EmitDelegate<Func<int>>(() =>
+            {
+                int island = GenVars.skyIslandHouseCount;
+                if (island > 4)
+                    island = Main.rand.Next(5);
+
+                return island switch
+                {
+                    1 => 65, // Starfury
+                    2 => 158, // Lucky Horseshoe
+                    3 => 2219, // Celestial Magnet
+                    4 => 4978, // Fledgling Wings
+                    _ => 159, // Shiny Red Balloon
+                };
+            });
+
+            // Store this value in the variable which holds the ID of the item, then branch past the original logic.
+            cursor.Emit(OpCodes.Stloc, 13);
+            cursor.Emit(OpCodes.Br, label);
+
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdsfld<WorldGen>("getGoodWorldGen")))
+            {
+                LogFailure("Fledgling Wings", "Could not move after the switch statement.");
+                return;
+            }
+            cursor.MarkLabel(label);
+        }
+
+        /// <summary>
+        /// Disables Fledgling Wings being added as secondary loot in floating island chests
+        /// </summary>
+        private static void DisableFledglingWingsSecondary(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdloc(9)))
+            {
+                LogFailure("Fledgling Wings", "Could not move to the code adding Fledgling Wings as secondary loot.");
+                return;
+            }
+
+            // AND with 0 (false) so that the code to add Fledgling Wings as secondary loot never runs.
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
+        }
+        #endregion
     }
 }

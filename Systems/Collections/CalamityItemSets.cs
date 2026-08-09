@@ -14,7 +14,6 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using ReLogic.Reflection;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,7 +33,7 @@ namespace CalamityMod.Systems.Collections
         public static bool[] WeaponWithToolPowerAffectedBySummonPenalty = Factory.CreateNamedSet("WeaponWithToolPowerAffectedBySummonPenalty")
             .Description("Makes items with tool power still trigger the summon damage penalty.")
             .RegisterBoolSet(ItemID.ButchersChainsaw, ItemID.LucyTheAxe, ItemID.Rockfish, ItemType<AxeofPurity>(), ItemType<HydraulicVoltCrasher>(), ItemType<InfernaCutter>(),
-                ItemType<PhotonRipper>(), ItemType<Respiteblock>());
+                ItemType<PhotonRipper>(), ItemType<Respiteblock>(), ItemType<Spadefish>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, manually disables Calamity's summon damage penalty mechanic while that item type is held.<br/>
@@ -61,7 +60,7 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] DisablesVeneratedLocketEffect = Factory.CreateNamedSet("DisablesVeneratedLocketEffect")
             .Description("Prevents this item from triggering Venerated Locket's clone projectiles.")
-            .RegisterBoolSet(ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
+            .RegisterBoolSet(ItemType<WalkingCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a magic gun.<br/>
@@ -168,6 +167,16 @@ namespace CalamityMod.Systems.Collections
             .Description("Labels this item as having Shady Salesman flavor text, making it draw at the top of the tooltip and the actual tooltip being drawn small below it.")
             .RegisterBoolSet(ItemType<FishStocks>(), ItemType<TrustyOldRod>(), ItemType<RageBait>(), ItemType<GluttonyBlender>(), ItemType<TheMonument>(), ItemType<GreedPot>(), ItemType<BaconOil>(), ItemType<TheSandwich>(), ItemType<TheConcoction>(), ItemType<TheElixir>(), ItemType<TheGift>(), ItemType<OmniGun>(),
             ItemType<CombatVoucher>(), ItemType<AggressiveVoucher>(), ItemType<OddVoucher>(), ItemType<UnbreakableVoucher>(), ItemType<HurriedVoucher>(), ItemType<TheHousingContract>(), ItemType<CorruptionEffigy>(), ItemType<CrimsonEffigy>(), ItemType<TrinketofChi>(), ItemType<FrozenCube>(), ItemType<LuxorsGift>(),
-            ItemType<FungalSymbiote>(), ItemType<GladiatorsLocket>(), ItemType<UnstableGraniteCore>(), ItemType<HeartofDarkness>(), ItemType<StressPills>());
+            ItemType<FungalSymbiote>(), ItemType<GladiatorsLocket>(), ItemType<UnstableGraniteCore>(), ItemType<HeartofDarkness>(), ItemType<StressPills>(), ItemType<TheWand>(), ItemType<ThePact>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, this item is an accessory which uses a keybind for an active ability.<br/>
+        /// Used for assigning it one of the dedicated keybind slots based on slot order with other accessories that use keybinds.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] HasAccessoryKeybind = Factory.CreateNamedSet("HasAccessoryKeybind")
+            .Description("Counts this item as having an accessory keybind. Used for assigning which keybind goes to which accessory.")
+            .RegisterBoolSet(ItemType<AngelicAlliance>(), ItemType<AscendantInsignia>(), ItemType<DivineProvidence>(), ItemType<BlunderBooster>(), ItemType<DeadshotBrooch>(), ItemType<FlameLickedShell>(), 
+            ItemType<InterstellarStompers>(),ItemType<PlaguedFuelPack>(), ItemType<PlanebreakersPouch>(), ItemType<SpectralVeil>(), ItemType<SpringStool>(), ItemType<ThePointer>(), ItemType<TheTransformer>());
     }
 }

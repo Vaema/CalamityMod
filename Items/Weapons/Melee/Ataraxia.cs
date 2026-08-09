@@ -21,10 +21,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 94;
             Item.height = 92;
             Item.DamageType = DamageClass.Melee;
-            Item.damage = 675;
+            Item.damage = 325;
             Item.knockBack = 2.5f;
-            Item.useAnimation = 10;
-            Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.autoReuse = true;
             Item.useTurn = true;
 
@@ -47,12 +46,11 @@ namespace CalamityMod.Items.Weapons.Melee
 
             // Center projectile
             int centerID = ModContent.ProjectileType<AtaraxiaMain>();
-            int centerDamage = (damage / 2);
-            Projectile.NewProjectile(source, position, velocity, centerID, centerDamage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, centerID, damage, knockback, player.whoAmI);
 
-            // Side projectiles (these deal 75% damage)
+            // Side projectiles (these deal 50% damage)
             int sideID = ModContent.ProjectileType<AtaraxiaSide>();
-            int sideDamage = ((int)(0.75f * centerDamage) / 2);
+            int sideDamage = (int)(0.5f * damage);
             Vector2 originalVelocity = velocity;
             velocity.Normalize();
             velocity *= 22f;

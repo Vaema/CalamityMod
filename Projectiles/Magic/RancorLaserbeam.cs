@@ -4,6 +4,7 @@ using System.Linq;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -128,7 +129,8 @@ namespace CalamityMod.Projectiles.Magic
         public void CreateTileHitEffects()
         {
             Vector2 endOfLaser = Projectile.Center + Projectile.velocity * (LaserLength - Main.rand.NextFloat(12f, 72f));
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), endOfLaser, Main.rand.NextVector2Circular(4f, 8f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner, 0f, 1f);
+            RancorFog fog = new(endOfLaser, Main.rand.NextVector2Circular(4f, 8f), 180, Main.rand.NextFloat(1f, 1.7f), Main.rand.NextFloat(MathHelper.TwoPi));
+            GeneralParticleHandler.SpawnParticle(fog, false, Enums.GeneralDrawLayer.BeforeNPCs);
 
             if (Main.rand.NextBool())
             {

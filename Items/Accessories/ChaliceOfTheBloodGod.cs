@@ -71,7 +71,8 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<BloodPact>().
                 AddIngredient(ItemID.CharmofMyths).
-                AddIngredient<BloodstoneCore>(5).
+                AddIngredient<Bloodstone>(12).
+                AddIngredient<BloodOrb>(5).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();

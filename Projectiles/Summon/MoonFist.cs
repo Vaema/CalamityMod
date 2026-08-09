@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.penetrate = -1;
             Projectile.MaxUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 10;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.netImportant = true;
             Projectile.timeLeft = 90000;
             Projectile.DamageType = DamageClass.Summon;
@@ -122,13 +122,13 @@ namespace CalamityMod.Projectiles.Summon
 
         public void AttackTarget(NPC target)
         {
-            int reelBackTime = 32;
-            int homeDelay = 27;
+            int reelBackTime = 30;
+            int homeDelay = 15;
             int attackTime = 150;
             int attackCycleInterval = reelBackTime + attackTime;
 
             // Teleport to the enemy if it's far away.
-            if (!Projectile.WithinRange(target.Center, 1200f))
+            if (!Projectile.WithinRange(target.Center, 960f))
             {
                 Vector2 teleportDestination = target.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(250f, 300f);
                 DoTeleport(teleportDestination);
@@ -145,11 +145,11 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame = (int)Math.Round(MathHelper.Lerp(6f, 11f, AttackTimer / reelBackTime));
 
                 // Reel back and look at the target.
-                float hoverOffset = MathHelper.Lerp(200f, 480f, AttackTimer / reelBackTime);
+                float hoverOffset = MathHelper.Lerp(160f, 320f, AttackTimer / reelBackTime);
                 hoverOffset += MathHelper.Lerp(-10f, 75f, Projectile.identity % 9f / 1f);
                 float spin = MathHelper.Lerp(-0.27f, 0.27f, Projectile.identity / 7f % 1f);
                 Vector2 hoverDestination = target.Center - target.SafeDirectionTo(target.Center, Vector2.UnitY).RotatedBy(spin) * hoverOffset;
-                Vector2 idealVelocity = Projectile.SafeDirectionTo(hoverDestination) * MathHelper.Min(25f, Projectile.Distance(hoverDestination));
+                Vector2 idealVelocity = Projectile.SafeDirectionTo(hoverDestination) * MathHelper.Min(12f, Projectile.Distance(hoverDestination));
 
                 Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.02f);
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.03f).MoveTowards(idealVelocity, 0.5f);
@@ -164,6 +164,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             else if (DelayUntilNextPunch <= 0)
             {
+                Projectile.ResetLocalNPCHitImmunity();
+
                 // Home towards the target briefly after the initial charge.
                 if (AttackTimer >= reelBackTime + homeDelay)
                     Projectile.velocity = Projectile.SuperhomeTowardsTarget(target, 34f, 24f);
@@ -203,14 +205,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netUpdate = true;
         }
 
-        public override bool MinionContactDamage() => true;
+        public override bool MinionContactDamage() => DelayUntilNextPunch <= 0 && AttackTimer > 0f;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // Rebound on collision.
-            if (DelayUntilNextPunch > 0 || AttackTimer <= 0f)
-                return;
-
             // Create some cool particles to go with the hit.
             Vector2 impactPoint = Vector2.Lerp(Projectile.Center, target.Hitbox.ClosestPointInRect(Projectile.Center), 0.5f);
             for (int i = 0; i < 7; i++)
@@ -235,7 +233,7 @@ namespace CalamityMod.Projectiles.Summon
 
             SoundEngine.PlaySound(SoundID.Item74 with { Pitch = -0.36f }, Projectile.Center);
             DelayUntilNextPunch = WarloksMoonFist.PunchCooldownTime - 10;
-            Projectile.velocity = Projectile.SafeDirectionTo(target.Center, -Vector2.UnitY).RotatedBy(0.16f) * Projectile.velocity.Length() * -0.45f;
+            Projectile.velocity = Projectile.SafeDirectionTo(target.Center, -Vector2.UnitY).RotatedBy(0.16f) * Projectile.velocity.Length() * -0.3f;
             Projectile.netUpdate = true;
         }
 

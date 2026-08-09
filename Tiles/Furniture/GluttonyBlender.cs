@@ -236,8 +236,8 @@ namespace CalamityMod.Tiles.Furniture
             {
                 Item dummy = new Item();
                 dummy.SetDefaults(ItemType);
-                // 0.5% per minute of duration, multiplied by 1.5x for T@ food and 2x for T3 food
-                float goodPercent = dummy.buffTime * (dummy.buffType == BuffID.WellFed3 ? 2f : dummy.buffType == BuffID.WellFed2 ? 1.5f : 1f) / 3600f / 2f;
+                // 0.1% per minute of duration, multiplied by 2x for T2 food and 10x for T3 food
+                float goodPercent = dummy.buffTime * (dummy.buffType == BuffID.WellFed3 ? 10f : dummy.buffType == BuffID.WellFed2 ? 2f : 1f) / 3600f / 10f;
 
                 int itemDrop = Main.rand.NextFloat(100f) < goodPercent ? ModContent.ItemType<QualitySlop>() : ModContent.ItemType<DisgustingSlop>();
                 int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, itemDrop);

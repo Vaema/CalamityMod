@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ScoriaBar>(15).
+                AddIngredient<ScoriaBar>(20).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -10,7 +10,8 @@ namespace CalamityMod.Prefixes
     public class Horrible : HorribleWeaponPrefix
     {
         public override float damageMult => 0.66f;
-        public override float sizeMult => 2f;
+        public override float sizeMult => 1.66f;
+        public override float knockbackMult => 0.01f;
     }
     public abstract class HorribleWeaponPrefix : ModPrefix, ILocalizedModType
     {
@@ -19,6 +20,7 @@ namespace CalamityMod.Prefixes
         // Stats
         public virtual float damageMult => 1f;
         public virtual float sizeMult => 1f;
+        public virtual float knockbackMult => 1f;
 
         public override PrefixCategory Category => PrefixCategory.AnyWeapon;
         public override float RollChance(Item item) => 0; // Is manually applied by an item, can't be rerolled normally
@@ -31,6 +33,7 @@ namespace CalamityMod.Prefixes
         {
             damageMult = this.damageMult;
             scaleMult = this.sizeMult;
+            knockbackMult = this.knockbackMult;
         }
         public override void ModifyValue(ref float valueMult)
         {

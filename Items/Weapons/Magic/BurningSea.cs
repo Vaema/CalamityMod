@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.SpellTome).
-                AddIngredient<UnholyCore>(5).
+                AddIngredient<UnholyCore>(8).
                 AddTile(TileID.Bookcases).
                 Register();
         }

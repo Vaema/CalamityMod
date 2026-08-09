@@ -637,5 +637,7 @@ namespace CalamityMod.Items.Accessories
                 AddDecraftCondition(CalamityConditions.DownedSupremeCalamitas, CalamityConditions.DownedExoMechs).
                 Register();
         }
+
+        public static Color RarityColor() => CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25), 6f); //alternates between emerald green and amber (BanditHueh)
     }
 }
