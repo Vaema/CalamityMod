@@ -3,30 +3,29 @@ using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Ammo
-{
-    public class BloodRune : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Ammo";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
+namespace CalamityMod.Items.Ammo;
 
-        public override void SetDefaults()
-        {
-            Item.width = 22;
-            Item.height = 24;
-            Item.damage = 1;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.knockBack = 10f;
-            Item.value = Item.buyPrice(gold: 1); // Sold by Archmage
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.Calamity().donorItem = true;
-            Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
-            Item.shootSpeed = 0f;
-            Item.ammo = Item.type;
-        }
+public class BloodRune : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Ammo";
+    public override void SetStaticDefaults()
+    {
+        Item.ResearchUnlockCount = 99;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.width = 22;
+        Item.height = 24;
+        Item.damage = 1;
+        Item.maxStack = Item.CommonMaxStack;
+        Item.consumable = true;
+        Item.knockBack = 10f;
+        Item.value = Item.buyPrice(gold: 1); // Sold by Archmage
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+        Item.Calamity().donorItem = true;
+        Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
+        Item.shootSpeed = 0f;
+        Item.ammo = Item.type;
     }
 }

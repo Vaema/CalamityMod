@@ -2,33 +2,32 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Healing
+namespace CalamityMod.Projectiles.Healing;
+
+public class DemonHeal : ModProjectile, ILocalizedModType
 {
-    public class DemonHeal : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Healing";
+    public Player Owner => Main.player[Projectile.owner];
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Healing";
-        public Player Owner => Main.player[Projectile.owner];
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Projectile.width = 4;
+        Projectile.height = 4;
+        Projectile.friendly = true;
+        Projectile.penetrate = 1;
+        Projectile.timeLeft = 640;
+        Projectile.tileCollide = false;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 4;
-            Projectile.height = 4;
-            Projectile.friendly = true;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 640;
-            Projectile.tileCollide = false;
-        }
+    public override void AI()
+    {
+        Projectile.HealingProjectile(10, Projectile.owner, 20f, 20f, true, 640);
 
-        public override void AI()
-        {
-            Projectile.HealingProjectile(10, Projectile.owner, 20f, 20f, true, 640);
-
-            Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.Firework_Red);
-            fire.velocity = Microsoft.Xna.Framework.Vector2.Zero;
-            fire.scale = Main.rand.NextFloat(1f, 1.15f);
-            fire.fadeIn = 0.45f;
-            fire.noGravity = true;
-        }
+        Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.Firework_Red);
+        fire.velocity = Microsoft.Xna.Framework.Vector2.Zero;
+        fire.scale = Main.rand.NextFloat(1f, 1.15f);
+        fire.fadeIn = 0.45f;
+        fire.noGravity = true;
     }
 }

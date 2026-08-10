@@ -7,47 +7,46 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Summon
+namespace CalamityMod.Items.Weapons.Summon;
+
+public class DreadmineStaff : ModItem, ILocalizedModType
 {
-    public class DreadmineStaff : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Summon";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetDefaults()
-        {
-            Item.width = 44;
-            Item.height = 44;
-            Item.damage = 40;
-            Item.mana = 10;
-            Item.useAnimation = Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
-            Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-            Item.rare = ItemRarityID.Lime;
-            Item.UseSound = SoundID.Item113;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<DreadmineTurret>();
-            Item.shootSpeed = 10f;
-            Item.DamageType = DamageClass.Summon;
-            Item.sentry = true;
-        }
+        Item.width = 44;
+        Item.height = 44;
+        Item.damage = 40;
+        Item.mana = 10;
+        Item.useAnimation = Item.useTime = 30;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.noMelee = true;
+        Item.knockBack = 4.5f;
+        Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+        Item.rare = ItemRarityID.Lime;
+        Item.UseSound = SoundID.Item113;
+        Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<DreadmineTurret>();
+        Item.shootSpeed = 10f;
+        Item.DamageType = DamageClass.Summon;
+        Item.sentry = true;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
-            player.UpdateMaxTurrets();
-            return false;
-        }
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+        if (Main.projectile.IndexInRange(p))
+            Main.projectile[p].originalDamage = Item.damage;
+        player.UpdateMaxTurrets();
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<Voidstone>(30).
-                AddIngredient<DepthCells>(30).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<Voidstone>(30).
+            AddIngredient<DepthCells>(30).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

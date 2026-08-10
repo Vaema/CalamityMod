@@ -10,76 +10,75 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Rogue
+namespace CalamityMod.Items.Weapons.Rogue;
+
+public class Celestus : RogueWeapon
 {
-    public class Celestus : RogueWeapon
+    public override float StealthDamageMultiplier => 0.8f;
+
+    public override void SetDefaults()
     {
-        public override float StealthDamageMultiplier => 0.8f;
+        Item.width = 150;
+        Item.height = 132;
+        Item.damage = 280;
+        Item.DamageType = RogueDamageClass.Instance;
+        Item.useAnimation = Item.useTime = 22;
+        Item.shootSpeed = 25f;
+        Item.knockBack = 6f;
 
-        public override void SetDefaults()
+        Item.shoot = ModContent.ProjectileType<CelestusProj>();
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.UseSound = SoundID.Item1;
+        Item.rare = ModContent.RarityType<ExoticRainbow>();
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+        Item.autoReuse = true;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.Calamity().StealthStrikeAvailable()) // Setting the Stealth Strike.
         {
-            Item.width = 150;
-            Item.height = 132;
-            Item.damage = 280;
-            Item.DamageType = RogueDamageClass.Instance;
-            Item.useAnimation = Item.useTime = 22;
-            Item.shootSpeed = 25f;
-            Item.knockBack = 6f;
-
-            Item.shoot = ModContent.ProjectileType<CelestusProj>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.UseSound = SoundID.Item1;
-            Item.rare = ModContent.RarityType<ExoticRainbow>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.autoReuse = true;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-        }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (player.Calamity().StealthStrikeAvailable()) // Setting the Stealth Strike.
-            {
-                int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (stealth.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[stealth].Calamity().stealthStrike = true;
-                return false;
-            }
-            return true;
-        }
-
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 0.3f,
-                drawOffset: default
-            );
+            int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            if (stealth.WithinBounds(Main.maxProjectiles))
+                Main.projectile[stealth].Calamity().stealthStrike = true;
             return false;
         }
+        return true;
+    }
 
-        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
-        {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/CelestusGlow").Value);
-        }
+    public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        CalamityUtils.DrawInventoryCustomScale(
+            spriteBatch,
+            texture: TextureAssets.Item[Type].Value,
+            position,
+            frame,
+            drawColor,
+            itemColor,
+            origin,
+            scale,
+            wantedScale: 0.3f,
+            drawOffset: default
+        );
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<ReboundingRainbow>().
-                AddIngredient<MoltenAmputator>().
-                AddIngredient<SubductionSlicer>().
-                AddIngredient<EnchantedAxe>().
-                AddIngredient<MiracleMatter>().
-                AddTile<DraedonsForge>().
-                Register();
-        }
+    public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+    {
+        Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/CelestusGlow").Value);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<ReboundingRainbow>().
+            AddIngredient<MoltenAmputator>().
+            AddIngredient<SubductionSlicer>().
+            AddIngredient<EnchantedAxe>().
+            AddIngredient<MiracleMatter>().
+            AddTile<DraedonsForge>().
+            Register();
     }
 }

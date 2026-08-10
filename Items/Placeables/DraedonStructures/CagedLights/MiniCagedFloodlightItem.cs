@@ -5,27 +5,26 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights
+namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+
+public class MiniCagedFloodlightItem : ModItem, ILocalizedModType
 {
-    public class MiniCagedFloodlightItem : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MiniAgedFloodlightItem>();
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MiniAgedFloodlightItem>();
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<MiniCagedFloodlight>());
-            Item.value = Item.sellPrice(silver: 1);
-        }
+        Item.DefaultToPlaceableTile(ModContent.TileType<MiniCagedFloodlight>());
+        Item.value = Item.sellPrice(silver: 1);
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(20).
-                AddIngredient<DubiousPlating>().
-                AddIngredient<MysteriousCircuitry>(2).
-                AddIngredient<Navyplate>().
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(20).
+            AddIngredient<DubiousPlating>().
+            AddIngredient<MysteriousCircuitry>(2).
+            AddIngredient<Navyplate>().
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

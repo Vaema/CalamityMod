@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class CannonballJellyfishBanner : BaseBanner
 {
-    public class CannonballJellyfishBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 127;
-    }
+    public override int BannerTileStyle => 127;
 }

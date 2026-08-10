@@ -4,183 +4,182 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Pets
+namespace CalamityMod.Projectiles.Pets;
+
+public class Astrophage : ModProjectile, ILocalizedModType
 {
-    public class Astrophage : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Pets";
+    private bool fly = false;
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Pets";
-        private bool fly = false;
+        Main.projFrames[Type] = 5;
+        Main.projPet[Type] = true;
 
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
+        .WithOffset(-10f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.netImportant = true;
+        Projectile.width = 35;
+        Projectile.height = 35;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft *= 5;
+        Projectile.tileCollide = true;
+    }
+
+    public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+    {
+        Player player = Main.player[Projectile.owner];
+        Vector2 projCenter = Projectile.Center;
+        Vector2 playerDirection = player.Center - projCenter;
+        float playerDistance = playerDirection.Length();
+        fallThrough = playerDistance > 200f;
+        return true;
+    }
+
+    public override void AI()
+    {
+        Player player = Main.player[Projectile.owner];
+        if (!player.active)
         {
-            Main.projFrames[Type] = 5;
-            Main.projPet[Type] = true;
-
-            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
-            .WithOffset(-10f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+            Projectile.active = false;
+            return;
         }
-
-        public override void SetDefaults()
+        CalamityPlayer modPlayer = player.Calamity();
+        if (player.dead)
         {
-            Projectile.netImportant = true;
-            Projectile.width = 35;
-            Projectile.height = 35;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft *= 5;
-            Projectile.tileCollide = true;
+            modPlayer.astrophage = false;
         }
-
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        if (modPlayer.astrophage)
         {
-            Player player = Main.player[Projectile.owner];
-            Vector2 projCenter = Projectile.Center;
-            Vector2 playerDirection = player.Center - projCenter;
-            float playerDistance = playerDirection.Length();
-            fallThrough = playerDistance > 200f;
-            return true;
+            Projectile.timeLeft = 2;
         }
-
-        public override void AI()
+        if (Projectile.position.X == Projectile.oldPosition.X && Projectile.position.Y == Projectile.oldPosition.Y && Projectile.velocity.X == 0)
         {
-            Player player = Main.player[Projectile.owner];
-            if (!player.active)
+            Projectile.frame = 0;
+        }
+        else if (Projectile.velocity.Y > 0.3f && Projectile.position.Y != Projectile.oldPosition.Y)
+        {
+            Projectile.frame = 1;
+            Projectile.frameCounter = 0;
+        }
+        else
+        {
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter > 6)
             {
-                Projectile.active = false;
-                return;
+                Projectile.frame++;
+                Projectile.frameCounter = 0;
             }
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.dead)
-            {
-                modPlayer.astrophage = false;
-            }
-            if (modPlayer.astrophage)
-            {
-                Projectile.timeLeft = 2;
-            }
-            if (Projectile.position.X == Projectile.oldPosition.X && Projectile.position.Y == Projectile.oldPosition.Y && Projectile.velocity.X == 0)
+            if (Projectile.frame > 4)
             {
                 Projectile.frame = 0;
             }
-            else if (Projectile.velocity.Y > 0.3f && Projectile.position.Y != Projectile.oldPosition.Y)
-            {
-                Projectile.frame = 1;
-                Projectile.frameCounter = 0;
-            }
-            else
-            {
-                Projectile.frameCounter++;
-                if (Projectile.frameCounter > 6)
-                {
-                    Projectile.frame++;
-                    Projectile.frameCounter = 0;
-                }
-                if (Projectile.frame > 4)
-                {
-                    Projectile.frame = 0;
-                }
-            }
-            Vector2 vector46 = Projectile.position;
-            if (!fly)
-            {
-                Projectile.rotation = 0;
-                Vector2 projCenter = Projectile.Center;
-                Vector2 playerDirection = player.Center - projCenter;
-                float playerDistance = playerDirection.Length();
-                if (Projectile.velocity.Y == 0 && (HoleBelow() || (playerDistance > 110f && Projectile.position.X == Projectile.oldPosition.X)))
-                {
-                    Projectile.velocity.Y = -5f;
-                }
-                Projectile.velocity.Y += 0.20f;
-                if (Projectile.velocity.Y > 7f)
-                {
-                    Projectile.velocity.Y = 7f;
-                }
-                if (playerDistance > 600f)
-                {
-                    fly = true;
-                    Projectile.velocity.X = 0f;
-                    Projectile.velocity.Y = 0f;
-                }
-                if (playerDistance > 100f)
-                {
-                    if (player.position.X - Projectile.position.X > 0f)
-                    {
-                        Projectile.velocity.X += 0.10f;
-                        if (Projectile.velocity.X > 7f)
-                        {
-                            Projectile.velocity.X = 7f;
-                        }
-                    }
-                    else
-                    {
-                        Projectile.velocity.X -= 0.10f;
-                        if (Projectile.velocity.X < -7f)
-                        {
-                            Projectile.velocity.X = -7f;
-                        }
-                    }
-                }
-                if (playerDistance < 100f)
-                {
-                    if (Projectile.velocity.X != 0f)
-                    {
-                        if (Projectile.velocity.X > 0.5f)
-                        {
-                            Projectile.velocity.X -= 0.15f;
-                        }
-                        else if (Projectile.velocity.X < -0.5f)
-                        {
-                            Projectile.velocity.X += 0.15f;
-                        }
-                        else if (Projectile.velocity.X < 0.5f && Projectile.velocity.X > -0.5f)
-                        {
-                            Projectile.velocity.X = 0f;
-                        }
-                    }
-                }
-            }
-            else if (fly)
-            {
-                Projectile.alpha += 15;
-                if (Projectile.alpha >= 255)
-                {
-                    Projectile.position.X = player.position.X;
-                    Projectile.position.Y = player.position.Y;
-                    fly = false;
-                    Projectile.alpha = 0;
-                }
-            }
-            if (Projectile.velocity.X > 0.25f)
-            {
-                Projectile.spriteDirection = -1;
-            }
-            else if (Projectile.velocity.X < -0.25f)
-            {
-                Projectile.spriteDirection = 1;
-            }
         }
-
-        private bool HoleBelow() //pretty much the same as the one used in mantis
+        Vector2 vector46 = Projectile.position;
+        if (!fly)
         {
-            int tileWidth = 4;
-            int tileX = (int)(Projectile.Center.X / 16f) - tileWidth;
-            if (Projectile.velocity.X > 0)
+            Projectile.rotation = 0;
+            Vector2 projCenter = Projectile.Center;
+            Vector2 playerDirection = player.Center - projCenter;
+            float playerDistance = playerDirection.Length();
+            if (Projectile.velocity.Y == 0 && (HoleBelow() || (playerDistance > 110f && Projectile.position.X == Projectile.oldPosition.X)))
             {
-                tileX += tileWidth;
+                Projectile.velocity.Y = -5f;
             }
-            int tileY = (int)((Projectile.position.Y + Projectile.height) / 16f);
-            for (int y = tileY; y < tileY + 2; y++)
+            Projectile.velocity.Y += 0.20f;
+            if (Projectile.velocity.Y > 7f)
             {
-                for (int x = tileX; x < tileX + tileWidth; x++)
+                Projectile.velocity.Y = 7f;
+            }
+            if (playerDistance > 600f)
+            {
+                fly = true;
+                Projectile.velocity.X = 0f;
+                Projectile.velocity.Y = 0f;
+            }
+            if (playerDistance > 100f)
+            {
+                if (player.position.X - Projectile.position.X > 0f)
                 {
-                    if (Main.tile[x, y].HasTile)
+                    Projectile.velocity.X += 0.10f;
+                    if (Projectile.velocity.X > 7f)
                     {
-                        return false;
+                        Projectile.velocity.X = 7f;
+                    }
+                }
+                else
+                {
+                    Projectile.velocity.X -= 0.10f;
+                    if (Projectile.velocity.X < -7f)
+                    {
+                        Projectile.velocity.X = -7f;
                     }
                 }
             }
-            return true;
+            if (playerDistance < 100f)
+            {
+                if (Projectile.velocity.X != 0f)
+                {
+                    if (Projectile.velocity.X > 0.5f)
+                    {
+                        Projectile.velocity.X -= 0.15f;
+                    }
+                    else if (Projectile.velocity.X < -0.5f)
+                    {
+                        Projectile.velocity.X += 0.15f;
+                    }
+                    else if (Projectile.velocity.X < 0.5f && Projectile.velocity.X > -0.5f)
+                    {
+                        Projectile.velocity.X = 0f;
+                    }
+                }
+            }
         }
+        else if (fly)
+        {
+            Projectile.alpha += 15;
+            if (Projectile.alpha >= 255)
+            {
+                Projectile.position.X = player.position.X;
+                Projectile.position.Y = player.position.Y;
+                fly = false;
+                Projectile.alpha = 0;
+            }
+        }
+        if (Projectile.velocity.X > 0.25f)
+        {
+            Projectile.spriteDirection = -1;
+        }
+        else if (Projectile.velocity.X < -0.25f)
+        {
+            Projectile.spriteDirection = 1;
+        }
+    }
+
+    private bool HoleBelow() //pretty much the same as the one used in mantis
+    {
+        int tileWidth = 4;
+        int tileX = (int)(Projectile.Center.X / 16f) - tileWidth;
+        if (Projectile.velocity.X > 0)
+        {
+            tileX += tileWidth;
+        }
+        int tileY = (int)((Projectile.position.Y + Projectile.height) / 16f);
+        for (int y = tileY; y < tileY + 2; y++)
+        {
+            for (int x = tileX; x < tileX + tileWidth; x++)
+            {
+                if (Main.tile[x, y].HasTile)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

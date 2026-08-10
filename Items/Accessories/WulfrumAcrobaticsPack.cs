@@ -15,947 +15,946 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[AutoloadEquip(EquipType.Back)]
+public class WulfrumAcrobaticsPack : ModItem, ILocalizedModType
 {
-    [AutoloadEquip(EquipType.Back)]
-    public class WulfrumAcrobaticsPack : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/WulfrumHookShoot") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
+    public static readonly SoundStyle GrabSound = new("CalamityMod/Sounds/Custom/WulfrumHookGrapple") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
+    public static readonly SoundStyle ReleaseSound = new("CalamityMod/Sounds/Custom/WulfrumHookDisengage") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/WulfrumHookShoot") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
-        public static readonly SoundStyle GrabSound = new("CalamityMod/Sounds/Custom/WulfrumHookGrapple") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
-        public static readonly SoundStyle ReleaseSound = new("CalamityMod/Sounds/Custom/WulfrumHookDisengage") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
-
-        public override void SetDefaults()
-        {
-            Item.width = 20;
-            Item.height = 22;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
-            Item.accessory = true;
-            Item.rare = ItemRarityID.Blue;
-        }
-
-        public override bool CanUseItem(Player player)
-        {
-            return player.TryGetModPlayer<WulfrumPackPlayer>(out var mp) && mp.hookCooldown <= 0;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            player.moveSpeed += 0.08f;
-            player.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped = true;
-            player.GetModPlayer<WulfrumPackPlayer>().PackItem = Item;
-            player.maxFallSpeed *= 1.25f;
-            Lighting.AddLight(player.Center, Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f) * 0.5f + 0.5f).ToVector3());
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(10).
-                AddIngredient<EnergyCore>().
-                AddIngredient(ItemID.Chain, 3).
-                AddTile(TileID.Anvils).
-                Register();
-        }
+        Item.width = 20;
+        Item.height = 22;
+        Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+        Item.accessory = true;
+        Item.rare = ItemRarityID.Blue;
     }
 
-    public class WulfrumPackProjectile : GlobalProjectile
+    public override bool CanUseItem(Player player)
     {
-        public override bool? CanUseGrapple(int type, Player player)
-        {
-            //Player can shoot up to 2 wulfrum hooks, but only 2 is allowed to stay grappled.
-            if (player.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped)
-            {
-                if (Main.projectile.Count(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<WulfrumHook>()) > 1)
-                    return false;
-            }
+        return player.TryGetModPlayer<WulfrumPackPlayer>(out var mp) && mp.hookCooldown <= 0;
+    }
 
-            //This should never happen. This is for the case in which the player shoots a hook without having the wulfrum pack equipped but somehow having a wulfrum hook out.
-            //Under no real circumstances should this happen, given wulfrum hooks instantly get killed if the player doesn't have the wulfrum pack.
-            else if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<WulfrumHook>()))
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        player.moveSpeed += 0.08f;
+        player.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped = true;
+        player.GetModPlayer<WulfrumPackPlayer>().PackItem = Item;
+        player.maxFallSpeed *= 1.25f;
+        Lighting.AddLight(player.Center, Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f) * 0.5f + 0.5f).ToVector3());
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<WulfrumMetalScrap>(10).
+            AddIngredient<EnergyCore>().
+            AddIngredient(ItemID.Chain, 3).
+            AddTile(TileID.Anvils).
+            Register();
+    }
+}
+
+public class WulfrumPackProjectile : GlobalProjectile
+{
+    public override bool? CanUseGrapple(int type, Player player)
+    {
+        //Player can shoot up to 2 wulfrum hooks, but only 2 is allowed to stay grappled.
+        if (player.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped)
+        {
+            if (Main.projectile.Count(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<WulfrumHook>()) > 1)
+                return false;
+        }
+
+        //This should never happen. This is for the case in which the player shoots a hook without having the wulfrum pack equipped but somehow having a wulfrum hook out.
+        //Under no real circumstances should this happen, given wulfrum hooks instantly get killed if the player doesn't have the wulfrum pack.
+        else if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<WulfrumHook>()))
+            return false;
+
+        return base.CanUseGrapple(type, player);
+    }
+
+    //Prevent players with a wulfrum pack to spawn any non-wulfrum hooks.
+    /*
+    public override void OnSpawn(Projectile projectile, IEntitySource source)
+    {
+        Player owner = Main.player[projectile.owner];
+        if (projectile.aiStyle == ProjAIStyleID.Hook && projectile.type != ProjectileType<WulfrumHook>() && owner.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped && projectile.type != ProjectileID.TrackHook)
+        {
+            projectile.active = false;
+        }
+    }*/
+}
+
+public class WulfrumPackPlayer : ModPlayer
+{
+    public bool WulfrumPackEquipped = false;
+    public Item PackItem = null;
+    public bool AutoGrappleActivated
+    {
+        get
+        {
+            if (!WulfrumPackEquipped || Grappled || //Ignore if player isnt wearing the grapple pack, or is already grappled.
+                Player.noFallDmg || Player.equippedWings != null || //Ignore if player can't take fall damage
+                Player.controlDown || //Ignore if player disables the auto grapple by holding down
+                Player.velocity.Y * Player.gravDir < 0 || //Ignore if not falling *down*
+                (Player.fallStart >= (int)(Player.position.Y / 16f) && Player.gravDir > 0) || (!(Player.fallStart <= (int)(Player.position.Y / 16f)) && Player.gravDir < 0) || //Ignore if the player is not falling below their last fall point
+                Player.mount.Active || //ignore if player is on a mount
+                Player.webbed || Player.stoned || Player.frozen || Player.vortexDebuff //Ignore if players movement is compromised
+                )
                 return false;
 
-            return base.CanUseGrapple(type, player);
+            return true;
         }
-
-        //Prevent players with a wulfrum pack to spawn any non-wulfrum hooks.
-        /*
-        public override void OnSpawn(Projectile projectile, IEntitySource source)
+    }
+    /// <summary>
+    /// The index of the grapple projectile currently grappled.
+    /// </summary>
+    public int Grapple = -1;
+    /// <summary>
+    /// The length of the current rope. Determined when the grapple lands.
+    /// </summary>
+    public float SwingLength = 0f;
+    /// <summary>
+    /// Used when we need to store the hook between instructions.
+    /// </summary>
+    public int hookCache = -1;
+    /// <summary>
+    /// The cooldown is only set when firing a hook straight downwards
+    /// </summary>
+    public int hookCooldown = 0;
+    /// <summary>
+    /// Is the player grappled?
+    /// </summary>
+    public bool Grappled => WulfrumPackEquipped && Grapple > -1 && Main.projectile[Grapple].active && Main.projectile[Grapple].ModProjectile is WulfrumHook hook && hook.State == WulfrumHook.HookState.Grappling;
+    public bool GrappleMovementDisabled
+    {
+        get
         {
-            Player owner = Main.player[projectile.owner];
-            if (projectile.aiStyle == ProjAIStyleID.Hook && projectile.type != ProjectileType<WulfrumHook>() && owner.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped && projectile.type != ProjectileID.TrackHook)
-            {
-                projectile.active = false;
-            }
-        }*/
+            if (!Grappled)
+                return false;
+
+            if (!PlayerOnGround || !obeyGravity)
+                return false;
+
+            if ((Player.Center - Main.projectile[Grapple].Center).Length() > SwingLength)
+                return false;
+
+            return true;
+        }
     }
 
-    public class WulfrumPackPlayer : ModPlayer
+    public bool obeyGravity => !(Player.miscEquips[4].type == ItemID.AntiGravityHook);
+    public bool strongerReel => Player.miscEquips[4].type == ItemID.StaticHook;
+    public Vector2 CurrentPosition;
+    public Vector2 OldPosition;
+    public List<VerletSimulatedSegment> Segments;
+
+    //Hook stats
+    /// <summary>
+    /// This is the length when using Grappling Hook. Faster hooks get more length, and slower ones get less.
+    /// </summary>
+    public const float BaseMaxLength = 600;
+    /// <summary>
+    /// This is the launch velocity when using Grappling Hook. Faster hooks get more speed, and slower ones get less.
+    /// </summary>
+    public const float BaseLaunchVelocity = 17f;
+    /// <summary>
+    /// This is the return velocity when using Grappling Hook.
+    /// The ratio between this and BaseLaunchVelocity will be the same regardless of hook
+    /// </summary>
+    public const float BaseReturnVelocity = 5f;
+    /// <summary>
+    /// This is how much of the equipped hook's launch speed is factored into the Acro Pack hook speed
+    /// All other stat changes are based off the ratio of the base launch velocity and actual launch velocity
+    /// Increase this to make the difference between hooks more obvious, and lower it to make the difference less obvious
+    /// Note: The base stats balance around having Grappling Hook equipped
+    /// </summary>
+    public const float HookSpeedFactor = 0.5f;
+    /// <summary>
+    /// How quickly you reel in/out with UP and DOWN
+    /// </summary>
+    public const float ReelSpeed = 4f;
+    /// <summary>
+    /// How quickly you reel in with Static Hook equipped
+    /// </summary>
+    public const float StaticHookReelSpeed = 6f;
+    /// <summary>
+    /// How much stronger the player manually swinging should be with antigrav hook equipped
+    /// </summary>
+    public const float AntiGravSwingModifier = 2f;
+
+    public const int SimulationResolution = 5;
+    public const int HookUpdates = 3;
+    public const float MaxHopVelocity = 3f; //The maximum velocity at which the player gets any amount of vertical boost from hopping out of the hook
+    public const int SafetySteps = 3;
+    public const float SafetyHookAngle = MathHelper.PiOver2 * 1.2f;
+    public const float SafetyHookAngleResolution = 50f;
+
+
+    public float ActualLaunchVelocity
     {
-        public bool WulfrumPackEquipped = false;
-        public Item PackItem = null;
-        public bool AutoGrappleActivated
+        get
         {
-            get
+            float hookSpeed = 0;
+            Item hook = Player.miscEquips[4];
+            if (!hook.IsAir)
             {
-                if (!WulfrumPackEquipped || Grappled || //Ignore if player isnt wearing the grapple pack, or is already grappled.
-                    Player.noFallDmg || Player.equippedWings != null || //Ignore if player can't take fall damage
-                    Player.controlDown || //Ignore if player disables the auto grapple by holding down
-                    Player.velocity.Y * Player.gravDir < 0 || //Ignore if not falling *down*
-                    (Player.fallStart >= (int)(Player.position.Y / 16f) && Player.gravDir > 0) || (!(Player.fallStart <= (int)(Player.position.Y / 16f)) && Player.gravDir < 0) || //Ignore if the player is not falling below their last fall point
-                    Player.mount.Active || //ignore if player is on a mount
-                    Player.webbed || Player.stoned || Player.frozen || Player.vortexDebuff //Ignore if players movement is compromised
-                    )
-                    return false;
-
-                return true;
+                hookSpeed = hook.shootSpeed;
             }
+            return BaseLaunchVelocity + (-11.5f + hookSpeed) * HookSpeedFactor;
         }
-        /// <summary>
-        /// The index of the grapple projectile currently grappled.
-        /// </summary>
-        public int Grapple = -1;
-        /// <summary>
-        /// The length of the current rope. Determined when the grapple lands.
-        /// </summary>
-        public float SwingLength = 0f;
-        /// <summary>
-        /// Used when we need to store the hook between instructions.
-        /// </summary>
-        public int hookCache = -1;
-        /// <summary>
-        /// The cooldown is only set when firing a hook straight downwards
-        /// </summary>
-        public int hookCooldown = 0;
-        /// <summary>
-        /// Is the player grappled?
-        /// </summary>
-        public bool Grappled => WulfrumPackEquipped && Grapple > -1 && Main.projectile[Grapple].active && Main.projectile[Grapple].ModProjectile is WulfrumHook hook && hook.State == WulfrumHook.HookState.Grappling;
-        public bool GrappleMovementDisabled
+    }
+    public float HookSpeedRatio
+    {
+        get
         {
-            get
-            {
-                if (!Grappled)
-                    return false;
+            return ActualLaunchVelocity / BaseLaunchVelocity;
+        }
+    }
+    public float ActualMaxLength
+    {
+        get
+        {
+            return BaseMaxLength * HookSpeedRatio;
+        }
+    }
+    public float ActualReturnVelocity
+    {
+        get
+        {
+            return BaseReturnVelocity * HookSpeedRatio;
+        }
+    }
 
-                if (!PlayerOnGround || !obeyGravity)
-                    return false;
+    public bool PlayerOnGround => Collision.SolidCollision(Player.position + Vector2.UnitY * 2f * Player.gravDir, Player.width, Player.height, false);
 
-                if ((Player.Center - Main.projectile[Grapple].Center).Length() > SwingLength)
-                    return false;
+    public override void Load()
+    {
+        base.Load();
 
-                return true;
-            }
+        // On_Player.QuickGrapple_GetItemToUse += QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack;
+        On_Player.QuickGrapple += QuickGrapple_UseCustomGrapple;
+    }
+
+    private static void QuickGrapple_UseCustomGrapple(On_Player.orig_QuickGrapple orig, Player self)
+    {
+        if (!self.TryGetModPlayer<WulfrumPackPlayer>(out var mp) || !mp.WulfrumPackEquipped)
+        {
+            orig(self);
+            return;
         }
 
-        public bool obeyGravity => !(Player.miscEquips[4].type == ItemID.AntiGravityHook);
-        public bool strongerReel => Player.miscEquips[4].type == ItemID.StaticHook;
-        public Vector2 CurrentPosition;
-        public Vector2 OldPosition;
-        public List<VerletSimulatedSegment> Segments;
-
-        //Hook stats
-        /// <summary>
-        /// This is the length when using Grappling Hook. Faster hooks get more length, and slower ones get less.
-        /// </summary>
-        public const float BaseMaxLength = 600;
-        /// <summary>
-        /// This is the launch velocity when using Grappling Hook. Faster hooks get more speed, and slower ones get less.
-        /// </summary>
-        public const float BaseLaunchVelocity = 17f;
-        /// <summary>
-        /// This is the return velocity when using Grappling Hook.
-        /// The ratio between this and BaseLaunchVelocity will be the same regardless of hook
-        /// </summary>
-        public const float BaseReturnVelocity = 5f;
-        /// <summary>
-        /// This is how much of the equipped hook's launch speed is factored into the Acro Pack hook speed
-        /// All other stat changes are based off the ratio of the base launch velocity and actual launch velocity
-        /// Increase this to make the difference between hooks more obvious, and lower it to make the difference less obvious
-        /// Note: The base stats balance around having Grappling Hook equipped
-        /// </summary>
-        public const float HookSpeedFactor = 0.5f;
-        /// <summary>
-        /// How quickly you reel in/out with UP and DOWN
-        /// </summary>
-        public const float ReelSpeed = 4f;
-        /// <summary>
-        /// How quickly you reel in with Static Hook equipped
-        /// </summary>
-        public const float StaticHookReelSpeed = 6f;
-        /// <summary>
-        /// How much stronger the player manually swinging should be with antigrav hook equipped
-        /// </summary>
-        public const float AntiGravSwingModifier = 2f;
-
-        public const int SimulationResolution = 5;
-        public const int HookUpdates = 3;
-        public const float MaxHopVelocity = 3f; //The maximum velocity at which the player gets any amount of vertical boost from hopping out of the hook
-        public const int SafetySteps = 3;
-        public const float SafetyHookAngle = MathHelper.PiOver2 * 1.2f;
-        public const float SafetyHookAngleResolution = 50f;
-
-
-        public float ActualLaunchVelocity
+        if (mp.hookCooldown > 0)
         {
-            get
-            {
-                float hookSpeed = 0;
-                Item hook = Player.miscEquips[4];
-                if (!hook.IsAir)
-                {
-                    hookSpeed = hook.shootSpeed;
-                }
-                return BaseLaunchVelocity + (-11.5f + hookSpeed) * HookSpeedFactor;
-            }
-        }
-        public float HookSpeedRatio
-        {
-            get
-            {
-                return ActualLaunchVelocity / BaseLaunchVelocity;
-            }
-        }
-        public float ActualMaxLength
-        {
-            get
-            {
-                return BaseMaxLength * HookSpeedRatio;
-            }
-        }
-        public float ActualReturnVelocity
-        {
-            get
-            {
-                return BaseReturnVelocity * HookSpeedRatio;
-            }
+            return;
         }
 
-        public bool PlayerOnGround => Collision.SolidCollision(Player.position + Vector2.UnitY * 2f * Player.gravDir, Player.width, Player.height, false);
-
-        public override void Load()
+        if (self.frozen || self.tongued || self.webbed || self.stoned || self.dead)
         {
-            base.Load();
-
-            // On_Player.QuickGrapple_GetItemToUse += QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack;
-            On_Player.QuickGrapple += QuickGrapple_UseCustomGrapple;
+            return;
         }
 
-        private static void QuickGrapple_UseCustomGrapple(On_Player.orig_QuickGrapple orig, Player self)
+        if (PlayerInput.GrappleAndInteractAreShared)
         {
-            if (!self.TryGetModPlayer<WulfrumPackPlayer>(out var mp) || !mp.WulfrumPackEquipped)
-            {
-                orig(self);
-                return;
-            }
-
-            if (mp.hookCooldown > 0)
+            if (Main.HoveringOverAnNPC || Main.SmartInteractShowingGenuine || Main.SmartInteractShowingFake || (WiresUI.Settings.DrawToolModeUI && PlayerInput.UsingGamepad))
             {
                 return;
             }
 
-            if (self.frozen || self.tongued || self.webbed || self.stoned || self.dead)
+            var ctrlTile = self.controlUseTile;
+            var ctrlItem = self.controlUseItem;
+            if (!ctrlTile && !ctrlItem)
             {
                 return;
             }
 
-            if (PlayerInput.GrappleAndInteractAreShared)
-            {
-                if (Main.HoveringOverAnNPC || Main.SmartInteractShowingGenuine || Main.SmartInteractShowingFake || (WiresUI.Settings.DrawToolModeUI && PlayerInput.UsingGamepad))
-                {
-                    return;
-                }
-
-                var ctrlTile = self.controlUseTile;
-                var ctrlItem = self.controlUseItem;
-                if (!ctrlTile && !ctrlItem)
-                {
-                    return;
-                }
-
-                var tile = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY);
-                if ((tile.HasTile && (tile.TileType is 4 or 33 or 372 or 174 or 646 or 49)) || (self.HeldItem.type == ItemID.PortalGun && PlayerInput.UsingGamepad))
-                {
-                    return;
-                }
-            }
-
-            if (self.noItems)
+            var tile = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY);
+            if ((tile.HasTile && (tile.TileType is 4 or 33 or 372 or 174 or 646 or 49)) || (self.HeldItem.type == ItemID.PortalGun && PlayerInput.UsingGamepad))
             {
                 return;
             }
+        }
 
-            if (self.mount.Active)
+        if (self.noItems)
+        {
+            return;
+        }
+
+        if (self.mount.Active)
+        {
+            self.mount.Dismount(self);
+        }
+
+        self.UpdateBlacklistedTilesForGrappling();
+
+        foreach (var proj in Main.ActiveProjectiles)
+        {
+            if (proj.owner != self.whoAmI || proj.aiStyle != ProjAIStyleID.Hook || proj.type == ProjectileType<WulfrumHook>())
             {
-                self.mount.Dismount(self);
+                continue;
             }
 
-            self.UpdateBlacklistedTilesForGrappling();
+            proj.Kill();
+        }
 
-            foreach (var proj in Main.ActiveProjectiles)
+        if (Main.projectile.Count(n => n.active && n.owner == self.whoAmI && n.type == ProjectileType<WulfrumHook>()) <= 1)
+        {
+            SoundEngine.PlaySound(WulfrumAcrobaticsPack.ShootSound, self.Center);
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Vector2 velocity = (Main.MouseWorld - self.Center).SafeNormalize(Vector2.One) * mp.ActualLaunchVelocity;
+            Projectile.NewProjectile(self.GetSource_ItemUse(mp.PackItem), self.Center, velocity, ProjectileType<WulfrumHook>(), 0, 0, self.whoAmI);
+
+            float angleToRightBelow = velocity.AngleBetween(Vector2.UnitY);
+            if (angleToRightBelow < MathHelper.PiOver2) //Put a cooldown on hooking down below. 
             {
-                if (proj.owner != self.whoAmI || proj.aiStyle != ProjAIStyleID.Hook || proj.type == ProjectileType<WulfrumHook>())
+                int extraCooldown = (int)(Utils.GetLerpValue(MathHelper.PiOver2, 0f, angleToRightBelow) * 15); //Get more cooldown the straightest down youre aiming
+                mp.hookCooldown = 15 + extraCooldown;
+            }
+        }
+    }
+
+    /*
+    private static Item QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack(On_Player.orig_QuickGrapple_GetItemToUse orig, Player self)
+    {
+        if (self.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer) && mPlayer.WulfrumPackEquipped && mPlayer.PackItem is not null)
+        {
+            return mPlayer.PackItem;
+        }
+
+        return orig(self);
+    }
+    */
+
+    public override void ResetEffects()
+    {
+        WulfrumPackEquipped = false;
+        PackItem = null;
+        if (Grapple >= 0)
+            Player.GoingDownWithGrapple = true; //This causes the player to fall through platforms when grappled. Used to fix a weird bug when grappling and standing on a platform.
+
+        if (hookCooldown > 0)
+            hookCooldown--;
+    }
+
+    //Initialize the segments between the player and the hook's end point.
+    public void SetSegments(Vector2 endPoint)
+    {
+        if (Segments == null)
+            Segments = new List<VerletSimulatedSegment>();
+
+        Segments.Clear();
+
+        for (int i = 0; i <= SimulationResolution; i++)
+        {
+            float progress = i / (float)SimulationResolution;
+            VerletSimulatedSegment segment = new VerletSimulatedSegment(Vector2.Lerp(endPoint, Player.Center, progress));
+            if (i == 0)
+                segment.locked = true;
+
+            if (i == SimulationResolution)
+                segment.oldPosition = Player.oldPosition + new Vector2(Player.width, Player.height) * 0.5f;
+
+            Segments.Add(segment);
+        }
+    }
+
+    public override void PostUpdateRunSpeeds()
+    {
+        if (hookCache != -1)
+        {
+            Player.grappling[0] = hookCache;
+            Player.grapCount = 1;
+        }
+
+        hookCache = -1;
+    }
+
+    public override void PreUpdateMovement()
+    {
+        //If the hook cache was set from -1 in the part before the player stepped up,reset it.
+        //Should this be detoured before the PlayerLoaders PreUpdateMovement call? In case another mod uses hooks in this call and their modplayer gets called before this one?
+        if (hookCache > -1)
+        {
+            Player.grappling[0] = hookCache;
+            Player.grapCount = 1;
+        }
+
+        hookCache = -1;
+        if (!obeyGravity)
+        {
+            Player.gravity = -1f; //Disable player gravity with Anti-Grav hook
+        }
+        if (Grappled)
+        {
+            if ((Main.projectile[Grapple].Center - Player.Center).Length() > SwingLength + 80f)
+            {
+                SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, Main.projectile[Grapple].Center);
+                Main.projectile[Grapple].Kill();
+            }
+            else
+                SimulateMovement(Main.projectile[Grapple]);
+        }
+        else
+        {
+            Grapple = -1;
+        }
+    }
+
+    public void SimulateMovement(Projectile grapple)
+    {
+        Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLength / SimulationResolution, 50, (obeyGravity ? 0.3f * Player.gravDir : 0));
+
+        Vector2 CurrentPosition;
+
+        foreach (VerletSimulatedSegment position in Segments)
+        {
+            CurrentPosition = position.position;
+
+            //Control point markers
+            //Dust doost = Dust.NewDustPerfect(CurrentPosition, 1, Vector2.Zero);
+            //doost.noGravity = true;
+        }
+        if (!GrappleMovementDisabled)
+        {
+            if (obeyGravity)
+            {
+
+
+                CurrentPosition = Segments[SimulationResolution].position;
+                Player.velocity = CurrentPosition - Player.Center;
+
+                //let the player swing themselves around if they are under the hook.
+                if (Player.gravDir * (Player.Center.Y - Segments[0].position.Y) > 0)
                 {
-                    continue;
+                    float swing = 0;
+
+                    if (Math.Sign(Player.velocity.X) < 0)
+                    {
+                        if (Player.controlLeft)
+                            swing -= 0.1f;
+
+                        else if (Player.controlRight)
+                            swing += 0.1f;
+                    }
+
+                    else if (Math.Sign(Player.velocity.X) > 0)
+                    {
+                        if (Player.controlRight)
+                            swing += 0.1f;
+
+                        else if (Player.controlLeft)
+                            swing -= 0.1f;
+                    }
+
+                    Player.velocity.X += swing;
                 }
 
-                proj.Kill();
+                else if (Math.Abs(Player.Center.X - Segments[0].position.X) < 30f && Math.Abs(Player.velocity.X) < 1)
+                {
+                    Player.velocity.X = Player.velocity.X == 0 ? 1.5f : 1.5f * Math.Sign(Player.velocity.X);
+                }
             }
 
-            if (Main.projectile.Count(n => n.active && n.owner == self.whoAmI && n.type == ProjectileType<WulfrumHook>()) <= 1)
+            else
             {
-                SoundEngine.PlaySound(WulfrumAcrobaticsPack.ShootSound, self.Center);
-
-                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                Vector2 velocity = (Main.MouseWorld - self.Center).SafeNormalize(Vector2.One) * mp.ActualLaunchVelocity;
-                Projectile.NewProjectile(self.GetSource_ItemUse(mp.PackItem), self.Center, velocity, ProjectileType<WulfrumHook>(), 0, 0, self.whoAmI);
-
-                float angleToRightBelow = velocity.AngleBetween(Vector2.UnitY);
-                if (angleToRightBelow < MathHelper.PiOver2) //Put a cooldown on hooking down below. 
+                if (Player.grappling[0] > -1)
                 {
-                    int extraCooldown = (int)(Utils.GetLerpValue(MathHelper.PiOver2, 0f, angleToRightBelow) * 15); //Get more cooldown the straightest down youre aiming
-                    mp.hookCooldown = 15 + extraCooldown;
+                    var Hook = Main.projectile[Player.grappling[0]];
+                    if (Hook != null)
+                    {
+
+                        if (Player.controlRight)
+                            Player.velocity.X += 0.3f;
+                        else if (Player.controlLeft)
+                            Player.velocity.X -= 0.3f;
+                        Player.velocity -= Player.Center.DirectionTo(Hook.Center);
+                        var estimatedPos = Player.Center + Player.velocity;
+                        var estimatedDir = Hook.Center.DirectionTo(estimatedPos);
+                        var goalPos = Hook.Center + estimatedDir * SwingLength;
+                        var estimatedPosLocked = Hook.Center + Hook.Center.DirectionTo(Player.Center) * SwingLength;
+                        if (estimatedPosLocked.Distance(estimatedPos) < 2)
+                        {
+                            estimatedPos = estimatedPosLocked;
+                        }
+                        var dis = Hook.Center.Distance(estimatedPos);
+                        if (dis > SwingLength && dis < 1000f)
+                        {
+                            var dis2 = Math.Min(Player.Center.Distance(goalPos), SwingLength * 3f);
+                            if (dis2 > 0)
+                            {
+                                Player.velocity = Player.Center.DirectionTo(goalPos) * dis2;
+                            }
+
+                        }
+
+
+                        if (Player.velocity.Length() < 1.5f)
+                            Player.direction = Hook.Center.X > Player.Center.X ? 1 : -1;
+                    }
                 }
             }
         }
 
+        if (Grappled)
+        {
+            for (int i = 1; i < Segments.Count; i++)
+            {
+                Lighting.AddLight(Segments[i].position, Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, i / (float)SimulationResolution).ToVector3());
+            }
+        }
+
+        //Set the old position of the simulation's segments to be the players current center (before the velocity gets applied
+        //We can't set the new position here by simply adding the velocity to the players current position because it leads to.. funny bugs if you collide with tiles.
+        Segments[SimulationResolution].oldPosition = Player.Center;
+    }
+
+    public override void PostUpdate()
+    {
+        //After the player's movements are finished being calculated, set the current position of the hook chain to be at their new center.
+        if (Grappled)
+        {
+            Segments[SimulationResolution].position = Player.Center;
+
+
+            if (!GrappleMovementDisabled)
+            {
+                //Play a swoosh sound if the player changed sides and moved fast
+                bool playerCrossedSides = Math.Sign(Segments[SimulationResolution].oldPosition.X - Segments[0].position.X) != Math.Sign(Segments[SimulationResolution].position.X - Segments[0].position.X);
+                float swingSpeed = (Segments[SimulationResolution].oldPosition - Segments[SimulationResolution].position).Length();
+                if (swingSpeed > 6f && playerCrossedSides)
+                {
+                    SoundStyle swing = new SoundStyle("CalamityMod/Sounds/Custom/LoudSwingWoosh") with { Volume = Math.Clamp((swingSpeed - 6f) / 12f, 0, 1) };
+                    SoundEngine.PlaySound(swing, Player.Center);
+                }
+            }
+        }
+
+        else if (AutoGrappleActivated)
+        {
+            Vector2 checkedPlayerPosition = Player.position;
+            bool imminentDanger = false;
+
+            for (int i = 0; i < SafetySteps; i++)
+            {
+                Vector2 collisionVector = Collision.TileCollision(checkedPlayerPosition, Player.velocity, Player.width, Player.height, gravDir: (int)Player.gravDir);
+                if (collisionVector.Y < Player.velocity.Y)
+                {
+                    imminentDanger = true;
+                    checkedPlayerPosition += collisionVector;
+                    break;
+                }
+
+                checkedPlayerPosition += collisionVector;
+            }
+
+            if (!imminentDanger)
+                return;
+
+            int fallDistance = (int)(checkedPlayerPosition.Y / 16f) - Player.fallStart;
+            int fallDmgThreshold = 25 + Player.extraFall;
+
+            //Technically doesn't ignore clouds but oh well.
+            if (fallDistance * Player.gravDir > fallDmgThreshold)
+            {
+                float halfSpread = SafetyHookAngle / 2f;
+                Point bestGrapplePos = Point.Zero;
+                float bestGrappleScore = 0;
+
+                for (float angle = -halfSpread; angle < halfSpread; angle += SafetyHookAngle / SafetyHookAngleResolution)
+                {
+                    for (int i = 0; i < (int)(ActualMaxLength / 16f); i++)
+                    {
+                        Vector2 checkSpot = Player.Center + (-Vector2.UnitY * Player.gravDir * i * 16f).RotatedBy(angle);
+                        Point tilePos = checkSpot.ToSafeTileCoordinates();
+                        Tile tile = Main.tile[tilePos];
+                        if (tile.HasUnactuatedTile && tile.CanTileBeLatchedOnTo() && !Player.IsBlacklistedForGrappling(tilePos))
+                        {
+                            if (bestGrappleScore < EvaluatePotentialSafetyHookPos((checkSpot - Player.Center).Length(), angle))
+                            {
+                                bestGrapplePos = tilePos;
+                                bestGrappleScore = EvaluatePotentialSafetyHookPos((checkSpot - Player.Center).Length(), angle);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (bestGrapplePos != Point.Zero)
+                {
+                    //Clear any hooks that might have been flying before then.
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        if (p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
+                            continue;
+
+                        if (p.ModProjectile is WulfrumHook)
+                        {
+                            SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, p.Center);
+                            p.Kill();
+
+                        }
+                    }
+
+                    //Reset the players fall height, because if they take fall dmg in teh frame right after this one it may have a chance of still killing the player due to the
+                    //code where the grapple resets the players fall speed hasnt been called yet
+                    Player.fallStart = (int)(Player.position.Y / 16);
+
+                    if (Player.whoAmI == Main.myPlayer)
+                    {
+                        Projectile.NewProjectile(Player.GetSource_ItemUse(PackItem), bestGrapplePos.ToWorldCoordinates(), Vector2.Zero, ProjectileType<WulfrumHook>(), 3, 0, Player.whoAmI);
+                    }
+                }
+            }
+        }
+    }
+
+    public float EvaluatePotentialSafetyHookPos(float distance, float angle)
+    {
+        float score = 0.0001f;
+
+        if (distance < 2 * ActualMaxLength / 3f)
+            score += distance / (2 * ActualMaxLength / 3f);
+
+        else
+            score += 1 - (distance - (2 * ActualMaxLength / 3f)) / (ActualMaxLength / 3f);
+
+        score += (1 - Math.Abs(angle) / (SafetyHookAngle / 2f)) * 0.5f;
+
+        return score;
+    }
+
+    public override void ProcessTriggers(TriggersSet triggersSet)
+    {
+        if (!WulfrumPackEquipped)
+            return;
+
+        //Shoot a new hook
         /*
-        private static Item QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack(On_Player.orig_QuickGrapple_GetItemToUse orig, Player self)
+        if (triggersSet.Grapple && Player.releaseHook)
         {
-            if (self.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer) && mPlayer.WulfrumPackEquipped && mPlayer.PackItem is not null)
+            //Clear any previous non-wulfrum hooks / Any hooks that just got shot (should already be handled by the global proj
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                return mPlayer.PackItem;
+                if (p.owner != Player.whoAmI || p.aiStyle != ProjAIStyleID.Hook || p.type == ProjectileType<WulfrumHook>())
+                    continue;
+
+                p.Kill();
             }
 
-            return orig(self);
+
+            if (hookCooldown <= 0 && Main.projectile.Count(n => n.active && n.owner == Player.whoAmI && n.type == ProjectileType<WulfrumHook>()) <= 1)
+            {
+                SoundEngine.PlaySound(WulfrumAcrobaticsPack.ShootSound, Player.Center);
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                    Vector2 velocity = (Main.MouseWorld - Player.Center).SafeNormalize(Vector2.One) * ActualLaunchVelocity;
+                    Projectile.NewProjectile(Player.GetSource_ItemUse(PackItem), Player.Center, velocity, ProjectileType<WulfrumHook>(), 0, 0, Player.whoAmI);
+
+                    float angleToRightBelow = velocity.AngleBetween(Vector2.UnitY);
+                    if (angleToRightBelow < MathHelper.PiOver2) //Put a cooldown on hooking down below. 
+                    {
+                        int extraCooldown = (int)(Utils.GetLerpValue(MathHelper.PiOver2, 0f, angleToRightBelow) * 15); //Get more cooldown the straightest down youre aiming
+                        hookCooldown = 15 + extraCooldown;
+                    }
+                }
+            }
         }
         */
 
-        public override void ResetEffects()
+        bool setControlUpFalse = false;
+        if (Grappled && triggersSet.Up)
         {
-            WulfrumPackEquipped = false;
-            PackItem = null;
-            if (Grapple >= 0)
-                Player.GoingDownWithGrapple = true; //This causes the player to fall through platforms when grappled. Used to fix a weird bug when grappling and standing on a platform.
-
-            if (hookCooldown > 0)
-                hookCooldown--;
+            SwingLength -= (strongerReel ? StaticHookReelSpeed : ReelSpeed);
+            Player.controlUp = false; //This is required to stop the player from bouncing off platforms when falling down and reeling in. Also prevents gravity swapping while hooked.
+            setControlUpFalse = true;
         }
 
-        //Initialize the segments between the player and the hook's end point.
-        public void SetSegments(Vector2 endPoint)
+        if (triggersSet.Down) //Static Hook doesn't effect this speed because it would be faster than your fall speed and feel janky.
         {
-            if (Segments == null)
-                Segments = new List<VerletSimulatedSegment>();
-
-            Segments.Clear();
-
-            for (int i = 0; i <= SimulationResolution; i++)
+            float length = ActualMaxLength;
+            if (SwingLength < length)
             {
-                float progress = i / (float)SimulationResolution;
-                VerletSimulatedSegment segment = new VerletSimulatedSegment(Vector2.Lerp(endPoint, Player.Center, progress));
-                if (i == 0)
-                    segment.locked = true;
-
-                if (i == SimulationResolution)
-                    segment.oldPosition = Player.oldPosition + new Vector2(Player.width, Player.height) * 0.5f;
-
-                Segments.Add(segment);
+                SwingLength += (ReelSpeed);
+                if (SwingLength > length)
+                    SwingLength = length;
             }
         }
 
-        public override void PostUpdateRunSpeeds()
+        //Jumping out of the hook
+        if (triggersSet.Jump && Player.releaseJump)
         {
-            if (hookCache != -1)
-            {
-                Player.grappling[0] = hookCache;
-                Player.grapCount = 1;
-            }
+            var syncData = new WulfrumAcrobaticsJumpSync.Data();
 
-            hookCache = -1;
-        }
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
+                    continue;
 
-        public override void PreUpdateMovement()
-        {
-            //If the hook cache was set from -1 in the part before the player stepped up,reset it.
-            //Should this be detoured before the PlayerLoaders PreUpdateMovement call? In case another mod uses hooks in this call and their modplayer gets called before this one?
-            if (hookCache > -1)
-            {
-                Player.grappling[0] = hookCache;
-                Player.grapCount = 1;
-            }
-
-            hookCache = -1;
-            if (!obeyGravity)
-            {
-                Player.gravity = -1f; //Disable player gravity with Anti-Grav hook
-            }
-            if (Grappled)
-            {
-                if ((Main.projectile[Grapple].Center - Player.Center).Length() > SwingLength + 80f)
+                //Only clear hooks that are attached to stuff
+                if (p.ModProjectile is WulfrumHook claw && claw.State == WulfrumHook.HookState.Grappling)
                 {
-                    SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, Main.projectile[Grapple].Center);
-                    Main.projectile[Grapple].Kill();
-                }
-                else
-                    SimulateMovement(Main.projectile[Grapple]);
-            }
-            else
-            {
-                Grapple = -1;
-            }
-        }
+                    float angleToUpright = (Player.Center - p.Center).AngleBetween(-Vector2.UnitY);
+                    bool canJumpOffHook = angleToUpright > MathHelper.PiOver2 || Player.Distance(p.Center) < 38;// Don't do any jump stuff if the player is jumping from above the hook.
 
-        public void SimulateMovement(Projectile grapple)
-        {
-            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLength / SimulationResolution, 50, (obeyGravity ? 0.3f * Player.gravDir : 0));
+                    syncData = syncData with { CanJumpOffHook = canJumpOffHook };
 
-            Vector2 CurrentPosition;
-
-            foreach (VerletSimulatedSegment position in Segments)
-            {
-                CurrentPosition = position.position;
-
-                //Control point markers
-                //Dust doost = Dust.NewDustPerfect(CurrentPosition, 1, Vector2.Zero);
-                //doost.noGravity = true;
-            }
-            if (!GrappleMovementDisabled)
-            {
-                if (obeyGravity)
-                {
-
-
-                    CurrentPosition = Segments[SimulationResolution].position;
-                    Player.velocity = CurrentPosition - Player.Center;
-
-                    //let the player swing themselves around if they are under the hook.
-                    if (Player.gravDir * (Player.Center.Y - Segments[0].position.Y) > 0)
+                    if (canJumpOffHook)
                     {
-                        float swing = 0;
+                        Vector2 velocityBoost = Vector2.Zero;
 
-                        if (Math.Sign(Player.velocity.X) < 0)
+                        //Additionally, accelerate the player a lil' if they were holding down the buttons in the direction of their swing.
+                        if ((Math.Sign(Player.velocity.X) < 0 && Player.controlLeft) || (Math.Sign(Player.velocity.X) > 0 && Player.controlRight))
                         {
-                            if (Player.controlLeft)
-                                swing -= 0.1f;
-
-                            else if (Player.controlRight)
-                                swing += 0.1f;
+                            velocityBoost += Player.velocity * 0.15f;
+                            if (velocityBoost.Y < 0) //This causes upward velocity to be increased by more. Not needed, but just feels good.
+                                velocityBoost.Y *= 2;
+                        }
+                        //Additionally^2, if the player isnt moving very fast, make them do a straight up hop.
+                        //Don't do the hop if the player isnt moving at all though because thats handled by vanilla.
+                        if (Player.velocity.Length() < MaxHopVelocity && Player.velocity.Length() > 0.0001f || PlayerOnGround)
+                        {
+                            velocityBoost -= Vector2.UnitY * Player.jumpSpeed * (1 - (float)Math.Pow(Player.velocity.Length() / MaxHopVelocity, 5f));
+                        }
+                        //If the player is moving fast enough, don't jump out of the hook. This is to maintain vertical momentum when releasing grapple while swinging.
+                        if (Player.velocity.Length() < 8f)
+                        {
+                            Player.jump = Player.jumpHeight / 2;
                         }
 
-                        else if (Math.Sign(Player.velocity.X) > 0)
-                        {
-                            if (Player.controlRight)
-                                swing += 0.1f;
 
-                            else if (Player.controlLeft)
-                                swing -= 0.1f;
-                        }
-
-                        Player.velocity.X += swing;
+                        Player.velocity += velocityBoost;
+                        Player.releaseJump = false;
                     }
 
-                    else if (Math.Abs(Player.Center.X - Segments[0].position.X) < 30f && Math.Abs(Player.velocity.X) < 1)
+                    else
                     {
-                        Player.velocity.X = Player.velocity.X == 0 ? 1.5f : 1.5f * Math.Sign(Player.velocity.X);
-                    }
-                }
-
-                else
-                {
-                    if (Player.grappling[0] > -1)
-                    {
-                        var Hook = Main.projectile[Player.grappling[0]];
-                        if (Hook != null)
-                        {
-
-                            if (Player.controlRight)
-                                Player.velocity.X += 0.3f;
-                            else if (Player.controlLeft)
-                                Player.velocity.X -= 0.3f;
-                            Player.velocity -= Player.Center.DirectionTo(Hook.Center);
-                            var estimatedPos = Player.Center + Player.velocity;
-                            var estimatedDir = Hook.Center.DirectionTo(estimatedPos);
-                            var goalPos = Hook.Center + estimatedDir * SwingLength;
-                            var estimatedPosLocked = Hook.Center + Hook.Center.DirectionTo(Player.Center) * SwingLength;
-                            if (estimatedPosLocked.Distance(estimatedPos) < 2)
-                            {
-                                estimatedPos = estimatedPosLocked;
-                            }
-                            var dis = Hook.Center.Distance(estimatedPos);
-                            if (dis > SwingLength && dis < 1000f)
-                            {
-                                var dis2 = Math.Min(Player.Center.Distance(goalPos), SwingLength * 3f);
-                                if (dis2 > 0)
-                                {
-                                    Player.velocity = Player.Center.DirectionTo(goalPos) * dis2;
-                                }
-
-                            }
-
-
-                            if (Player.velocity.Length() < 1.5f)
-                                Player.direction = Hook.Center.X > Player.Center.X ? 1 : -1;
-                        }
-                    }
-                }
-            }
-
-            if (Grappled)
-            {
-                for (int i = 1; i < Segments.Count; i++)
-                {
-                    Lighting.AddLight(Segments[i].position, Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, i / (float)SimulationResolution).ToVector3());
-                }
-            }
-
-            //Set the old position of the simulation's segments to be the players current center (before the velocity gets applied
-            //We can't set the new position here by simply adding the velocity to the players current position because it leads to.. funny bugs if you collide with tiles.
-            Segments[SimulationResolution].oldPosition = Player.Center;
-        }
-
-        public override void PostUpdate()
-        {
-            //After the player's movements are finished being calculated, set the current position of the hook chain to be at their new center.
-            if (Grappled)
-            {
-                Segments[SimulationResolution].position = Player.Center;
-
-
-                if (!GrappleMovementDisabled)
-                {
-                    //Play a swoosh sound if the player changed sides and moved fast
-                    bool playerCrossedSides = Math.Sign(Segments[SimulationResolution].oldPosition.X - Segments[0].position.X) != Math.Sign(Segments[SimulationResolution].position.X - Segments[0].position.X);
-                    float swingSpeed = (Segments[SimulationResolution].oldPosition - Segments[SimulationResolution].position).Length();
-                    if (swingSpeed > 6f && playerCrossedSides)
-                    {
-                        SoundStyle swing = new SoundStyle("CalamityMod/Sounds/Custom/LoudSwingWoosh") with { Volume = Math.Clamp((swingSpeed - 6f) / 12f, 0, 1) };
-                        SoundEngine.PlaySound(swing, Player.Center);
-                    }
-                }
-            }
-
-            else if (AutoGrappleActivated)
-            {
-                Vector2 checkedPlayerPosition = Player.position;
-                bool imminentDanger = false;
-
-                for (int i = 0; i < SafetySteps; i++)
-                {
-                    Vector2 collisionVector = Collision.TileCollision(checkedPlayerPosition, Player.velocity, Player.width, Player.height, gravDir: (int)Player.gravDir);
-                    if (collisionVector.Y < Player.velocity.Y)
-                    {
-                        imminentDanger = true;
-                        checkedPlayerPosition += collisionVector;
-                        break;
+                        //Prevents double jumps from getting activated
+                        Player.releaseJump = false;
                     }
 
-                    checkedPlayerPosition += collisionVector;
-                }
-
-                if (!imminentDanger)
-                    return;
-
-                int fallDistance = (int)(checkedPlayerPosition.Y / 16f) - Player.fallStart;
-                int fallDmgThreshold = 25 + Player.extraFall;
-
-                //Technically doesn't ignore clouds but oh well.
-                if (fallDistance * Player.gravDir > fallDmgThreshold)
-                {
-                    float halfSpread = SafetyHookAngle / 2f;
-                    Point bestGrapplePos = Point.Zero;
-                    float bestGrappleScore = 0;
-
-                    for (float angle = -halfSpread; angle < halfSpread; angle += SafetyHookAngle / SafetyHookAngleResolution)
-                    {
-                        for (int i = 0; i < (int)(ActualMaxLength / 16f); i++)
-                        {
-                            Vector2 checkSpot = Player.Center + (-Vector2.UnitY * Player.gravDir * i * 16f).RotatedBy(angle);
-                            Point tilePos = checkSpot.ToSafeTileCoordinates();
-                            Tile tile = Main.tile[tilePos];
-                            if (tile.HasUnactuatedTile && tile.CanTileBeLatchedOnTo() && !Player.IsBlacklistedForGrappling(tilePos))
-                            {
-                                if (bestGrappleScore < EvaluatePotentialSafetyHookPos((checkSpot - Player.Center).Length(), angle))
-                                {
-                                    bestGrapplePos = tilePos;
-                                    bestGrappleScore = EvaluatePotentialSafetyHookPos((checkSpot - Player.Center).Length(), angle);
-                                }
-                                break;
-                            }
-                        }
-                    }
-
-                    if (bestGrapplePos != Point.Zero)
-                    {
-                        //Clear any hooks that might have been flying before then.
-                        foreach (Projectile p in Main.ActiveProjectiles)
-                        {
-                            if (p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
-                                continue;
-
-                            if (p.ModProjectile is WulfrumHook)
-                            {
-                                SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, p.Center);
-                                p.Kill();
-
-                            }
-                        }
-
-                        //Reset the players fall height, because if they take fall dmg in teh frame right after this one it may have a chance of still killing the player due to the
-                        //code where the grapple resets the players fall speed hasnt been called yet
-                        Player.fallStart = (int)(Player.position.Y / 16);
-
-                        if (Player.whoAmI == Main.myPlayer)
-                        {
-                            Projectile.NewProjectile(Player.GetSource_ItemUse(PackItem), bestGrapplePos.ToWorldCoordinates(), Vector2.Zero, ProjectileType<WulfrumHook>(), 3, 0, Player.whoAmI);
-                        }
-                    }
-                }
-            }
-        }
-
-        public float EvaluatePotentialSafetyHookPos(float distance, float angle)
-        {
-            float score = 0.0001f;
-
-            if (distance < 2 * ActualMaxLength / 3f)
-                score += distance / (2 * ActualMaxLength / 3f);
-
-            else
-                score += 1 - (distance - (2 * ActualMaxLength / 3f)) / (ActualMaxLength / 3f);
-
-            score += (1 - Math.Abs(angle) / (SafetyHookAngle / 2f)) * 0.5f;
-
-            return score;
-        }
-
-        public override void ProcessTriggers(TriggersSet triggersSet)
-        {
-            if (!WulfrumPackEquipped)
-                return;
-
-            //Shoot a new hook
-            /*
-            if (triggersSet.Grapple && Player.releaseHook)
-            {
-                //Clear any previous non-wulfrum hooks / Any hooks that just got shot (should already be handled by the global proj
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.owner != Player.whoAmI || p.aiStyle != ProjAIStyleID.Hook || p.type == ProjectileType<WulfrumHook>())
-                        continue;
-
+                    SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, p.Center);
                     p.Kill();
+                    Player.grapCount = 0;
                 }
+            }
 
-
-                if (hookCooldown <= 0 && Main.projectile.Count(n => n.active && n.owner == Player.whoAmI && n.type == ProjectileType<WulfrumHook>()) <= 1)
-                {
-                    SoundEngine.PlaySound(WulfrumAcrobaticsPack.ShootSound, Player.Center);
-                    if (Player.whoAmI == Main.myPlayer)
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                WulfrumAcrobaticsJumpSync.Send(
+                    syncData with
                     {
-                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                        Vector2 velocity = (Main.MouseWorld - Player.Center).SafeNormalize(Vector2.One) * ActualLaunchVelocity;
-                        Projectile.NewProjectile(Player.GetSource_ItemUse(PackItem), Player.Center, velocity, ProjectileType<WulfrumHook>(), 0, 0, Player.whoAmI);
-
-                        float angleToRightBelow = velocity.AngleBetween(Vector2.UnitY);
-                        if (angleToRightBelow < MathHelper.PiOver2) //Put a cooldown on hooking down below. 
-                        {
-                            int extraCooldown = (int)(Utils.GetLerpValue(MathHelper.PiOver2, 0f, angleToRightBelow) * 15); //Get more cooldown the straightest down youre aiming
-                            hookCooldown = 15 + extraCooldown;
-                        }
+                        PlayerWhoAmI = (byte)Player.whoAmI,
+                        SwingLength = SwingLength,
+                        PlayerVelocity = Player.velocity,
+                        PlayerJump = Player.jump,
+                        SetControlUpFalse = setControlUpFalse,
                     }
-                }
-            }
-            */
-
-            bool setControlUpFalse = false;
-            if (Grappled && triggersSet.Up)
-            {
-                SwingLength -= (strongerReel ? StaticHookReelSpeed : ReelSpeed);
-                Player.controlUp = false; //This is required to stop the player from bouncing off platforms when falling down and reeling in. Also prevents gravity swapping while hooked.
-                setControlUpFalse = true;
-            }
-
-            if (triggersSet.Down) //Static Hook doesn't effect this speed because it would be faster than your fall speed and feel janky.
-            {
-                float length = ActualMaxLength;
-                if (SwingLength < length)
-                {
-                    SwingLength += (ReelSpeed);
-                    if (SwingLength > length)
-                        SwingLength = length;
-                }
-            }
-
-            //Jumping out of the hook
-            if (triggersSet.Jump && Player.releaseJump)
-            {
-                var syncData = new WulfrumAcrobaticsJumpSync.Data();
-
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
-                        continue;
-
-                    //Only clear hooks that are attached to stuff
-                    if (p.ModProjectile is WulfrumHook claw && claw.State == WulfrumHook.HookState.Grappling)
-                    {
-                        float angleToUpright = (Player.Center - p.Center).AngleBetween(-Vector2.UnitY);
-                        bool canJumpOffHook = angleToUpright > MathHelper.PiOver2 || Player.Distance(p.Center) < 38;// Don't do any jump stuff if the player is jumping from above the hook.
-
-                        syncData = syncData with { CanJumpOffHook = canJumpOffHook };
-
-                        if (canJumpOffHook)
-                        {
-                            Vector2 velocityBoost = Vector2.Zero;
-
-                            //Additionally, accelerate the player a lil' if they were holding down the buttons in the direction of their swing.
-                            if ((Math.Sign(Player.velocity.X) < 0 && Player.controlLeft) || (Math.Sign(Player.velocity.X) > 0 && Player.controlRight))
-                            {
-                                velocityBoost += Player.velocity * 0.15f;
-                                if (velocityBoost.Y < 0) //This causes upward velocity to be increased by more. Not needed, but just feels good.
-                                    velocityBoost.Y *= 2;
-                            }
-                            //Additionally^2, if the player isnt moving very fast, make them do a straight up hop.
-                            //Don't do the hop if the player isnt moving at all though because thats handled by vanilla.
-                            if (Player.velocity.Length() < MaxHopVelocity && Player.velocity.Length() > 0.0001f || PlayerOnGround)
-                            {
-                                velocityBoost -= Vector2.UnitY * Player.jumpSpeed * (1 - (float)Math.Pow(Player.velocity.Length() / MaxHopVelocity, 5f));
-                            }
-                            //If the player is moving fast enough, don't jump out of the hook. This is to maintain vertical momentum when releasing grapple while swinging.
-                            if (Player.velocity.Length() < 8f)
-                            {
-                                Player.jump = Player.jumpHeight / 2;
-                            }
-
-
-                            Player.velocity += velocityBoost;
-                            Player.releaseJump = false;
-                        }
-
-                        else
-                        {
-                            //Prevents double jumps from getting activated
-                            Player.releaseJump = false;
-                        }
-
-                        SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, p.Center);
-                        p.Kill();
-                        Player.grapCount = 0;
-                    }
-                }
-
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                {
-                    WulfrumAcrobaticsJumpSync.Send(
-                        syncData with
-                        {
-                            PlayerWhoAmI = (byte)Player.whoAmI,
-                            SwingLength = SwingLength,
-                            PlayerVelocity = Player.velocity,
-                            PlayerJump = Player.jump,
-                            SetControlUpFalse = setControlUpFalse,
-                        }
-                    );
-                }
-            }
-            else
-            {
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                {
-                    WulfrumAcrobaticsLengthSync.Send(
-                        new WulfrumAcrobaticsLengthSync.Data((byte)Player.whoAmI, SwingLength, setControlUpFalse)
-                    );
-                }
+                );
             }
         }
-
-
-        public override void FrameEffects()
+        else
         {
-            //Cache the hook. This is done so that the player may walk around animated if the grapple's movement is disabled.
-            //The cache is retrieved in the postFrame detour.
-            if (Player.grappling[0] >= 0 && GrappleMovementDisabled && Main.projectile[Player.grappling[0]].type == ProjectileType<WulfrumHook>())
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                hookCache = Player.grappling[0];
-                Player.grappling[0] = -1;
-                Player.grapCount = 0;
+                WulfrumAcrobaticsLengthSync.Send(
+                    new WulfrumAcrobaticsLengthSync.Data((byte)Player.whoAmI, SwingLength, setControlUpFalse)
+                );
             }
         }
     }
 
-    internal sealed class WulfrumAcrobaticsSync : CalamityPacket
-    {
-        public static WulfrumAcrobaticsSync Instance { get; private set; }
 
-        public static void Send(Player player, WulfrumPackPlayer mPlayer, Projectile proj, int toClient = -1, int ignoreClient = -1)
+    public override void FrameEffects()
+    {
+        //Cache the hook. This is done so that the player may walk around animated if the grapple's movement is disabled.
+        //The cache is retrieved in the postFrame detour.
+        if (Player.grappling[0] >= 0 && GrappleMovementDisabled && Main.projectile[Player.grappling[0]].type == ProjectileType<WulfrumHook>())
+        {
+            hookCache = Player.grappling[0];
+            Player.grappling[0] = -1;
+            Player.grapCount = 0;
+        }
+    }
+}
+
+internal sealed class WulfrumAcrobaticsSync : CalamityPacket
+{
+    public static WulfrumAcrobaticsSync Instance { get; private set; }
+
+    public static void Send(Player player, WulfrumPackPlayer mPlayer, Projectile proj, int toClient = -1, int ignoreClient = -1)
+    {
+        Send(
+            (byte)player.whoAmI,
+            mPlayer.SwingLength,
+            mPlayer.OldPosition,
+            proj.Center,
+            (byte)proj.whoAmI
+        );
+    }
+
+    private static void Send(
+        byte playerWhoAmI,
+        float swingLength,
+        Vector2 playerOldPos,
+        Vector2 projCenter,
+        byte projWhoAmI,
+        int toClient = -1,
+        int ignoreClient = -1
+    )
+    {
+        var packet = Instance.CreateBasePacket();
+        packet.Write(playerWhoAmI);
+        packet.Write(swingLength);
+        packet.WriteVector2(playerOldPos);
+        packet.WriteVector2(projCenter);
+        packet.Write(projWhoAmI);
+        packet.Send(toClient, ignoreClient);
+    }
+
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        var playerWhoAmI = packet.ReadByte();
+        var swingLength = packet.ReadSingle();
+        var playerOldPos = packet.ReadVector2();
+        var projCenter = packet.ReadVector2();
+        var projWhoAmI = packet.ReadByte();
+
+        if (Main.player[playerWhoAmI].TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
+        {
+            mPlayer.SwingLength = swingLength;
+            mPlayer.OldPosition = playerOldPos;
+            mPlayer.SetSegments(projCenter);
+            mPlayer.Grapple = projWhoAmI;
+        }
+
+        if (Main.netMode == NetmodeID.Server)
         {
             Send(
-                (byte)player.whoAmI,
-                mPlayer.SwingLength,
-                mPlayer.OldPosition,
-                proj.Center,
-                (byte)proj.whoAmI
+                playerWhoAmI,
+                swingLength,
+                playerOldPos,
+                projCenter,
+                projWhoAmI,
+                ignoreClient: sender
             );
         }
+    }
+}
 
-        private static void Send(
-            byte playerWhoAmI,
-            float swingLength,
-            Vector2 playerOldPos,
-            Vector2 projCenter,
-            byte projWhoAmI,
-            int toClient = -1,
-            int ignoreClient = -1
-        )
-        {
-            var packet = Instance.CreateBasePacket();
-            packet.Write(playerWhoAmI);
-            packet.Write(swingLength);
-            packet.WriteVector2(playerOldPos);
-            packet.WriteVector2(projCenter);
-            packet.Write(projWhoAmI);
-            packet.Send(toClient, ignoreClient);
-        }
+internal sealed class WulfrumAcrobaticsJumpSync : CalamityPacket
+{
+    public readonly record struct Data(
+        byte PlayerWhoAmI,
+        float SwingLength,
+        bool CanJumpOffHook,
+        Vector2 PlayerVelocity,
+        int PlayerJump,
+        bool SetControlUpFalse
+    );
 
-        public override void HandlePacket(BinaryReader packet, int sender)
-        {
-            var playerWhoAmI = packet.ReadByte();
-            var swingLength = packet.ReadSingle();
-            var playerOldPos = packet.ReadVector2();
-            var projCenter = packet.ReadVector2();
-            var projWhoAmI = packet.ReadByte();
+    public static WulfrumAcrobaticsJumpSync Instance { get; private set; }
 
-            if (Main.player[playerWhoAmI].TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
-            {
-                mPlayer.SwingLength = swingLength;
-                mPlayer.OldPosition = playerOldPos;
-                mPlayer.SetSegments(projCenter);
-                mPlayer.Grapple = projWhoAmI;
-            }
-
-            if (Main.netMode == NetmodeID.Server)
-            {
-                Send(
-                    playerWhoAmI,
-                    swingLength,
-                    playerOldPos,
-                    projCenter,
-                    projWhoAmI,
-                    ignoreClient: sender
-                );
-            }
-        }
+    public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
+    {
+        var packet = Instance.CreateBasePacket();
+        packet.Write(data.PlayerWhoAmI);
+        packet.Write(data.SwingLength);
+        packet.Write(data.CanJumpOffHook);
+        packet.WriteVector2(data.PlayerVelocity);
+        packet.Write(data.PlayerJump);
+        packet.Write(data.SetControlUpFalse);
+        packet.Send(toClient, ignoreClient);
     }
 
-    internal sealed class WulfrumAcrobaticsJumpSync : CalamityPacket
+    public override void HandlePacket(BinaryReader packet, int sender)
     {
-        public readonly record struct Data(
-            byte PlayerWhoAmI,
-            float SwingLength,
-            bool CanJumpOffHook,
-            Vector2 PlayerVelocity,
-            int PlayerJump,
-            bool SetControlUpFalse
-        );
+        var playerWhoAmI = packet.ReadByte();
+        var swingLength = packet.ReadSingle();
+        var canJumpOffHook = packet.ReadBoolean();
+        var playerVelocity = packet.ReadVector2();
+        var playerJump = packet.ReadInt32();
+        var setControlUpFalse = packet.ReadBoolean();
 
-        public static WulfrumAcrobaticsJumpSync Instance { get; private set; }
-
-        public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
+        var player = Main.player[playerWhoAmI];
+        if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
         {
-            var packet = Instance.CreateBasePacket();
-            packet.Write(data.PlayerWhoAmI);
-            packet.Write(data.SwingLength);
-            packet.Write(data.CanJumpOffHook);
-            packet.WriteVector2(data.PlayerVelocity);
-            packet.Write(data.PlayerJump);
-            packet.Write(data.SetControlUpFalse);
-            packet.Send(toClient, ignoreClient);
+            mPlayer.SwingLength = swingLength;
         }
 
-        public override void HandlePacket(BinaryReader packet, int sender)
+        if (canJumpOffHook)
         {
-            var playerWhoAmI = packet.ReadByte();
-            var swingLength = packet.ReadSingle();
-            var canJumpOffHook = packet.ReadBoolean();
-            var playerVelocity = packet.ReadVector2();
-            var playerJump = packet.ReadInt32();
-            var setControlUpFalse = packet.ReadBoolean();
+            player.jump = playerJump;
+            player.velocity = playerVelocity;
+        }
+        else
+        {
+            player.releaseJump = false;
+        }
 
-            var player = Main.player[playerWhoAmI];
-            if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
-            {
-                mPlayer.SwingLength = swingLength;
-            }
+        if (setControlUpFalse)
+        {
+            player.controlUp = false;
+        }
 
-            if (canJumpOffHook)
-            {
-                player.jump = playerJump;
-                player.velocity = playerVelocity;
-            }
-            else
-            {
-                player.releaseJump = false;
-            }
-
-            if (setControlUpFalse)
-            {
-                player.controlUp = false;
-            }
-
-            if (Main.netMode == NetmodeID.Server)
-            {
-                Send(
-                    new Data(playerWhoAmI, swingLength, canJumpOffHook, playerVelocity, playerJump, setControlUpFalse),
-                    ignoreClient: sender
-                );
-            }
+        if (Main.netMode == NetmodeID.Server)
+        {
+            Send(
+                new Data(playerWhoAmI, swingLength, canJumpOffHook, playerVelocity, playerJump, setControlUpFalse),
+                ignoreClient: sender
+            );
         }
     }
+}
 
-    internal sealed class WulfrumAcrobaticsLengthSync : CalamityPacket
+internal sealed class WulfrumAcrobaticsLengthSync : CalamityPacket
+{
+    public readonly record struct Data(
+        byte PlayerWhoAmI,
+        float SwingLength,
+        bool SetControlUpFalse
+    );
+
+    public static WulfrumAcrobaticsLengthSync Instance { get; private set; }
+
+    public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
     {
-        public readonly record struct Data(
-            byte PlayerWhoAmI,
-            float SwingLength,
-            bool SetControlUpFalse
-        );
+        var packet = Instance.CreateBasePacket();
+        packet.Write(data.PlayerWhoAmI);
+        packet.Write(data.SwingLength);
+        packet.Write(data.SetControlUpFalse);
+        packet.Send(toClient, ignoreClient);
+    }
 
-        public static WulfrumAcrobaticsLengthSync Instance { get; private set; }
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        var playerWhoAmI = packet.ReadByte();
+        var swingLength = packet.ReadSingle();
+        var setControlUpFalse = packet.ReadBoolean();
 
-        public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
+        var player = Main.player[playerWhoAmI];
+        if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
         {
-            var packet = Instance.CreateBasePacket();
-            packet.Write(data.PlayerWhoAmI);
-            packet.Write(data.SwingLength);
-            packet.Write(data.SetControlUpFalse);
-            packet.Send(toClient, ignoreClient);
+            mPlayer.SwingLength = swingLength;
         }
 
-        public override void HandlePacket(BinaryReader packet, int sender)
+        if (setControlUpFalse)
         {
-            var playerWhoAmI = packet.ReadByte();
-            var swingLength = packet.ReadSingle();
-            var setControlUpFalse = packet.ReadBoolean();
+            player.controlUp = false;
+        }
 
-            var player = Main.player[playerWhoAmI];
-            if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
-            {
-                mPlayer.SwingLength = swingLength;
-            }
-
-            if (setControlUpFalse)
-            {
-                player.controlUp = false;
-            }
-
-            if (Main.netMode == NetmodeID.Server)
-            {
-                Send(
-                    new Data(playerWhoAmI, swingLength, setControlUpFalse),
-                    ignoreClient: sender
-                );
-            }
+        if (Main.netMode == NetmodeID.Server)
+        {
+            Send(
+                new Data(playerWhoAmI, swingLength, setControlUpFalse),
+                ignoreClient: sender
+            );
         }
     }
 }

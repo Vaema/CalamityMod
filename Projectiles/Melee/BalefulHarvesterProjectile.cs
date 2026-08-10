@@ -5,149 +5,148 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Melee;
+
+public class BalefulHarvesterProjectile : ModProjectile, ILocalizedModType
 {
-    public class BalefulHarvesterProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Melee";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        ProjectileID.Sets.TrailCacheLength[Type] = 5;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+        Main.projFrames[Type] = 4;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = Projectile.height = 24;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.Melee;
+        Projectile.penetrate = 1;
+        Projectile.extraUpdates = 1;
+        Projectile.timeLeft = 300;
+        Projectile.alpha = 255;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.ai[0] < 0f)
+            Projectile.alpha = 0;
+        if (Projectile.alpha > 0)
+            Projectile.alpha -= 50;
+        if (Projectile.alpha < 0)
+            Projectile.alpha = 0;
+
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter >= 5)
         {
-            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Type] = 5;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-            Main.projFrames[Type] = 4;
+            Projectile.frameCounter = 0;
+            Projectile.frame++;
+            if (Projectile.frame >= Main.projFrames[Type])
+                Projectile.frame = 0;
         }
 
-        public override void SetDefaults()
+        if (Projectile.ai[0] >= 0f && Projectile.ai[0] < 200f)
         {
-            Projectile.width = Projectile.height = 24;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 1;
-            Projectile.extraUpdates = 1;
-            Projectile.timeLeft = 300;
-            Projectile.alpha = 255;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-        }
-
-        public override void AI()
-        {
-            if (Projectile.ai[0] < 0f)
-                Projectile.alpha = 0;
-            if (Projectile.alpha > 0)
-                Projectile.alpha -= 50;
-            if (Projectile.alpha < 0)
-                Projectile.alpha = 0;
-
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter >= 5)
+            int npcTracker = (int)Projectile.ai[0];
+            if (Main.npc[npcTracker].active)
             {
-                Projectile.frameCounter = 0;
-                Projectile.frame++;
-                if (Projectile.frame >= Main.projFrames[Type])
-                    Projectile.frame = 0;
+                Vector2 projDirection = Projectile.Center;
+                float projXVel = Main.npc[npcTracker].position.X - projDirection.X;
+                float projYVel = Main.npc[npcTracker].position.Y - projDirection.Y;
+                float projVelocity = (float)Math.Sqrt((double)(projXVel * projXVel + projYVel * projYVel));
+                projVelocity = 8f / projVelocity;
+                projXVel *= projVelocity;
+                projYVel *= projVelocity;
+                Projectile.velocity.X = (Projectile.velocity.X * 14f + projXVel) / 15f;
+                Projectile.velocity.Y = (Projectile.velocity.Y * 14f + projYVel) / 15f;
             }
-
-            if (Projectile.ai[0] >= 0f && Projectile.ai[0] < 200f)
+            else
             {
-                int npcTracker = (int)Projectile.ai[0];
-                if (Main.npc[npcTracker].active)
+                float homingRange = 1000f;
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    Vector2 projDirection = Projectile.Center;
-                    float projXVel = Main.npc[npcTracker].position.X - projDirection.X;
-                    float projYVel = Main.npc[npcTracker].position.Y - projDirection.Y;
-                    float projVelocity = (float)Math.Sqrt((double)(projXVel * projXVel + projYVel * projYVel));
-                    projVelocity = 8f / projVelocity;
-                    projXVel *= projVelocity;
-                    projYVel *= projVelocity;
-                    Projectile.velocity.X = (Projectile.velocity.X * 14f + projXVel) / 15f;
-                    Projectile.velocity.Y = (Projectile.velocity.Y * 14f + projYVel) / 15f;
-                }
-                else
-                {
-                    float homingRange = 1000f;
-                    foreach (NPC n in Main.ActiveNPCs)
+                    if (n.CanBeChasedBy(Projectile, false))
                     {
-                        if (n.CanBeChasedBy(Projectile, false))
+                        float npcX = n.position.X + (float)(n.width / 2);
+                        float npcY = n.position.Y + (float)(n.height / 2);
+                        float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
+                        if (npcDist < homingRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                         {
-                            float npcX = n.position.X + (float)(n.width / 2);
-                            float npcY = n.position.Y + (float)(n.height / 2);
-                            float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
-                            if (npcDist < homingRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
-                            {
-                                homingRange = npcDist;
-                                Projectile.ai[0] = (float)n.whoAmI;
-                            }
+                            homingRange = npcDist;
+                            Projectile.ai[0] = (float)n.whoAmI;
                         }
                     }
                 }
-
-                if (Projectile.velocity.X < 0f)
-                {
-                    Projectile.spriteDirection = -1;
-                    Projectile.rotation = (float)Math.Atan2((double)-(double)Projectile.velocity.Y, (double)-(double)Projectile.velocity.X);
-                }
-                else
-                {
-                    Projectile.spriteDirection = 1;
-                    Projectile.rotation = Projectile.velocity.ToRotation();
-                }
-
-                for (int j = 0; j < 2; j++)
-                {
-                    Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X + 4f, Projectile.position.Y + 4f), Projectile.width - 8, Projectile.height - 8, Main.rand.NextBool() ? 5 : 6, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 2f);
-                    dust.position -= Projectile.velocity * 2f;
-                    dust.noGravity = true;
-                    dust.velocity *= 0.3f;
-                }
-
-                return;
             }
 
-            Projectile.Kill();
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            for (int j = 0; j < 3; j++)
+            if (Projectile.velocity.X < 0f)
             {
-                int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.25f);
-                Main.dust[deathDust].velocity *= 3f;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[deathDust].scale = 0.5f;
-                    Main.dust[deathDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
+                Projectile.spriteDirection = -1;
+                Projectile.rotation = (float)Math.Atan2((double)-(double)Projectile.velocity.Y, (double)-(double)Projectile.velocity.X);
             }
-            for (int k = 0; k < 5; k++)
+            else
             {
-                int deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2.5f);
-                Main.dust[deathDust2].noGravity = true;
-                Main.dust[deathDust2].velocity *= 5f;
-                deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1.5f);
-                Main.dust[deathDust2].velocity *= 2f;
+                Projectile.spriteDirection = 1;
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
+
+            for (int j = 0; j < 2; j++)
+            {
+                Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X + 4f, Projectile.position.Y + 4f), Projectile.width - 8, Projectile.height - 8, Main.rand.NextBool() ? 5 : 6, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100, default, 2f);
+                dust.position -= Projectile.velocity * 2f;
+                dust.noGravity = true;
+                dust.velocity *= 0.3f;
+            }
+
+            return;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        Projectile.Kill();
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+        for (int j = 0; j < 3; j++)
         {
-            target.AddBuff(BuffID.OnFire3, 240);
-            if (Projectile.owner == Main.myPlayer)
+            int deathDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.25f);
+            Main.dust[deathDust].velocity *= 3f;
+            if (Main.rand.NextBool())
             {
-                int maxProjectiles = 2;
-                for (int k = 0; k < maxProjectiles; k++)
-                {
-                    Vector2 flareVelocity = Main.rand.NextVector2CircularEdge(3.5f, 3.5f) + Projectile.oldVelocity;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, flareVelocity, ModContent.ProjectileType<TinyFlare>(), (int)(Projectile.damage * 0.35), Projectile.knockBack * 0.35f, Main.myPlayer);
-                }
+                Main.dust[deathDust].scale = 0.5f;
+                Main.dust[deathDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+            }
+        }
+        for (int k = 0; k < 5; k++)
+        {
+            int deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2.5f);
+            Main.dust[deathDust2].noGravity = true;
+            Main.dust[deathDust2].velocity *= 5f;
+            deathDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1.5f);
+            Main.dust[deathDust2].velocity *= 2f;
+        }
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.OnFire3, 240);
+        if (Projectile.owner == Main.myPlayer)
+        {
+            int maxProjectiles = 2;
+            for (int k = 0; k < maxProjectiles; k++)
+            {
+                Vector2 flareVelocity = Main.rand.NextVector2CircularEdge(3.5f, 3.5f) + Projectile.oldVelocity;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, flareVelocity, ModContent.ProjectileType<TinyFlare>(), (int)(Projectile.damage * 0.35), Projectile.knockBack * 0.35f, Main.myPlayer);
             }
         }
     }

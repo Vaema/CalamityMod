@@ -13,237 +13,236 @@ using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Melee;
+
+public class ArkoftheCosmosParryHoldout : ModProjectile, ILocalizedModType
 {
-    public class ArkoftheCosmosParryHoldout : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Melee";
+    public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight";
+
+    private bool initialized = false;
+    internal const float MaxTime = 340;
+    static float ParryTime = 15;
+    public Vector2 DistanceFromPlayer => Projectile.velocity * 10 + Projectile.velocity * 10 * ThrustDisplaceRatio();
+    public float Timer => MaxTime - Projectile.timeLeft;
+    public float ParryProgress => (MaxTime - Projectile.timeLeft) / ParryTime;
+
+    public ref float AlreadyParried => ref Projectile.ai[1];
+    public Player Owner => Main.player[Projectile.owner];
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight";
+        Projectile.DamageType = DamageClass.MeleeNoSpeed;
+        Projectile.width = Projectile.height = 75;
+        Projectile.width = Projectile.height = 75;
+        Projectile.tileCollide = false;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.noEnchantmentVisuals = true;
+        Projectile.usesIDStaticNPCImmunity = true;
+        Projectile.idStaticNPCHitCooldown = 10;
+        Projectile.timeLeft = (int)MaxTime;
+    }
 
-        private bool initialized = false;
-        internal const float MaxTime = 340;
-        static float ParryTime = 15;
-        public Vector2 DistanceFromPlayer => Projectile.velocity * 10 + Projectile.velocity * 10 * ThrustDisplaceRatio();
-        public float Timer => MaxTime - Projectile.timeLeft;
-        public float ParryProgress => (MaxTime - Projectile.timeLeft) / ParryTime;
+    public override bool? CanDamage() => Timer <= ParryTime && AlreadyParried == 0f;
 
-        public ref float AlreadyParried => ref Projectile.ai[1];
-        public Player Owner => Main.player[Projectile.owner];
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+    {
+        //The hitbox is simplified into a line collision.
+        float collisionPoint = 0f;
+        float bladeLength = 142f * Projectile.scale;
+        return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 44, ref collisionPoint);
+    }
 
-        public override void SetDefaults()
+    public void GeneralParryEffects()
+    {
+        ArkoftheCosmos sword = (Owner.HeldItem.ModItem as ArkoftheCosmos);
+        if (sword != null)
         {
-            Projectile.DamageType = DamageClass.MeleeNoSpeed;
-            Projectile.width = Projectile.height = 75;
-            Projectile.width = Projectile.height = 75;
-            Projectile.tileCollide = false;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.noEnchantmentVisuals = true;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
-            Projectile.timeLeft = (int)MaxTime;
+            sword.Charge = ArkoftheCosmos.MaxCharge;
+            sword.Combo = 0f;
+        }
+        SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
+        SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume = CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
+
+        CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), CalamityUtils.GetTextValue("Misc.ArkParry"), true);
+
+        for (int i = 0; i < 5; i++) //Don't loose your way
+        {
+            Vector2 particleDispalce = Main.rand.NextVector2Circular(Owner.Hitbox.Width * 2f, Owner.Hitbox.Height * 1.2f);
+            float particleScale = Main.rand.NextFloat(0.5f, 1.4f);
+            Particle shine = new FlareShine(Owner.Center + particleDispalce, particleDispalce * 0.01f, Color.White, Color.Red, 0f, new Vector2(0.6f, 1f) * particleScale, new Vector2(1.5f, 2.7f) * particleScale, 20 + Main.rand.Next(6), bloomScale: 3f, spawnDelay: Main.rand.Next(7) * 2);
+            GeneralParticleHandler.SpawnParticle(shine);
         }
 
-        public override bool? CanDamage() => Timer <= ParryTime && AlreadyParried == 0f;
+        AlreadyParried = 1f;
+    }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (AlreadyParried > 0)
+            return;
+
+        GeneralParryEffects();
+
+        // 17APR2024: Ozzatron: Ark of the Cosmos is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+        // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
+        if (target.damage > 0)
         {
-            //The hitbox is simplified into a line collision.
-            float collisionPoint = 0f;
-            float bladeLength = 142f * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 44, ref collisionPoint);
+            int arkParryIFrames = Owner.ComputeParryIFrames();
+            Owner.GiveUniversalIFrames(arkParryIFrames, false);
         }
 
-        public void GeneralParryEffects()
+        Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
+        Particle spark = new GenericSparkle(particleOrigin, Vector2.Zero, Color.White, Color.HotPink, 1.2f, 35, 0.1f, 2);
+        GeneralParticleHandler.SpawnParticle(spark);
+
+        for (int i = 0; i < 10; i++)
         {
-            ArkoftheCosmos sword = (Owner.HeldItem.ModItem as ArkoftheCosmos);
-            if (sword != null)
-            {
-                sword.Charge = ArkoftheCosmos.MaxCharge;
-                sword.Combo = 0f;
-            }
-            SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
-            SoundEngine.PlaySound(CommonCalamitySounds.ScissorGuillotineSnapSound with { Volume = CommonCalamitySounds.ScissorGuillotineSnapSound.Volume * 1.3f }, Projectile.Center);
+            Vector2 particleSpeed = Main.rand.NextVector2CircularEdge(1, 1) * Main.rand.NextFloat(2.6f, 4f);
+            Particle energyLeak = new SquishyLightParticle(particleOrigin, particleSpeed, Main.rand.NextFloat(0.3f, 0.6f), Color.Cyan, 60, 1, 1.5f, hueShift: 0.02f);
+            GeneralParticleHandler.SpawnParticle(energyLeak);
+        }
+    }
 
-            CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), CalamityUtils.GetTextValue("Misc.ArkParry"), true);
+    public override void AI()
+    {
+        if (!initialized) //Initialization
+        {
+            //Projectile.timeLeft = (int)MaxTime;
+            SoundEngine.PlaySound(SoundID.Item84 with { Volume = SoundID.Item84.Volume * 0.3f }, Projectile.Center);
 
-            for (int i = 0; i < 5; i++) //Don't loose your way
-            {
-                Vector2 particleDispalce = Main.rand.NextVector2Circular(Owner.Hitbox.Width * 2f, Owner.Hitbox.Height * 1.2f);
-                float particleScale = Main.rand.NextFloat(0.5f, 1.4f);
-                Particle shine = new FlareShine(Owner.Center + particleDispalce, particleDispalce * 0.01f, Color.White, Color.Red, 0f, new Vector2(0.6f, 1f) * particleScale, new Vector2(1.5f, 2.7f) * particleScale, 20 + Main.rand.Next(6), bloomScale: 3f, spawnDelay: Main.rand.Next(7) * 2);
-                GeneralParticleHandler.SpawnParticle(shine);
-            }
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
+            Projectile.velocity.Normalize();
+            Projectile.rotation = Projectile.velocity.ToRotation();
 
-            AlreadyParried = 1f;
+            initialized = true;
+            Projectile.ForceNetUpdate();
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        //Manage position and rotation
+        Projectile.Center = Owner.Center + DistanceFromPlayer;
+        Projectile.scale = 1.4f + ThrustDisplaceRatio() * 0.2f;
+
+        if (Timer > ParryTime)
+            return;
+
+        float collisionPoint = 0f;
+        float bladeLength = 142f * Projectile.scale;
+
+        for (int k = 0; k < Main.maxProjectiles; k++)
         {
-            if (AlreadyParried > 0)
-                return;
+            Projectile proj = Main.projectile[k];
 
-            GeneralParryEffects();
-
-            // 17APR2024: Ozzatron: Ark of the Cosmos is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
-            // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
-            if (target.damage > 0)
+            if (proj.active && proj.hostile && proj.damage > 1 && //Only parry harmful projectiles
+               proj.velocity.Length() * (proj.extraUpdates + 1) > 1f && //Only parry projectiles that move semi-quickly
+               proj.Size.Length() < 300 && //Only parry projectiles that aren't too large
+               Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint))
             {
-                int arkParryIFrames = Owner.ComputeParryIFrames();
-                Owner.GiveUniversalIFrames(arkParryIFrames, false);
-            }
-
-            Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
-            Particle spark = new GenericSparkle(particleOrigin, Vector2.Zero, Color.White, Color.HotPink, 1.2f, 35, 0.1f, 2);
-            GeneralParticleHandler.SpawnParticle(spark);
-
-            for (int i = 0; i < 10; i++)
-            {
-                Vector2 particleSpeed = Main.rand.NextVector2CircularEdge(1, 1) * Main.rand.NextFloat(2.6f, 4f);
-                Particle energyLeak = new SquishyLightParticle(particleOrigin, particleSpeed, Main.rand.NextFloat(0.3f, 0.6f), Color.Cyan, 60, 1, 1.5f, hueShift: 0.02f);
-                GeneralParticleHandler.SpawnParticle(energyLeak);
-            }
-        }
-
-        public override void AI()
-        {
-            if (!initialized) //Initialization
-            {
-                //Projectile.timeLeft = (int)MaxTime;
-                SoundEngine.PlaySound(SoundID.Item84 with { Volume = SoundID.Item84.Volume * 0.3f }, Projectile.Center);
-
-                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
-                Projectile.velocity.Normalize();
-                Projectile.rotation = Projectile.velocity.ToRotation();
-
-                initialized = true;
-                Projectile.ForceNetUpdate();
-            }
-
-            //Manage position and rotation
-            Projectile.Center = Owner.Center + DistanceFromPlayer;
-            Projectile.scale = 1.4f + ThrustDisplaceRatio() * 0.2f;
-
-            if (Timer > ParryTime)
-                return;
-
-            float collisionPoint = 0f;
-            float bladeLength = 142f * Projectile.scale;
-
-            for (int k = 0; k < Main.maxProjectiles; k++)
-            {
-                Projectile proj = Main.projectile[k];
-
-                if (proj.active && proj.hostile && proj.damage > 1 && //Only parry harmful projectiles
-                   proj.velocity.Length() * (proj.extraUpdates + 1) > 1f && //Only parry projectiles that move semi-quickly
-                   proj.Size.Length() < 300 && //Only parry projectiles that aren't too large
-                   Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint))
+                if (AlreadyParried == 0)
                 {
-                    if (AlreadyParried == 0)
-                    {
-                        GeneralParryEffects();
-                        if (Owner.velocity.Y != 0)
-                            Owner.velocity += Utils.SafeNormalize(Owner.Center - proj.Center, Vector2.Zero) * 2;
-                    }
-
-                    //Reduce the projectile's damage by 120 for a second.
-                    if (proj.Calamity().flatDR < 120)
-                        proj.Calamity().flatDR = 120;
-                    if (proj.Calamity().flatDRTimer < 60)
-                        proj.Calamity().flatDRTimer = 60;
-                    break;
+                    GeneralParryEffects();
+                    if (Owner.velocity.Y != 0)
+                        Owner.velocity += Utils.SafeNormalize(Owner.Center - proj.Center, Vector2.Zero) * 2;
                 }
-            }
 
-
-            //Make the owner look like theyre holding the sword bla bla
-            Owner.heldProj = Projectile.whoAmI;
-            Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
-            Owner.itemRotation = Projectile.rotation;
-            if (Owner.direction != 1)
-            {
-                Owner.itemRotation -= MathHelper.Pi;
-            }
-            Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
-
-            if (AlreadyParried > 0)
-            {
-                AlreadyParried++;
+                //Reduce the projectile's damage by 120 for a second.
+                if (proj.Calamity().flatDR < 120)
+                    proj.Calamity().flatDR = 120;
+                if (proj.Calamity().flatDRTimer < 60)
+                    proj.Calamity().flatDRTimer = 60;
+                break;
             }
         }
 
-        //Animation keys
-        public CurveSegment anticipation = new CurveSegment(EasingType.SineBump, 0f, 0.2f, -0.05f);
-        public CurveSegment thrust = new CurveSegment(EasingType.PolyInOut, 0.2f, 0.2f, 0.8f, 2);
-        public CurveSegment retract = new CurveSegment(EasingType.CircIn, 0.7f, 1f, -0.1f);
-        internal float ThrustDisplaceRatio() => PiecewiseAnimation(ParryProgress, new CurveSegment[] { anticipation, thrust, retract });
 
-        public CurveSegment openMore = new CurveSegment(EasingType.SineBump, 0f, 0f, -0.15f);
-        public CurveSegment close = new CurveSegment(EasingType.PolyIn, 0.3f, 0f, 1f, 4);
-        public CurveSegment stayClosed = new CurveSegment(EasingType.Linear, 0.5f, 1f, 0f);
-        internal float RotationRatio() => PiecewiseAnimation(ParryProgress, new CurveSegment[] { openMore, close, stayClosed });
-
-        public override bool PreDraw(ref Color lightColor)
+        //Make the owner look like theyre holding the sword bla bla
+        Owner.heldProj = Projectile.whoAmI;
+        Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
+        Owner.itemRotation = Projectile.rotation;
+        if (Owner.direction != 1)
         {
-            //Stop drawing the sword. Draw a recharge bar instead
-            if (Timer > ParryTime)
+            Owner.itemRotation -= MathHelper.Pi;
+        }
+        Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
+
+        if (AlreadyParried > 0)
+        {
+            AlreadyParried++;
+        }
+    }
+
+    //Animation keys
+    public CurveSegment anticipation = new CurveSegment(EasingType.SineBump, 0f, 0.2f, -0.05f);
+    public CurveSegment thrust = new CurveSegment(EasingType.PolyInOut, 0.2f, 0.2f, 0.8f, 2);
+    public CurveSegment retract = new CurveSegment(EasingType.CircIn, 0.7f, 1f, -0.1f);
+    internal float ThrustDisplaceRatio() => PiecewiseAnimation(ParryProgress, new CurveSegment[] { anticipation, thrust, retract });
+
+    public CurveSegment openMore = new CurveSegment(EasingType.SineBump, 0f, 0f, -0.15f);
+    public CurveSegment close = new CurveSegment(EasingType.PolyIn, 0.3f, 0f, 1f, 4);
+    public CurveSegment stayClosed = new CurveSegment(EasingType.Linear, 0.5f, 1f, 0f);
+    internal float RotationRatio() => PiecewiseAnimation(ParryProgress, new CurveSegment[] { openMore, close, stayClosed });
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        //Stop drawing the sword. Draw a recharge bar instead
+        if (Timer > ParryTime)
+        {
+            if (Main.myPlayer == Owner.whoAmI)
             {
-                if (Main.myPlayer == Owner.whoAmI)
-                {
-                    var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
-                    var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
+                var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
+                var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
 
-                    Vector2 drawPos = Owner.Center - Main.screenPosition + new Vector2(0, -36) - barBG.Size() / 2;
-                    Rectangle frame = new Rectangle(0, 0, (int)((Timer - ParryTime) / (MaxTime - ParryTime) * barFG.Width), barFG.Height);
+                Vector2 drawPos = Owner.Center - Main.screenPosition + new Vector2(0, -36) - barBG.Size() / 2;
+                Rectangle frame = new Rectangle(0, 0, (int)((Timer - ParryTime) / (MaxTime - ParryTime) * barFG.Width), barFG.Height);
 
-                    float opacity = Timer <= ParryTime + 25f ? (Timer - ParryTime) / 25f : (MaxTime - Timer <= 8) ? Projectile.timeLeft / 8f : 1f;
-                    Color color = Main.hslToRgb((float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.2f) * 0.05f + 0.08f, 1, 0.65f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 7f) * 0.1f);
+                float opacity = Timer <= ParryTime + 25f ? (Timer - ParryTime) / 25f : (MaxTime - Timer <= 8) ? Projectile.timeLeft / 8f : 1f;
+                Color color = Main.hslToRgb((float)Math.Sin(Main.GlobalTimeWrappedHourly * 1.2f) * 0.05f + 0.08f, 1, 0.65f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 7f) * 0.1f);
 
-                    Main.spriteBatch.Draw(barBG, drawPos, color * opacity);
-                    Main.spriteBatch.Draw(barFG, drawPos, frame, color * opacity * 0.8f);
-                }
-                return false;
+                Main.spriteBatch.Draw(barBG, drawPos, color * opacity);
+                Main.spriteBatch.Draw(barFG, drawPos, frame, color * opacity * 0.8f);
             }
-
-            Texture2D frontBlade = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsLeft").Value;
-            Texture2D frontBladeGlow = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsLeftGlow").Value;
-            Texture2D backBlade = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsRight").Value;
-            Texture2D backBladeGlow = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsRightGlow").Value;
-
-            float snippingRotation = Projectile.rotation + MathHelper.PiOver4;
-
-            float drawRotation = MathHelper.Lerp(snippingRotation - MathHelper.PiOver4, snippingRotation, RotationRatio());
-            float drawRotationBack = MathHelper.Lerp(snippingRotation + MathHelper.PiOver4, snippingRotation, RotationRatio());
-
-            Vector2 drawOrigin = new Vector2(33, 86); //Right on the hole
-            Vector2 drawOriginBack = new Vector2(44f, 86); //Right on the hole
-            Vector2 drawPosition = Owner.Center + Projectile.velocity * 15 + Projectile.velocity * ThrustDisplaceRatio() * 50f - Main.screenPosition;
-
-            Main.EntitySpriteDraw(backBlade, drawPosition, null, lightColor, drawRotationBack, drawOriginBack, Projectile.scale, 0f, 0);
-            Main.EntitySpriteDraw(backBladeGlow, drawPosition, null, Color.Lerp(lightColor, Color.White, 0.75f), drawRotationBack, drawOriginBack, Projectile.scale, 0f, 0);
-
-            Main.EntitySpriteDraw(frontBlade, drawPosition, null, lightColor, drawRotation, drawOrigin, Projectile.scale, 0f, 0);
-            Main.EntitySpriteDraw(frontBladeGlow, drawPosition, null, Color.Lerp(lightColor, Color.White, 0.75f), drawRotation, drawOrigin, Projectile.scale, 0f, 0);
             return false;
         }
 
-        public override void OnKill(int timeLeft)
-        {
-            //Play a blip when it dies, to indicate to the player its ready to get used again
-            if (Main.myPlayer == Owner.whoAmI)
-            {
-                SoundEngine.PlaySound(SoundID.Item35 with { Volume = SoundID.Item35.Volume * 2f });
-            }
-        }
+        Texture2D frontBlade = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsLeft").Value;
+        Texture2D frontBladeGlow = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsLeftGlow").Value;
+        Texture2D backBlade = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsRight").Value;
+        Texture2D backBladeGlow = Request<Texture2D>("CalamityMod/Projectiles/Melee/SunderingScissorsRightGlow").Value;
 
-        public override void SendExtraAI(BinaryWriter writer)
+        float snippingRotation = Projectile.rotation + MathHelper.PiOver4;
+
+        float drawRotation = MathHelper.Lerp(snippingRotation - MathHelper.PiOver4, snippingRotation, RotationRatio());
+        float drawRotationBack = MathHelper.Lerp(snippingRotation + MathHelper.PiOver4, snippingRotation, RotationRatio());
+
+        Vector2 drawOrigin = new Vector2(33, 86); //Right on the hole
+        Vector2 drawOriginBack = new Vector2(44f, 86); //Right on the hole
+        Vector2 drawPosition = Owner.Center + Projectile.velocity * 15 + Projectile.velocity * ThrustDisplaceRatio() * 50f - Main.screenPosition;
+
+        Main.EntitySpriteDraw(backBlade, drawPosition, null, lightColor, drawRotationBack, drawOriginBack, Projectile.scale, 0f, 0);
+        Main.EntitySpriteDraw(backBladeGlow, drawPosition, null, Color.Lerp(lightColor, Color.White, 0.75f), drawRotationBack, drawOriginBack, Projectile.scale, 0f, 0);
+
+        Main.EntitySpriteDraw(frontBlade, drawPosition, null, lightColor, drawRotation, drawOrigin, Projectile.scale, 0f, 0);
+        Main.EntitySpriteDraw(frontBladeGlow, drawPosition, null, Color.Lerp(lightColor, Color.White, 0.75f), drawRotation, drawOrigin, Projectile.scale, 0f, 0);
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        //Play a blip when it dies, to indicate to the player its ready to get used again
+        if (Main.myPlayer == Owner.whoAmI)
         {
-            writer.Write(initialized);
+            SoundEngine.PlaySound(SoundID.Item35 with { Volume = SoundID.Item35.Volume * 2f });
         }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            initialized = reader.ReadBoolean();
-        }
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(initialized);
+    }
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        initialized = reader.ReadBoolean();
     }
 }

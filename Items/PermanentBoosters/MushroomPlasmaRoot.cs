@@ -6,54 +6,53 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.PermanentBoosters
+namespace CalamityMod.Items.PermanentBoosters;
+
+public class MushroomPlasmaRoot : ModItem, ILocalizedModType
 {
-    public class MushroomPlasmaRoot : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Misc";
+    public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.RageBoosterTooltip").WithFormatArgs(BalancingConstants.RageDurationPerBooster.FramesToSeconds());
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Misc";
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.RageBoosterTooltip").WithFormatArgs(BalancingConstants.RageDurationPerBooster.FramesToSeconds());
+        Item.width = 20;
+        Item.height = 20;
+        Item.consumable = true;
+        Item.useAnimation = Item.useTime = 30;
+        Item.UseSound = SoundID.Item122;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.value = Item.sellPrice(gold: 2);
+        Item.rare = ItemRarityID.Green;
+        Item.SetRevExclusive();
+    }
 
-        public override void SetDefaults()
+    public static bool HasConsumedBefore(Player player) => player.Calamity().rageBoostOne;
+
+    public override bool CanUseItem(Player player)
+    {
+        if (HasConsumedBefore(player))
         {
-            Item.width = 20;
-            Item.height = 20;
-            Item.consumable = true;
-            Item.useAnimation = Item.useTime = 30;
-            Item.UseSound = SoundID.Item122;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.value = Item.sellPrice(gold: 2);
-            Item.rare = ItemRarityID.Green;
-            Item.SetRevExclusive();
+            // Refuse Text can be added on here
+            return false;
         }
 
-        public static bool HasConsumedBefore(Player player) => player.Calamity().rageBoostOne;
+        return true;
+    }
 
-        public override bool CanUseItem(Player player)
+    public override bool? UseItem(Player player)
+    {
+        if (player.itemAnimation > 0 && player.itemTime == 0)
         {
-            if (HasConsumedBefore(player))
-            {
-                // Refuse Text can be added on here
-                return false;
-            }
-
-            return true;
+            player.itemTime = Item.useTime;
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.rageBoostOne = true;
         }
+        return true;
+    }
 
-        public override bool? UseItem(Player player)
-        {
-            if (player.itemAnimation > 0 && player.itemTime == 0)
-            {
-                player.itemTime = Item.useTime;
-                CalamityPlayer modPlayer = player.Calamity();
-                modPlayer.rageBoostOne = true;
-            }
-            return true;
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            if (HasConsumedBefore(Main.LocalPlayer))
-                list.AddConsumedTooltip("Tooltip0");
-        }
+    public override void ModifyTooltips(List<TooltipLine> list)
+    {
+        if (HasConsumedBefore(Main.LocalPlayer))
+            list.AddConsumedTooltip("Tooltip0");
     }
 }

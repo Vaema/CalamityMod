@@ -5,25 +5,24 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Pets
+namespace CalamityMod.Items.Pets;
+
+public class GeyserShell : ModItem, ILocalizedModType
 {
-    public class GeyserShell : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Pets";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Pets";
+        Item.DefaultToVanitypet(ModContent.ProjectileType<FlakPet>(), ModContent.BuffType<FlakHermitBuff>());
+        Item.value = Item.sellPrice(gold: 2);
+        Item.rare = ItemRarityID.Orange;
+    }
 
-        public override void SetDefaults()
+    public override void UseStyle(Player player, Rectangle heldItemFrame)
+    {
+        if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
         {
-            Item.DefaultToVanitypet(ModContent.ProjectileType<FlakPet>(), ModContent.BuffType<FlakHermitBuff>());
-            Item.value = Item.sellPrice(gold: 2);
-            Item.rare = ItemRarityID.Orange;
-        }
-
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
-        {
-            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
-            {
-                player.AddBuff(Item.buffType, 15, true);
-            }
+            player.AddBuff(Item.buffType, 15, true);
         }
     }
 }

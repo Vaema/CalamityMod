@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class VirulingBanner : BaseBanner
 {
-    public class VirulingBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 82;
-    }
+    public override int BannerTileStyle => 82;
 }

@@ -1,10 +1,9 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum Season : byte
 {
-    public enum Season : byte
-    {
-        Winter,
-        Spring,
-        Summer,
-        Fall
-    }
+    Winter,
+    Spring,
+    Summer,
+    Fall
 }

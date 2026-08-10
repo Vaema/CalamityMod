@@ -8,54 +8,53 @@ using Terraria.ID;
 using CalamityMod.Systems.Collections;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Summon
+namespace CalamityMod.Items.Weapons.Summon;
+
+public class SlimePuppetStaff : ModItem, ILocalizedModType
 {
-    public class SlimePuppetStaff : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Summon";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Slimed];
-        }
-        public override void SetDefaults()
-        {
-            Item.width = 32;
-            Item.height = 34;
-            Item.damage = 10;
-            Item.mana = 10;
-            Item.useAnimation = Item.useTime = 29;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.noMelee = true;
-            Item.knockBack = 3.6f;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
-            Item.UseSound = SlimeGodCore.PossessionSound;
-            Item.shoot = ModContent.ProjectileType<SlimePuppet>();
-            Item.shootSpeed = 10f;
-            Item.autoReuse = true;
-            Item.DamageType = DamageClass.Summon;
-        }
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Slimed];
+    }
+    public override void SetDefaults()
+    {
+        Item.width = 32;
+        Item.height = 34;
+        Item.damage = 10;
+        Item.mana = 10;
+        Item.useAnimation = Item.useTime = 29;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.noMelee = true;
+        Item.knockBack = 3.6f;
+        Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+        Item.rare = ItemRarityID.LightRed;
+        Item.UseSound = SlimeGodCore.PossessionSound;
+        Item.shoot = ModContent.ProjectileType<SlimePuppet>();
+        Item.shootSpeed = 10f;
+        Item.autoReuse = true;
+        Item.DamageType = DamageClass.Summon;
+    }
 
-        public override Vector2? HoldoutOrigin() => new Vector2(12f);
+    public override Vector2? HoldoutOrigin() => new Vector2(12f);
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.altFunctionUse != 2)
         {
-            if (player.altFunctionUse != 2)
-            {
-                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, Main.myPlayer);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-            }
-            return false;
+            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, Main.myPlayer);
+            if (Main.projectile.IndexInRange(p))
+                Main.projectile[p].originalDamage = Item.damage;
         }
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<PurifiedGel>(14).
-                AddIngredient<BlightedGel>(14).
-                AddTile(TileID.Solidifier).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<PurifiedGel>(14).
+            AddIngredient<BlightedGel>(14).
+            AddTile(TileID.Solidifier).
+            Register();
     }
 }

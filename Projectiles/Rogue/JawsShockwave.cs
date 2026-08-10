@@ -3,65 +3,64 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class JawsShockwave : ModProjectile, ILocalizedModType
 {
-    public class JawsShockwave : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Projectile.width = 320;
+        Projectile.height = 320;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 10;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+        Projectile.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        if (Projectile.timeLeft >= 5)
         {
-            Projectile.width = 320;
-            Projectile.height = 320;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 10;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-            Projectile.DamageType = RogueDamageClass.Instance;
-        }
-
-        public override void AI()
-        {
-            if (Projectile.timeLeft >= 5)
+            for (int i = 0; i < 50; i++)
             {
-                for (int i = 0; i < 50; i++)
+                int dustToUse = Main.rand.Next(0, 4);
+                int dustType = 0;
+                switch (dustToUse)
                 {
-                    int dustToUse = Main.rand.Next(0, 4);
-                    int dustType = 0;
-                    switch (dustToUse)
-                    {
-                        case 0:
-                            dustType = 33;
-                            break;
-                        case 1:
-                            dustType = 101;
-                            break;
-                        case 2:
-                            dustType = 111;
-                            break;
-                        case 3:
-                            dustType = 180;
-                            break;
-                    }
-
-                    Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                    dustVelocity.Normalize();
-                    dustVelocity *= 16;
-
-                    int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType, dustVelocity.X, dustVelocity.Y, 0, default, 1.5f);
-                    Main.dust[dust].noGravity = true;
+                    case 0:
+                        dustType = 33;
+                        break;
+                    case 1:
+                        dustType = 101;
+                        break;
+                    case 2:
+                        dustType = 111;
+                        break;
+                    case 3:
+                        dustType = 180;
+                        break;
                 }
+
+                Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
+                dustVelocity.Normalize();
+                dustVelocity *= 16;
+
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType, dustVelocity.X, dustVelocity.Y, 0, default, 1.5f);
+                Main.dust[dust].noGravity = true;
             }
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 160f, targetHitbox);
     }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
+
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 160f, targetHitbox);
 }

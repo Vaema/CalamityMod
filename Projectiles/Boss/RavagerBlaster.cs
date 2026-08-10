@@ -4,73 +4,72 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Boss
+namespace CalamityMod.Projectiles.Boss;
+
+public class RavagerBlaster : ModProjectile, ILocalizedModType
 {
-    public class RavagerBlaster : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Boss";
+    public override string Texture => "CalamityMod/NPCs/Ravager/RavagerHead";
+    public static readonly SoundStyle SANSCharge = new("CalamityMod/Sounds/Custom/Ravager/GasterBlasterCharge");
+    public static readonly SoundStyle SANSFire = new("CalamityMod/Sounds/Custom/Ravager/GasterBlasterFire");
+    public Vector2 storedVelocity;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Boss";
-        public override string Texture => "CalamityMod/NPCs/Ravager/RavagerHead";
-        public static readonly SoundStyle SANSCharge = new("CalamityMod/Sounds/Custom/Ravager/GasterBlasterCharge");
-        public static readonly SoundStyle SANSFire = new("CalamityMod/Sounds/Custom/Ravager/GasterBlasterFire");
-        public Vector2 storedVelocity;
+        Projectile.width = Projectile.height = 80;
+        Projectile.hostile = true;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.timeLeft = 180;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Lighting.AddLight(Projectile.Center, 1f, 1f, 1f);
+
+        //ai0 = timer, ai1 = laser size
+        if (Projectile.ai[0] < 90f) //Before the laser
         {
-            Projectile.width = Projectile.height = 80;
-            Projectile.hostile = true;
-            Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;
-            Projectile.timeLeft = 180;
-        }
-
-        public override void AI()
-        {
-            Lighting.AddLight(Projectile.Center, 1f, 1f, 1f);
-
-            //ai0 = timer, ai1 = laser size
-            if (Projectile.ai[0] < 90f) //Before the laser
+            Projectile.ai[0]++;
+            if (storedVelocity == Vector2.Zero)
             {
-                Projectile.ai[0]++;
-                if (storedVelocity == Vector2.Zero)
-                {
-                    storedVelocity = Projectile.SafeDirectionTo(Projectile.velocity);
-                    Projectile.velocity = Vector2.Zero;
-                    Projectile.netUpdate = true;
-                    Projectile.rotation = (float)Math.Atan2(storedVelocity.Y, storedVelocity.X) - MathHelper.PiOver2;
+                storedVelocity = Projectile.SafeDirectionTo(Projectile.velocity);
+                Projectile.velocity = Vector2.Zero;
+                Projectile.netUpdate = true;
+                Projectile.rotation = (float)Math.Atan2(storedVelocity.Y, storedVelocity.X) - MathHelper.PiOver2;
 
-                    SoundEngine.PlaySound(SANSCharge, Projectile.Center); //Funny Gaster Blaster sounds
-                }
-                else if (Projectile.ai[0] >= 55f)
-                {
-                    Projectile.ai[0] = 90f;
-                    if (Projectile.owner == Main.myPlayer)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, storedVelocity, ModContent.ProjectileType<RavagerBlast>(), Projectile.damage, 0f, Projectile.owner, Projectile.ai[1], Projectile.whoAmI);
-
-                    SoundEngine.PlaySound(SANSFire, Projectile.Center); //Funny Gaster Blaster sounds #2
-                }
+                SoundEngine.PlaySound(SANSCharge, Projectile.Center); //Funny Gaster Blaster sounds
             }
-            else //Move out and despawn
+            else if (Projectile.ai[0] >= 55f)
             {
-                //Start moving
-                if (Projectile.velocity == Vector2.Zero)
-                    Projectile.velocity = storedVelocity * -1f;
-                else
-                    Projectile.velocity *= 1.01f;
+                Projectile.ai[0] = 90f;
+                if (Projectile.owner == Main.myPlayer)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, storedVelocity, ModContent.ProjectileType<RavagerBlast>(), Projectile.damage, 0f, Projectile.owner, Projectile.ai[1], Projectile.whoAmI);
 
-                //Fade out and die
-                Projectile.alpha += 3;
-                if (Projectile.alpha >= 255)
-                    Projectile.Kill();
+                SoundEngine.PlaySound(SANSFire, Projectile.Center); //Funny Gaster Blaster sounds #2
             }
         }
-
-        // Does no contact damage
-        public override bool? CanDamage() => false;
-
-        public override bool PreDraw(ref Color lightColor)
+        else //Move out and despawn
         {
-            CalamityUtils.DrawProjectileWithBackglow(Projectile, Color.LightGray, lightColor, 5f);
-            return false;
+            //Start moving
+            if (Projectile.velocity == Vector2.Zero)
+                Projectile.velocity = storedVelocity * -1f;
+            else
+                Projectile.velocity *= 1.01f;
+
+            //Fade out and die
+            Projectile.alpha += 3;
+            if (Projectile.alpha >= 255)
+                Projectile.Kill();
         }
+    }
+
+    // Does no contact damage
+    public override bool? CanDamage() => false;
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawProjectileWithBackglow(Projectile, Color.LightGray, lightColor, 5f);
+        return false;
     }
 }

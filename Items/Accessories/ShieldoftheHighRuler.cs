@@ -5,71 +5,70 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[AutoloadEquip(EquipType.Shield)]
+public class ShieldoftheHighRuler : ModItem, ILocalizedModType, IHoldShiftTooltipItem
 {
-    [AutoloadEquip(EquipType.Shield)]
-    public class ShieldoftheHighRuler : ModItem, ILocalizedModType, IHoldShiftTooltipItem
+    public new string LocalizationCategory => "Items.Accessories";
+
+    public bool HasFlavorTooltip => true;
+    public Color? TooltipExtensionColor => new(195, 223, 255);
+
+    public const int ShieldSlamIFrames = 12;
+    public const float EoCDashVelocity = 14.5f;
+    public const float TabiDashVelocity = 18.9f;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
+        Item.width = 36;
+        Item.height = 38;
+        Item.DamageType = DamageClass.MeleeNoSpeed;
+        Item.damage = 300;
+        Item.knockBack = 9f;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.Calamity().donorItem = true;
+        Item.defense = 4;
+        Item.accessory = true;
+        Item.expert = true;
+    }
 
-        public bool HasFlavorTooltip => true;
-        public Color? TooltipExtensionColor => new(195, 223, 255);
+    public override bool MeleePrefix() => false;
+    public override bool WeaponPrefix() => false;
 
-        public const int ShieldSlamIFrames = 12;
-        public const float EoCDashVelocity = 14.5f;
-        public const float TabiDashVelocity = 18.9f;
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        player.dashType = 2;
+        modPlayer.DashID = string.Empty;
+        modPlayer.copyrightInfringementShield = true;
+        player.noKnockback = true;
+        player.fireWalk = true;
+        player.buffImmune[BuffID.OnFire] = true;
+        player.buffImmune[BuffID.Chilled] = true;
+        player.buffImmune[BuffID.Frostburn] = true;
+        player.buffImmune[BuffID.Weak] = true;
+        player.buffImmune[BuffID.BrokenArmor] = true;
+        player.buffImmune[BuffID.Bleeding] = true;
+        player.buffImmune[BuffID.Poisoned] = true;
+        player.buffImmune[BuffID.Slow] = true;
+        player.buffImmune[BuffID.Confused] = true;
+        player.buffImmune[BuffID.Silenced] = true;
+        player.buffImmune[BuffID.Cursed] = true;
+        player.buffImmune[BuffID.Darkness] = true;
+        player.buffImmune[BuffID.WindPushed] = true;
+        player.buffImmune[BuffID.Stoned] = true;
+        player.statLifeMax2 += 10;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 36;
-            Item.height = 38;
-            Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 300;
-            Item.knockBack = 9f;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.Calamity().donorItem = true;
-            Item.defense = 4;
-            Item.accessory = true;
-            Item.expert = true;
-        }
-
-        public override bool MeleePrefix() => false;
-        public override bool WeaponPrefix() => false;
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            player.dashType = 2;
-            modPlayer.DashID = string.Empty;
-            modPlayer.copyrightInfringementShield = true;
-            player.noKnockback = true;
-            player.fireWalk = true;
-            player.buffImmune[BuffID.OnFire] = true;
-            player.buffImmune[BuffID.Chilled] = true;
-            player.buffImmune[BuffID.Frostburn] = true;
-            player.buffImmune[BuffID.Weak] = true;
-            player.buffImmune[BuffID.BrokenArmor] = true;
-            player.buffImmune[BuffID.Bleeding] = true;
-            player.buffImmune[BuffID.Poisoned] = true;
-            player.buffImmune[BuffID.Slow] = true;
-            player.buffImmune[BuffID.Confused] = true;
-            player.buffImmune[BuffID.Silenced] = true;
-            player.buffImmune[BuffID.Cursed] = true;
-            player.buffImmune[BuffID.Darkness] = true;
-            player.buffImmune[BuffID.WindPushed] = true;
-            player.buffImmune[BuffID.Stoned] = true;
-            player.statLifeMax2 += 10;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.EoCShield).
-                AddIngredient(ItemID.CobaltShield).
-                AddIngredient<LifeAlloy>(4).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.EoCShield).
+            AddIngredient(ItemID.CobaltShield).
+            AddIngredient<LifeAlloy>(4).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

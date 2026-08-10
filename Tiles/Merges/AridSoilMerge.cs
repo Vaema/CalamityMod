@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.SunkenSea;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class AridSoilMerge : TileBlendTexture
 {
-    public sealed class AridSoilMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<AridSoil>();
-    }
+    public override int TileType => ModContent.TileType<AridSoil>();
 }

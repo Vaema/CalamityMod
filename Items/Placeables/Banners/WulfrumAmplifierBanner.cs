@@ -1,10 +1,9 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Banners
+namespace CalamityMod.Items.Placeables.Banners;
+
+[LegacyName("WulfrumPylonBanner")]
+public class WulfrumAmplifierBanner : BaseBanner
 {
-    [LegacyName("WulfrumPylonBanner")]
-    public class WulfrumAmplifierBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 126;
-    }
+    public override int BannerTileStyle => 126;
 }

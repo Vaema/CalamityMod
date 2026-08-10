@@ -6,44 +6,43 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Weapons.Summon
-{
-    public class FuelCellBundle : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Plague>()];
-        }
-        public override void SetDefaults()
-        {
-            Item.width = 32;
-            Item.height = 32;
-            Item.mana = 10;
-            Item.damage = 22;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = Item.useTime = 36;
-            Item.noMelee = true;
-            Item.knockBack = 7f;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.UseSound = SoundID.Item106;
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
-            Item.shoot = ModContent.ProjectileType<PlaguebringerMK2>(); //not the flask, so this weapon works w/ minion targetting
-            Item.shootSpeed = 11f;
-            Item.DamageType = DamageClass.Summon;
-        }
+namespace CalamityMod.Items.Weapons.Summon;
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+public class FuelCellBundle : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Weapons.Summon";
+    public override void SetStaticDefaults()
+    {
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Plague>()];
+    }
+    public override void SetDefaults()
+    {
+        Item.width = 32;
+        Item.height = 32;
+        Item.mana = 10;
+        Item.damage = 22;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useAnimation = Item.useTime = 36;
+        Item.noMelee = true;
+        Item.knockBack = 7f;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.UseSound = SoundID.Item106;
+        Item.autoReuse = true;
+        Item.noUseGraphic = true;
+        Item.shoot = ModContent.ProjectileType<PlaguebringerMK2>(); //not the flask, so this weapon works w/ minion targetting
+        Item.shootSpeed = 11f;
+        Item.DamageType = DamageClass.Summon;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.altFunctionUse != 2) //throws a flask
         {
-            if (player.altFunctionUse != 2) //throws a flask
-            {
-                int p = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MK2FlaskSummon>(), damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-            }
-            return false;
+            int p = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MK2FlaskSummon>(), damage, knockback, player.whoAmI);
+            if (Main.projectile.IndexInRange(p))
+                Main.projectile[p].originalDamage = Item.damage;
         }
+        return false;
     }
 }

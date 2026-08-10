@@ -1,21 +1,20 @@
 ﻿using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.SunkenSea
-{
-    public class OrangeCoral : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<YellowCoral>();
-        }
+namespace CalamityMod.Items.Placeables.SunkenSea;
 
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.OrangeCoral>());
-            Item.rare = ItemRarityID.Blue;
-        }
+public class OrangeCoral : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetStaticDefaults()
+    {
+        Item.ResearchUnlockCount = 100;
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<YellowCoral>();
+    }
+
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.OrangeCoral>());
+        Item.rare = ItemRarityID.Blue;
     }
 }

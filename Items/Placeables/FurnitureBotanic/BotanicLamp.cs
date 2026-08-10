@@ -1,24 +1,23 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Placeables.FurnitureBotanic
-{
-    public class BotanicLamp : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureBotanic.BotanicLamp>());
-            Item.value = Item.sellPrice(silver: 1);
-        }
+namespace CalamityMod.Items.Placeables.FurnitureBotanic;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<UelibloomBrick>(3).
-                AddIngredient(ItemID.Torch).
-                AddTile(TileID.LivingLoom).
-                Register();
-        }
+public class BotanicLamp : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureBotanic.BotanicLamp>());
+        Item.value = Item.sellPrice(silver: 1);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<UelibloomBrick>(3).
+            AddIngredient(ItemID.Torch).
+            AddTile(TileID.LivingLoom).
+            Register();
     }
 }

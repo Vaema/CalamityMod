@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class FlakCrabBanner : BaseBanner
 {
-    public class FlakCrabBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 117;
-    }
+    public override int BannerTileStyle => 117;
 }

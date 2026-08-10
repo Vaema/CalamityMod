@@ -1,10 +1,9 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Banners
+namespace CalamityMod.Items.Placeables.Banners;
+
+[LegacyName("FlounderBanner")]
+public class SulflounderBanner : BaseBanner
 {
-    [LegacyName("FlounderBanner")]
-    public class SulflounderBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 1;
-    }
+    public override int BannerTileStyle => 1;
 }

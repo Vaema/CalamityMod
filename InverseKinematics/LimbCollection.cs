@@ -1,55 +1,54 @@
 ﻿using System.Linq;
 using Microsoft.Xna.Framework;
 
-namespace CalamityMod.InverseKinematics
+namespace CalamityMod.InverseKinematics;
+
+public class LimbCollection
 {
-    public class LimbCollection
+    public Limb[] Limbs;
+    public IInverseKinematicsUpdateRule UpdateRule;
+    public Vector2 ConnectPoint => Limbs.First().ConnectPoint;
+    public Vector2 EndPoint => Limbs.Last().EndPoint;
+    public double TotalLength => Limbs.Sum(l => l.Length);
+
+    public LimbCollection(IInverseKinematicsUpdateRule updateRule, int limbCount, float limbLength)
     {
-        public Limb[] Limbs;
-        public IInverseKinematicsUpdateRule UpdateRule;
-        public Vector2 ConnectPoint => Limbs.First().ConnectPoint;
-        public Vector2 EndPoint => Limbs.Last().EndPoint;
-        public double TotalLength => Limbs.Sum(l => l.Length);
+        UpdateRule = updateRule;
 
-        public LimbCollection(IInverseKinematicsUpdateRule updateRule, int limbCount, float limbLength)
-        {
-            UpdateRule = updateRule;
+        Limbs = new Limb[limbCount];
+        for (int i = 0; i < limbCount; i++)
+            Limbs[i] = new Limb(0f, limbLength);
+    }
 
-            Limbs = new Limb[limbCount];
-            for (int i = 0; i < limbCount; i++)
-                Limbs[i] = new Limb(0f, limbLength);
-        }
+    public LimbCollection(IInverseKinematicsUpdateRule updateRule, params float[] limbLengths)
+    {
+        UpdateRule = updateRule;
 
-        public LimbCollection(IInverseKinematicsUpdateRule updateRule, params float[] limbLengths)
-        {
-            UpdateRule = updateRule;
+        int limbCount = limbLengths.Length;
+        Limbs = new Limb[limbCount];
+        for (int i = 0; i < limbCount; i++)
+            Limbs[i] = new Limb(0f, limbLengths[i]);
+    }
 
-            int limbCount = limbLengths.Length;
-            Limbs = new Limb[limbCount];
-            for (int i = 0; i < limbCount; i++)
-                Limbs[i] = new Limb(0f, limbLengths[i]);
-        }
+    public void UpdateConnectPoints(Vector2? connectPoint = null)
+    {
+        if (connectPoint.HasValue)
+            Limbs[0].ConnectPoint = connectPoint.Value;
 
-        public void UpdateConnectPoints(Vector2? connectPoint = null)
-        {
-            if (connectPoint.HasValue)
-                Limbs[0].ConnectPoint = connectPoint.Value;
+        for (int i = 1; i < Limbs.Length; i++)
+            Limbs[i].ConnectPoint = Limbs[i - 1].EndPoint;
+    }
 
-            for (int i = 1; i < Limbs.Length; i++)
-                Limbs[i].ConnectPoint = Limbs[i - 1].EndPoint;
-        }
+    public Limb this[int index]
+    {
+        get => Limbs[index];
+        set => Limbs[index] = value;
+    }
 
-        public Limb this[int index]
-        {
-            get => Limbs[index];
-            set => Limbs[index] = value;
-        }
-
-        public void Update(Vector2 connectPoint, Vector2 destination)
-        {
-            UpdateRule.Update(this, destination);
-            Limbs[0].ConnectPoint = connectPoint;
-            UpdateConnectPoints(connectPoint);
-        }
+    public void Update(Vector2 connectPoint, Vector2 destination)
+    {
+        UpdateRule.Update(this, destination);
+        Limbs[0].ConnectPoint = connectPoint;
+        UpdateConnectPoints(connectPoint);
     }
 }

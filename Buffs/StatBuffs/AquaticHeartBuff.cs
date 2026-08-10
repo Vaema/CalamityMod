@@ -3,39 +3,38 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.StatBuffs
-{
-    public class AquaticHeartBuff : ModBuff
-    {
-        public override void SetStaticDefaults()
-        {
-            Main.debuff[Type] = true;
-            Main.buffNoSave[Type] = true;
-            Main.buffNoTimeDisplay[Type] = true;
-            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
-        }
+namespace CalamityMod.Buffs.StatBuffs;
 
-        public override void Update(Player player, ref int buffIndex)
+public class AquaticHeartBuff : ModBuff
+{
+    public override void SetStaticDefaults()
+    {
+        Main.debuff[Type] = true;
+        Main.buffNoSave[Type] = true;
+        Main.buffNoTimeDisplay[Type] = true;
+        BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
+    }
+
+    public override void Update(Player player, ref int buffIndex)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        if (modPlayer.aquaticHeartPrevious)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.aquaticHeartPrevious)
+            player.ignoreWater = NPC.downedBoss3;
+            player.accFlipper = true;
+            if (player.breath <= player.breathMax + 2 && !modPlayer.ZoneAbyss && NPC.downedBoss3)
             {
-                player.ignoreWater = NPC.downedBoss3;
-                player.accFlipper = true;
-                if (player.breath <= player.breathMax + 2 && !modPlayer.ZoneAbyss && NPC.downedBoss3)
-                {
-                    player.breath = player.breathMax + 3;
-                }
-                if (Main.myPlayer == player.whoAmI && player.Calamity().countsAsAnyWet && NPC.downedBoss3)
-                {
-                    player.AddBuff(ModContent.BuffType<AquaticHeartWaterSpeed>(), 360);
-                }
+                player.breath = player.breathMax + 3;
             }
-            else
+            if (Main.myPlayer == player.whoAmI && player.Calamity().countsAsAnyWet && NPC.downedBoss3)
             {
-                player.DelBuff(buffIndex);
-                buffIndex--;
+                player.AddBuff(ModContent.BuffType<AquaticHeartWaterSpeed>(), 360);
             }
+        }
+        else
+        {
+            player.DelBuff(buffIndex);
+            buffIndex--;
         }
     }
 }

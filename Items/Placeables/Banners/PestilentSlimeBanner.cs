@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class PestilentSlimeBanner : BaseBanner
 {
-    public class PestilentSlimeBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 79;
-    }
+    public override int BannerTileStyle => 79;
 }

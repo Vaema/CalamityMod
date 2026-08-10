@@ -2,23 +2,22 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls;
+
+[LegacyName("AstralStoneWallSafe")]
+public class AstralStoneWall : ModWall
 {
-    [LegacyName("AstralStoneWallSafe")]
-    public class AstralStoneWall : ModWall
+
+    public override void SetStaticDefaults()
     {
+        // TODO -- Change this dust to be one more befitting Astral Stone.
+        DustType = DustID.Shadowflame;
+        Main.wallHouse[Type] = true;
 
-        public override void SetStaticDefaults()
-        {
-            // TODO -- Change this dust to be one more befitting Astral Stone.
-            DustType = DustID.Shadowflame;
-            Main.wallHouse[Type] = true;
+        WallID.Sets.Conversion.Stone[Type] = true;
 
-            WallID.Sets.Conversion.Stone[Type] = true;
-
-            AddMapEntry(new Color(15, 26, 31));
-        }
-
-        public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
+        AddMapEntry(new Color(15, 26, 31));
     }
+
+    public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 }

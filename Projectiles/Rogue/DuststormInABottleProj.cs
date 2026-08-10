@@ -4,108 +4,107 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class DuststormInABottleProj : ModProjectile, ILocalizedModType
 {
-    public class DuststormInABottleProj : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+
+    int lifetime => AIState == 1 ? 300 : 150;
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
+        ProjectileID.Sets.TrailCacheLength[Type] = 3;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
 
-        int lifetime => AIState == 1 ? 300 : 150;
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 24;
+        Projectile.height = 24;
+        Projectile.friendly = true;
+        Projectile.tileCollide = true;
+        Projectile.penetrate = -1;
+        Projectile.MaxUpdates = 2;
+        Projectile.timeLeft = lifetime;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+    }
+    ref float Timer => ref Projectile.ai[0];
+    ref float TimerMax => ref Projectile.ai[1];
+    ref float AIState => ref Projectile.ai[2];
+
+    int gravTimer = 0;
+    bool Stealth => Projectile.Calamity().stealthStrike;
+
+    public override void AI()
+    {
+        Timer++;
+        gravTimer++;
+
+        Projectile.rotation += 0.075f * Projectile.direction * Projectile.velocity.Length();
+        if (gravTimer > 20)
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 3;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.velocity.Y += 0.22f;
         }
 
-        public override void SetDefaults()
+        if (AIState == 1)
         {
-            Projectile.width = 24;
-            Projectile.height = 24;
-            Projectile.friendly = true;
-            Projectile.tileCollide = true;
-            Projectile.penetrate = -1;
-            Projectile.MaxUpdates = 2;
-            Projectile.timeLeft = lifetime;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-        }
-        ref float Timer => ref Projectile.ai[0];
-        ref float TimerMax => ref Projectile.ai[1];
-        ref float AIState => ref Projectile.ai[2];
-
-        int gravTimer = 0;
-        bool Stealth => Projectile.Calamity().stealthStrike;
-
-        public override void AI()
-        {
-            Timer++;
-            gravTimer++;
-
-            Projectile.rotation += 0.075f * Projectile.direction * Projectile.velocity.Length();
-            if (gravTimer > 20)
+            if (Timer % 10 == 0 && Main.myPlayer == Projectile.owner)
             {
-                Projectile.velocity.Y += 0.22f;
-            }
-
-            if (AIState == 1)
-            {
-                if (Timer % 10 == 0 && Main.myPlayer == Projectile.owner)
-                {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(5, 5), ModContent.ProjectileType<DuststormCloud>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
-                }
-            }
-            if (Timer > TimerMax && AIState == 0)
-            {
-                if (!Stealth)
-                {
-                    if (Main.myPlayer == Projectile.owner)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    Projectile.Kill();
-                    return;
-                }
-                AIState = 1;
-                Timer = 0;
-                Projectile.timeLeft = lifetime;
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(5, 5), ModContent.ProjectileType<DuststormCloud>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Vector2 origin = TextureAssets.Projectile[Type].Size() * new Vector2(Projectile.velocity.X < 0f ? 0.4f : 0.6f, 0.5f);
-            SpriteEffects sp = Projectile.velocity.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, origin, Projectile.scale, sp);
-            return false;
-        }
-
-        public override bool? CanHitNPC(NPC target)
-        {
-            return Projectile.velocity.Length() > 1f;
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        if (Timer > TimerMax && AIState == 0)
         {
             if (!Stealth)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 Projectile.Kill();
                 return;
             }
-            if (Projectile.numHits == 0)
-            {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-            }
+            AIState = 1;
+            Timer = 0;
+            Projectile.timeLeft = lifetime;
+        }
+    }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Vector2 origin = TextureAssets.Projectile[Type].Size() * new Vector2(Projectile.velocity.X < 0f ? 0.4f : 0.6f, 0.5f);
+        SpriteEffects sp = Projectile.velocity.X < 0f ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, origin, Projectile.scale, sp);
+        return false;
+    }
+
+    public override bool? CanHitNPC(NPC target)
+    {
+        return Projectile.velocity.Length() > 1f;
+    }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (!Stealth)
+        {
+            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+            Projectile.Kill();
             return;
         }
+        if (Projectile.numHits == 0)
+        {
+            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+        }
+        return;
+    }
 
-        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
-        {
-            if (gravTimer > 25)
-                fallThrough = false;
-            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
-        }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.velocity *= 0.95f;
-            return false;
-        }
+    public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+    {
+        if (gravTimer > 25)
+            fallThrough = false;
+        return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
+    }
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Projectile.velocity *= 0.95f;
+        return false;
     }
 }

@@ -5,95 +5,94 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Healing
+namespace CalamityMod.Projectiles.Healing;
+
+public class PhantomicHeart : ModProjectile, ILocalizedModType
 {
-    public class PhantomicHeart : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Healing";
+    private int floatTimer = 0;
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Healing";
-        private int floatTimer = 0;
+        Main.projFrames[Type] = 4;
+        ProjectileID.Sets.TrailCacheLength[Type] = 4;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
 
-        public override void SetStaticDefaults()
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 28;
+        Projectile.height = 42;
+        Projectile.friendly = true;
+        Projectile.tileCollide = false;
+        Projectile.alpha = 20;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 600;
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(floatTimer);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        floatTimer = reader.ReadInt32();
+    }
+
+    public override void AI()
+    {
+        if (floatTimer >= 10)
         {
-            Main.projFrames[Type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Type] = 4;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.velocity.Y *= 0.99f;
+        }
+        else
+        {
+            Projectile.velocity.Y *= 1.01f;
+        }
+        if (floatTimer >= 20)
+            floatTimer = 0;
+        else
+            floatTimer++;
 
+        for (int i = 0; i < 3; i++)
+        {
+            Dust.NewDust(Projectile.TopLeft, Projectile.width, Projectile.height, DustID.Blood, Main.rand.NextFloat(-3, 3), -5f, 0, new Color(99, 54, 84), Main.rand.NextFloat(0.5f, 1.5f));
         }
 
-        public override void SetDefaults()
+        Player player = Main.player[Projectile.owner];
+        Vector2 playerVector = player.Center - Projectile.Center;
+        float playerDist = playerVector.Length();
+        if (Projectile.timeLeft < 500 && playerDist < 50f && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
         {
-            Projectile.width = 28;
-            Projectile.height = 42;
-            Projectile.friendly = true;
-            Projectile.tileCollide = false;
-            Projectile.alpha = 20;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
+            if (player.whoAmI == Main.myPlayer)
+            {
+                CalamityPlayer calPlayer = player.Calamity();
+                calPlayer.phantomicHeartRegen = 600;
+                Projectile.Kill();
+            }
         }
-
-        public override void SendExtraAI(BinaryWriter writer)
+        if (player.lifeMagnet && Projectile.timeLeft < 510)
         {
-            writer.Write(floatTimer);
+            float N = 18f;
+            playerDist = 15f / playerDist;
+            playerVector.X *= playerDist;
+            playerVector.Y *= playerDist;
+            Projectile.velocity.X = (Projectile.velocity.X * N + playerVector.X) / (N + 1f);
+            Projectile.velocity.Y = (Projectile.velocity.Y * N + playerVector.Y) / (N + 1f);
         }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 5)
         {
-            floatTimer = reader.ReadInt32();
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
+            if (Projectile.frame % 2 == 0)
+                Projectile.netUpdate = true;
         }
-
-        public override void AI()
+        if (Projectile.frame > 3)
         {
-            if (floatTimer >= 10)
-            {
-                Projectile.velocity.Y *= 0.99f;
-            }
-            else
-            {
-                Projectile.velocity.Y *= 1.01f;
-            }
-            if (floatTimer >= 20)
-                floatTimer = 0;
-            else
-                floatTimer++;
-
-            for (int i = 0; i < 3; i++)
-            {
-                Dust.NewDust(Projectile.TopLeft, Projectile.width, Projectile.height, DustID.Blood, Main.rand.NextFloat(-3, 3), -5f, 0, new Color(99, 54, 84), Main.rand.NextFloat(0.5f, 1.5f));
-            }
-
-            Player player = Main.player[Projectile.owner];
-            Vector2 playerVector = player.Center - Projectile.Center;
-            float playerDist = playerVector.Length();
-            if (Projectile.timeLeft < 500 && playerDist < 50f && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
-            {
-                if (player.whoAmI == Main.myPlayer)
-                {
-                    CalamityPlayer calPlayer = player.Calamity();
-                    calPlayer.phantomicHeartRegen = 600;
-                    Projectile.Kill();
-                }
-            }
-            if (player.lifeMagnet && Projectile.timeLeft < 510)
-            {
-                float N = 18f;
-                playerDist = 15f / playerDist;
-                playerVector.X *= playerDist;
-                playerVector.Y *= playerDist;
-                Projectile.velocity.X = (Projectile.velocity.X * N + playerVector.X) / (N + 1f);
-                Projectile.velocity.Y = (Projectile.velocity.Y * N + playerVector.Y) / (N + 1f);
-            }
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 5)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-                if (Projectile.frame % 2 == 0)
-                    Projectile.netUpdate = true;
-            }
-            if (Projectile.frame > 3)
-            {
-                Projectile.frame = 0;
-            }
+            Projectile.frame = 0;
         }
     }
 }

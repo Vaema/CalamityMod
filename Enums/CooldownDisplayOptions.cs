@@ -1,9 +1,8 @@
-﻿namespace CalamityMod.Enums
+﻿namespace CalamityMod.Enums;
+
+public enum CooldownDisplayOptions
 {
-    public enum CooldownDisplayOptions
-    {
-        Full,
-        Compact,
-        Hidden
-    }
+    Full,
+    Compact,
+    Hidden
 }

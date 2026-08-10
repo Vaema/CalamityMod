@@ -4,115 +4,114 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+public class FungalSymbiote : ModItem, ILocalizedModType
 {
-    public class FungalSymbiote : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public override void SetDefaults()
+        Item.width = 38;
+        Item.height = 36;
+        Item.value = Item.buyPrice(gold: 15); // Sold by Shady Salesman
+        Item.rare = ItemRarityID.Orange;
+        Item.accessory = true;
+    }
+
+    public override void UpdateInventory(Player player)
+    {
+        if (Main.netMode != NetmodeID.MultiplayerClient && !RecipeUnlockHandler.HasFoundFungalSymbiote)
         {
-            Item.width = 38;
-            Item.height = 36;
-            Item.value = Item.buyPrice(gold: 15); // Sold by Shady Salesman
-            Item.rare = ItemRarityID.Orange;
-            Item.accessory = true;
+            RecipeUnlockHandler.HasFoundFungalSymbiote = true;
+            CalamityNetcode.SyncWorld();
         }
+    }
 
-        public override void UpdateInventory(Player player)
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.fungalSymbiote = true;
+
+        // Mushroom growing effects.
+        int x = (int)player.Center.X / 16;
+        int y = (int)(player.Bottom.Y - 1f) / 16;
+        Tile groundTile = CalamityUtils.ParanoidTileRetrieval(x, y + 1);
+        if (player.whoAmI == Main.myPlayer && player.velocity.Y == 0f && player.grappling[0] == -1)
         {
-            if (Main.netMode != NetmodeID.MultiplayerClient && !RecipeUnlockHandler.HasFoundFungalSymbiote)
+            Tile walkTile = CalamityUtils.ParanoidTileRetrieval(x, y);
+            if (!walkTile.HasTile && walkTile.LiquidAmount == 0 && groundTile != null && WorldGen.SolidTile(groundTile))
             {
-                RecipeUnlockHandler.HasFoundFungalSymbiote = true;
-                CalamityNetcode.SyncWorld();
-            }
-        }
+                walkTile.TileFrameY = 0;
+                walkTile.Get<TileWallWireStateData>().Slope = SlopeType.Solid;
+                walkTile.Get<TileWallWireStateData>().IsHalfBlock = false;
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.fungalSymbiote = true;
-
-            // Mushroom growing effects.
-            int x = (int)player.Center.X / 16;
-            int y = (int)(player.Bottom.Y - 1f) / 16;
-            Tile groundTile = CalamityUtils.ParanoidTileRetrieval(x, y + 1);
-            if (player.whoAmI == Main.myPlayer && player.velocity.Y == 0f && player.grappling[0] == -1)
-            {
-                Tile walkTile = CalamityUtils.ParanoidTileRetrieval(x, y);
-                if (!walkTile.HasTile && walkTile.LiquidAmount == 0 && groundTile != null && WorldGen.SolidTile(groundTile))
+                // On dirt, grow teal and green mushrooms.
+                if (groundTile.TileType == TileID.Dirt)
                 {
-                    walkTile.TileFrameY = 0;
-                    walkTile.Get<TileWallWireStateData>().Slope = SlopeType.Solid;
-                    walkTile.Get<TileWallWireStateData>().IsHalfBlock = false;
-
-                    // On dirt, grow teal and green mushrooms.
-                    if (groundTile.TileType == TileID.Dirt)
-                    {
-                        if (Main.rand.NextBool(1000))
-                        {
-                            walkTile.Get<TileWallWireStateData>().HasTile = true;
-                            walkTile.TileType = TileID.DyePlants;
-                            walkTile.TileFrameX = (short)(Main.rand.NextBool() ? 0 : 34);
-                        }
-
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                            NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
-                    }
-
-                    // On grass, grow mushrooms.
-                    else if (groundTile.TileType == TileID.Grass)
+                    if (Main.rand.NextBool(1000))
                     {
                         walkTile.Get<TileWallWireStateData>().HasTile = true;
-                        walkTile.TileType = TileID.Plants;
-                        walkTile.TileFrameX = 144;
-
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                            NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
+                        walkTile.TileType = TileID.DyePlants;
+                        walkTile.TileFrameX = (short)(Main.rand.NextBool() ? 0 : 34);
                     }
 
-                    // On hallowed grass, grow mushrooms.
-                    else if (groundTile.TileType == TileID.HallowedGrass)
-                    {
-                        walkTile.Get<TileWallWireStateData>().HasTile = true;
-                        walkTile.TileType = TileID.HallowedPlants;
-                        walkTile.TileFrameX = 144;
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
+                }
 
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                            NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
-                    }
+                // On grass, grow mushrooms.
+                else if (groundTile.TileType == TileID.Grass)
+                {
+                    walkTile.Get<TileWallWireStateData>().HasTile = true;
+                    walkTile.TileType = TileID.Plants;
+                    walkTile.TileFrameX = 144;
 
-                    // On corrupt grass, grow vile mushrooms.
-                    else if (groundTile.TileType == TileID.CorruptGrass)
-                    {
-                        walkTile.Get<TileWallWireStateData>().HasTile = true;
-                        walkTile.TileType = TileID.CorruptPlants;
-                        walkTile.TileFrameX = 144;
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
+                }
 
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                            NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
-                    }
+                // On hallowed grass, grow mushrooms.
+                else if (groundTile.TileType == TileID.HallowedGrass)
+                {
+                    walkTile.Get<TileWallWireStateData>().HasTile = true;
+                    walkTile.TileType = TileID.HallowedPlants;
+                    walkTile.TileFrameX = 144;
 
-                    // On crimson grass, grow vicious mushrooms.
-                    else if (groundTile.TileType == TileID.CrimsonGrass)
-                    {
-                        walkTile.Get<TileWallWireStateData>().HasTile = true;
-                        walkTile.TileType = TileID.CrimsonPlants;
-                        walkTile.TileFrameX = 270;
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
+                }
 
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                            NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
-                    }
+                // On corrupt grass, grow vile mushrooms.
+                else if (groundTile.TileType == TileID.CorruptGrass)
+                {
+                    walkTile.Get<TileWallWireStateData>().HasTile = true;
+                    walkTile.TileType = TileID.CorruptPlants;
+                    walkTile.TileFrameX = 144;
 
-                    // On glowing mushroom grass, grow glowing mushrooms.
-                    else if (groundTile.TileType == TileID.MushroomGrass)
-                    {
-                        walkTile.Get<TileWallWireStateData>().HasTile = true;
-                        walkTile.TileType = TileID.MushroomPlants;
-                        walkTile.TileFrameX = (short)(Main.rand.Next(5) * 18);
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
+                }
 
-                        if (Main.netMode == NetmodeID.MultiplayerClient)
-                            NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
-                    }
+                // On crimson grass, grow vicious mushrooms.
+                else if (groundTile.TileType == TileID.CrimsonGrass)
+                {
+                    walkTile.Get<TileWallWireStateData>().HasTile = true;
+                    walkTile.TileType = TileID.CrimsonPlants;
+                    walkTile.TileFrameX = 270;
+
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
+                }
+
+                // On glowing mushroom grass, grow glowing mushrooms.
+                else if (groundTile.TileType == TileID.MushroomGrass)
+                {
+                    walkTile.Get<TileWallWireStateData>().HasTile = true;
+                    walkTile.TileType = TileID.MushroomPlants;
+                    walkTile.TileFrameX = (short)(Main.rand.Next(5) * 18);
+
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendTileSquare(-1, x, y, 1, TileChangeType.None);
                 }
             }
         }

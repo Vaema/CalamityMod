@@ -3,29 +3,28 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+public class InkBomb : ModItem, ILocalizedModType
 {
-    public class InkBomb : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+
+    public static int InkDamage => CalamityUtils.ScaleWithDifficulty(16);
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
+        Item.width = 22;
+        Item.height = 50;
+        Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+        Item.rare = ItemRarityID.Orange;
+        Item.accessory = true;
+    }
 
-        public static int InkDamage => CalamityUtils.ScaleWithDifficulty(16);
-
-        public override void SetDefaults()
-        {
-            Item.width = 22;
-            Item.height = 50;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
-            Item.accessory = true;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.inkBomb = true;
-            modPlayer.stealthGenStandstill += 0.07f;
-            modPlayer.stealthGenMoving += 0.07f;
-        }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.inkBomb = true;
+        modPlayer.stealthGenStandstill += 0.07f;
+        modPlayer.stealthGenMoving += 0.07f;
     }
 }

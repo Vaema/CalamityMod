@@ -7,112 +7,111 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Graphics.Metaballs
+namespace CalamityMod.Graphics.Metaballs;
+
+public class SeekersMetaball : Metaball
 {
-    public class SeekersMetaball : Metaball
+    public class Particle
     {
-        public class Particle
+        public float Size;
+
+        public Vector2 Velocity;
+
+        public Vector2 Center;
+
+        public Texture2D TextureToUse = null;
+
+        public float rotation = 0;
+
+        public float SizeScaling = 0.85f;
+        bool firstFrame = true;
+        public int CurrentFrame = 0;
+        public int MaxFrames = 1;
+        public Particle(Vector2 center, Vector2 velocity, float size)
         {
-            public float Size;
-
-            public Vector2 Velocity;
-
-            public Vector2 Center;
-
-            public Texture2D TextureToUse = null;
-
-            public float rotation = 0;
-
-            public float SizeScaling = 0.85f;
-            bool firstFrame = true;
-            public int CurrentFrame = 0;
-            public int MaxFrames = 1;
-            public Particle(Vector2 center, Vector2 velocity, float size)
-            {
-                Center = center;
-                Velocity = velocity;
-                Size = size;
-            }
-
-            public void Update()
-            {
-                Center += Velocity;
-                Velocity *= 0.96f;
-                if (firstFrame)
-                    firstFrame = false;
-                else
-                    Size *= SizeScaling;
-            }
+            Center = center;
+            Velocity = velocity;
+            Size = size;
         }
 
-        public override bool IgnoreFPS => true;
-        public static List<Particle> Particles
+        public void Update()
         {
-            get;
-            private set;
-        } = new();
-
-        public override bool AnythingToDraw => Particles.Any();
-        public static Asset<Texture2D> LayerAsset
-        {
-            get;
-            private set;
+            Center += Velocity;
+            Velocity *= 0.96f;
+            if (firstFrame)
+                firstFrame = false;
+            else
+                Size *= SizeScaling;
         }
-        public override IEnumerable<Texture2D> Layers
+    }
+
+    public override bool IgnoreFPS => true;
+    public static List<Particle> Particles
+    {
+        get;
+        private set;
+    } = new();
+
+    public override bool AnythingToDraw => Particles.Any();
+    public static Asset<Texture2D> LayerAsset
+    {
+        get;
+        private set;
+    }
+    public override IEnumerable<Texture2D> Layers
+    {
+        get
         {
-            get
-            {
-                yield return LayerAsset.Value;
-            }
+            yield return LayerAsset.Value;
         }
-        public override void Load()
+    }
+    public override void Load()
+    {
+        if (Main.dedServ)
+            return;
+
+        // Load the layer asset wrapper.
+        LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/SeekersLayer", AssetRequestMode.ImmediateLoad);
+    }
+    public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
+
+    public override Color EdgeColor => new Color(255,106,0);
+
+    public override void Update()
+    {
+        // Update all particle instances.
+        // Once sufficiently small, they vanish.
+        for (int i = 0; i < Particles.Count; i++)
+            Particles[i].Update();
+        Particles.RemoveAll(p => p.Size <= 2f);
+    }
+
+    public static Particle SpawnParticle(Vector2 position, Vector2 velocity, float size)
+    {
+        Particle particle = new(position, velocity, size);
+        Particles.Add(particle);
+
+        return particle;
+    }
+
+    // Make the texture scroll.
+    public override Vector2 CalculateManualOffsetForLayer(int layerIndex)
+    {
+        return Vector2.UnitX * Main.GlobalTimeWrappedHourly * 0.037f;
+    }
+
+    public override void DrawInstances()
+    {
+        Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+
+        foreach (Particle particle in Particles)
         {
-            if (Main.dedServ)
-                return;
-
-            // Load the layer asset wrapper.
-            LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/SeekersLayer", AssetRequestMode.ImmediateLoad);
-        }
-        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
-
-        public override Color EdgeColor => new Color(255,106,0);
-
-        public override void Update()
-        {
-            // Update all particle instances.
-            // Once sufficiently small, they vanish.
-            for (int i = 0; i < Particles.Count; i++)
-                Particles[i].Update();
-            Particles.RemoveAll(p => p.Size <= 2f);
-        }
-
-        public static Particle SpawnParticle(Vector2 position, Vector2 velocity, float size)
-        {
-            Particle particle = new(position, velocity, size);
-            Particles.Add(particle);
-
-            return particle;
-        }
-
-        // Make the texture scroll.
-        public override Vector2 CalculateManualOffsetForLayer(int layerIndex)
-        {
-            return Vector2.UnitX * Main.GlobalTimeWrappedHourly * 0.037f;
-        }
-
-        public override void DrawInstances()
-        {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
-
-            foreach (Particle particle in Particles)
-            {
-                var texture2d = particle.TextureToUse ?? tex;
-                Vector2 drawPosition = particle.Center - Main.screenPosition;
-                Vector2 scale = Vector2.One * particle.Size / texture2d.Width;
-                var frame = texture2d.Frame(1, particle.MaxFrames, 0, particle.CurrentFrame);
-                Vector2 origin = frame.Size() * 0.5f;
-                Main.spriteBatch.Draw(texture2d, drawPosition, frame, Color.White, particle.rotation, origin, scale, SpriteEffects.None, 0f);
-            }
+            var texture2d = particle.TextureToUse ?? tex;
+            Vector2 drawPosition = particle.Center - Main.screenPosition;
+            Vector2 scale = Vector2.One * particle.Size / texture2d.Width;
+            var frame = texture2d.Frame(1, particle.MaxFrames, 0, particle.CurrentFrame);
+            Vector2 origin = frame.Size() * 0.5f;
+            Main.spriteBatch.Draw(texture2d, drawPosition, frame, Color.White, particle.rotation, origin, scale, SpriteEffects.None, 0f);
         }
     }
 }

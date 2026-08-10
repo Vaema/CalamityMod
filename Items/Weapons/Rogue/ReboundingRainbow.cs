@@ -8,63 +8,62 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Rogue
+namespace CalamityMod.Items.Weapons.Rogue;
+
+[LegacyName("AccretionDisk", "ElementalDisk")]
+public class ReboundingRainbow : RogueWeapon
 {
-    [LegacyName("AccretionDisk", "ElementalDisk")]
-    public class ReboundingRainbow : RogueWeapon
+    public static int stealthTimeMult = 2;
+    public override void SetStaticDefaults()
     {
-        public static int stealthTimeMult = 2;
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ElementalMix>()];
-        }
-        public override void SetDefaults()
-        {
-            Item.width = 38;
-            Item.height = 38;
-            Item.damage = 92;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 16;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 16;
-            Item.knockBack = 9f;
-            Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
-            Item.rare = ItemRarityID.Purple;
-            Item.shoot = ModContent.ProjectileType<ReboundingRainbowProj>();
-            Item.shootSpeed = 15f;
-            Item.DamageType = RogueDamageClass.Instance;
-        }
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ElementalMix>()];
+    }
+    public override void SetDefaults()
+    {
+        Item.width = 38;
+        Item.height = 38;
+        Item.damage = 92;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.autoReuse = true;
+        Item.useAnimation = 16;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useTime = 16;
+        Item.knockBack = 9f;
+        Item.UseSound = SoundID.Item1;
+        Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+        Item.rare = ItemRarityID.Purple;
+        Item.shoot = ModContent.ProjectileType<ReboundingRainbowProj>();
+        Item.shootSpeed = 15f;
+        Item.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override float StealthVelocityMultiplier => 0.7f;
-        public override float StealthDamageMultiplier => 0.75f;
+    public override float StealthVelocityMultiplier => 0.7f;
+    public override float StealthDamageMultiplier => 0.75f;
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.Calamity().StealthStrikeAvailable())
         {
-            if (player.Calamity().StealthStrikeAvailable())
+            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            if (proj.WithinBounds(Main.maxProjectiles))
             {
-                int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (proj.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[proj].Calamity().stealthStrike = true;
-                    Main.projectile[proj].timeLeft *= stealthTimeMult;
-                }
-                return false;
+                Main.projectile[proj].Calamity().stealthStrike = true;
+                Main.projectile[proj].timeLeft *= stealthTimeMult;
             }
-            return true;
+            return false;
         }
+        return true;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<SamsaraSlicer>().
-                AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient<LifeAlloy>(5).
-                AddIngredient<MeldBlob>(5).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<SamsaraSlicer>().
+            AddIngredient(ItemID.LunarBar, 5).
+            AddIngredient<LifeAlloy>(5).
+            AddIngredient<MeldBlob>(5).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

@@ -4,92 +4,91 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class MythrilKnifeProjectile : ModProjectile, ILocalizedModType
 {
-    public class MythrilKnifeProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/MythrilKnife";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/MythrilKnife";
+        Projectile.width = 12;
+        Projectile.height = 12;
+        Projectile.friendly = true;
+        Projectile.penetrate = 1;
+        Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
+        Projectile.timeLeft = 600;
+        AIType = ProjectileID.ThrowingKnife;
+        Projectile.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        if (Projectile.Calamity().stealthStrike)
         {
-            Projectile.width = 12;
-            Projectile.height = 12;
-            Projectile.friendly = true;
-            Projectile.penetrate = 1;
-            Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
-            Projectile.timeLeft = 600;
-            AIType = ProjectileID.ThrowingKnife;
-            Projectile.DamageType = RogueDamageClass.Instance;
-        }
-
-        public override void AI()
-        {
-            if (Projectile.Calamity().stealthStrike)
+            if (Main.rand.NextBool(7))
             {
-                if (Main.rand.NextBool(7))
-                {
-                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Venom, 0.0f, 0.0f, 100, new Color(), 1f);
-                    Main.dust[index].noGravity = true;
-                    Main.dust[index].fadeIn = 1.5f;
-                    Main.dust[index].velocity *= 0.25f;
-                }
-                if (Main.rand.NextBool(5))
-                {
-                    int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Poisoned, 0.0f, 0.0f, 100, new Color(), 1f);
-                    Main.dust[index].noGravity = true;
-                    Main.dust[index].fadeIn = 1.5f;
-                    Main.dust[index].velocity *= 0.25f;
-                }
+                int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Venom, 0.0f, 0.0f, 100, new Color(), 1f);
+                Main.dust[index].noGravity = true;
+                Main.dust[index].fadeIn = 1.5f;
+                Main.dust[index].velocity *= 0.25f;
+            }
+            if (Main.rand.NextBool(5))
+            {
+                int index = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Poisoned, 0.0f, 0.0f, 100, new Color(), 1f);
+                Main.dust[index].noGravity = true;
+                Main.dust[index].fadeIn = 1.5f;
+                Main.dust[index].velocity *= 0.25f;
             }
         }
+    }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Projectile.penetrate--;
+        if (Projectile.penetrate <= 0)
         {
-            Projectile.penetrate--;
-            if (Projectile.penetrate <= 0)
+            Projectile.Kill();
+        }
+        else
+        {
+            if (Projectile.velocity.X != oldVelocity.X)
             {
-                Projectile.Kill();
+                Projectile.velocity.X = -oldVelocity.X;
             }
-            else
+            if (Projectile.velocity.Y != oldVelocity.Y)
             {
-                if (Projectile.velocity.X != oldVelocity.X)
-                {
-                    Projectile.velocity.X = -oldVelocity.X;
-                }
-                if (Projectile.velocity.Y != oldVelocity.Y)
-                {
-                    Projectile.velocity.Y = -oldVelocity.Y;
-                }
+                Projectile.velocity.Y = -oldVelocity.Y;
             }
-            return false;
         }
+        return false;
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+        return false;
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (!Projectile.Calamity().stealthStrike)
-                return;
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (!Projectile.Calamity().stealthStrike)
+            return;
 
-            target.AddBuff(BuffID.Poisoned, 480);
-            target.AddBuff(BuffID.Venom, 480);
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
-        }
+        target.AddBuff(BuffID.Poisoned, 480);
+        target.AddBuff(BuffID.Venom, 480);
+        target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
+    }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (!Projectile.Calamity().stealthStrike)
-                return;
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        if (!Projectile.Calamity().stealthStrike)
+            return;
 
-            target.AddBuff(BuffID.Poisoned, 480);
-            target.AddBuff(BuffID.Venom, 480);
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
-        }
+        target.AddBuff(BuffID.Poisoned, 480);
+        target.AddBuff(BuffID.Venom, 480);
+        target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
     }
 }

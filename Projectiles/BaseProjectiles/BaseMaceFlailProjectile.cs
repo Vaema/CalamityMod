@@ -8,8 +8,8 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.BaseProjectiles
-{
+namespace CalamityMod.Projectiles.BaseProjectiles;
+
 	// Adapted from ExampleMod's ExampleAdvancedFlailProjectile (which in turn also adapted from Vanilla's AI Style 15)
 	public abstract class BaseMaceFlailProjectile : ModProjectile
 	{
@@ -563,4 +563,3 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 		}
 		#endregion
 	}
-}

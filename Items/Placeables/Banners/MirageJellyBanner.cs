@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class MirageJellyBanner : BaseBanner
 {
-    public class MirageJellyBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 24;
-    }
+    public override int BannerTileStyle => 24;
 }

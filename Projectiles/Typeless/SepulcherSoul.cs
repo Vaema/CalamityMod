@@ -3,40 +3,39 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Typeless
+namespace CalamityMod.Projectiles.Typeless;
+
+public class SepulcherSoul : ModProjectile, ILocalizedModType
 {
-    public class SepulcherSoul : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Typeless";
+    public ref float Time => ref Projectile.ai[0];
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
-        public ref float Time => ref Projectile.ai[0];
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 3;
-        }
+        Main.projFrames[Type] = 3;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = Projectile.height = 16;
-            Projectile.Opacity = 0f;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 120;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = Projectile.height = 16;
+        Projectile.Opacity = 0f;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 120;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        if (Projectile.localAI[0] == 0f)
         {
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
-                Projectile.localAI[0] = 1f;
-            }
-            Vector2 idealVelocity = Vector2.Zero;
-            idealVelocity.X = (float)(Math.Sin(Time / 27f + Projectile.identity * 1.1f) + (float)Math.Cos(Math.E * (Time / 27f + Projectile.identity * 1.1f))) * 4f;
-            idealVelocity.Y = MathHelper.SmoothStep(-3f, -9f, (float)Math.Sin(Time / 23f + Projectile.identity * 1.1f) * 0.5f + 0.5f);
-            Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.075f);
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            Projectile.Opacity = Utils.GetLerpValue(0f, 15f, Time, true) * Utils.GetLerpValue(0f, 25f, Projectile.timeLeft, true);
-            Time++;
+            Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
+            Projectile.localAI[0] = 1f;
         }
+        Vector2 idealVelocity = Vector2.Zero;
+        idealVelocity.X = (float)(Math.Sin(Time / 27f + Projectile.identity * 1.1f) + (float)Math.Cos(Math.E * (Time / 27f + Projectile.identity * 1.1f))) * 4f;
+        idealVelocity.Y = MathHelper.SmoothStep(-3f, -9f, (float)Math.Sin(Time / 23f + Projectile.identity * 1.1f) * 0.5f + 0.5f);
+        Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.075f);
+        Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+        Projectile.Opacity = Utils.GetLerpValue(0f, 15f, Time, true) * Utils.GetLerpValue(0f, 25f, Projectile.timeLeft, true);
+        Time++;
     }
 }

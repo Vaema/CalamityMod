@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class AuroraSpiritBanner : BaseBanner
 {
-    public class AuroraSpiritBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 10;
-    }
+    public override int BannerTileStyle => 10;
 }

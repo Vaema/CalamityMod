@@ -1,16 +1,15 @@
 ﻿using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Typeless
+namespace CalamityMod.Projectiles.Typeless;
+
+public class HeronBobber : ModProjectile, ILocalizedModType
 {
-    public class HeronBobber : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Typeless";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
-        public override void SetDefaults()
-        {
-            Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.aiStyle = ProjAIStyleID.Bobber;
-            Projectile.bobber = true;
-        }
+        Projectile.width = 14;
+        Projectile.height = 14;
+        Projectile.aiStyle = ProjAIStyleID.Bobber;
+        Projectile.bobber = true;
     }
 }

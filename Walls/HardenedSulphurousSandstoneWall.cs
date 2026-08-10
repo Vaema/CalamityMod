@@ -3,17 +3,16 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
-{
-    public class HardenedSulphurousSandstoneWall : ModWall
-    {
-        public override void SetStaticDefaults()
-        {
-            Main.wallHouse[Type] = true;
-            DustType = DustID.Sand;
-            AddMapEntry(new Color(62, 50, 39));
-        }
+namespace CalamityMod.Walls;
 
-        public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
+public class HardenedSulphurousSandstoneWall : ModWall
+{
+    public override void SetStaticDefaults()
+    {
+        Main.wallHouse[Type] = true;
+        DustType = DustID.Sand;
+        AddMapEntry(new Color(62, 50, 39));
     }
+
+    public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 }

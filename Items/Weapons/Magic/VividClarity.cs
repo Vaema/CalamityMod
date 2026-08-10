@@ -12,85 +12,84 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+public class VividClarity : ModItem, ILocalizedModType
 {
-    public class VividClarity : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+
+    public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/VividClarityShoot") { Volume = 0.30f };
+    public static readonly SoundStyle BeamSound = new("CalamityMod/Sounds/Item/VividClarityBeamAppear");
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
+        Item.staff[Type] = true;
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<MiracleBlight>()];
+    }
 
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/VividClarityShoot") { Volume = 0.30f };
-        public static readonly SoundStyle BeamSound = new("CalamityMod/Sounds/Item/VividClarityBeamAppear");
-        public override void SetStaticDefaults()
-        {
-            Item.staff[Type] = true;
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<MiracleBlight>()];
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 140;
+        Item.height = 140;
+        Item.damage = 162;
+        Item.DamageType = DamageClass.Magic;
+        Item.mana = 54;
+        Item.useTime = 4;
+        Item.useAnimation = 20;
+        Item.reuseDelay = Item.useAnimation;
+        Item.useLimitPerAnimation = 5;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 7.5f;
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+        Item.UseSound = UseSound;
+        Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<VividBeam>();
+        Item.shootSpeed = 6f;
+        Item.rare = ModContent.RarityType<ExoticRainbow>();
+    }
 
-        public override void SetDefaults()
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo projSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Vector2 playerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+        float speed = Item.shootSpeed;
+        float xPos = (float)Main.mouseX + Main.screenPosition.X - playerPos.X;
+        float yPos = (float)Main.mouseY + Main.screenPosition.Y - playerPos.Y;
+        float f = Main.rand.NextFloat() * MathHelper.TwoPi;
+        float sourceVariationLow = 20f;
+        float sourceVariationHigh = 60f;
+        Vector2 source = playerPos + f.ToRotationVector2() * MathHelper.Lerp(sourceVariationLow, sourceVariationHigh, Main.rand.NextFloat());
+        for (int i = 0; i < 50; i++)
         {
-            Item.width = 140;
-            Item.height = 140;
-            Item.damage = 162;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 54;
-            Item.useTime = 4;
-            Item.useAnimation = 20;
-            Item.reuseDelay = Item.useAnimation;
-            Item.useLimitPerAnimation = 5;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.UseSound = UseSound;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<VividBeam>();
-            Item.shootSpeed = 6f;
-            Item.rare = ModContent.RarityType<ExoticRainbow>();
-        }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo projSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Vector2 playerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float speed = Item.shootSpeed;
-            float xPos = (float)Main.mouseX + Main.screenPosition.X - playerPos.X;
-            float yPos = (float)Main.mouseY + Main.screenPosition.Y - playerPos.Y;
-            float f = Main.rand.NextFloat() * MathHelper.TwoPi;
-            float sourceVariationLow = 20f;
-            float sourceVariationHigh = 60f;
-            Vector2 source = playerPos + f.ToRotationVector2() * MathHelper.Lerp(sourceVariationLow, sourceVariationHigh, Main.rand.NextFloat());
-            for (int i = 0; i < 50; i++)
+            source = playerPos + f.ToRotationVector2() * MathHelper.Lerp(sourceVariationLow, sourceVariationHigh, Main.rand.NextFloat());
+            if (Collision.CanHit(playerPos, 0, 0, source + (source - playerPos).SafeNormalize(Vector2.UnitX) * 8f, 0, 0))
             {
-                source = playerPos + f.ToRotationVector2() * MathHelper.Lerp(sourceVariationLow, sourceVariationHigh, Main.rand.NextFloat());
-                if (Collision.CanHit(playerPos, 0, 0, source + (source - playerPos).SafeNormalize(Vector2.UnitX) * 8f, 0, 0))
-                {
-                    break;
-                }
-                f = Main.rand.NextFloat() * MathHelper.TwoPi;
+                break;
             }
-            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            Vector2 velocityReal = Main.MouseWorld - source;
-            Vector2 velocityVariation = new Vector2(xPos, yPos).SafeNormalize(Vector2.UnitY) * speed;
-            velocityReal = velocityReal.SafeNormalize(velocityVariation) * speed;
-            velocityReal = Vector2.Lerp(velocityReal, velocityVariation, 0.25f);
-            Projectile.NewProjectile(projSource, source, velocityReal, type, damage, knockback, player.whoAmI, 0f, Main.rand.Next(3));
-            return false;
+            f = Main.rand.NextFloat() * MathHelper.TwoPi;
         }
+        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+        Vector2 velocityReal = Main.MouseWorld - source;
+        Vector2 velocityVariation = new Vector2(xPos, yPos).SafeNormalize(Vector2.UnitY) * speed;
+        velocityReal = velocityReal.SafeNormalize(velocityVariation) * speed;
+        velocityReal = Vector2.Lerp(velocityReal, velocityVariation, 0.25f);
+        Projectile.NewProjectile(projSource, source, velocityReal, type, damage, knockback, player.whoAmI, 0f, Main.rand.Next(3));
+        return false;
+    }
 
-        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
-        {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/VividClarityGlow").Value);
-        }
+    public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+    {
+        Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/VividClarityGlow").Value);
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<Nucleosynthesis>().
-                AddIngredient<PhantasmalFury>().
-                AddIngredient<ShadowboltStaff>().
-                AddIngredient<UltraLiquidator>().
-                AddIngredient<MiracleMatter>().
-                AddTile<DraedonsForge>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<Nucleosynthesis>().
+            AddIngredient<PhantasmalFury>().
+            AddIngredient<ShadowboltStaff>().
+            AddIngredient<UltraLiquidator>().
+            AddIngredient<MiracleMatter>().
+            AddTile<DraedonsForge>().
+            Register();
     }
 }

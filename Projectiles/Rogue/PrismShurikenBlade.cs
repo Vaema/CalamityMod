@@ -5,63 +5,62 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class PrismShurikenBlade : ModProjectile, ILocalizedModType
 {
-    public class PrismShurikenBlade : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-        public override void SetDefaults()
-        {
-            Projectile.width = Projectile.height = 22;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.extraUpdates = 1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.tileCollide = false;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.timeLeft = 300;
-        }
+        Projectile.width = Projectile.height = 22;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = -1;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.extraUpdates = 1;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.tileCollide = false;
+        Projectile.localNPCHitCooldown = 10;
+        Projectile.timeLeft = 300;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        if (Projectile.timeLeft <= 260)
+            CalamityUtils.HomeInOnNPC(Projectile, false, 850f, 19f, 30f);
+        Projectile.velocity += Projectile.velocity.RotatedBy(MathHelper.ToRadians(90f)) * 0.02f;
+        Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+        if (Main.rand.NextBool(4))
         {
-            if (Projectile.timeLeft <= 260)
-                CalamityUtils.HomeInOnNPC(Projectile, false, 850f, 19f, 30f);
-            Projectile.velocity += Projectile.velocity.RotatedBy(MathHelper.ToRadians(90f)) * 0.02f;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (Main.rand.NextBool(4))
-            {
-                List<Color> eColors = new List<Color>()
-                    {
-                        Color.PaleVioletRed,
-                        Color.Turquoise,
-                        Color.OrangeRed,
-                        Color.GreenYellow
-                    };
-                float rate = (Main.GlobalTimeWrappedHourly * 8);
-                int colorIndex = (int)(rate / 2 % eColors.Count);
-                Color currentColor = eColors[colorIndex];
-                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
-                Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(-0.2f, -0.6f), usedColor, 40, Main.rand.NextFloat(0.45f, 0.6f), 0.8f, Main.rand.NextFloat(-0.2f, 0.2f), true, required: true);
-                GeneralParticleHandler.SpawnParticle(smoke);
-            }
+            List<Color> eColors = new List<Color>()
+                {
+                    Color.PaleVioletRed,
+                    Color.Turquoise,
+                    Color.OrangeRed,
+                    Color.GreenYellow
+                };
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(-0.2f, -0.6f), usedColor, 40, Main.rand.NextFloat(0.45f, 0.6f), 0.8f, Main.rand.NextFloat(-0.2f, 0.2f), true, required: true);
+            GeneralParticleHandler.SpawnParticle(smoke);
         }
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (Projectile.timeLeft <= 260)
         {
-            if (Projectile.timeLeft <= 260)
-            {
-                Projectile.Kill();
-            }
+            Projectile.Kill();
         }
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
+        return false;
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class RepairUnitBanner : BaseBanner
 {
-    public class RepairUnitBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 0;
-    }
+    public override int BannerTileStyle => 0;
 }

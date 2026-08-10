@@ -4,46 +4,45 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Tools
+namespace CalamityMod.Items.Tools;
+
+public class AerialHamaxe : ModItem, ILocalizedModType
 {
-    public class AerialHamaxe : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Tools";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Tools";
-        public override void SetDefaults()
-        {
-            Item.width = 44;
-            Item.height = 44;
-            Item.damage = 20;
-            Item.knockBack = 7f;
-            Item.useTime = 16;
-            Item.useAnimation = 26;
-            Item.hammer = 70;
-            Item.axe = 125 / 5;
-            Item.tileBoost += 1;
+        Item.width = 44;
+        Item.height = 44;
+        Item.damage = 20;
+        Item.knockBack = 7f;
+        Item.useTime = 16;
+        Item.useAnimation = 26;
+        Item.hammer = 70;
+        Item.axe = 125 / 5;
+        Item.tileBoost += 1;
 
-            Item.DamageType = DamageClass.Melee;
-            Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = Item.sellPrice(silver: 60);
-            Item.rare = ItemRarityID.Orange;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-        }
+        Item.DamageType = DamageClass.Melee;
+        Item.useTurn = true;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.value = Item.sellPrice(silver: 60);
+        Item.rare = ItemRarityID.Orange;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<AerialiteBar>(10).
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<AerialiteBar>(10).
+            AddTile(TileID.Anvils).
+            Register();
+    }
 
-        public override void MeleeEffects(Player player, Rectangle hitbox)
+    public override void MeleeEffects(Player player, Rectangle hitbox)
+    {
+        if (Main.rand.NextBool(3))
         {
-            if (Main.rand.NextBool(3))
-            {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.BlueTorch);
-            }
+            int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.BlueTorch);
         }
     }
 }

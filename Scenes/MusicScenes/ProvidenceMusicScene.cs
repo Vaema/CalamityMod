@@ -4,32 +4,31 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Systems
+namespace CalamityMod.Systems;
+
+public class ProvidenceMusicScene : BaseMusicSceneEffect
 {
-    public class ProvidenceMusicScene : BaseMusicSceneEffect
+    public override SceneEffectPriority Priority => SceneEffectPriority.BossHigh;
+
+    public override int NPCType => ModContent.NPCType<Providence>();
+    public static int ProvidenceTrack => (int)CalamityMod.Instance.GetMusicFromMusicMod("Providence");
+    public static int SilenceTrack => MusicLoader.GetMusicSlot(CalamityMod.Instance, "Sounds/Music/Silence");
+    public override int? MusicModMusic => ProvidenceSpawnState() < 180f ? SilenceTrack : ProvidenceTrack;
+    public override int VanillaMusic => MusicID.LunarBoss;
+    public override int OtherworldMusic => MusicID.OtherworldlyLunarBoss;
+    public override void SpecialVisuals(Player player, bool isActive)
     {
-        public override SceneEffectPriority Priority => SceneEffectPriority.BossHigh;
+        if (ProvidenceSpawnState() == 180f)
+            Main.musicFade[ProvidenceTrack] = 1f;
+    }
 
-        public override int NPCType => ModContent.NPCType<Providence>();
-        public static int ProvidenceTrack => (int)CalamityMod.Instance.GetMusicFromMusicMod("Providence");
-        public static int SilenceTrack => MusicLoader.GetMusicSlot(CalamityMod.Instance, "Sounds/Music/Silence");
-        public override int? MusicModMusic => ProvidenceSpawnState() < 180f ? SilenceTrack : ProvidenceTrack;
-        public override int VanillaMusic => MusicID.LunarBoss;
-        public override int OtherworldMusic => MusicID.OtherworldlyLunarBoss;
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
-            if (ProvidenceSpawnState() == 180f)
-                Main.musicFade[ProvidenceTrack] = 1f;
-        }
+    public static float ProvidenceSpawnState()
+    {
+        int provIndex = CalamityGlobalNPC.holyBoss;
+        if (!Main.npc.IndexInRange(provIndex))
+            return -1f;
 
-        public static float ProvidenceSpawnState()
-        {
-            int provIndex = CalamityGlobalNPC.holyBoss;
-            if (!Main.npc.IndexInRange(provIndex))
-                return -1f;
-
-            var prov = Main.npc[provIndex];
-            return prov.Calamity().newAI[3];
-        }
+        var prov = Main.npc[provIndex];
+        return prov.Calamity().newAI[3];
     }
 }

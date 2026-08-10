@@ -1,22 +1,21 @@
 ﻿using System.IO;
 using CalamityMod.Events;
 
-namespace CalamityMod.Packets
+namespace CalamityMod.Packets;
+
+internal sealed class BossRushEndTimerPacket : CalamityPacket
 {
-    internal sealed class BossRushEndTimerPacket : CalamityPacket
+    public static BossRushEndTimerPacket Instance { get; private set; }
+
+    public static void Send(int toClient = -1, int ignoreClient = -1)
     {
-        public static BossRushEndTimerPacket Instance { get; private set; }
+        var packet = Instance.CreateBasePacket();
+        packet.Write(BossRushEvent.EndTimer);
+        packet.Send(toClient, ignoreClient);
+    }
 
-        public static void Send(int toClient = -1, int ignoreClient = -1)
-        {
-            var packet = Instance.CreateBasePacket();
-            packet.Write(BossRushEvent.EndTimer);
-            packet.Send(toClient, ignoreClient);
-        }
-
-        public override void HandlePacket(BinaryReader packet, int sender)
-        {
-            BossRushEvent.EndTimer = packet.ReadInt32();
-        }
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        BossRushEvent.EndTimer = packet.ReadInt32();
     }
 }

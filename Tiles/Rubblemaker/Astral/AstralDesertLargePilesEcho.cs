@@ -6,38 +6,37 @@ using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Rubblemake.Astral
+namespace CalamityMod.Tiles.Rubblemake.Astral;
+
+public class AstralDesertLargePilesEcho : ModTile
 {
-    public class AstralDesertLargePilesEcho : ModTile
+    public override string Texture => "CalamityMod/Tiles/AstralDesert/AstralDesertLargePiles";
+    public override void SetStaticDefaults()
     {
-        public override string Texture => "CalamityMod/Tiles/AstralDesert/AstralDesertLargePiles";
-        public override void SetStaticDefaults()
-        {
-            Main.tileFrameImportant[Type] = true;
-            Main.tileNoFail[Type] = true;
-            Main.tileObsidianKill[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        Main.tileNoFail[Type] = true;
+        Main.tileObsidianKill[Type] = true;
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
-            TileObjectData.addTile(Type);
+        TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+        TileObjectData.addTile(Type);
 
-            DustType = ModContent.DustType<AstralBasic>();
+        DustType = ModContent.DustType<AstralBasic>();
 
-            AddMapEntry(new Color(79, 61, 97));
+        AddMapEntry(new Color(79, 61, 97));
 
-            RegisterItemDrop(ModContent.ItemType<AstralSand>());
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<AstralSand>(), Type, 0, 1, 2, 3, 4, 5);
+        RegisterItemDrop(ModContent.ItemType<AstralSand>());
+        FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<AstralSand>(), Type, 0, 1, 2, 3, 4, 5);
 
-            base.SetStaticDefaults();
-        }
+        base.SetStaticDefaults();
+    }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
-        {
-            offsetY = 2;
-        }
+    public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
+    {
+        offsetY = 2;
+    }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 4;
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 4;
     }
 }

@@ -7,98 +7,37 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+[PierceResistException]
+public class JawsProjectile : ModProjectile, ILocalizedModType
 {
-    [PierceResistException]
-    public class JawsProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.TrailCacheLength[Type] = 8;
+        ProjectileID.Sets.TrailingMode[Type] = 1;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 10;
+        Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 600;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 10;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.ai[0] == 0f)
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 8;
-            ProjectileID.Sets.TrailingMode[Type] = 1;
-        }
-
-        public override void SetDefaults()
-        {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-        }
-
-        public override void AI()
-        {
-            if (Projectile.ai[0] == 0f)
-            {
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-                if (Projectile.Calamity().stealthStrike)
-                {
-                    int dustType = Utils.SelectRandom(Main.rand, new int[]
-                    {
-                        33,
-                        101,
-                        111,
-                        180
-                    });
-
-                    int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
-                    Main.dust[dust].noGravity = true;
-                }
-            }
-            //Sticky Behaviour
-            Projectile.StickyProjAI(15);
-        }
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(6);
-        public override bool? CanDamage() => Projectile.ai[0] == 1f ? false : base.CanDamage();
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            Player player = Main.player[Projectile.owner];
-            target.AddBuff(BuffID.Venom, 120);
-            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.Calamity().stealthStrike)
-            {
-                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
-            }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            Player player = Main.player[Projectile.owner];
-            target.AddBuff(BuffID.Venom, 120);
-            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
-            if (Projectile.Calamity().stealthStrike)
-            {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
-                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
-            }
-        }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            Projectile.Kill();
-            return false;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            for (int i = 0; i < 5; i++)
             {
                 int dustType = Utils.SelectRandom(Main.rand, new int[]
                 {
@@ -108,9 +47,69 @@ namespace CalamityMod.Projectiles.Rogue
                     180
                 });
 
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType, 0, 0, 0, default, 1.5f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
                 Main.dust[dust].noGravity = true;
             }
+        }
+        //Sticky Behaviour
+        Projectile.StickyProjAI(15);
+    }
+
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(6);
+    public override bool? CanDamage() => Projectile.ai[0] == 1f ? false : base.CanDamage();
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        Player player = Main.player[Projectile.owner];
+        target.AddBuff(BuffID.Venom, 120);
+        target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+        if (Projectile.Calamity().stealthStrike)
+        {
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
+        }
+    }
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        Player player = Main.player[Projectile.owner];
+        target.AddBuff(BuffID.Venom, 120);
+        target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+        if (Projectile.Calamity().stealthStrike)
+        {
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<JawsShockwave>(), Projectile.damage, 10f, Projectile.owner, 0, 0);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
+        }
+    }
+
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
+        SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+        Projectile.Kill();
+        return false;
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            int dustType = Utils.SelectRandom(Main.rand, new int[]
+            {
+                33,
+                101,
+                111,
+                180
+            });
+
+            int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType, 0, 0, 0, default, 1.5f);
+            Main.dust[dust].noGravity = true;
         }
     }
 }

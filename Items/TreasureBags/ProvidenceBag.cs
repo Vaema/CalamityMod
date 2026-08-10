@@ -15,72 +15,71 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.TreasureBags
+namespace CalamityMod.Items.TreasureBags;
+
+public class ProvidenceBag : ModItem, ILocalizedModType
 {
-    public class ProvidenceBag : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.TreasureBags";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.TreasureBags";
-        public override void SetStaticDefaults()
+        Item.ResearchUnlockCount = 3;
+        ItemID.Sets.BossBag[Type] = true;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.width = 24;
+        Item.height = 24;
+        Item.maxStack = Item.CommonMaxStack;
+        Item.consumable = true;
+        Item.rare = ItemRarityID.Cyan;
+        Item.expert = true;
+    }
+
+    public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+    {
+        itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+    }
+
+    public override bool CanRightClick() => true;
+
+    public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+
+    public override void PostUpdate() => Item.TreasureBagLightAndDust();
+
+    public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+    {
+        return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
+    }
+
+    public override void ModifyItemLoot(ItemLoot itemLoot)
+    {
+        // Money
+        itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Providence>()));
+
+        // Materials
+        itemLoot.Add(ModContent.ItemType<UnholyEssence>(), 1, 40, 50);
+        itemLoot.Add(ModContent.ItemType<DivineGeode>(), 1, 60, 70);
+
+        // Weapons
+        itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
         {
-            Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Type] = true;
-        }
+            ModContent.ItemType<HolyCollider>(),
+            ModContent.ItemType<BurningRevelation>(),
+            ModContent.ItemType<BlissfulBombardier>(),
+            ModContent.ItemType<TelluricGlare>(),
+            ModContent.ItemType<PurgeGuzzler>(),
+            ModContent.ItemType<DazzlingStabberStaff>(),
+            ModContent.ItemType<MoltenAmputator>(),
+        }));
+        itemLoot.Add(ModContent.ItemType<PristineFury>(), 10);
 
-        public override void SetDefaults()
-        {
-            Item.width = 24;
-            Item.height = 24;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.rare = ItemRarityID.Cyan;
-            Item.expert = true;
-        }
+        // Equipment
+        itemLoot.Add(ModContent.ItemType<DivineProvidence>());
+        itemLoot.AddRevBagAccessories();
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-        }
-
-        public override bool CanRightClick() => true;
-
-        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
-
-        public override void PostUpdate() => Item.TreasureBagLightAndDust();
-
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
-            return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
-        }
-
-        public override void ModifyItemLoot(ItemLoot itemLoot)
-        {
-            // Money
-            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Providence>()));
-
-            // Materials
-            itemLoot.Add(ModContent.ItemType<UnholyEssence>(), 1, 40, 50);
-            itemLoot.Add(ModContent.ItemType<DivineGeode>(), 1, 60, 70);
-
-            // Weapons
-            itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
-            {
-                ModContent.ItemType<HolyCollider>(),
-                ModContent.ItemType<BurningRevelation>(),
-                ModContent.ItemType<BlissfulBombardier>(),
-                ModContent.ItemType<TelluricGlare>(),
-                ModContent.ItemType<PurgeGuzzler>(),
-                ModContent.ItemType<DazzlingStabberStaff>(),
-                ModContent.ItemType<MoltenAmputator>(),
-            }));
-            itemLoot.Add(ModContent.ItemType<PristineFury>(), 10);
-
-            // Equipment
-            itemLoot.Add(ModContent.ItemType<DivineProvidence>());
-            itemLoot.AddRevBagAccessories();
-
-            // Vanity
-            itemLoot.Add(ModContent.ItemType<ProvidenceMask>(), 7);
-            itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-        }
+        // Vanity
+        itemLoot.Add(ModContent.ItemType<ProvidenceMask>(), 7);
+        itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
     }
 }

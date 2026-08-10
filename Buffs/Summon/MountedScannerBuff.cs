@@ -1,12 +1,11 @@
 ﻿using CalamityMod.Projectiles.DraedonsArsenal;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Summon
-{
-    public class MountedScannerBuff : BaseSummonBuff
-    {
-        protected override int MinionProjectileType => ModContent.ProjectileType<MountedScannerSummon>();
+namespace CalamityMod.Buffs.Summon;
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.mountedScanner;
-    }
+public class MountedScannerBuff : BaseSummonBuff
+{
+    protected override int MinionProjectileType => ModContent.ProjectileType<MountedScannerSummon>();
+
+    protected override ref bool MinionBool => ref BuffModdedOwner.mountedScanner;
 }

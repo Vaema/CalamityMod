@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class ScryllarBanner : BaseBanner
 {
-    public class ScryllarBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 45;
-    }
+    public override int BannerTileStyle => 45;
 }

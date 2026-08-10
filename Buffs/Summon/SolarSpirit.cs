@@ -1,12 +1,11 @@
 ﻿using CalamityMod.Projectiles.Summon;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Summon
-{
-    public class SolarSpirit : BaseSummonBuff
-    {
-        protected override int MinionProjectileType => ModContent.ProjectileType<SunSpiritMinion>();
+namespace CalamityMod.Buffs.Summon;
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.sunSpirit;
-    }
+public class SolarSpirit : BaseSummonBuff
+{
+    protected override int MinionProjectileType => ModContent.ProjectileType<SunSpiritMinion>();
+
+    protected override ref bool MinionBool => ref BuffModdedOwner.sunSpirit;
 }

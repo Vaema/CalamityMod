@@ -9,79 +9,78 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Summon
+namespace CalamityMod.Items.Weapons.Summon;
+
+public class EndoHydraStaff : ModItem, ILocalizedModType
 {
-    public class EndoHydraStaff : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Summon";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetDefaults()
+        Item.width = 58;
+        Item.height = 60;
+        Item.damage = 190;
+        Item.DamageType = DamageClass.Summon;
+        Item.useAnimation = Item.useTime = 24;
+        Item.mana = 10;
+        Item.knockBack = 3f;
+
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.noMelee = true;
+        Item.UseSound = SoundID.Item60;
+        Item.autoReuse = true;
+        Item.buffType = ModContent.BuffType<EndoHydraBuff>();
+        Item.shoot = ModContent.ProjectileType<EndoHydraBody>();
+
+        Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        player.AddBuff(Item.buffType, 2);
+
+        bool bodyExists = false;
+        int bodyIndex = -1;
+        foreach (Projectile p in Main.ActiveProjectiles)
         {
-            Item.width = 58;
-            Item.height = 60;
-            Item.damage = 190;
-            Item.DamageType = DamageClass.Summon;
-            Item.useAnimation = Item.useTime = 24;
-            Item.mana = 10;
-            Item.knockBack = 3f;
-
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
-            Item.UseSound = SoundID.Item60;
-            Item.autoReuse = true;
-            Item.buffType = ModContent.BuffType<EndoHydraBuff>();
-            Item.shoot = ModContent.ProjectileType<EndoHydraBody>();
-
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            if (p.type == type && p.owner == player.whoAmI)
+            {
+                bodyIndex = p.whoAmI;
+                bodyExists = true;
+                break;
+            }
         }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        if (bodyExists)
         {
-            player.AddBuff(Item.buffType, 2);
-
-            bool bodyExists = false;
-            int bodyIndex = -1;
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.type == type && p.owner == player.whoAmI)
-                {
-                    bodyIndex = p.whoAmI;
-                    bodyExists = true;
-                    break;
-                }
-            }
-            if (bodyExists)
-            {
-                var head = Projectile.NewProjectileDirect(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
-                head.originalDamage = Item.damage;
-            }
-            else
-            {
-                bodyIndex = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(bodyIndex))
-                    Main.projectile[bodyIndex].originalDamage = Item.damage;
-                var head = Projectile.NewProjectileDirect(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
-                head.originalDamage = Item.damage;
-                for (int i = 0; i < 72; i++)
-                {
-                    Dust dust = Dust.NewDustPerfect(Main.projectile[bodyIndex].Center, DustID.MushroomSpray);
-                    dust.velocity = (MathHelper.TwoPi * Vector2.Dot((i / 72f * MathHelper.TwoPi).ToRotationVector2(), player.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(i / 72f * -MathHelper.TwoPi))).ToRotationVector2();
-                    dust.velocity = dust.velocity.RotatedBy(i / 36f * MathHelper.TwoPi) * 8f;
-                    dust.noGravity = true;
-                    dust.scale = 1.9f;
-                }
-            }
-            return false;
+            var head = Projectile.NewProjectileDirect(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
+            head.originalDamage = Item.damage;
         }
-
-        public override void AddRecipes()
+        else
         {
-            CreateRecipe().
-                AddIngredient(ItemID.StaffoftheFrostHydra).
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<EndothermicEnergy>(20).
-                AddTile<CosmicAnvil>().
-                Register();
+            bodyIndex = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            if (Main.projectile.IndexInRange(bodyIndex))
+                Main.projectile[bodyIndex].originalDamage = Item.damage;
+            var head = Projectile.NewProjectileDirect(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
+            head.originalDamage = Item.damage;
+            for (int i = 0; i < 72; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Main.projectile[bodyIndex].Center, DustID.MushroomSpray);
+                dust.velocity = (MathHelper.TwoPi * Vector2.Dot((i / 72f * MathHelper.TwoPi).ToRotationVector2(), player.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(i / 72f * -MathHelper.TwoPi))).ToRotationVector2();
+                dust.velocity = dust.velocity.RotatedBy(i / 36f * MathHelper.TwoPi) * 8f;
+                dust.noGravity = true;
+                dust.scale = 1.9f;
+            }
         }
+        return false;
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.StaffoftheFrostHydra).
+            AddIngredient<CosmiliteBar>(8).
+            AddIngredient<EndothermicEnergy>(20).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

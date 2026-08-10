@@ -6,88 +6,87 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Summon
+namespace CalamityMod.Projectiles.Summon;
+
+public class CinderBlossom : ModProjectile, ILocalizedModType
 {
-    public class CinderBlossom : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Summon";
+
+    public Player Owner => Main.player[Projectile.owner];
+    public CalamityPlayer ModdedOwner => Owner.Calamity();
+    public NPC Target => Owner.Center.MinionHoming(1200f, Owner, CalamityPlayer.areThereAnyDamnBosses);
+    public ref float DelayBetweenShooting => ref Projectile.ai[0];
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Summon";
+        Main.projPet[Type] = true;
+        ProjectileID.Sets.MinionSacrificable[Type] = true;
+        ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+    }
 
-        public Player Owner => Main.player[Projectile.owner];
-        public CalamityPlayer ModdedOwner => Owner.Calamity();
-        public NPC Target => Owner.Center.MinionHoming(1200f, Owner, CalamityPlayer.areThereAnyDamnBosses);
-        public ref float DelayBetweenShooting => ref Projectile.ai[0];
+    public override void SetDefaults()
+    {
+        Projectile.minionSlots = 1f;
+        Projectile.penetrate = -1;
 
-        public override void SetStaticDefaults()
+        Projectile.width = 42;
+        Projectile.height = 42;
+
+        Projectile.DamageType = DamageClass.Summon;
+        Projectile.netImportant = true;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.minion = true;
+    }
+
+    public override void AI()
+    {
+        CheckMinionExistince(); // Checks if the minion can still exist.
+        ShootTarget(Target); // Shoots at the target if there's one.
+
+        Projectile.Center = Owner.Center - Vector2.UnitY * (60f - Owner.gfxOffY);
+        Projectile.rotation += MathHelper.ToRadians(5f * Owner.direction); // The projectile normally will spin in the direction of the player.
+        Lighting.AddLight(Projectile.Center, Color.Orange.ToVector3());
+    }
+
+    public void CheckMinionExistince()
+    {
+        Owner.AddBuff(ModContent.BuffType<CinderBlossomBuff>(), 1);
+        if (Projectile.type == ModContent.ProjectileType<CinderBlossom>())
         {
-            Main.projPet[Type] = true;
-            ProjectileID.Sets.MinionSacrificable[Type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            if (Owner.dead)
+                ModdedOwner.cinderBlossom = false;
+            if (ModdedOwner.cinderBlossom)
+                Projectile.timeLeft = 2;
         }
+    }
 
-        public override void SetDefaults()
+    public override void OnSpawn(IEntitySource source)
+    {
+        for (int i = 0; i < 36; i++)
         {
-            Projectile.minionSlots = 1f;
-            Projectile.penetrate = -1;
-
-            Projectile.width = 42;
-            Projectile.height = 42;
-
-            Projectile.DamageType = DamageClass.Summon;
-            Projectile.netImportant = true;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;
-            Projectile.minion = true;
+            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
+            dust.noGravity = true;
+            dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f, 6f);
         }
+    }
 
-        public override void AI()
+    public void ShootTarget(NPC target)
+    {
+        if (target != null && Projectile.owner == Main.myPlayer)
         {
-            CheckMinionExistince(); // Checks if the minion can still exist.
-            ShootTarget(Target); // Shoots at the target if there's one.
-
-            Projectile.Center = Owner.Center - Vector2.UnitY * (60f - Owner.gfxOffY);
-            Projectile.rotation += MathHelper.ToRadians(5f * Owner.direction); // The projectile normally will spin in the direction of the player.
-            Lighting.AddLight(Projectile.Center, Color.Orange.ToVector3());
-        }
-
-        public void CheckMinionExistince()
-        {
-            Owner.AddBuff(ModContent.BuffType<CinderBlossomBuff>(), 1);
-            if (Projectile.type == ModContent.ProjectileType<CinderBlossom>())
+            if (DelayBetweenShooting == 35f) // Shoots once every 35 frames.
             {
-                if (Owner.dead)
-                    ModdedOwner.cinderBlossom = false;
-                if (ModdedOwner.cinderBlossom)
-                    Projectile.timeLeft = 2;
+                Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, target, 20f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<Cinder>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+
+                DelayBetweenShooting = 0f;
+                Projectile.netUpdate = true;
             }
-        }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            for (int i = 0; i < 36; i++)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
-                dust.noGravity = true;
-                dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f, 6f);
-            }
-        }
-
-        public void ShootTarget(NPC target)
-        {
-            if (target != null && Projectile.owner == Main.myPlayer)
-            {
-                if (DelayBetweenShooting == 35f) // Shoots once every 35 frames.
-                {
-                    Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, target, 20f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<Cinder>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-
-                    DelayBetweenShooting = 0f;
-                    Projectile.netUpdate = true;
-                }
-
-                if (DelayBetweenShooting < 35f)
-                    DelayBetweenShooting++;
-            }
+            if (DelayBetweenShooting < 35f)
+                DelayBetweenShooting++;
         }
     }
 }

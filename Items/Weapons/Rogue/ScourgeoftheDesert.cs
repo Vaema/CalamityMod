@@ -6,47 +6,46 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Rogue
+namespace CalamityMod.Items.Weapons.Rogue;
+
+public class ScourgeoftheDesert : RogueWeapon
 {
-    public class ScourgeoftheDesert : RogueWeapon
+
+    public override void SetDefaults()
     {
+        Item.width = 112;
+        Item.height = 116;
+        Item.damage = 12;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useAnimation = Item.useTime = 24;
+        Item.knockBack = 3.5f;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
+        Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+        Item.rare = ItemRarityID.Green;
+        Item.shoot = ModContent.ProjectileType<ScourgeoftheDesertProj>();
+        Item.shootSpeed = 12f;
+        Item.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override void SetDefaults()
+    public override float StealthDamageMultiplier => 0.65f;
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
         {
-            Item.width = 112;
-            Item.height = 116;
-            Item.damage = 12;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = Item.useTime = 24;
-            Item.knockBack = 3.5f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
-            Item.shoot = ModContent.ProjectileType<ScourgeoftheDesertProj>();
-            Item.shootSpeed = 12f;
-            Item.DamageType = RogueDamageClass.Instance;
-        }
-
-        public override float StealthDamageMultiplier => 0.65f;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
+            int index = 5;
+            for (int i = -index; i <= index; i += index)
             {
-                int index = 5;
-                for (int i = -index; i <= index; i += index)
-                {
-                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                    int stealth = Projectile.NewProjectile(source, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
-                    if (stealth.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[stealth].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
-                }
-                return false;
+                Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
+                int stealth = Projectile.NewProjectile(source, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
+                if (stealth.WithinBounds(Main.maxProjectiles))
+                    Main.projectile[stealth].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
             }
-            return true;
+            return false;
         }
+        return true;
     }
 }

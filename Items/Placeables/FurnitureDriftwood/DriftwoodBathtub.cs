@@ -2,23 +2,22 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.FurnitureDriftwood
-{
-    public class DriftwoodBathtub : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureDriftwood.DriftwoodBathtub>());
-            Item.value = Item.sellPrice(copper: 60);
-        }
+namespace CalamityMod.Items.Placeables.FurnitureDriftwood;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<Driftwood>(14).
-                AddTile(TileID.Sawmill).
-                Register();
-        }
+public class DriftwoodBathtub : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureDriftwood.DriftwoodBathtub>());
+        Item.value = Item.sellPrice(copper: 60);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<Driftwood>(14).
+            AddTile(TileID.Sawmill).
+            Register();
     }
 }

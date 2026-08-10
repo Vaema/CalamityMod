@@ -15,116 +15,115 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[LegacyName("StatisBeltOfCurses")]
+public class StatisVoidSash : ModItem, ILocalizedModType, IHoldShiftTooltipItem
 {
-    [LegacyName("StatisBeltOfCurses")]
-    public class StatisVoidSash : ModItem, ILocalizedModType, IHoldShiftTooltipItem
+    public new string LocalizationCategory => "Items.Accessories";
+
+    public static SoundStyle VoidDash = new ("CalamityMod/Sounds/Item/VoidDash");
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
+        Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 3));
+        ItemID.Sets.AnimatesAsSoul[Type] = true;
+    }
 
-        public static SoundStyle VoidDash = new ("CalamityMod/Sounds/Item/VoidDash");
+    public override void SetDefaults()
+    {
+        Item.width = 28;
+        Item.height = 32;
+        Item.accessory = true;
+        Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+    }
+    #region Toggleable Tiger Gear
 
-        public override void SetStaticDefaults()
-        {
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 3));
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
-        }
+    bool toggleEnabled = true;
 
-        public override void SetDefaults()
-        {
-            Item.width = 28;
-            Item.height = 32;
-            Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-        }
-        #region Toggleable Tiger Gear
+    public override bool CanRightClick() => Main.keyState.PressingShift();
+    public override void RightClick(Player player)
+    {
+        toggleEnabled = !toggleEnabled;
+        Item.NetStateChanged();
+    }
+    public override bool ConsumeItem(Player player) => false;
+    public override void SaveData(TagCompound tag)
+    {
+        tag.Add("toggleEffect", toggleEnabled);
+    }
 
-        bool toggleEnabled = true;
+    public override void LoadData(TagCompound tag)
+    {
+        toggleEnabled = tag.GetBool("toggleEffect");
+    }
 
-        public override bool CanRightClick() => Main.keyState.PressingShift();
-        public override void RightClick(Player player)
-        {
-            toggleEnabled = !toggleEnabled;
-            Item.NetStateChanged();
-        }
-        public override bool ConsumeItem(Player player) => false;
-        public override void SaveData(TagCompound tag)
-        {
-            tag.Add("toggleEffect", toggleEnabled);
-        }
+    public override void NetSend(BinaryWriter writer)
+    {
+        writer.Write(toggleEnabled);
+    }
 
-        public override void LoadData(TagCompound tag)
-        {
-            toggleEnabled = tag.GetBool("toggleEffect");
-        }
+    public override void NetReceive(BinaryReader reader)
+    {
+        toggleEnabled = reader.ReadBoolean();
+    }
 
-        public override void NetSend(BinaryWriter writer)
-        {
-            writer.Write(toggleEnabled);
-        }
+    public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
+    }
+    #endregion
+    public override void ModifyTooltips(List<TooltipLine> tooltips)
+    {
+        tooltips.FindAndReplace("[TOGGLE]", toggleEnabled ? this.GetLocalizedValue("ToggleEffect") : "");
+        base.ModifyTooltips(tooltips);
+    }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
 
-        public override void NetReceive(BinaryReader reader)
-        {
-            toggleEnabled = reader.ReadBoolean();
-        }
+        modPlayer.voidSashVisuals = !hideVisual;
 
-        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
-        }
-        #endregion
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.FindAndReplace("[TOGGLE]", toggleEnabled ? this.GetLocalizedValue("ToggleEffect") : "");
-            base.ModifyTooltips(tooltips);
-        }
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
+        player.autoJump = true;
+        player.jumpSpeedBoost += 1.6f;
+        player.moveSpeed += 0.2f;
+        player.noFallDmg = true;
+        player.blackBelt = true;
+        modPlayer.DashID = StatisVoidSashDash.ID;
+        player.dashType = 0;
+        if (toggleEnabled)
+            player.spikedBoots = 2;
+        player.accFlipper = true;
+        player.Calamity().statisVoidSash = true;
 
-            modPlayer.voidSashVisuals = !hideVisual;
+        player.MountedCenter.ToTileCoordinates();
+    }
 
-            player.autoJump = true;
-            player.jumpSpeedBoost += 1.6f;
-            player.moveSpeed += 0.2f;
-            player.noFallDmg = true;
-            player.blackBelt = true;
-            modPlayer.DashID = StatisVoidSashDash.ID;
-            player.dashType = 0;
-            if (toggleEnabled)
-                player.spikedBoots = 2;
-            player.accFlipper = true;
-            player.Calamity().statisVoidSash = true;
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<StatisNinjaBelt>().
+            AddIngredient<TwistingNether>(10).
+            AddIngredient<NightmareFuel>(20).
+            AddTile<CosmicAnvil>().
+            Register();
+    }
 
-            player.MountedCenter.ToTileCoordinates();
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<StatisNinjaBelt>().
-                AddIngredient<TwistingNether>(10).
-                AddIngredient<NightmareFuel>(20).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
-
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 1f,
-                drawOffset: new(0f, 0f)
-            );
-            return false;
-        }
+    public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        CalamityUtils.DrawInventoryCustomScale(
+            spriteBatch,
+            texture: TextureAssets.Item[Type].Value,
+            position,
+            frame,
+            drawColor,
+            itemColor,
+            origin,
+            scale,
+            wantedScale: 1f,
+            drawOffset: new(0f, 0f)
+        );
+        return false;
     }
 }

@@ -1,10 +1,9 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum ExoMech
 {
-    public enum ExoMech
-    {
-        None,
-        Destroyer,
-        Prime,
-        Twins
-    }
+    None,
+    Destroyer,
+    Prime,
+    Twins
 }

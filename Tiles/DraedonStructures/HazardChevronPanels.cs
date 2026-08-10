@@ -5,33 +5,32 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.DraedonStructures
+namespace CalamityMod.Tiles.DraedonStructures;
+
+public class HazardChevronPanels : ModTile
 {
-    public class HazardChevronPanels : ModTile
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
 
-            CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryDoorOpen>());
-            CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryDoorClosed>());
-            CalamityUtils.SetMerge(Type, ModContent.TileType<AgedLaboratoryDoorOpen>());
-            CalamityUtils.SetMerge(Type, ModContent.TileType<AgedLaboratoryDoorClosed>());
-            CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryPanels>());
+        CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryDoorOpen>());
+        CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryDoorClosed>());
+        CalamityUtils.SetMerge(Type, ModContent.TileType<AgedLaboratoryDoorOpen>());
+        CalamityUtils.SetMerge(Type, ModContent.TileType<AgedLaboratoryDoorClosed>());
+        CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryPanels>());
 
-            HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = DustID.Sunflower;
-            MinPick = 30;
-            AddMapEntry(new Color(163, 150, 73));
-        }
+        HitSound = CommonCalamitySounds.PlatingMine;
+        DustType = DustID.Sunflower;
+        MinPick = 30;
+        AddMapEntry(new Color(163, 150, 73));
+    }
 
-        public override bool CanExplode(int i, int j) => false;
+    public override bool CanExplode(int i, int j) => false;
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
-        }
+    public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+    {
+        return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
     }
 }

@@ -5,29 +5,28 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 
-namespace CalamityMod.Tiles.Plates
+namespace CalamityMod.Tiles.Plates;
+
+public class Onyxplate : GlowMaskTile
 {
-    public class Onyxplate : GlowMaskTile
+    public override void SetupStatic()
     {
-        public override void SetupStatic()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileMergeDirt[Type] = true;
-            Main.tileBlockLight[Type] = true;
+        Main.tileSolid[Type] = true;
+        Main.tileMergeDirt[Type] = true;
+        Main.tileBlockLight[Type] = true;
 
-            CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.MergeWithGeneral(Type);
 
-            HitSound = CommonCalamitySounds.PlatingMine;
-            MineResist = 1f;
-            DustType = DustID.ShadowbeamStaff;
-            AddMapEntry(new Color(182, 28, 232));
-        }
+        HitSound = CommonCalamitySounds.PlatingMine;
+        MineResist = 1f;
+        DustType = DustID.ShadowbeamStaff;
+        AddMapEntry(new Color(182, 28, 232));
+    }
 
-        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
-        {
-            float brightness = GreyscaleGradient.OnyxplatePulse.GetRepeat((int)Main.GameUpdateCount);
-            brightness = 0.04f + (brightness * 0.31f);
-            return Color.White * brightness;
-        }
+    public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
+    {
+        float brightness = GreyscaleGradient.OnyxplatePulse.GetRepeat((int)Main.GameUpdateCount);
+        brightness = 0.04f + (brightness * 0.31f);
+        return Color.White * brightness;
     }
 }

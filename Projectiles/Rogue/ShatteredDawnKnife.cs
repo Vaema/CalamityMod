@@ -6,153 +6,152 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class ShatteredDawnKnife : ModProjectile, ILocalizedModType
 {
-    public class ShatteredDawnKnife : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/ShatteredDawn";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ShatteredDawn";
+        ProjectileID.Sets.TrailCacheLength[Type] = 4;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 56;
+        Projectile.height = 56;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = 4;
+        Projectile.timeLeft = 300;
+        Projectile.alpha = 255;
+        Projectile.tileCollide = false;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 15;
+        Projectile.DamageType = RogueDamageClass.Instance;
+    }
+
+    public override void AI()
+    {
+        Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
+        Projectile.ai[1] += 1f;
+        if (Projectile.ai[1] < 5f)
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 4;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.alpha -= 50;
         }
-
-        public override void SetDefaults()
+        if (Projectile.ai[1] == 5f)
         {
-            Projectile.width = 56;
-            Projectile.height = 56;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 4;
-            Projectile.timeLeft = 300;
-            Projectile.alpha = 255;
+            Projectile.alpha = 0;
             Projectile.tileCollide = false;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 15;
-            Projectile.DamageType = RogueDamageClass.Instance;
         }
 
-        public override void AI()
+        if (Projectile.ai[1] == 20f)
         {
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
-            Projectile.ai[1] += 1f;
-            if (Projectile.ai[1] < 5f)
+            int numProj = 5;
+            if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.alpha -= 50;
-            }
-            if (Projectile.ai[1] == 5f)
-            {
-                Projectile.alpha = 0;
-                Projectile.tileCollide = false;
-            }
-
-            if (Projectile.ai[1] == 20f)
-            {
-                int numProj = 5;
-                if (Projectile.owner == Main.myPlayer)
+                int spread = 6;
+                int projID = ModContent.ProjectileType<ShatteredDawnScorchedBlade>();
+                int splitDamage = (int)(0.75f * Projectile.damage);
+                float splitKB = 1f;
+                for (int i = 0; i < numProj; i++)
                 {
-                    int spread = 6;
-                    int projID = ModContent.ProjectileType<ShatteredDawnScorchedBlade>();
-                    int splitDamage = (int)(0.75f * Projectile.damage);
-                    float splitKB = 1f;
-                    for (int i = 0; i < numProj; i++)
+                    Vector2 perturbedspeed = new Vector2(Projectile.velocity.X, Projectile.velocity.Y + Main.rand.Next(-3, 4)).RotatedBy(MathHelper.ToRadians(spread));
+                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedspeed * 0.2f, projID, splitDamage, splitKB, Projectile.owner, 0f, 0f);
+                    Main.projectile[proj].Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
+                    spread -= Main.rand.Next(2, 6);
+                }
+                SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
+                Projectile.active = false;
+                for (int j = 0; j < 8; j++)
+                {
+                    int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
+                    Main.dust[dusty].velocity *= 3f;
+                    if (Main.rand.NextBool())
                     {
-                        Vector2 perturbedspeed = new Vector2(Projectile.velocity.X, Projectile.velocity.Y + Main.rand.Next(-3, 4)).RotatedBy(MathHelper.ToRadians(spread));
-                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedspeed * 0.2f, projID, splitDamage, splitKB, Projectile.owner, 0f, 0f);
-                        Main.projectile[proj].Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
-                        spread -= Main.rand.Next(2, 6);
-                    }
-                    SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
-                    Projectile.active = false;
-                    for (int j = 0; j < 8; j++)
-                    {
-                        int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
-                        Main.dust[dusty].velocity *= 3f;
-                        if (Main.rand.NextBool())
-                        {
-                            Main.dust[dusty].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
-                        }
-                    }
-                    for (int k = 0; k < 16; k++)
-                    {
-                        int dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 3f);
-                        Main.dust[dusty2].noGravity = true;
-                        Main.dust[dusty2].velocity *= 5f;
-                        dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
-                        Main.dust[dusty2].velocity *= 2f;
+                        Main.dust[dusty].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
                     }
                 }
-            }
-
-            if (Projectile.Calamity().stealthStrike)
-            {
-                float projX = Projectile.Center.X;
-                float projY = Projectile.Center.Y;
-                foreach (NPC n in Main.ActiveNPCs)
+                for (int k = 0; k < 16; k++)
                 {
-                    if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
+                    int dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 3f);
+                    Main.dust[dusty2].noGravity = true;
+                    Main.dust[dusty2].velocity *= 5f;
+                    dusty2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
+                    Main.dust[dusty2].velocity *= 2f;
+                }
+            }
+        }
+
+        if (Projectile.Calamity().stealthStrike)
+        {
+            float projX = Projectile.Center.X;
+            float projY = Projectile.Center.Y;
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
+                {
+                    float npcCenterX = n.position.X + (float)(n.width / 2);
+                    float npcCenterY = n.position.Y + (float)(n.height / 2);
+                    float targetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
+                    if (targetDist < 600f)
                     {
-                        float npcCenterX = n.position.X + (float)(n.width / 2);
-                        float npcCenterY = n.position.Y + (float)(n.height / 2);
-                        float targetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
-                        if (targetDist < 600f)
+                        if (n.position.X < projX)
                         {
-                            if (n.position.X < projX)
-                            {
-                                n.velocity.X += 0.25f;
-                            }
-                            else
-                            {
-                                n.velocity.X -= 0.25f;
-                            }
-                            if (n.position.Y < projY)
-                            {
-                                n.velocity.Y += 0.25f;
-                            }
-                            else
-                            {
-                                n.velocity.Y -= 0.25f;
-                            }
+                            n.velocity.X += 0.25f;
+                        }
+                        else
+                        {
+                            n.velocity.X -= 0.25f;
+                        }
+                        if (n.position.Y < projY)
+                        {
+                            n.velocity.Y += 0.25f;
+                        }
+                        else
+                        {
+                            n.velocity.Y -= 0.25f;
                         }
                     }
                 }
             }
         }
+    }
 
-        public override bool PreDraw(ref Color lightColor)
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
+    }
+
+    private void ShatteredExplosion()
+    {
+        int projID = ModContent.ProjectileType<ShatteredExplosion>();
+        int explosionDamage = (int)(Projectile.damage * 0.45f);
+        float explosionKB = 3f;
+        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, projID, explosionDamage, explosionKB, Projectile.owner, 0f, 0f);
+        SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShatteredExplosion();
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShatteredExplosion();
+
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        ShatteredExplosion();
+        return true;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
+        for (int k = 0; k < 5; k++)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
-
-        private void ShatteredExplosion()
-        {
-            int projID = ModContent.ProjectileType<ShatteredExplosion>();
-            int explosionDamage = (int)(Projectile.damage * 0.45f);
-            float explosionKB = 3f;
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, projID, explosionDamage, explosionKB, Projectile.owner, 0f, 0f);
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShatteredExplosion();
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShatteredExplosion();
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            ShatteredExplosion();
-            return true;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
-            for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GoldCoin, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 1f);
-            }
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GoldCoin, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 1f);
         }
     }
 }

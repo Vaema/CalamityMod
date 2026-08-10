@@ -2,45 +2,44 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+public class RogueEmblem : ModItem, ILocalizedModType
 {
-    public class RogueEmblem : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public override void SetDefaults()
-        {
-            Item.width = 24;
-            Item.height = 24;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
-            Item.accessory = true;
-        }
+        Item.width = 24;
+        Item.height = 24;
+        Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+        Item.rare = ItemRarityID.LightRed;
+        Item.accessory = true;
+    }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            player.GetDamage<ThrowingDamageClass>() += 0.15f;
-        }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        player.GetDamage<ThrowingDamageClass>() += 0.15f;
+    }
 
-        public override void AddRecipes()
-        {
-            Recipe r = Recipe.Create(ItemID.AvengerEmblem);
-            r.AddIngredient<RogueEmblem>();
-            r.AddIngredient(ItemID.SoulofMight, 5);
-            r.AddIngredient(ItemID.SoulofSight, 5);
-            r.AddIngredient(ItemID.SoulofFright, 5);
-            r.AddTile(TileID.TinkerersWorkbench);
-            r.Register();
+    public override void AddRecipes()
+    {
+        Recipe r = Recipe.Create(ItemID.AvengerEmblem);
+        r.AddIngredient<RogueEmblem>();
+        r.AddIngredient(ItemID.SoulofMight, 5);
+        r.AddIngredient(ItemID.SoulofSight, 5);
+        r.AddIngredient(ItemID.SoulofFright, 5);
+        r.AddTile(TileID.TinkerersWorkbench);
+        r.Register();
 
-            // Sort after recipe with Summoner Emblem as ingredient
-            // There is no sort after last of X so this process needs to be manual
-            for (int i = 0; i < Recipe.maxRecipes; i++)
+        // Sort after recipe with Summoner Emblem as ingredient
+        // There is no sort after last of X so this process needs to be manual
+        for (int i = 0; i < Recipe.maxRecipes; i++)
+        {
+            Recipe s = Main.recipe[i];
+            if (s.createItem.type == ItemID.AvengerEmblem && s.HasIngredient(ItemID.SummonerEmblem))
             {
-                Recipe s = Main.recipe[i];
-                if (s.createItem.type == ItemID.AvengerEmblem && s.HasIngredient(ItemID.SummonerEmblem))
-                {
-                    r.SortAfter(s);
-                    break;
-                }
+                r.SortAfter(s);
+                break;
             }
         }
     }

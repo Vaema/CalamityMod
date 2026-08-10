@@ -9,56 +9,55 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Rogue
+namespace CalamityMod.Items.Weapons.Rogue;
+
+public class ShatteredDawn : RogueWeapon
 {
-    public class ShatteredDawn : RogueWeapon
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
-        }
-        public override void SetDefaults()
-        {
-            Item.width = 66;
-            Item.height = 66;
-            Item.damage = 80;
-            Item.crit = 10;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.useAnimation = 12;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 12;
-            Item.knockBack = 6f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.shoot = ModContent.ProjectileType<ShatteredDawnKnife>();
-            Item.shootSpeed = 25f;
-            Item.DamageType = RogueDamageClass.Instance;
-        }
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
+    }
+    public override void SetDefaults()
+    {
+        Item.width = 66;
+        Item.height = 66;
+        Item.damage = 80;
+        Item.crit = 10;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.useAnimation = 12;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useTime = 12;
+        Item.knockBack = 6f;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
+        Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+        Item.rare = ModContent.RarityType<Turquoise>();
+        Item.shoot = ModContent.ProjectileType<ShatteredDawnKnife>();
+        Item.shootSpeed = 25f;
+        Item.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override float StealthDamageMultiplier => 1.2f;
+    public override float StealthDamageMultiplier => 1.2f;
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.Calamity().StealthStrikeAvailable())
         {
-            if (player.Calamity().StealthStrikeAvailable())
-            {
-                int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (stealth.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[stealth].Calamity().stealthStrike = true;
-                return false;
-            }
-            return true;
+            int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            if (stealth.WithinBounds(Main.maxProjectiles))
+                Main.projectile[stealth].Calamity().stealthStrike = true;
+            return false;
         }
+        return true;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<RadiantStar>().
-                AddIngredient<DivineGeode>(6).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<RadiantStar>().
+            AddIngredient<DivineGeode>(6).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

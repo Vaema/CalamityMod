@@ -9,70 +9,69 @@ using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Typeless
+namespace CalamityMod.Projectiles.Typeless;
+
+public class BossRushEffectThing : ModProjectile, ILocalizedModType
 {
-    public class BossRushEffectThing : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Typeless";
+    public Player Owner => Main.player[Projectile.owner];
+    public ref float Time => ref Projectile.ai[0];
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
-        public Player Owner => Main.player[Projectile.owner];
-        public ref float Time => ref Projectile.ai[0];
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public override void SetDefaults()
+        Projectile.width = 2;
+        Projectile.height = 2;
+        Projectile.aiStyle = -1;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.timeLeft = BossRushEvent.StartEffectTotalTime;
+        Projectile.penetrate = -1;
+    }
+
+    public override void AI()
+    {
+        Projectile.Center = Owner.Center;
+        if (Time >= 70f)
+            MoonlordDeathDrama.RequestLight(Utils.GetLerpValue(70f, 85f, Time, true), Main.LocalPlayer.Center);
+
+        if (Time % 10f == 9f)
+            BossRushEvent.SyncStartTimer((int)Time);
+
+        float currentShakePower = MathHelper.Lerp(8f, 12f, Utils.GetLerpValue(BossRushEvent.StartEffectTotalTime * 0.6f, BossRushEvent.StartEffectTotalTime, Time, true));
+        currentShakePower *= 1f - Utils.GetLerpValue(1500f, 3700f, Main.LocalPlayer.Distance(Projectile.Center), true);
+        Main.LocalPlayer.SetScreenshake(currentShakePower);
+
+        Time++;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        BossRushEvent.SyncStartTimer(BossRushEvent.StartEffectTotalTime);
+        for (int doom = 0; doom < Main.maxNPCs; doom++)
         {
-            Projectile.width = 2;
-            Projectile.height = 2;
-            Projectile.aiStyle = -1;
-            Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;
-            Projectile.timeLeft = BossRushEvent.StartEffectTotalTime;
-            Projectile.penetrate = -1;
+            NPC n = Main.npc[doom];
+            if (!n.active)
+                continue;
+
+            // will also correctly despawn EoW because none of his segments are boss flagged
+            bool shouldDespawn = n.boss || n.type == NPCID.EaterofWorldsHead || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail || n.type == ModContent.NPCType<Draedon>();
+            if (shouldDespawn)
+            {
+                n.active = false;
+                n.netUpdate = true;
+            }
         }
 
-        public override void AI()
+        BossRushEvent.BossRushStage = 0;
+        BossRushEvent.BossRushActive = true;
+
+        // Play startup dialogue
+        BossRushDialogueSystem.StartDialogue(DownedBossSystem.startedBossRushAtLeastOnce ? BossRushDialoguePhase.StartRepeat : BossRushDialoguePhase.Start);
+
+        CalamityNetcode.SyncWorld();
+        if (Main.dedServ)
         {
-            Projectile.Center = Owner.Center;
-            if (Time >= 70f)
-                MoonlordDeathDrama.RequestLight(Utils.GetLerpValue(70f, 85f, Time, true), Main.LocalPlayer.Center);
-
-            if (Time % 10f == 9f)
-                BossRushEvent.SyncStartTimer((int)Time);
-
-            float currentShakePower = MathHelper.Lerp(8f, 12f, Utils.GetLerpValue(BossRushEvent.StartEffectTotalTime * 0.6f, BossRushEvent.StartEffectTotalTime, Time, true));
-            currentShakePower *= 1f - Utils.GetLerpValue(1500f, 3700f, Main.LocalPlayer.Distance(Projectile.Center), true);
-            Main.LocalPlayer.SetScreenshake(currentShakePower);
-
-            Time++;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            BossRushEvent.SyncStartTimer(BossRushEvent.StartEffectTotalTime);
-            for (int doom = 0; doom < Main.maxNPCs; doom++)
-            {
-                NPC n = Main.npc[doom];
-                if (!n.active)
-                    continue;
-
-                // will also correctly despawn EoW because none of his segments are boss flagged
-                bool shouldDespawn = n.boss || n.type == NPCID.EaterofWorldsHead || n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail || n.type == ModContent.NPCType<Draedon>();
-                if (shouldDespawn)
-                {
-                    n.active = false;
-                    n.netUpdate = true;
-                }
-            }
-
-            BossRushEvent.BossRushStage = 0;
-            BossRushEvent.BossRushActive = true;
-
-            // Play startup dialogue
-            BossRushDialogueSystem.StartDialogue(DownedBossSystem.startedBossRushAtLeastOnce ? BossRushDialoguePhase.StartRepeat : BossRushDialoguePhase.Start);
-
-            CalamityNetcode.SyncWorld();
-            if (Main.dedServ)
-            {
-                BossRushStagePacket.Send();
-            }
+            BossRushStagePacket.Send();
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class RimehoundBanner : BaseBanner
 {
-    public class RimehoundBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 59;
-    }
+    public override int BannerTileStyle => 59;
 }

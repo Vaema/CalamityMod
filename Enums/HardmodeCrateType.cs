@@ -1,9 +1,8 @@
-﻿namespace CalamityMod.Enums
+﻿namespace CalamityMod.Enums;
+
+public enum HardmodeCrateType
 {
-    public enum HardmodeCrateType
-    {
-        Biome,
-        Mythril,
-        Titanium
-    }
+    Biome,
+    Mythril,
+    Titanium
 }

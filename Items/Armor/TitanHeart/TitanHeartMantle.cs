@@ -4,51 +4,50 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Armor.TitanHeart
+namespace CalamityMod.Items.Armor.TitanHeart;
+
+[AutoloadEquip(EquipType.Body)]
+public class TitanHeartMantle : ModItem, ILocalizedModType
 {
-    [AutoloadEquip(EquipType.Body)]
-    public class TitanHeartMantle : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+    public static float RogueDamageBoost = 0.1f;
+    public static float RogueKnockbackBoost = 0.5f;
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueKnockbackBoost.ToPercent());
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Armor.Hardmode";
+        if (Main.dedServ)
+            return;
 
-        public static float RogueDamageBoost = 0.1f;
-        public static float RogueKnockbackBoost = 0.5f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueKnockbackBoost.ToPercent());
+        int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
 
-        public override void SetStaticDefaults()
-        {
-            if (Main.dedServ)
-                return;
+        ArmorIDs.Body.Sets.HidesTopSkin[equipSlot] = true;
+        ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
+    }
 
-            int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
+    public override void SetDefaults()
+    {
+        Item.width = 18;
+        Item.height = 18;
+        Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+        Item.rare = ItemRarityID.LightRed;
+        Item.defense = 14;
+    }
 
-            ArmorIDs.Body.Sets.HidesTopSkin[equipSlot] = true;
-            ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
-        }
+    public override void UpdateEquip(Player player)
+    {
+        player.Calamity().titanHeartMantle = true;
+        player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 18;
-            Item.height = 18;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
-            Item.defense = 14;
-        }
-
-        public override void UpdateEquip(Player player)
-        {
-            player.Calamity().titanHeartMantle = true;
-            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<AstralMonolith>(20).
-                AddIngredient<Materials.TitanHeart>().
-                AddTile(TileID.Anvils).
-                SortBeforeFirstRecipesOf(ModContent.ItemType<TitanHeartBoots>()).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<AstralMonolith>(20).
+            AddIngredient<Materials.TitanHeart>().
+            AddTile(TileID.Anvils).
+            SortBeforeFirstRecipesOf(ModContent.ItemType<TitanHeartBoots>()).
+            Register();
     }
 }

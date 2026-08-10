@@ -6,33 +6,32 @@ using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.FurnitureAncient
+namespace CalamityMod.Tiles.FurnitureAncient;
+
+public class AncientSofa : ModTile
 {
-    public class AncientSofa : ModTile
+    public override void SetStaticDefaults() => this.SetUpSofa(ModContent.ItemType<Items.Placeables.FurnitureAncient.AncientSofa>(), true);
+
+    public override bool CreateDust(int i, int j, ref int type)
     {
-        public override void SetStaticDefaults() => this.SetUpSofa(ModContent.ItemType<Items.Placeables.FurnitureAncient.AncientSofa>(), true);
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+        return false;
+    }
 
-        public override bool CreateDust(int i, int j, ref int type)
-        {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
-            return false;
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
+    }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+    public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => FurnitureCommon.BenchSitInfo(i, j, ref info);
 
-        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => FurnitureCommon.BenchSitInfo(i, j, ref info);
+    public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
+    public override void MouseOver(int i, int j) => FurnitureCommon.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAncient.AncientSofa>());
 
-        public override void MouseOver(int i, int j) => FurnitureCommon.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAncient.AncientSofa>());
-
-        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
-        {
-            return settings.player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance);
-        }
+    public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
+    {
+        return settings.player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance);
     }
 }

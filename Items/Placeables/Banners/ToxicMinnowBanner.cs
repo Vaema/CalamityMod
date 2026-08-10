@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class ToxicMinnowBanner : BaseBanner
 {
-    public class ToxicMinnowBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 17;
-    }
+    public override int BannerTileStyle => 17;
 }

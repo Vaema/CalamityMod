@@ -9,54 +9,53 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+public class DragonsBreath : ModItem, ILocalizedModType
 {
-    public class DragonsBreath : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+    public static int AmmoSavedPercent = 80;
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
+    public static readonly SoundStyle FireballSound = new("CalamityMod/Sounds/Custom/Yharon/YharonFireball", 3) { PitchVariance = 0.3f, Volume = 0.75f };
+    public static readonly SoundStyle WeldingStart = new("CalamityMod/Sounds/Item/DragonsBreathStrongStart") { Volume = 1.75f };
+    public static readonly SoundStyle WeldingBurn = new("CalamityMod/Sounds/Item/WeldingBurn") { Volume = 0.65f };
+    public static readonly SoundStyle WeldingShoot = new("CalamityMod/Sounds/Item/WeldingShoot") { Volume = 0.45f };
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
+        Item.width = 124;
+        Item.height = 72;
+        Item.damage = 328;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useTime = 30;
+        Item.useAnimation = 30;
+        Item.autoReuse = true;
+        Item.channel = true;
+        Item.useStyle = ItemUseStyleID.Shoot;
 
-        public static int AmmoSavedPercent = 80;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.knockBack = 4.5f;
+        Item.UseSound = null;
+        Item.shoot = ModContent.ProjectileType<DragonsBreathHoldout>();
+        Item.shootSpeed = 3.5f;
+        Item.useAmmo = AmmoID.Gel;
 
-        public static readonly SoundStyle FireballSound = new("CalamityMod/Sounds/Custom/Yharon/YharonFireball", 3) { PitchVariance = 0.3f, Volume = 0.75f };
-        public static readonly SoundStyle WeldingStart = new("CalamityMod/Sounds/Item/DragonsBreathStrongStart") { Volume = 1.75f };
-        public static readonly SoundStyle WeldingBurn = new("CalamityMod/Sounds/Item/WeldingBurn") { Volume = 0.65f };
-        public static readonly SoundStyle WeldingShoot = new("CalamityMod/Sounds/Item/WeldingShoot") { Volume = 0.45f };
-        public override void SetDefaults()
-        {
-            Item.width = 124;
-            Item.height = 72;
-            Item.damage = 328;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
-            Item.autoReuse = true;
-            Item.channel = true;
-            Item.useStyle = ItemUseStyleID.Shoot;
+        Item.rare = ModContent.RarityType<BurnishedAuric>();
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+    }
+    public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+    public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Projectile holdout = Projectile.NewProjectileDirect(source, position, Vector2.Zero, ModContent.ProjectileType<DragonsBreathHoldout>(), damage, knockback, player.whoAmI);
 
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.knockBack = 4.5f;
-            Item.UseSound = null;
-            Item.shoot = ModContent.ProjectileType<DragonsBreathHoldout>();
-            Item.shootSpeed = 3.5f;
-            Item.useAmmo = AmmoID.Gel;
+        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+        // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
+        holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
 
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-        }
-        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile holdout = Projectile.NewProjectileDirect(source, position, Vector2.Zero, ModContent.ProjectileType<DragonsBreathHoldout>(), damage, knockback, player.whoAmI);
-
-            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
-            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
-
-            return false;
-        }
+        return false;
     }
 }

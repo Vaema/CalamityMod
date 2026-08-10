@@ -3,18 +3,17 @@ using CalamityMod.NPCs.Leviathan;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Systems
+namespace CalamityMod.Systems;
+
+public class LeviathanMusicScene : BaseMusicSceneEffect
 {
-    public class LeviathanMusicScene : BaseMusicSceneEffect
-    {
-        public override SceneEffectPriority Priority => SceneEffectPriority.BossMedium;
+    public override SceneEffectPriority Priority => SceneEffectPriority.BossMedium;
 
-        public override int NPCType => ModContent.NPCType<Leviathan>();
-        public override int? MusicModMusic => CalamityMod.Instance.GetMusicFromMusicMod("Leviathan");
-        public override int VanillaMusic => MusicID.Boss3;
-        public override int OtherworldMusic => MusicID.OtherworldlyBoss2;
-        public override int[] AdditionalNPCs => new int[] { ModContent.NPCType<Anahita>() };
+    public override int NPCType => ModContent.NPCType<Leviathan>();
+    public override int? MusicModMusic => CalamityMod.Instance.GetMusicFromMusicMod("Leviathan");
+    public override int VanillaMusic => MusicID.Boss3;
+    public override int OtherworldMusic => MusicID.OtherworldlyBoss2;
+    public override int[] AdditionalNPCs => new int[] { ModContent.NPCType<Anahita>() };
 
-        public override bool AdditionalCheck() => CalamityGlobalNPC.LeviAndAna != -1;
-    }
+    public override bool AdditionalCheck() => CalamityGlobalNPC.LeviAndAna != -1;
 }

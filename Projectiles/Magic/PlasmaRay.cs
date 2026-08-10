@@ -3,83 +3,82 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class PlasmaRay : ModProjectile, ILocalizedModType
 {
-    public class PlasmaRay : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Projectile.width = 4;
+        Projectile.height = 4;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.penetrate = 1;
+        Projectile.extraUpdates = 100;
+        Projectile.timeLeft = 80;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.DemonTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+        if (Projectile.velocity.X != Projectile.velocity.X)
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 1;
-            Projectile.extraUpdates = 100;
-            Projectile.timeLeft = 80;
+            Projectile.position.X = Projectile.position.X + Projectile.velocity.X;
+            Projectile.velocity.X = -Projectile.velocity.X;
         }
-
-        public override void AI()
+        if (Projectile.velocity.Y != Projectile.velocity.Y)
         {
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.DemonTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
-            if (Projectile.velocity.X != Projectile.velocity.X)
+            Projectile.position.Y = Projectile.position.Y + Projectile.velocity.Y;
+            Projectile.velocity.Y = -Projectile.velocity.Y;
+        }
+        Projectile.localAI[0] += 1f;
+        if (Projectile.localAI[0] > 9f)
+        {
+            for (int i = 0; i < 4; i++)
             {
-                Projectile.position.X = Projectile.position.X + Projectile.velocity.X;
-                Projectile.velocity.X = -Projectile.velocity.X;
-            }
-            if (Projectile.velocity.Y != Projectile.velocity.Y)
-            {
-                Projectile.position.Y = Projectile.position.Y + Projectile.velocity.Y;
-                Projectile.velocity.Y = -Projectile.velocity.Y;
-            }
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 9f)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    Vector2 projPos = Projectile.position;
-                    projPos -= Projectile.velocity * ((float)i * 0.25f);
-                    Projectile.alpha = 255;
-                    int purpDust = Dust.NewDust(projPos, 1, 1, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 0.75f);
-                    Main.dust[purpDust].position = projPos;
-                    Main.dust[purpDust].scale = (float)Main.rand.Next(70, 110) * 0.013f;
-                    Main.dust[purpDust].velocity *= 0.2f;
-                }
+                Vector2 projPos = Projectile.position;
+                projPos -= Projectile.velocity * ((float)i * 0.25f);
+                Projectile.alpha = 255;
+                int purpDust = Dust.NewDust(projPos, 1, 1, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 0.75f);
+                Main.dust[purpDust].position = projPos;
+                Main.dust[purpDust].scale = (float)Main.rand.Next(70, 110) * 0.013f;
+                Main.dust[purpDust].velocity *= 0.2f;
             }
         }
+    }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        if (Projectile.owner == Main.myPlayer)
         {
-            if (Projectile.owner == Main.myPlayer)
+            float offset = Main.rand.NextFloat(MathHelper.TwoPi);
+            for (int i = 0; i < 8; i++)
             {
-                float offset = Main.rand.NextFloat(MathHelper.TwoPi);
-                for (int i = 0; i < 8; i++)
-                {
-                    Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - offset).ToRotationVector2() * 4f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<PlasmaRay2>(), (int)(Projectile.damage * 1.75), Projectile.knockBack, Projectile.owner);
-                }
-            }
-            Projectile.penetrate--;
-            if (Projectile.penetrate <= 0)
-            {
-                Projectile.Kill();
-            }
-            return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - offset).ToRotationVector2() * 4f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<PlasmaRay2>(), (int)(Projectile.damage * 1.75), Projectile.knockBack, Projectile.owner);
             }
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        Projectile.penetrate--;
+        if (Projectile.penetrate <= 0)
         {
-            target.AddBuff(BuffID.ShadowFlame, 180);
+            Projectile.Kill();
         }
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        for (int k = 0; k < 5; k++)
+        {
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+        }
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.ShadowFlame, 180);
     }
 }

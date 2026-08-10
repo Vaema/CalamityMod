@@ -9,86 +9,85 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.PermanentBoosters
+namespace CalamityMod.Items.PermanentBoosters;
+
+public class PhantomHeart : ModItem, ILocalizedModType
 {
-    public class PhantomHeart : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Misc";
+    public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PhantomHeartUse");
+    public const int ManaBoost = 60;
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ManaBoost);
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Misc";
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PhantomHeartUse");
-        public const int ManaBoost = 60;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ManaBoost);
+        // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+        ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Item.width = 28;
+        Item.height = 46;
+        Item.consumable = true;
+        Item.useAnimation = Item.useTime = 30;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.value = Item.sellPrice(gold: 24);
+        Item.rare = ModContent.RarityType<PureGreen>();
+    }
+
+    public static bool HasConsumedBefore(Player player) => player.Calamity().pHeart;
+
+    public override bool CanUseItem(Player player)
+    {
+        if (player.ConsumedManaCrystals != Player.ManaCrystalMax)
         {
-            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
+            return false;
         }
 
-        public override void SetDefaults()
+        if (HasConsumedBefore(player))
         {
-            Item.width = 28;
-            Item.height = 46;
-            Item.consumable = true;
-            Item.useAnimation = Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.value = Item.sellPrice(gold: 24);
-            Item.rare = ModContent.RarityType<PureGreen>();
-        }
-
-        public static bool HasConsumedBefore(Player player) => player.Calamity().pHeart;
-
-        public override bool CanUseItem(Player player)
-        {
-            if (player.ConsumedManaCrystals != Player.ManaCrystalMax)
+            if (player.whoAmI == Main.myPlayer)
             {
-                return false;
+                string key = "Mods.CalamityMod.Misc.PhantomHeartText";
+                Color messageColor = Color.Pink;
+                Main.NewText(Language.GetTextValue(key), messageColor);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public override bool? UseItem(Player player)
+    {
+        SoundEngine.PlaySound(UseSound, player.Center);
+        CalamityPlayer modPlayer = player.Calamity();
+        if (player.itemAnimation > 0 && player.itemTime == 0)
+        {
+            player.itemTime = Item.useTime;
+            if (modPlayer.pHeart)
+            {
+                return null;
             }
 
-            if (HasConsumedBefore(player))
-            {
-                if (player.whoAmI == Main.myPlayer)
-                {
-                    string key = "Mods.CalamityMod.Misc.PhantomHeartText";
-                    Color messageColor = Color.Pink;
-                    Main.NewText(Language.GetTextValue(key), messageColor);
-                }
-                return false;
-            }
-
-            return true;
+            player.UseManaMaxIncreasingItem(ManaBoost);
+            modPlayer.pHeart = true;
         }
+        return true;
+    }
 
-        public override bool? UseItem(Player player)
-        {
-            SoundEngine.PlaySound(UseSound, player.Center);
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.itemAnimation > 0 && player.itemTime == 0)
-            {
-                player.itemTime = Item.useTime;
-                if (modPlayer.pHeart)
-                {
-                    return null;
-                }
+    public override void ModifyTooltips(List<TooltipLine> list)
+    {
+        if (HasConsumedBefore(Main.LocalPlayer))
+            list.AddConsumedTooltip();
+    }
 
-                player.UseManaMaxIncreasingItem(ManaBoost);
-                modPlayer.pHeart = true;
-            }
-            return true;
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            if (HasConsumedBefore(Main.LocalPlayer))
-                list.AddConsumedTooltip();
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<RuinousSoul>(5).
-                AddIngredient<Necroplasm>(25).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<RuinousSoul>(5).
+            AddIngredient<Necroplasm>(25).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

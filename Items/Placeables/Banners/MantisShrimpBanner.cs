@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class MantisShrimpBanner : BaseBanner
 {
-    public class MantisShrimpBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 9;
-    }
+    public override int BannerTileStyle => 9;
 }

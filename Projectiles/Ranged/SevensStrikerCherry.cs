@@ -6,37 +6,36 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Ranged
+namespace CalamityMod.Projectiles.Ranged;
+
+public class SevensStrikerCherry : ModProjectile, ILocalizedModType
 {
-    public class SevensStrikerCherry : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Ranged";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
-        public override void SetDefaults()
-        {
-            Projectile.width = 20;
-            Projectile.height = 20;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.extraUpdates = 1;
-            Projectile.timeLeft = 300;
-        }
+        Projectile.width = 20;
+        Projectile.height = 20;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.Ranged;
+        Projectile.extraUpdates = 1;
+        Projectile.timeLeft = 300;
+    }
 
-        public override void AI()
-        {
-            Projectile.rotation += 0.1f * Projectile.direction;
-        }
+    public override void AI()
+    {
+        Projectile.rotation += 0.1f * Projectile.direction;
+    }
 
-        public override void OnKill(int timeLeft)
+    public override void OnKill(int timeLeft)
+    {
+        if (Projectile.owner == Main.myPlayer)
         {
-            if (Projectile.owner == Main.myPlayer)
+            for (int f = 0; f < 2; f++)
             {
-                for (int f = 0; f < 2; f++)
-                {
-                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<SevensStrikerCherrySplit>(), (int)(Projectile.damage * TheSevensStriker.TriplesCherrySplitMultiplier), 0f, Projectile.owner);
-                }
+                Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<SevensStrikerCherrySplit>(), (int)(Projectile.damage * TheSevensStriker.TriplesCherrySplitMultiplier), 0f, Projectile.owner);
             }
-            SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.position);
         }
+        SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.position);
     }
 }

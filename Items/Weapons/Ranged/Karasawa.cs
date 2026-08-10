@@ -9,69 +9,68 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+// TODO -- This weapon is a disgrace to its Armored Core heritage. It needs a full rework.
+public class Karasawa : ModItem, ILocalizedModType
 {
-    // TODO -- This weapon is a disgrace to its Armored Core heritage. It needs a full rework.
-    public class Karasawa : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+    public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/MechGaussRifle");
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/MechGaussRifle");
+        Item.width = 94;
+        Item.height = 44;
+        Item.DamageType = DamageClass.Ranged;
+        Item.damage = 2400;
+        Item.knockBack = 12f;
+        Item.useTime = 52;
+        Item.useAnimation = 52;
+        Item.autoReuse = true;
 
-        public override void SetDefaults()
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.UseSound = FireSound;
+        Item.noMelee = true;
+
+        Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+        Item.Calamity().donorItem = true;
+
+        Item.shoot = ModContent.ProjectileType<KarasawaShot>();
+        Item.shootSpeed = 1f;
+        Item.useAmmo = AmmoID.Bullet;
+    }
+
+    public override bool CanUseItem(Player player) => CalamityGlobalItem.HasEnoughAmmo(player, Item, 5);
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (velocity.Length() > 5f)
         {
-            Item.width = 94;
-            Item.height = 44;
-            Item.DamageType = DamageClass.Ranged;
-            Item.damage = 2400;
-            Item.knockBack = 12f;
-            Item.useTime = 52;
-            Item.useAnimation = 52;
-            Item.autoReuse = true;
-
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = FireSound;
-            Item.noMelee = true;
-
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.Calamity().donorItem = true;
-
-            Item.shoot = ModContent.ProjectileType<KarasawaShot>();
-            Item.shootSpeed = 1f;
-            Item.useAmmo = AmmoID.Bullet;
+            velocity.Normalize();
+            velocity *= 5f;
         }
+        Projectile.NewProjectile(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
 
-        public override bool CanUseItem(Player player) => CalamityGlobalItem.HasEnoughAmmo(player, Item, 5);
+        // Consume 5 ammo per shot
+        CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 5);
+        return false;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (velocity.Length() > 5f)
-            {
-                velocity.Normalize();
-                velocity *= 5f;
-            }
-            Projectile.NewProjectile(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
+    // Disable vanilla ammo consumption
+    public override bool CanConsumeAmmo(Item ammo, Player player) => false;
 
-            // Consume 5 ammo per shot
-            CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 5);
-            return false;
-        }
+    public override Vector2? HoldoutOffset() => new Vector2(-20, 0);
 
-        // Disable vanilla ammo consumption
-        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
-
-        public override Vector2? HoldoutOffset() => new Vector2(-20, 0);
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.LargeRuby).
-                AddIngredient<MysteriousCircuitry>(15).
-                AddIngredient<DubiousPlating>(25).
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<NightmareFuel>(20).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.LargeRuby).
+            AddIngredient<MysteriousCircuitry>(15).
+            AddIngredient<DubiousPlating>(25).
+            AddIngredient<CosmiliteBar>(8).
+            AddIngredient<NightmareFuel>(20).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

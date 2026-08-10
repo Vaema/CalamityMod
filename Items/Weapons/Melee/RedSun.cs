@@ -11,113 +11,112 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Melee
+namespace CalamityMod.Items.Weapons.Melee;
+
+public class RedSun : ModItem, ILocalizedModType
 {
-    public class RedSun : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Melee";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>()];
-        }
-        public override void SetDefaults()
-        {
-            Item.width = 62;
-            Item.height = 62;
-            Item.damage = 400;
-            Item.DamageType = DamageClass.Melee;
-            Item.useTime = 10;
-            Item.useAnimation = 40;
-            Item.reuseDelay = 0;
-            Item.useLimitPerAnimation = 6;
-            Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 4;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<RSSolarFlare>();
-            Item.shootSpeed = 15f;
-
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
-            Item.rare = ModContent.RarityType<HotPink>();
-            Item.Calamity().devItem = true;
-        }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            float flareSpeed = Item.shootSpeed;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-                mouseDistance = flareSpeed;
-            }
-            else
-            {
-                mouseDistance = flareSpeed / mouseDistance;
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
-                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                realPlayerPos.Y -= (float)(100 * i);
-                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-                if (mouseYDist < 0f)
-                {
-                    mouseYDist *= -1f;
-                }
-                if (mouseYDist < 20f)
-                {
-                    mouseYDist = 20f;
-                }
-                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-                mouseDistance = flareSpeed / mouseDistance;
-                mouseXDist *= mouseDistance;
-                mouseYDist *= mouseDistance;
-                float speedX4 = mouseXDist + (float)Main.rand.Next(-1000, 1001) * 0.02f;
-                float speedY5 = mouseYDist + (float)Main.rand.Next(-1000, 1001) * 0.02f;
-                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<RSSolarFlare>(), (int)((double)damage * 0.7), knockback, player.whoAmI, 0f, (float)Main.rand.Next(10));
-            }
-            return false;
-        }
-
-        public override void MeleeEffects(Player player, Rectangle hitbox)
-        {
-            if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.YellowTorch);
-        }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.Daybreak, 300);
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.AntlionClaw).
-                AddIngredient<ForsakenSaber>().
-                AddIngredient<ShadowspecBar>(5).
-                AddIngredient<EssenceofSunlight>(5).
-                AddTile<DraedonsForge>().
-                Register();
-        }
-
-        public static Color RarityColor() => CalamityUtils.ColorSwap(new Color(204, 86, 80), new Color(237, 69, 141), 4f);
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>()];
     }
+    public override void SetDefaults()
+    {
+        Item.width = 62;
+        Item.height = 62;
+        Item.damage = 400;
+        Item.DamageType = DamageClass.Melee;
+        Item.useTime = 10;
+        Item.useAnimation = 40;
+        Item.reuseDelay = 0;
+        Item.useLimitPerAnimation = 6;
+        Item.useTurn = true;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.knockBack = 4;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<RSSolarFlare>();
+        Item.shootSpeed = 15f;
+
+        Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+        Item.rare = ModContent.RarityType<HotPink>();
+        Item.Calamity().devItem = true;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        float flareSpeed = Item.shootSpeed;
+        Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+        float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
+        float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
+        if (player.gravDir == -1f)
+        {
+            mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
+        }
+        float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+        if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
+        {
+            mouseXDist = (float)player.direction;
+            mouseYDist = 0f;
+            mouseDistance = flareSpeed;
+        }
+        else
+        {
+            mouseDistance = flareSpeed / mouseDistance;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+            realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
+            realPlayerPos.Y -= (float)(100 * i);
+            mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
+            mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
+            if (mouseYDist < 0f)
+            {
+                mouseYDist *= -1f;
+            }
+            if (mouseYDist < 20f)
+            {
+                mouseYDist = 20f;
+            }
+            mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
+            mouseDistance = flareSpeed / mouseDistance;
+            mouseXDist *= mouseDistance;
+            mouseYDist *= mouseDistance;
+            float speedX4 = mouseXDist + (float)Main.rand.Next(-1000, 1001) * 0.02f;
+            float speedY5 = mouseYDist + (float)Main.rand.Next(-1000, 1001) * 0.02f;
+            Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<RSSolarFlare>(), (int)((double)damage * 0.7), knockback, player.whoAmI, 0f, (float)Main.rand.Next(10));
+        }
+        return false;
+    }
+
+    public override void MeleeEffects(Player player, Rectangle hitbox)
+    {
+        if (Main.rand.NextBool(3))
+            Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.YellowTorch);
+    }
+
+    public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.Daybreak, 300);
+    }
+
+    public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
+    {
+        target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.AntlionClaw).
+            AddIngredient<ForsakenSaber>().
+            AddIngredient<ShadowspecBar>(5).
+            AddIngredient<EssenceofSunlight>(5).
+            AddTile<DraedonsForge>().
+            Register();
+    }
+
+    public static Color RarityColor() => CalamityUtils.ColorSwap(new Color(204, 86, 80), new Color(237, 69, 141), 4f);
 }

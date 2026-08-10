@@ -6,77 +6,76 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class ExecutionersBladeStealthProj : ModProjectile, ILocalizedModType
 {
-    public class ExecutionersBladeStealthProj : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/ExecutionersBlade";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/ExecutionersBlade";
+        ProjectileID.Sets.TrailCacheLength[Type] = 2;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 64;
+        Projectile.height = 64;
+        Projectile.friendly = true;
+        Projectile.tileCollide = false;
+        Projectile.penetrate = 1;
+        Projectile.timeLeft = 200;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.extraUpdates = 1;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.timeLeft >= 150 && Projectile.FinalExtraUpdate())
+            Projectile.velocity.Y *= 1.3f;
+        Projectile.rotation += 0.5f * (float)Projectile.direction;
+        Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+    }
+
+    public override void PostDraw(Color lightColor)
+    {
+        Vector2 origin = new Vector2(32f, 32f);
+        Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/ExecutionersBladeGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
+
+    public override void OnKill(int timeLeft)
+    {
+        Projectile.ExpandHitboxBy(128);
+        SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
+        for (int i = 0; i < 3; i++)
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 2;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
-
-        public override void SetDefaults()
-        {
-            Projectile.width = 64;
-            Projectile.height = 64;
-            Projectile.friendly = true;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 200;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.extraUpdates = 1;
-        }
-
-        public override void AI()
-        {
-            if (Projectile.timeLeft >= 150 && Projectile.FinalExtraUpdate())
-                Projectile.velocity.Y *= 1.3f;
-            Projectile.rotation += 0.5f * (float)Projectile.direction;
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
-        }
-
-        public override void PostDraw(Color lightColor)
-        {
-            Vector2 origin = new Vector2(32f, 32f);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/ExecutionersBladeGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
-
-        public override void OnKill(int timeLeft)
-        {
-            Projectile.ExpandHitboxBy(128);
-            SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
-            for (int i = 0; i < 3; i++)
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+            Main.dust[dust].velocity *= 3f;
+            if (Main.rand.NextBool())
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
-                Main.dust[dust].velocity *= 3f;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[dust].scale = 0.5f;
-                    Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
-                }
-            }
-            for (int j = 0; j < 5; j++)
-            {
-                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
-                Main.dust[dust2].noGravity = true;
-                Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
-                Main.dust[dust2].velocity *= 2f;
+                Main.dust[dust].scale = 0.5f;
+                Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
             }
         }
-
-        public override bool PreDraw(ref Color lightColor)
+        for (int j = 0; j < 5; j++)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
+            int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
+            Main.dust[dust2].noGravity = true;
+            Main.dust[dust2].velocity *= 5f;
+            dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
+            Main.dust[dust2].velocity *= 2f;
         }
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

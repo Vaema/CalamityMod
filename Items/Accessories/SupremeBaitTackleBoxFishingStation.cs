@@ -3,36 +3,35 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+public class SupremeBaitTackleBoxFishingStation : ModItem, ILocalizedModType
 {
-    public class SupremeBaitTackleBoxFishingStation : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public override void SetDefaults()
-        {
-            Item.width = 46;
-            Item.height = 52;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
-            Item.accessory = true;
-        }
+        Item.width = 46;
+        Item.height = 52;
+        Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+        Item.rare = ItemRarityID.LightRed;
+        Item.accessory = true;
+    }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            player.fishingSkill += 50;
-            player.accFishingLine = true;
-            player.accTackleBox = true;
-            player.accLavaFishing = true;
-        }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        player.fishingSkill += 50;
+        player.accFishingLine = true;
+        player.accTackleBox = true;
+        player.accLavaFishing = true;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.LavaproofTackleBag).
-                AddIngredient(ItemID.MasterBait, 5).
-                AddIngredient<MolluskHusk>(5).
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.LavaproofTackleBag).
+            AddIngredient(ItemID.MasterBait, 5).
+            AddIngredient<MolluskHusk>(5).
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

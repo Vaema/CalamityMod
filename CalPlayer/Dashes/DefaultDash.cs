@@ -2,27 +2,26 @@
 using Terraria;
 using Terraria.DataStructures;
 
-namespace CalamityMod.CalPlayer.Dashes
+namespace CalamityMod.CalPlayer.Dashes;
+
+public class DefaultDash : PlayerDashEffect
 {
-    public class DefaultDash : PlayerDashEffect
+    public static new string ID { get; private set; }
+
+    public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
+
+    public override bool IsOmnidirectional => false;
+
+    public override void Load()
     {
-        public static new string ID { get; private set; }
+        ID = DashID;
+    }
 
-        public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
+    public override float CalculateDashSpeed(Player player) => 1f;
 
-        public override bool IsOmnidirectional => false;
-
-        public override void Load()
-        {
-            ID = DashID;
-        }
-
-        public override float CalculateDashSpeed(Player player) => 1f;
-
-        public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
-        {
-            hitContext.BaseDamage = 0;
-            hitContext.PlayerImmunityFrames = 0;
-        }
+    public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
+    {
+        hitContext.BaseDamage = 0;
+        hitContext.PlayerImmunityFrames = 0;
     }
 }

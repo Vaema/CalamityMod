@@ -7,118 +7,117 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Graphics.Metaballs
+namespace CalamityMod.Graphics.Metaballs;
+
+public class BigRipMetaball : Metaball
 {
-    public class BigRipMetaball : Metaball
+    public class Particle
     {
-        public class Particle
+        public float Size;
+
+        public Vector2 Velocity;
+
+        public Vector2 Center;
+
+        public Texture2D TextureToUse = null;
+
+        public float rotation = 0;
+
+        public Vector2 Scale = Vector2.One;
+
+        public float SizeScaling = 0.85f;
+        public int CurrentFrame = 0;
+        public int MaxFrames = 1;
+
+        public int ShrinkDelay = 15;
+        public int TimeAlive = 0;
+        public Particle(Vector2 center, Vector2 velocity, float size)
         {
-            public float Size;
-
-            public Vector2 Velocity;
-
-            public Vector2 Center;
-
-            public Texture2D TextureToUse = null;
-
-            public float rotation = 0;
-
-            public Vector2 Scale = Vector2.One;
-
-            public float SizeScaling = 0.85f;
-            public int CurrentFrame = 0;
-            public int MaxFrames = 1;
-
-            public int ShrinkDelay = 15;
-            public int TimeAlive = 0;
-            public Particle(Vector2 center, Vector2 velocity, float size)
-            {
-                Center = center;
-                Velocity = velocity;
-                Size = size;
-            }
-
-            public void Update()
-            {
-                TimeAlive++;
-                Center += Velocity;
-                Velocity *= 0.96f;
-                if (ShrinkDelay < TimeAlive || (TimeAlive > 1 && SizeScaling <= 0))
-                    Scale.X *= SizeScaling;
-            }
+            Center = center;
+            Velocity = velocity;
+            Size = size;
         }
 
-        public override bool FixedToScreen => true;
-        public static List<Particle> Particles
+        public void Update()
         {
-            get;
-            private set;
-        } = new();
-
-        public override bool AnythingToDraw => Particles.Any();
-        public static Asset<Texture2D> LayerAsset
-        {
-            get;
-            private set;
+            TimeAlive++;
+            Center += Velocity;
+            Velocity *= 0.96f;
+            if (ShrinkDelay < TimeAlive || (TimeAlive > 1 && SizeScaling <= 0))
+                Scale.X *= SizeScaling;
         }
-        public override IEnumerable<Texture2D> Layers
+    }
+
+    public override bool FixedToScreen => true;
+    public static List<Particle> Particles
+    {
+        get;
+        private set;
+    } = new();
+
+    public override bool AnythingToDraw => Particles.Any();
+    public static Asset<Texture2D> LayerAsset
+    {
+        get;
+        private set;
+    }
+    public override IEnumerable<Texture2D> Layers
+    {
+        get
         {
-            get
-            {
-                yield return LayerAsset.Value;
-            }
+            yield return LayerAsset.Value;
         }
-        public override void Load()
+    }
+    public override void Load()
+    {
+        if (Main.dedServ)
+            return;
+
+        // Load the layer asset wrapper.
+        LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/BigRipLayer", AssetRequestMode.ImmediateLoad);
+    }
+    public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
+
+    public override Color EdgeColor => new Color(239, 111, 85) * 0.5f;
+
+    public override void Update()
+    {
+        // Update all particle instances.
+        // Once sufficiently small, they vanish.
+        for (int i = 0; i < Particles.Count; i++)
+            Particles[i].Update();
+        Particles.RemoveAll(p => p.Scale.X <= 0.05f);
+    }
+
+    public static Particle SpawnParticle(Vector2 position, Vector2 velocity, float size)
+    {
+        Particle particle = new(position, velocity, size);
+        Particles.Add(particle);
+
+        return particle;
+    }
+
+    // Make the texture scroll.
+    public override Vector2 CalculateManualOffsetForLayer(int layerIndex)
+    {
+        return Vector2.Zero;
+    }
+
+    public override void DrawInstances()
+    {
+        Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+
+        foreach (Particle particle in Particles)
         {
-            if (Main.dedServ)
-                return;
-
-            // Load the layer asset wrapper.
-            LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/BigRipLayer", AssetRequestMode.ImmediateLoad);
-        }
-        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
-
-        public override Color EdgeColor => new Color(239, 111, 85) * 0.5f;
-
-        public override void Update()
-        {
-            // Update all particle instances.
-            // Once sufficiently small, they vanish.
-            for (int i = 0; i < Particles.Count; i++)
-                Particles[i].Update();
-            Particles.RemoveAll(p => p.Scale.X <= 0.05f);
-        }
-
-        public static Particle SpawnParticle(Vector2 position, Vector2 velocity, float size)
-        {
-            Particle particle = new(position, velocity, size);
-            Particles.Add(particle);
-
-            return particle;
-        }
-
-        // Make the texture scroll.
-        public override Vector2 CalculateManualOffsetForLayer(int layerIndex)
-        {
-            return Vector2.Zero;
-        }
-
-        public override void DrawInstances()
-        {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
-
-            foreach (Particle particle in Particles)
-            {
-                var texture2d = particle.TextureToUse ?? tex;
-                Vector2 drawPosition = particle.Center - Main.screenPosition;
-                var modScale = particle.Scale;
-                if (particle.TimeAlive < 5)
-                    modScale.X *= 0.25f + 0.75f * particle.TimeAlive / 5f;
-                Vector2 scale = modScale * particle.Size / texture2d.Height;
-                var frame = texture2d.Frame(1, particle.MaxFrames, 0, particle.CurrentFrame);
-                Vector2 origin = frame.Size() * 0.5f;
-                Main.spriteBatch.Draw(texture2d, drawPosition, frame, Color.White, particle.rotation, origin, scale, SpriteEffects.None, 0f);
-            }
+            var texture2d = particle.TextureToUse ?? tex;
+            Vector2 drawPosition = particle.Center - Main.screenPosition;
+            var modScale = particle.Scale;
+            if (particle.TimeAlive < 5)
+                modScale.X *= 0.25f + 0.75f * particle.TimeAlive / 5f;
+            Vector2 scale = modScale * particle.Size / texture2d.Height;
+            var frame = texture2d.Frame(1, particle.MaxFrames, 0, particle.CurrentFrame);
+            Vector2 origin = frame.Size() * 0.5f;
+            Main.spriteBatch.Draw(texture2d, drawPosition, frame, Color.White, particle.rotation, origin, scale, SpriteEffects.None, 0f);
         }
     }
 }

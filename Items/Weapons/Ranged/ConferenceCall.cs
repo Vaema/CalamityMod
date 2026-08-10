@@ -4,121 +4,120 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
-{
-    [LegacyName("TrueConferenceCall", "ConclaveCrossfire")]
-    public class ConferenceCall : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
+namespace CalamityMod.Items.Weapons.Ranged;
 
-        public override void SetDefaults()
+[LegacyName("TrueConferenceCall", "ConclaveCrossfire")]
+public class ConferenceCall : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+    public override void SetDefaults()
+    {
+        Item.width = 66;
+        Item.height = 26;
+        Item.damage = 53;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useTime = 42;
+        Item.useAnimation = 42;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 4.5f;
+        Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+        Item.rare = ItemRarityID.Red;
+        Item.UseSound = SoundID.Item38;
+        Item.autoReuse = true;
+        Item.shootSpeed = 12f;
+        Item.shoot = ProjectileID.PurificationPowder;
+        Item.useAmmo = AmmoID.Bullet;
+    }
+
+    public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        int bulletAmt = 4;
+        for (int index = 0; index < bulletAmt; ++index)
         {
-            Item.width = 66;
-            Item.height = 26;
-            Item.damage = 53;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 42;
-            Item.useAnimation = 42;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
-            Item.rare = ItemRarityID.Red;
-            Item.UseSound = SoundID.Item38;
-            Item.autoReuse = true;
-            Item.shootSpeed = 12f;
-            Item.shoot = ProjectileID.PurificationPowder;
-            Item.useAmmo = AmmoID.Bullet;
+            velocity.X += Main.rand.Next(-15, 16) * 0.05f;
+            velocity.Y += Main.rand.Next(-15, 16) * 0.05f;
+            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            Main.projectile[proj].extraUpdates += 2;
         }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        int maxTargets = 7;
+        int[] targets = new int[maxTargets];
+        int targetArrayIndex = 0;
+        Rectangle rectangle = new Rectangle((int)player.Center.X - 960, (int)player.Center.Y - 540, 1920, 1080);
+        foreach (NPC npc in Main.ActiveNPCs)
         {
-            int bulletAmt = 4;
-            for (int index = 0; index < bulletAmt; ++index)
+            if (npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly && !npc.immortal)
             {
-                velocity.X += Main.rand.Next(-15, 16) * 0.05f;
-                velocity.Y += Main.rand.Next(-15, 16) * 0.05f;
-                int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                Main.projectile[proj].extraUpdates += 2;
-            }
-
-            int maxTargets = 7;
-            int[] targets = new int[maxTargets];
-            int targetArrayIndex = 0;
-            Rectangle rectangle = new Rectangle((int)player.Center.X - 960, (int)player.Center.Y - 540, 1920, 1080);
-            foreach (NPC npc in Main.ActiveNPCs)
-            {
-                if (npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly && !npc.immortal)
+                if (npc.Hitbox.Intersects(rectangle))
                 {
-                    if (npc.Hitbox.Intersects(rectangle))
+                    if (targetArrayIndex < maxTargets)
                     {
-                        if (targetArrayIndex < maxTargets)
-                        {
-                            targets[targetArrayIndex] = npc.whoAmI;
-                            targetArrayIndex++;
-                        }
-                        else
-                            break;
+                        targets[targetArrayIndex] = npc.whoAmI;
+                        targetArrayIndex++;
                     }
+                    else
+                        break;
                 }
             }
+        }
 
-            if (targetArrayIndex == 0)
-                return false;
-
-            Vector2 targetPosition;
-            int extraBulletDamage = (int)(damage * 0.8);
-
-            for (int j = 0; j < targetArrayIndex; j++)
-            {
-                targetPosition = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
-                targetPosition.Y -= 100 * j;
-
-                // Create a dummy projectile to grab the number of max updates the bullet has for predictive aim use
-                Projectile dummy = new Projectile();
-                dummy.SetDefaults(type);
-                Vector2 extraBulletVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(targetPosition, Main.npc[targets[j]], Item.shootSpeed, dummy.MaxUpdates);
-
-                int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
-                Main.projectile[proj].tileCollide = false;
-                Main.projectile[proj].timeLeft /= 2;
-            }
-
-            if (targetArrayIndex == maxTargets)
-                return false;
-
-            // Fire bullets at the same targets if 12 unique targets aren't found
-            for (int k = 0; k < maxTargets - targetArrayIndex; k++)
-            {
-                int randomTarget = Main.rand.Next(targetArrayIndex);
-
-                targetPosition = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
-                targetPosition.Y -= 100 * randomTarget;
-
-                // Create a dummy projectile to grab the number of max updates the bullet has for predictive aim use
-                Projectile dummy = new Projectile();
-                dummy.SetDefaults(type);
-                Vector2 extraBulletVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(targetPosition, Main.npc[targets[randomTarget]], Item.shootSpeed, dummy.MaxUpdates);
-
-                int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
-                Main.projectile[proj].tileCollide = false;
-                Main.projectile[proj].timeLeft /= 2;
-            }
-
+        if (targetArrayIndex == 0)
             return false;
+
+        Vector2 targetPosition;
+        int extraBulletDamage = (int)(damage * 0.8);
+
+        for (int j = 0; j < targetArrayIndex; j++)
+        {
+            targetPosition = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+            targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
+            targetPosition.Y -= 100 * j;
+
+            // Create a dummy projectile to grab the number of max updates the bullet has for predictive aim use
+            Projectile dummy = new Projectile();
+            dummy.SetDefaults(type);
+            Vector2 extraBulletVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(targetPosition, Main.npc[targets[j]], Item.shootSpeed, dummy.MaxUpdates);
+
+            int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
+            Main.projectile[proj].tileCollide = false;
+            Main.projectile[proj].timeLeft /= 2;
         }
 
-        public override void AddRecipes()
+        if (targetArrayIndex == maxTargets)
+            return false;
+
+        // Fire bullets at the same targets if 12 unique targets aren't found
+        for (int k = 0; k < maxTargets - targetArrayIndex; k++)
         {
-            CreateRecipe().
-                AddIngredient(ItemID.TacticalShotgun).
-                AddIngredient(ItemID.FragmentVortex, 12).
-                AddTile(TileID.LunarCraftingStation).
-                Register();
+            int randomTarget = Main.rand.Next(targetArrayIndex);
+
+            targetPosition = new Vector2(player.position.X + player.width * 0.5f + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+            targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
+            targetPosition.Y -= 100 * randomTarget;
+
+            // Create a dummy projectile to grab the number of max updates the bullet has for predictive aim use
+            Projectile dummy = new Projectile();
+            dummy.SetDefaults(type);
+            Vector2 extraBulletVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(targetPosition, Main.npc[targets[randomTarget]], Item.shootSpeed, dummy.MaxUpdates);
+
+            int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
+            Main.projectile[proj].tileCollide = false;
+            Main.projectile[proj].timeLeft /= 2;
         }
+
+        return false;
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.TacticalShotgun).
+            AddIngredient(ItemID.FragmentVortex, 12).
+            AddTile(TileID.LunarCraftingStation).
+            Register();
     }
 }

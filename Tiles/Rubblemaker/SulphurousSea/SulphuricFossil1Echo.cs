@@ -6,30 +6,29 @@ using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Rubblemaker.SulphurousSea
+namespace CalamityMod.Tiles.Rubblemaker.SulphurousSea;
+
+public class SulphuricFossil1Echo : ModTile
 {
-    public class SulphuricFossil1Echo : ModTile
+    public override string Texture => "CalamityMod/Tiles/Abyss/SulphuricFossil1";
+    public override void SetStaticDefaults()
     {
-        public override string Texture => "CalamityMod/Tiles/Abyss/SulphuricFossil1";
-        public override void SetStaticDefaults()
-        {
-            Main.tileLighted[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            Main.tileLavaDeath[Type] = true;
-            Main.tileWaterDeath[Type] = false;
+        Main.tileLighted[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        Main.tileLavaDeath[Type] = true;
+        Main.tileWaterDeath[Type] = false;
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
-            TileObjectData.addTile(Type);
-            AddMapEntry(new Color(113, 90, 71), CalamityUtils.GetText("Tiles.Fossil"));
-            DustType = (int)CalamityDusts.SulphurousSeaAcid;
+        TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+        TileObjectData.addTile(Type);
+        AddMapEntry(new Color(113, 90, 71), CalamityUtils.GetText("Tiles.Fossil"));
+        DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
-            RegisterItemDrop(ModContent.ItemType<CorrodedFossil>());
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<CorrodedFossil>(), Type, 0);
-        }
+        RegisterItemDrop(ModContent.ItemType<CorrodedFossil>());
+        FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<CorrodedFossil>(), Type, 0);
+    }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
     }
 }

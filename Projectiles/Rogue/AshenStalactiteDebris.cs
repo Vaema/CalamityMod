@@ -6,54 +6,53 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class AshenStalactiteDebris : ModProjectile, ILocalizedModType
 {
-    public class AshenStalactiteDebris : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetDefaults()
-        {
-            Projectile.width = 12;
-            Projectile.height = 12;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 50;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
-        }
+        Projectile.width = 12;
+        Projectile.height = 12;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 50;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.usesIDStaticNPCImmunity = true;
+        Projectile.idStaticNPCHitCooldown = 10;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        Projectile.rotation += 0.2f;
+        Projectile.velocity.Y += 0.2f;
+        if (Projectile.velocity.Y > 16f)
         {
-            Projectile.rotation += 0.2f;
-            Projectile.velocity.Y += 0.2f;
-            if (Projectile.velocity.Y > 16f)
-            {
-                Projectile.velocity.Y = 16f;
-            }
+            Projectile.velocity.Y = 16f;
         }
+    }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            Projectile.Kill();
-            return false;
-        }
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
+        SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+        Projectile.Kill();
+        return false;
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+        return false;
+    }
 
-        public override void OnKill(int timeLeft)
+    public override void OnKill(int timeLeft)
+    {
+        for (int i = 0; i < 3; i++)
         {
-            for (int i = 0; i < 3; i++)
-            {
-                Dust.NewDust(Projectile.Center, 1, 1, DustID.Stone, Projectile.velocity.X, Projectile.velocity.Y);
-            }
+            Dust.NewDust(Projectile.Center, 1, 1, DustID.Stone, Projectile.velocity.X, Projectile.velocity.Y);
         }
     }
 }

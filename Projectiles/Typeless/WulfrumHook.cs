@@ -10,282 +10,281 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Typeless
+namespace CalamityMod.Projectiles.Typeless;
+
+public class WulfrumHook : ModProjectile, ILocalizedModType
 {
-    public class WulfrumHook : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Typeless";
+    public Player Owner => Main.player[Projectile.owner];
+    public int EquippedHook => Owner.miscEquips[4].type;
+
+    public HookState State
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
-        public Player Owner => Main.player[Projectile.owner];
-        public int EquippedHook => Owner.miscEquips[4].type;
+        get => (HookState)(int)Projectile.ai[0];
+        set { Projectile.ai[0] = (int)value; }
+    }
 
-        public HookState State
+    public ref float Timer => ref Projectile.ai[1];
+
+    public enum HookState
+    {
+        Thrown,
+        Retracting,
+        Grappling = 3 //Making this value "3" is important here, as it makes it so that i can put this projectile in the player grapple list while also never having it considered as "grappling" (aka ai[0] = 2)
+    }
+
+    public float MaxReach => Owner.GetModPlayer<WulfrumPackPlayer>().ActualMaxLength;
+
+    public override void SetStaticDefaults()
+    {
+        //Expand the draw distance. Should never happen really , but just in case the player basically walks away from the hook.
+        ProjectileID.Sets.DrawScreenCheckFluff[Type] = 3000;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 3;
+        Projectile.height = 3;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 2;
+        Projectile.tileCollide = false;
+        Projectile.extraUpdates = WulfrumPackPlayer.HookUpdates;
+        Projectile.netImportant = true;
+        Projectile.aiStyle = ProjAIStyleID.Hook; //The projectile uses entirely custom AI, but for some reason terraria's only way to distinguish what is and isnt a hook is its ai style.
+    }
+
+    public override bool? CanUseGrapple(Player player)
+    {
+        if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer) && mPlayer.hookCooldown > 0)
         {
-            get => (HookState)(int)Projectile.ai[0];
-            set { Projectile.ai[0] = (int)value; }
+            return false;
         }
 
-        public ref float Timer => ref Projectile.ai[1];
+        return base.CanUseGrapple(player);
+    }
 
-        public enum HookState
+    public override bool? CanDamage() => false;
+
+    public override bool PreAI() => false;
+    public override void PostAI()
+    {
+        Lighting.AddLight(Projectile.Center, Color.DeepSkyBlue.ToVector3());
+        Vector2 BetweenOwner = Owner.Center - Projectile.Center;
+
+        if (Owner.dead || Owner.stoned || Owner.webbed || Owner.frozen || BetweenOwner.Length() > 1500)
         {
-            Thrown,
-            Retracting,
-            Grappling = 3 //Making this value "3" is important here, as it makes it so that i can put this projectile in the player grapple list while also never having it considered as "grappling" (aka ai[0] = 2)
+            Projectile.Kill();
+            return;
         }
 
-        public float MaxReach => Owner.GetModPlayer<WulfrumPackPlayer>().ActualMaxLength;
+        Projectile.rotation = BetweenOwner.ToRotation() - MathHelper.PiOver2;
 
-        public override void SetStaticDefaults()
+        if (Owner.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped)
         {
-            //Expand the draw distance. Should never happen really , but just in case the player basically walks away from the hook.
-            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 3000;
-        }
-
-        public override void SetDefaults()
-        {
-            Projectile.width = 3;
-            Projectile.height = 3;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
             Projectile.timeLeft = 2;
-            Projectile.tileCollide = false;
-            Projectile.extraUpdates = WulfrumPackPlayer.HookUpdates;
-            Projectile.netImportant = true;
-            Projectile.aiStyle = ProjAIStyleID.Hook; //The projectile uses entirely custom AI, but for some reason terraria's only way to distinguish what is and isnt a hook is its ai style.
         }
 
-        public override bool? CanUseGrapple(Player player)
+        if (State == HookState.Thrown)
         {
-            if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer) && mPlayer.hookCooldown > 0)
-            {
-                return false;
-            }
+            //Retract if too far.
+            if (MaxReach < BetweenOwner.Length())
+                State = HookState.Retracting;
 
-            return base.CanUseGrapple(player);
+            float fallSpeed = Projectile.velocity.Y;
+
+            if (Timer > 15 * Projectile.extraUpdates)
+                Projectile.velocity += Vector2.UnitY * 0.5f * (1 - Math.Clamp((Timer - 15) / 35f, 0f, 1f)) / Projectile.extraUpdates;
+
+            Projectile.velocity *= 0.98f;
+
+            if (Projectile.velocity.Y + 0.001 > 0)
+                Projectile.velocity.Y = Math.Clamp(Projectile.velocity.Y, 0, Math.Max(18f, fallSpeed));
+
+            if (Projectile.velocity.Length() < 1f)
+                State = HookState.Retracting;
+
+            CheckForGrapplableTiles();
+
         }
 
-        public override bool? CanDamage() => false;
-
-        public override bool PreAI() => false;
-        public override void PostAI()
+        else if (State == HookState.Retracting)
         {
-            Lighting.AddLight(Projectile.Center, Color.DeepSkyBlue.ToVector3());
-            Vector2 BetweenOwner = Owner.Center - Projectile.Center;
+            Projectile.velocity = BetweenOwner.SafeNormalize(Vector2.One) * Owner.GetModPlayer<WulfrumPackPlayer>().ActualReturnVelocity;
+            Projectile.Center += Vector2.UnitY * 0.5f;
 
-            if (Owner.dead || Owner.stoned || Owner.webbed || Owner.frozen || BetweenOwner.Length() > 1500)
-            {
+            if (BetweenOwner.Length() < 25f)
                 Projectile.Kill();
-                return;
-            }
-
-            Projectile.rotation = BetweenOwner.ToRotation() - MathHelper.PiOver2;
-
-            if (Owner.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped)
-            {
-                Projectile.timeLeft = 2;
-            }
-
-            if (State == HookState.Thrown)
-            {
-                //Retract if too far.
-                if (MaxReach < BetweenOwner.Length())
-                    State = HookState.Retracting;
-
-                float fallSpeed = Projectile.velocity.Y;
-
-                if (Timer > 15 * Projectile.extraUpdates)
-                    Projectile.velocity += Vector2.UnitY * 0.5f * (1 - Math.Clamp((Timer - 15) / 35f, 0f, 1f)) / Projectile.extraUpdates;
-
-                Projectile.velocity *= 0.98f;
-
-                if (Projectile.velocity.Y + 0.001 > 0)
-                    Projectile.velocity.Y = Math.Clamp(Projectile.velocity.Y, 0, Math.Max(18f, fallSpeed));
-
-                if (Projectile.velocity.Length() < 1f)
-                    State = HookState.Retracting;
-
-                CheckForGrapplableTiles();
-
-            }
-
-            else if (State == HookState.Retracting)
-            {
-                Projectile.velocity = BetweenOwner.SafeNormalize(Vector2.One) * Owner.GetModPlayer<WulfrumPackPlayer>().ActualReturnVelocity;
-                Projectile.Center += Vector2.UnitY * 0.5f;
-
-                if (BetweenOwner.Length() < 25f)
-                    Projectile.Kill();
-            }
-
-            else
-            {
-                float LengthToOwner = BetweenOwner.Length();
-
-                if (LengthToOwner > Owner.GetModPlayer<WulfrumPackPlayer>().SwingLength + 60f)
-                {
-                    State = HookState.Retracting;
-                }
-
-                Point tilePos = Projectile.Center.ToTileCoordinates();
-                Tile tile = Main.tile[tilePos];
-                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
-                    State = HookState.Retracting;
-
-                Projectile.velocity = Vector2.Zero;
-
-                if (Owner.grapCount < 10)
-                {
-                    Owner.grappling[Owner.grapCount] = Projectile.whoAmI;
-                    Owner.grapCount++;
-                }
-            }
-
-            Timer++;
         }
 
-        public void CheckForGrapplableTiles()
+        else
         {
-            Vector2 hitboxStart = Projectile.Center - new Vector2(5f);
-            Vector2 hitboxEnd = Projectile.Center + new Vector2(5f);
+            float LengthToOwner = BetweenOwner.Length();
 
-            Point topLeftTile = (hitboxStart - new Vector2(16f)).ToTileCoordinates();
-            Point bottomRightTile = (hitboxEnd + new Vector2(32f)).ToTileCoordinates();
-
-            for (int x = topLeftTile.X; x < bottomRightTile.X; x++)
+            if (LengthToOwner > Owner.GetModPlayer<WulfrumPackPlayer>().SwingLength + 60f)
             {
-                for (int y = topLeftTile.Y; y < bottomRightTile.Y; y++)
-                {
-                    Vector2 worldPos = new Vector2(x * 16f, y * 16f);
-                    Point tilePos = new Point(x, y);
-
-                    //Ignore tiles that arent being collided with
-                    if (!(hitboxStart.X + 10f > worldPos.X) || !(hitboxStart.X < worldPos.X + 16f) || !(hitboxStart.Y + 10f > worldPos.Y) || !(hitboxStart.Y < worldPos.Y + 16f))
-                        continue;
-
-                    Tile tile = Main.tile[tilePos];
-
-                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook && Projectile.Distance(Owner.Center) > 96) || Owner.IsBlacklistedForGrappling(tilePos))
-                        continue;
-
-                    /*
-                    if (Main.myPlayer != Owner.whoAmI)
-                        continue;
-                    */
-
-                    OnGrapple(worldPos, x, y);
-
-                    break;
-                }
-
-                if (State == HookState.Grappling)
-                    break;
-            }
-        }
-
-        public void OnGrapple(Vector2 grapplePos, int x, int y)
-        {
-            WulfrumPackPlayer mp = Owner.GetModPlayer<WulfrumPackPlayer>();
-            //Clear all grapples
-            Owner.ClearGrapplingBlacklist();
-            Owner.grappling[0] = -1;
-            Owner.grapCount = 0;
-            for (int i = 0; i < 1000; i++)
-            {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Owner.whoAmI && Main.projectile[i].aiStyle == ProjAIStyleID.Hook && !(Main.projectile[i].whoAmI == Projectile.whoAmI))
-                    Main.projectile[i].Kill();
+                State = HookState.Retracting;
             }
 
-            //Hook onto the tile
+            Point tilePos = Projectile.Center.ToTileCoordinates();
+            Tile tile = Main.tile[tilePos];
+            if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
+                State = HookState.Retracting;
+
             Projectile.velocity = Vector2.Zero;
-            State = HookState.Grappling;
-
-            Projectile.Center = grapplePos + Vector2.One * 8f;
-            //effects
-            WorldGen.KillTile(x, y, fail: true, effectOnly: true);
-            SoundEngine.PlaySound(SoundID.Dig, grapplePos);
-            SoundEngine.PlaySound(WulfrumAcrobaticsPack.GrabSound, grapplePos);
 
             if (Owner.grapCount < 10)
             {
                 Owner.grappling[Owner.grapCount] = Projectile.whoAmI;
                 Owner.grapCount++;
             }
-
-            if (EquippedHook == ItemID.QueenSlimeHook && Owner.whoAmI == Main.myPlayer)
-            {
-                Owner.DoQueenSlimeHookTeleport(grapplePos + new Vector2(-(Owner.Center - Projectile.Center).Length() * 0.75f, 0).RotatedBy(Projectile.DirectionTo(Owner.Center).ToRotation()));
-            }
-
-            mp.SwingLength = (Owner.Center - Projectile.Center).Length();
-            mp.OldPosition = Owner.Center - Owner.velocity;
-            mp.SetSegments(Projectile.Center);
-            mp.Grapple = Projectile.whoAmI;
-
-            Rectangle? tileVisualHitbox = WorldGen.GetTileVisualHitbox(x, y);
-            if (tileVisualHitbox.HasValue)
-                Projectile.Center = tileVisualHitbox.Value.Center.ToVector2();
-
-            if (Owner.whoAmI == Main.myPlayer && Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                Projectile.netUpdate = true;
-                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Owner.whoAmI);
-                WulfrumAcrobaticsSync.Send(Owner, mp, Projectile);
-            }
         }
 
-        public override void OnKill(int timeLeft)
+        Timer++;
+    }
+
+    public void CheckForGrapplableTiles()
+    {
+        Vector2 hitboxStart = Projectile.Center - new Vector2(5f);
+        Vector2 hitboxEnd = Projectile.Center + new Vector2(5f);
+
+        Point topLeftTile = (hitboxStart - new Vector2(16f)).ToTileCoordinates();
+        Point bottomRightTile = (hitboxEnd + new Vector2(32f)).ToTileCoordinates();
+
+        for (int x = topLeftTile.X; x < bottomRightTile.X; x++)
         {
-            if (Owner.grappling[0] == Projectile.whoAmI)
+            for (int y = topLeftTile.Y; y < bottomRightTile.Y; y++)
             {
-                Owner.grappling[0] = -1;
-                Owner.grapCount--;
+                Vector2 worldPos = new Vector2(x * 16f, y * 16f);
+                Point tilePos = new Point(x, y);
+
+                //Ignore tiles that arent being collided with
+                if (!(hitboxStart.X + 10f > worldPos.X) || !(hitboxStart.X < worldPos.X + 16f) || !(hitboxStart.Y + 10f > worldPos.Y) || !(hitboxStart.Y < worldPos.Y + 16f))
+                    continue;
+
+                Tile tile = Main.tile[tilePos];
+
+                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook && Projectile.Distance(Owner.Center) > 96) || Owner.IsBlacklistedForGrappling(tilePos))
+                    continue;
+
+                /*
+                if (Main.myPlayer != Owner.whoAmI)
+                    continue;
+                */
+
+                OnGrapple(worldPos, x, y);
+
+                break;
             }
-        }
-
-        public float PrimWidthFunction(float completionRatio, Vector2 vertexPos)
-        {
-            return 1.6f;
-        }
-
-        public Color PrimColorFunction(float completionRatio, Vector2 vertexPos)
-        {
-            Color EndColor = Color.GreenYellow;
-
-            switch (EquippedHook)
-            {
-                case ItemID.AntiGravityHook:
-                    EndColor = Color.Aquamarine;
-                    break;
-                case ItemID.QueenSlimeHook:
-                    EndColor = Color.HotPink;
-                    break;
-                case ItemID.SquirrelHook:
-                    EndColor = Color.DarkOrange;
-                    break;
-                case ItemID.StaticHook:
-                    EndColor = Color.Silver;
-                    break;
-                default:
-                    break;
-            }
-
-            return Color.Lerp(Color.DeepSkyBlue, EndColor, (float)Math.Pow(completionRatio, 1.5D));
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Vector2[] segmentPositions = new Vector2[] { Projectile.Center, Owner.Center };
 
             if (State == HookState.Grappling)
-                segmentPositions = Owner.GetModPlayer<WulfrumPackPlayer>().Segments.Select(x => x.position).ToArray();
-            PrimitiveRenderer.RenderTrail(new List<Vector2>(segmentPositions) { Owner.Center }, new(PrimWidthFunction, PrimColorFunction, smoothen: State is HookState.Grappling), 30);
+                break;
+        }
+    }
 
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, 0, 0);
-            return false;
+    public void OnGrapple(Vector2 grapplePos, int x, int y)
+    {
+        WulfrumPackPlayer mp = Owner.GetModPlayer<WulfrumPackPlayer>();
+        //Clear all grapples
+        Owner.ClearGrapplingBlacklist();
+        Owner.grappling[0] = -1;
+        Owner.grapCount = 0;
+        for (int i = 0; i < 1000; i++)
+        {
+            if (Main.projectile[i].active && Main.projectile[i].owner == Owner.whoAmI && Main.projectile[i].aiStyle == ProjAIStyleID.Hook && !(Main.projectile[i].whoAmI == Projectile.whoAmI))
+                Main.projectile[i].Kill();
         }
 
-        public override bool PreDrawExtras() => false; //Prevents vanilla chain drawing from taking place
+        //Hook onto the tile
+        Projectile.velocity = Vector2.Zero;
+        State = HookState.Grappling;
+
+        Projectile.Center = grapplePos + Vector2.One * 8f;
+        //effects
+        WorldGen.KillTile(x, y, fail: true, effectOnly: true);
+        SoundEngine.PlaySound(SoundID.Dig, grapplePos);
+        SoundEngine.PlaySound(WulfrumAcrobaticsPack.GrabSound, grapplePos);
+
+        if (Owner.grapCount < 10)
+        {
+            Owner.grappling[Owner.grapCount] = Projectile.whoAmI;
+            Owner.grapCount++;
+        }
+
+        if (EquippedHook == ItemID.QueenSlimeHook && Owner.whoAmI == Main.myPlayer)
+        {
+            Owner.DoQueenSlimeHookTeleport(grapplePos + new Vector2(-(Owner.Center - Projectile.Center).Length() * 0.75f, 0).RotatedBy(Projectile.DirectionTo(Owner.Center).ToRotation()));
+        }
+
+        mp.SwingLength = (Owner.Center - Projectile.Center).Length();
+        mp.OldPosition = Owner.Center - Owner.velocity;
+        mp.SetSegments(Projectile.Center);
+        mp.Grapple = Projectile.whoAmI;
+
+        Rectangle? tileVisualHitbox = WorldGen.GetTileVisualHitbox(x, y);
+        if (tileVisualHitbox.HasValue)
+            Projectile.Center = tileVisualHitbox.Value.Center.ToVector2();
+
+        if (Owner.whoAmI == Main.myPlayer && Main.netMode == NetmodeID.MultiplayerClient)
+        {
+            Projectile.netUpdate = true;
+            NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Owner.whoAmI);
+            WulfrumAcrobaticsSync.Send(Owner, mp, Projectile);
+        }
     }
+
+    public override void OnKill(int timeLeft)
+    {
+        if (Owner.grappling[0] == Projectile.whoAmI)
+        {
+            Owner.grappling[0] = -1;
+            Owner.grapCount--;
+        }
+    }
+
+    public float PrimWidthFunction(float completionRatio, Vector2 vertexPos)
+    {
+        return 1.6f;
+    }
+
+    public Color PrimColorFunction(float completionRatio, Vector2 vertexPos)
+    {
+        Color EndColor = Color.GreenYellow;
+
+        switch (EquippedHook)
+        {
+            case ItemID.AntiGravityHook:
+                EndColor = Color.Aquamarine;
+                break;
+            case ItemID.QueenSlimeHook:
+                EndColor = Color.HotPink;
+                break;
+            case ItemID.SquirrelHook:
+                EndColor = Color.DarkOrange;
+                break;
+            case ItemID.StaticHook:
+                EndColor = Color.Silver;
+                break;
+            default:
+                break;
+        }
+
+        return Color.Lerp(Color.DeepSkyBlue, EndColor, (float)Math.Pow(completionRatio, 1.5D));
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Vector2[] segmentPositions = new Vector2[] { Projectile.Center, Owner.Center };
+
+        if (State == HookState.Grappling)
+            segmentPositions = Owner.GetModPlayer<WulfrumPackPlayer>().Segments.Select(x => x.position).ToArray();
+        PrimitiveRenderer.RenderTrail(new List<Vector2>(segmentPositions) { Owner.Center }, new(PrimWidthFunction, PrimColorFunction, smoothen: State is HookState.Grappling), 30);
+
+        Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+
+        Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, 0, 0);
+        return false;
+    }
+
+    public override bool PreDrawExtras() => false; //Prevents vanilla chain drawing from taking place
 }

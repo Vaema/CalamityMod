@@ -8,91 +8,90 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.PermanentBoosters
+namespace CalamityMod.Items.PermanentBoosters;
+
+[LegacyName("BloodOrange")]
+public class SanguineTangerine : ModItem, ILocalizedModType
 {
-    [LegacyName("BloodOrange")]
-    public class SanguineTangerine : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Misc";
+
+    public const int LifeBoost = 25;
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LifeBoost);
+
+    public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/BloodOrangeConsume");
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Misc";
+        // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+        ItemID.Sets.SortingPriorityBossSpawns[Type] = 20; // Life Fruit
+    }
 
-        public const int LifeBoost = 25;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LifeBoost);
+    public override void SetDefaults()
+    {
+        Item.width = 38;
+        Item.height = 40;
+        Item.consumable = true;
+        Item.useAnimation = Item.useTime = 30;
+        Item.UseSound = UseSound;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.value = Item.sellPrice(gold: 16);
+        Item.rare = ItemRarityID.LightPurple;
+    }
 
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/BloodOrangeConsume");
-        public override void SetStaticDefaults()
+    public static bool HasConsumedBefore(Player player) => player.Calamity().sTangerine;
+
+    public override bool CanUseItem(Player player)
+    {
+        if (player.ConsumedLifeFruit != Player.LifeFruitMax)
         {
-            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 20; // Life Fruit
+            return false;
         }
 
-        public override void SetDefaults()
+        if (HasConsumedBefore(player))
         {
-            Item.width = 38;
-            Item.height = 40;
-            Item.consumable = true;
-            Item.useAnimation = Item.useTime = 30;
-            Item.UseSound = UseSound;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.value = Item.sellPrice(gold: 16);
-            Item.rare = ItemRarityID.LightPurple;
-        }
-
-        public static bool HasConsumedBefore(Player player) => player.Calamity().sTangerine;
-
-        public override bool CanUseItem(Player player)
-        {
-            if (player.ConsumedLifeFruit != Player.LifeFruitMax)
+            if (player.whoAmI == Main.myPlayer)
             {
-                return false;
+                string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
+                Color messageColor = Color.Orange;
+                Main.NewText(Language.GetTextValue(key), messageColor);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public override bool? UseItem(Player player)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        if (player.itemAnimation > 0 && player.itemTime == 0)
+        {
+            player.itemTime = Item.useTime;
+            if (modPlayer.sTangerine)
+            {
+                return null;
             }
 
-            if (HasConsumedBefore(player))
-            {
-                if (player.whoAmI == Main.myPlayer)
-                {
-                    string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
-                    Color messageColor = Color.Orange;
-                    Main.NewText(Language.GetTextValue(key), messageColor);
-                }
-                return false;
-            }
-
-            return true;
+            player.UseHealthMaxIncreasingItem(LifeBoost);
+            modPlayer.sTangerine = true;
         }
+        return true;
+    }
 
-        public override bool? UseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.itemAnimation > 0 && player.itemTime == 0)
-            {
-                player.itemTime = Item.useTime;
-                if (modPlayer.sTangerine)
-                {
-                    return null;
-                }
+    public override void ModifyTooltips(List<TooltipLine> list)
+    {
+        if (HasConsumedBefore(Main.LocalPlayer))
+            list.AddConsumedTooltip();
+    }
 
-                player.UseHealthMaxIncreasingItem(LifeBoost);
-                modPlayer.sTangerine = true;
-            }
-            return true;
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            if (HasConsumedBefore(Main.LocalPlayer))
-                list.AddConsumedTooltip();
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.LifeFruit).
-                AddIngredient<BloodOrb>(10).
-                AddIngredient(ItemID.SoulofFright, 5).
-                AddIngredient(ItemID.SoulofMight, 5).
-                AddIngredient(ItemID.SoulofSight, 5).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.LifeFruit).
+            AddIngredient<BloodOrb>(10).
+            AddIngredient(ItemID.SoulofFright, 5).
+            AddIngredient(ItemID.SoulofMight, 5).
+            AddIngredient(ItemID.SoulofSight, 5).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

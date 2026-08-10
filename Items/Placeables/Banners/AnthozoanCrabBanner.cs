@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class AnthozoanCrabBanner : BaseBanner
 {
-    public class AnthozoanCrabBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 120;
-    }
+    public override int BannerTileStyle => 120;
 }

@@ -7,29 +7,28 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.PlaceableTurrets
+namespace CalamityMod.Items.Placeables.PlaceableTurrets;
+
+public class LabTurret : ModItem, ILocalizedModType
 {
-    public class LabTurret : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<PlayerLabTurret>());
+        Item.DefaultToPlaceableTile(ModContent.TileType<PlayerLabTurret>());
 
-            Item.value = Item.sellPrice(silver: 50);
-            Item.rare = ItemRarityID.Orange;
-        }
+        Item.value = Item.sellPrice(silver: 50);
+        Item.rare = ItemRarityID.Orange;
+    }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 1);
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<MysteriousCircuitry>(14).
-                AddIngredient<DubiousPlating>(20).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
-                AddTile(TileID.Anvils).
-                SortBeforeFirstRecipesOf(ModContent.ItemType<HostileLabTurret>()).
-                Register();
-        }
+    public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 1);
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<MysteriousCircuitry>(14).
+            AddIngredient<DubiousPlating>(20).
+            AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
+            AddTile(TileID.Anvils).
+            SortBeforeFirstRecipesOf(ModContent.ItemType<HostileLabTurret>()).
+            Register();
     }
 }

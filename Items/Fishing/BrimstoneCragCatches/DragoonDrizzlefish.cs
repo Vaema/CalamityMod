@@ -9,121 +9,120 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
+namespace CalamityMod.Items.Fishing.BrimstoneCragCatches;
+
+public class DragoonDrizzlefish : ModItem, ILocalizedModType
 {
-    public class DragoonDrizzlefish : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Fishing";
+
+    public bool ballShot = true;
+    public int shotCounter = 0;
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Fishing";
+        ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        Item.staff[Type] = true; //so it doesn't look weird af when holding it
+    }
 
-        public bool ballShot = true;
-        public int shotCounter = 0;
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Item.width = 42;
+        Item.height = 38;
+        Item.damage = 18;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useTime = 20;
+        Item.useAnimation = 20;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 1.1f;
+        Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+        Item.rare = ItemRarityID.Orange;
+        Item.UseSound = SoundID.Item20;
+        Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<DrizzlefishFireball>();
+        Item.shootSpeed = 11f;
+    }
+    public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+
+    public override bool CanUseItem(Player player)
+    {
+        if (player.altFunctionUse == 2)
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
-            Item.staff[Type] = true; //so it doesn't look weird af when holding it
+            if (!Main.zenithWorld || player.Calamity().dragoonDrizzlefishGelBoost >= 6)
+                return false;
+
+            Item gelFodder = new Item();
+            gelFodder.useAmmo = AmmoID.Gel;
+            return player.HasAmmo(gelFodder);
         }
+        return true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 42;
-            Item.height = 38;
-            Item.damage = 18;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 1.1f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
-            Item.UseSound = SoundID.Item20;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<DrizzlefishFireball>();
-            Item.shootSpeed = 11f;
-        }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+    public override Vector2? HoldoutOrigin() => new Vector2(7, 7);
 
-        public override bool CanUseItem(Player player)
+    public override bool AltFunctionUse(Player player) => Main.zenithWorld ? true : false;
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.altFunctionUse == 2)
         {
-            if (player.altFunctionUse == 2)
+            //GFB stuff
+            Item gelFodder = new Item();
+            gelFodder.useAmmo = AmmoID.Gel;
+            player.PickAmmo(gelFodder, out _, out _, out _, out _, out _);
+
+            player.Calamity().dragoonDrizzlefishGelBoost++;
+            SoundEngine.PlaySound(Sunskater.DeathSound with { Pitch = 0.3f }, player.Center);
+            SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 0.3f }, player.Center);
+            CombatText.NewText(player.Hitbox, Color.OrangeRed, ":)");
+            for (int i = 0; i <= 11; i++)
             {
-                if (!Main.zenithWorld || player.Calamity().dragoonDrizzlefishGelBoost >= 6)
-                    return false;
+                Vector2 hVelocity = Main.rand.NextVector2Unit();
+                hVelocity.X *= 0.66f;
+                hVelocity *= Main.rand.NextFloat(1f, 2f);
 
-                Item gelFodder = new Item();
-                gelFodder.useAmmo = AmmoID.Gel;
-                return player.HasAmmo(gelFodder);
+                int heart = Gore.NewGore(player.GetSource_FromThis(), player.Center + Main.rand.NextVector2Circular(14, 14), hVelocity, 331, Main.rand.NextFloat(0.2f, 1.3f));
+                Main.gore[heart].sticky = false;
+                Main.gore[heart].velocity *= 0.4f;
+                Main.gore[heart].velocity.Y -= 0.7f;
             }
-            return true;
         }
-
-        public override Vector2? HoldoutOrigin() => new Vector2(7, 7);
-
-        public override bool AltFunctionUse(Player player) => Main.zenithWorld ? true : false;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        else
         {
-            if (player.altFunctionUse == 2)
+            if (Main.zenithWorld)
             {
-                //GFB stuff
-                Item gelFodder = new Item();
-                gelFodder.useAmmo = AmmoID.Gel;
-                player.PickAmmo(gelFodder, out _, out _, out _, out _, out _);
-
-                player.Calamity().dragoonDrizzlefishGelBoost++;
-                SoundEngine.PlaySound(Sunskater.DeathSound with { Pitch = 0.3f }, player.Center);
-                SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 0.3f }, player.Center);
-                CombatText.NewText(player.Hitbox, Color.OrangeRed, ":)");
-                for (int i = 0; i <= 11; i++)
+                if (Main.rand.NextBool(25) && player.Calamity().dragoonDrizzlefishGelBoost > 1)
                 {
-                    Vector2 hVelocity = Main.rand.NextVector2Unit();
-                    hVelocity.X *= 0.66f;
-                    hVelocity *= Main.rand.NextFloat(1f, 2f);
-
-                    int heart = Gore.NewGore(player.GetSource_FromThis(), player.Center + Main.rand.NextVector2Circular(14, 14), hVelocity, 331, Main.rand.NextFloat(0.2f, 1.3f));
-                    Main.gore[heart].sticky = false;
-                    Main.gore[heart].velocity *= 0.4f;
-                    Main.gore[heart].velocity.Y -= 0.7f;
+                    SoundStyle roar = Sunskater.DeathSound;
+                    SoundEngine.PlaySound(roar, player.Center);
+                    player.Calamity().dragoonDrizzlefishGelBoost--;
                 }
+                if (player.Calamity().dragoonDrizzlefishGelBoost == 1 && Main.rand.NextBool(3))
+                {
+                    bool MADFISH = Main.rand.NextBool(4) ? true : false;
+                    CombatText.NewText(player.Hitbox, Color.OrangeRed, MADFISH ? ">:(" : ":(");
+                    SoundStyle roar = Sunskater.DeathSound;
+                    SoundEngine.PlaySound(roar with { Pitch = -0.3f }, player.Center);
+                    if (MADFISH)
+                        player.AddBuff(ModContent.BuffType<Dragonfire>(), 240, true);
+                    return false;
+                }
+            }
+
+            velocity = velocity.RotatedByRandom(MathHelper.ToRadians(5.5f));
+            int shotType = ModContent.ProjectileType<DrizzlefishFireball>();
+            if (shotCounter < 3)
+            {
+                shotType = ModContent.ProjectileType<DrizzlefishFireball>();
+                shotCounter++;
             }
             else
             {
-                if (Main.zenithWorld)
-                {
-                    if (Main.rand.NextBool(25) && player.Calamity().dragoonDrizzlefishGelBoost > 1)
-                    {
-                        SoundStyle roar = Sunskater.DeathSound;
-                        SoundEngine.PlaySound(roar, player.Center);
-                        player.Calamity().dragoonDrizzlefishGelBoost--;
-                    }
-                    if (player.Calamity().dragoonDrizzlefishGelBoost == 1 && Main.rand.NextBool(3))
-                    {
-                        bool MADFISH = Main.rand.NextBool(4) ? true : false;
-                        CombatText.NewText(player.Hitbox, Color.OrangeRed, MADFISH ? ">:(" : ":(");
-                        SoundStyle roar = Sunskater.DeathSound;
-                        SoundEngine.PlaySound(roar with { Pitch = -0.3f }, player.Center);
-                        if (MADFISH)
-                            player.AddBuff(ModContent.BuffType<Dragonfire>(), 240, true);
-                        return false;
-                    }
-                }
-
-                velocity = velocity.RotatedByRandom(MathHelper.ToRadians(5.5f));
-                int shotType = ModContent.ProjectileType<DrizzlefishFireball>();
-                if (shotCounter < 3)
-                {
-                    shotType = ModContent.ProjectileType<DrizzlefishFireball>();
-                    shotCounter++;
-                }
-                else
-                {
-                    shotType = ModContent.ProjectileType<DrizzlefishFire>();
-                    shotCounter = 0;
-                }
-                Projectile.NewProjectile(source, position, velocity, shotType, damage, knockback, player.whoAmI, 0f, Main.rand.Next(2));
+                shotType = ModContent.ProjectileType<DrizzlefishFire>();
+                shotCounter = 0;
             }
-
-            return false;
+            Projectile.NewProjectile(source, position, velocity, shotType, damage, knockback, player.whoAmI, 0f, Main.rand.Next(2));
         }
+
+        return false;
     }
 }

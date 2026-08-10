@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class ImpiousImmolatorBanner : BaseBanner
 {
-    public class ImpiousImmolatorBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 48;
-    }
+    public override int BannerTileStyle => 48;
 }

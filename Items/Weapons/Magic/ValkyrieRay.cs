@@ -5,58 +5,57 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+public class ValkyrieRay : ModItem, ILocalizedModType
 {
-    public class ValkyrieRay : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+    // The base use time of the weapon is 36: 24 charge frames + 12 cooldown frames.
+    // The rate at which it progresses through its charge and discharge cycle is dynamically sped up by reforges.
+    // This math is handled in its holdout projectile, ValkyrieRayStaff.
+    public const int ChargeFrames = 24;
+    public const int CooldownFrames = 12;
+    public const float GemDistance = 27f;
+    public static readonly Color LightColor = new Color(235, 40, 121);
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
-        // The base use time of the weapon is 36: 24 charge frames + 12 cooldown frames.
-        // The rate at which it progresses through its charge and discharge cycle is dynamically sped up by reforges.
-        // This math is handled in its holdout projectile, ValkyrieRayStaff.
-        public const int ChargeFrames = 24;
-        public const int CooldownFrames = 12;
-        public const float GemDistance = 27f;
-        public static readonly Color LightColor = new Color(235, 40, 121);
+        Item.staff[Type] = true;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            Item.staff[Type] = true;
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 54;
+        Item.height = 52;
+        Item.damage = 90;
+        Item.knockBack = 8.5f;
+        Item.DamageType = DamageClass.Magic;
+        Item.crit = 11;
+        Item.mana = 17;
+        Item.useTime = ChargeFrames + CooldownFrames;
+        Item.useAnimation = ChargeFrames + CooldownFrames;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.UseSound = SoundID.NPCDeath7 with { Volume = 0.7f };
+        Item.useTurn = false;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
+        Item.rare = ItemRarityID.LightPurple;
+        Item.shoot = ModContent.ProjectileType<ValkyrieRayStaff>();
+        Item.shootSpeed = 25f;
+        Item.autoReuse = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 54;
-            Item.height = 52;
-            Item.damage = 90;
-            Item.knockBack = 8.5f;
-            Item.DamageType = DamageClass.Magic;
-            Item.crit = 11;
-            Item.mana = 17;
-            Item.useTime = ChargeFrames + CooldownFrames;
-            Item.useAnimation = ChargeFrames + CooldownFrames;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.NPCDeath7 with { Volume = 0.7f };
-            Item.useTurn = false;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
-            Item.rare = ItemRarityID.LightPurple;
-            Item.shoot = ModContent.ProjectileType<ValkyrieRayStaff>();
-            Item.shootSpeed = 25f;
-            Item.autoReuse = true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.HallowedBar, 12).
-                AddIngredient<AerialiteBar>(6).
-                AddIngredient(ItemID.Ruby).
-                AddIngredient(ItemID.SoulofFright).
-                AddIngredient(ItemID.SoulofMight).
-                AddIngredient(ItemID.SoulofSight).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.HallowedBar, 12).
+            AddIngredient<AerialiteBar>(6).
+            AddIngredient(ItemID.Ruby).
+            AddIngredient(ItemID.SoulofFright).
+            AddIngredient(ItemID.SoulofMight).
+            AddIngredient(ItemID.SoulofSight).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

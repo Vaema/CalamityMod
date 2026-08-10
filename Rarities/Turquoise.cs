@@ -2,20 +2,19 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Rarities
-{
-    public class Turquoise : ModRarity
-    {
-        // Turquoise is Rarity 12
-        public override Color RarityColor => new Color(0, 255, 200);
+namespace CalamityMod.Rarities;
 
-        public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
-        {
-            -2 => ItemRarityID.Red,
-            -1 => ItemRarityID.Purple,
-            1 => ModContent.RarityType<PureGreen>(),
-            2 => ModContent.RarityType<PureGreen>(), // All higher rarities are unique, and so it cannot go up past Pure Green
-            _ => Type,
-        };
-    }
+public class Turquoise : ModRarity
+{
+    // Turquoise is Rarity 12
+    public override Color RarityColor => new Color(0, 255, 200);
+
+    public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
+    {
+        -2 => ItemRarityID.Red,
+        -1 => ItemRarityID.Purple,
+        1 => ModContent.RarityType<PureGreen>(),
+        2 => ModContent.RarityType<PureGreen>(), // All higher rarities are unique, and so it cannot go up past Pure Green
+        _ => Type,
+    };
 }

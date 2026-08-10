@@ -1,17 +1,16 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.CalPlayer.Dashes
+namespace CalamityMod.CalPlayer.Dashes;
+
+public struct DashHitContext
 {
-    public struct DashHitContext
-    {
-        public int BaseDamage;
+    public int BaseDamage;
 
-        public float BaseKnockback;
+    public float BaseKnockback;
 
-        public DamageClass damageClass;
+    public DamageClass damageClass;
 
-        public int PlayerImmunityFrames;
+    public int PlayerImmunityFrames;
 
-        public int HitDirection;
-    }
+    public int HitDirection;
 }

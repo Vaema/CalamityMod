@@ -15,54 +15,53 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories.Vanity
+namespace CalamityMod.Items.Accessories.Vanity;
+
+public class LittleE : TransformationAccessory, ILocalizedModType
 {
-    public class LittleE : TransformationAccessory, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+
+    public override (EquipType, string, string)[] EquipSlots =>
+    [
+        (EquipType.Head, "BigE", null),
+        (EquipType.Body, "BigE", null),
+        (EquipType.Legs, "BigE", null),
+    ];
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
+        Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 14));
+        ItemID.Sets.AnimatesAsSoul[Type] = true;
+        ItemID.Sets.ShimmerTransformToItem[ItemID.AlphabetStatueE] = Type;
+        base.SetStaticDefaults();
+    }
 
-        public override (EquipType, string, string)[] EquipSlots =>
-        [
-            (EquipType.Head, "BigE", null),
-            (EquipType.Body, "BigE", null),
-            (EquipType.Legs, "BigE", null),
-        ];
+    public override void SetDefaults()
+    {
+        Item.width = 30;
+        Item.height = 32;
+        Item.accessory = true;
+        Item.vanity = true;
+        Item.rare = ItemRarityID.Red;
+        Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+        Item.Calamity().devItem = true;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 14));
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[ItemID.AlphabetStatueE] = Type;
-            base.SetStaticDefaults();
-        }
+    public override void ModifyTooltips(List<TooltipLine> tooltips)
+    {
+        string text = Language.GetTextValue("Mods.CalamityMod.Items.Accessories.LittleE.Tooltip").FormatWith(Main.LocalPlayer.name);       
+        if (Item.social)
+            tooltips.Insert(1, new(CalamityMod.Instance, "Tooltip", text));
+        else
+            tooltips[3].Text = text;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 30;
-            Item.height = 32;
-            Item.accessory = true;
-            Item.vanity = true;
-            Item.rare = ItemRarityID.Red;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
-            Item.Calamity().devItem = true;
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            string text = Language.GetTextValue("Mods.CalamityMod.Items.Accessories.LittleE.Tooltip").FormatWith(Main.LocalPlayer.name);       
-            if (Item.social)
-                tooltips.Insert(1, new(CalamityMod.Instance, "Tooltip", text));
-            else
-                tooltips[3].Text = text;
-        }
-
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
-            var frame = Item.GetFrame(whoAmI);
-            var position = Item.Center - Main.screenPosition + Vector2.UnitY * 4;
-            var origin = frame.Size() / 2f;
-            spriteBatch.Draw(TextureAssets.Item[Type].Value, position, frame, lightColor, rotation, origin, scale, SpriteEffects.None, 0);
-            return false;
-        }
+    public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+    {
+        var frame = Item.GetFrame(whoAmI);
+        var position = Item.Center - Main.screenPosition + Vector2.UnitY * 4;
+        var origin = frame.Size() / 2f;
+        spriteBatch.Draw(TextureAssets.Item[Type].Value, position, frame, lightColor, rotation, origin, scale, SpriteEffects.None, 0);
+        return false;
     }
 }

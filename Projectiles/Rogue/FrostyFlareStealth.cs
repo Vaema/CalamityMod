@@ -4,121 +4,120 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
-{
-    public class FrostyFlareStealth : ModProjectile, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/FrostyFlare";
+namespace CalamityMod.Projectiles.Rogue;
 
-        public override void SetDefaults()
+public class FrostyFlareStealth : ModProjectile, ILocalizedModType
+{
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/FrostyFlare";
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 10;
+        Projectile.height = 10;
+        Projectile.coldDamage = true;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 600;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.usesIDStaticNPCImmunity = true;
+        Projectile.idStaticNPCHitCooldown = 10;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.owner != Main.myPlayer)
+            return;
+
+        bool shoot = false;
+        if (Projectile.timeLeft % 30f == 0f)
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.coldDamage = true;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            if (Projectile.owner == Main.myPlayer)
+                shoot = true;
         }
 
-        public override void AI()
+        if (Projectile.ai[0] == 0f)
         {
-            if (Projectile.owner != Main.myPlayer)
-                return;
+            Projectile.velocity.X *= 0.99f;
+            Projectile.velocity.Y += 0.25f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            bool shoot = false;
-            if (Projectile.timeLeft % 30f == 0f)
+            if (shoot)
             {
-                if (Projectile.owner == Main.myPlayer)
-                    shoot = true;
+                Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 801));
+                Vector2 vel = Utils.DirectionTo(pos, Projectile.Center) * 30f;
+                vel.X += Main.rand.NextFloat(-4f, 4f);
+                int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Projectile.velocity / 4f, ModContent.ProjectileType<FrostyFlareProj>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, ai2: 1f);
+                Main.projectile[flare].alpha = 150;
             }
 
-            if (Projectile.ai[0] == 0f)
+            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater);
+            Main.dust[index2].noGravity = true;
+        }
+        else
+        {
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            int id = (int)Projectile.ai[1];
+            if (id.WithinBounds(Main.maxNPCs) && Main.npc[id].active && !Main.npc[id].dontTakeDamage)
             {
-                Projectile.velocity.X *= 0.99f;
-                Projectile.velocity.Y += 0.25f;
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                Projectile.Center = Main.npc[id].Center - Projectile.velocity * 2f;
+                Projectile.gfxOffY = Main.npc[id].gfxOffY;
 
                 if (shoot)
                 {
-                    Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 801));
-                    Vector2 vel = Utils.DirectionTo(pos, Projectile.Center) * 30f;
+                    Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 751));
+                    Vector2 vel = CalamityUtils.CalculatePredictiveAimToTarget(pos, Main.npc[id], 30f);
                     vel.X += Main.rand.NextFloat(-4f, 4f);
-                    int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Projectile.velocity / 4f, ModContent.ProjectileType<FrostyFlareProj>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, ai2: 1f);
+                    int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Main.npc[id].velocity, ModContent.ProjectileType<FrostyFlareProj>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, ai2: 1f);
                     Main.projectile[flare].alpha = 150;
                 }
-
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater);
-                Main.dust[index2].noGravity = true;
             }
             else
             {
-                Projectile.ignoreWater = true;
-                Projectile.tileCollide = false;
-                int id = (int)Projectile.ai[1];
-                if (id.WithinBounds(Main.maxNPCs) && Main.npc[id].active && !Main.npc[id].dontTakeDamage)
-                {
-                    Projectile.Center = Main.npc[id].Center - Projectile.velocity * 2f;
-                    Projectile.gfxOffY = Main.npc[id].gfxOffY;
-
-                    if (shoot)
-                    {
-                        Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 751));
-                        Vector2 vel = CalamityUtils.CalculatePredictiveAimToTarget(pos, Main.npc[id], 30f);
-                        vel.X += Main.rand.NextFloat(-4f, 4f);
-                        int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Main.npc[id].velocity, ModContent.ProjectileType<FrostyFlareProj>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, ai2: 1f);
-                        Main.projectile[flare].alpha = 150;
-                    }
-                }
-                else
-                {
-                    Projectile.Kill();
-                }
+                Projectile.Kill();
             }
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.Frostburn2, 180);
-            target.AddBuff(BuffID.Frozen, 30);
-            Projectile.ai[0] = 1f;
-            Projectile.ai[1] = target.whoAmI;
-            Projectile.velocity = target.Center - Projectile.Center;
-            Projectile.velocity *= 0.75f;
-            Projectile.netUpdate = true;
-
-            const int maxFlares = 1;
-            int flaresFound = 0;
-            int oldestFlare = -1;
-            int oldestFlareTimeLeft = 300;
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.owner == Main.myPlayer && p.type == Projectile.type && p.whoAmI != Projectile.whoAmI && p.ai[1] == target.whoAmI)
-                {
-                    flaresFound++;
-                    if (p.timeLeft < oldestFlareTimeLeft)
-                    {
-                        oldestFlareTimeLeft = p.timeLeft;
-                        oldestFlare = p.whoAmI;
-                    }
-                    if (flaresFound >= maxFlares)
-                        break;
-                }
-            }
-            if (flaresFound >= maxFlares && oldestFlare >= 0)
-            {
-                Main.projectile[oldestFlare].Kill();
-            }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(BuffID.Frostburn2, 180);
-        }
-
-        public override bool? CanDamage() => Projectile.ai[0] == 0f ? null : false;
     }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.Frostburn2, 180);
+        target.AddBuff(BuffID.Frozen, 30);
+        Projectile.ai[0] = 1f;
+        Projectile.ai[1] = target.whoAmI;
+        Projectile.velocity = target.Center - Projectile.Center;
+        Projectile.velocity *= 0.75f;
+        Projectile.netUpdate = true;
+
+        const int maxFlares = 1;
+        int flaresFound = 0;
+        int oldestFlare = -1;
+        int oldestFlareTimeLeft = 300;
+        foreach (Projectile p in Main.ActiveProjectiles)
+        {
+            if (p.owner == Main.myPlayer && p.type == Projectile.type && p.whoAmI != Projectile.whoAmI && p.ai[1] == target.whoAmI)
+            {
+                flaresFound++;
+                if (p.timeLeft < oldestFlareTimeLeft)
+                {
+                    oldestFlareTimeLeft = p.timeLeft;
+                    oldestFlare = p.whoAmI;
+                }
+                if (flaresFound >= maxFlares)
+                    break;
+            }
+        }
+        if (flaresFound >= maxFlares && oldestFlare >= 0)
+        {
+            Main.projectile[oldestFlare].Kill();
+        }
+    }
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        target.AddBuff(BuffID.Frostburn2, 180);
+    }
+
+    public override bool? CanDamage() => Projectile.ai[0] == 0f ? null : false;
 }

@@ -1,10 +1,9 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Banners
+namespace CalamityMod.Items.Placeables.Banners;
+
+[LegacyName("SmallSightseerBanner")]
+public class SightseerColliderBanner : BaseBanner
 {
-    [LegacyName("SmallSightseerBanner")]
-    public class SightseerColliderBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 32;
-    }
+    public override int BannerTileStyle => 32;
 }

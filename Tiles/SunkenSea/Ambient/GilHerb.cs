@@ -3,8 +3,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 
-namespace CalamityMod.Tiles.SunkenSea.Ambient
-{
+namespace CalamityMod.Tiles.SunkenSea.Ambient;
+
 	public class GilHerb : ModTile
 	{
 		public override void SetStaticDefaults()
@@ -14,18 +14,18 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			Main.tileNoFail[Type] = true;
 			Main.tileNoAttach[Type] = true;
 			TileID.Sets.IsVine[Type] = true;
-            TileID.Sets.VineThreads[Type] = true;
+        TileID.Sets.VineThreads[Type] = true;
 			AddMapEntry(new Color(124, 67, 197));
 			DustType = DustID.Grass;
 			HitSound = SoundID.Grass;
 		}
 		
 		public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
-        {
-            Tile tile = Framing.GetTileSafely(i, j + 1);
-            if (tile.HasTile && tile.TileType == Type)
-                WorldGen.KillTile(i, j + 1);
-        }
+    {
+        Tile tile = Framing.GetTileSafely(i, j + 1);
+        if (tile.HasTile && tile.TileType == Type)
+            WorldGen.KillTile(i, j + 1);
+    }
 
 		public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
 		{
@@ -45,18 +45,18 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 		{
 			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
 			if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
-            {
+        {
 				bool PlaceVine = false;
 				int Test = j;
 				while (Test > j - 10) 
-                {
+            {
 					Tile testTile = Framing.GetTileSafely(i, Test);
 					if (testTile.BottomSlope) 
-                    {
+                {
 						break;
 					}
 					else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<Limestone>()) 
-                    {
+                {
 						Test--;
 						continue;
 					}
@@ -65,7 +65,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 				}
 				
 				if (PlaceVine) 
-                {
+            {
 					tileBelow.TileType = Type;
 					tileBelow.HasTile = true;
 					WorldGen.SquareTileFrame(i, j + 1, true);
@@ -75,4 +75,3 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			}
 		}
 	}
-}

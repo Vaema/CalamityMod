@@ -1,14 +1,13 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum PlanterBoxType
 {
-    public enum PlanterBoxType
-    {
-        Daybloom,
-        Moonglow,
-        Deathweed,
-        DeathweedCrimson,
-        Blinkroot,
-        Waterleaf,
-        Shiverthorn,
-        Fireblossom
-    }
+    Daybloom,
+    Moonglow,
+    Deathweed,
+    DeathweedCrimson,
+    Blinkroot,
+    Waterleaf,
+    Shiverthorn,
+    Fireblossom
 }

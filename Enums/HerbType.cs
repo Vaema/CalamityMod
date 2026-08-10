@@ -1,13 +1,12 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum HerbType
 {
-    public enum HerbType
-    {
-        Daybloom,
-        Moonglow,
-        Blinkroot,
-        Deathweed,
-        Waterleaf,
-        Fireblossom,
-        Shiverthorn
-    }
+    Daybloom,
+    Moonglow,
+    Blinkroot,
+    Deathweed,
+    Waterleaf,
+    Fireblossom,
+    Shiverthorn
 }

@@ -7,94 +7,93 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class BlueBubble : ModProjectile, ILocalizedModType
 {
-    public class BlueBubble : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    public Color mainColor;
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        public Color mainColor;
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        ProjectileID.Sets.TrailCacheLength[Type] = 12;
+        ProjectileID.Sets.TrailingMode[Type] = 2;
+    }
+    public override void SetDefaults()
+    {
+        Projectile.width = 10;
+        Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.penetrate = 1;
+        Projectile.extraUpdates = 1;
+        Projectile.alpha = 255;
+        Projectile.ignoreWater = true;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.timeLeft = 120;
+    }
+
+    public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 90 && target.CanBeChasedBy(Projectile);
+
+    public override void AI()
+    {
+        Projectile.velocity *= 0.99f;
+
+        Projectile.scale += 0.005f;
+
+        if (Projectile.alpha > 0)
+            Projectile.alpha -= 30;
+        if (Projectile.alpha < 0)
+            Projectile.alpha = 0;
+
+        Vector2 v2 = Projectile.ai[0].ToRotationVector2();
+        float projRotate = Projectile.velocity.ToRotation();
+        float aiRotation = v2.ToRotation();
+        double projAngle = aiRotation - projRotate;
+        if (projAngle > MathHelper.Pi)
+            projAngle -= MathHelper.TwoPi;
+        if (projAngle < -MathHelper.Pi)
+            projAngle += MathHelper.TwoPi;
+
+        Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+
+        if (Projectile.timeLeft < 90)
         {
-            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Type] = 12;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
-        }
-        public override void SetDefaults()
-        {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.penetrate = 1;
-            Projectile.extraUpdates = 1;
-            Projectile.alpha = 255;
-            Projectile.ignoreWater = true;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.timeLeft = 120;
-        }
-
-        public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 90 && target.CanBeChasedBy(Projectile);
-
-        public override void AI()
-        {
-            Projectile.velocity *= 0.99f;
-
-            Projectile.scale += 0.005f;
-
-            if (Projectile.alpha > 0)
-                Projectile.alpha -= 30;
-            if (Projectile.alpha < 0)
-                Projectile.alpha = 0;
-
-            Vector2 v2 = Projectile.ai[0].ToRotationVector2();
-            float projRotate = Projectile.velocity.ToRotation();
-            float aiRotation = v2.ToRotation();
-            double projAngle = aiRotation - projRotate;
-            if (projAngle > MathHelper.Pi)
-                projAngle -= MathHelper.TwoPi;
-            if (projAngle < -MathHelper.Pi)
-                projAngle += MathHelper.TwoPi;
-
-            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-
-            if (Projectile.timeLeft < 90)
+            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 400f, 8f, 20f);
+            if (Main.rand.NextBool(10))
             {
-                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 400f, 8f, 20f);
-                if (Main.rand.NextBool(10))
-                {
-                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, DustID.RainbowTorch);
-                    trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
-                    trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
-                    trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;
-                    trailDust.noGravity = true;
-                }
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, DustID.RainbowTorch);
+                trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
+                trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
+                trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;
+                trailDust.noGravity = true;
             }
         }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/BlueBubble").Value;
+    }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/BlueBubble").Value;
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Color drawColor = Color.Lerp(mainColor, Color.White, 0.2f) with { A = 0 };
-            float drawRotation = Projectile.rotation;
-            Vector2 rotationPoint = texture.Size() * 0.5f;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], drawColor, 1, texture, true, true);
-            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
-            return false;
-        }
+        Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+        Color drawColor = Color.Lerp(mainColor, Color.White, 0.2f) with { A = 0 };
+        float drawRotation = Projectile.rotation;
+        Vector2 rotationPoint = texture.Size() * 0.5f;
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], drawColor, 1, texture, true, true);
+        Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+        return false;
+    }
 
-        public override void OnKill(int timeLeft)
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(Effervescence.PopSound, Projectile.Center);
+        Particle Star = new CritSpark(Projectile.Center, Vector2.Zero, Color.SkyBlue, Color.DeepSkyBlue, Main.rand.NextFloat(1f, 1.1f), 30, 0.1f, 3f);
+        GeneralParticleHandler.SpawnParticle(Star);
+        int num190 = Main.rand.Next(5, 9);
+        for (int i = 0; i < num190; i++)
         {
-            SoundEngine.PlaySound(Effervescence.PopSound, Projectile.Center);
-            Particle Star = new CritSpark(Projectile.Center, Vector2.Zero, Color.SkyBlue, Color.DeepSkyBlue, Main.rand.NextFloat(1f, 1.1f), 30, 0.1f, 3f);
-            GeneralParticleHandler.SpawnParticle(Star);
-            int num190 = Main.rand.Next(5, 9);
-            for (int i = 0; i < num190; i++)
-            {
-                int bubbly = Dust.NewDust(Projectile.Center, 0, 0, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1.4f);
-                Main.dust[bubbly].velocity *= 0.8f;
-                Main.dust[bubbly].position = Vector2.Lerp(Main.dust[bubbly].position, Projectile.Center, 0.5f);
-                Main.dust[bubbly].noGravity = true;
-            }
+            int bubbly = Dust.NewDust(Projectile.Center, 0, 0, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, default, 1.4f);
+            Main.dust[bubbly].velocity *= 0.8f;
+            Main.dust[bubbly].position = Vector2.Lerp(Main.dust[bubbly].position, Projectile.Center, 0.5f);
+            Main.dust[bubbly].noGravity = true;
         }
     }
 }

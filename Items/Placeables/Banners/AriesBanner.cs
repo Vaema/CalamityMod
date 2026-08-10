@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class AriesBanner : BaseBanner
 {
-    public class AriesBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 34;
-    }
+    public override int BannerTileStyle => 34;
 }

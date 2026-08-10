@@ -2,38 +2,50 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class MeteorStarExplosion : ModProjectile, ILocalizedModType
 {
-    public class MeteorStarExplosion : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 7;
-        }
+        Main.projFrames[Type] = 7;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 84;
-            Projectile.height = 152;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = Main.projFrames[Type] * 5;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 35;
-            Projectile.tileCollide = false;
-            Projectile.hostile = true;
-            CooldownSlot = ImmunityCooldownID.TileContactDamage;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = 84;
+        Projectile.height = 152;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = Main.projFrames[Type] * 5;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 35;
+        Projectile.tileCollide = false;
+        Projectile.hostile = true;
+        CooldownSlot = ImmunityCooldownID.TileContactDamage;
+    }
 
-        public override void AI()
-        {
-            if (Projectile.timeLeft % 5f == 4f)
-                Projectile.frame++;
-        }
+    public override void AI()
+    {
+        if (Projectile.timeLeft % 5f == 4f)
+            Projectile.frame++;
+    }
 
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+    public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+    {
+        int intendedDamage = Main.rand.Next(GloriousEnd.PlayerExplosionDmgMin, GloriousEnd.PlayerExplosionDmgMax + 1);
+
+        modifiers.SourceDamage *= 0f;
+        modifiers.SourceDamage.Flat += intendedDamage.ScaleWithDifficulty();
+        if (Projectile.ai[0] == 1f)
+            modifiers.SourceDamage.Flat /= 2;
+    }
+
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    {
+        if (target.townNPC)
         {
             int intendedDamage = Main.rand.Next(GloriousEnd.PlayerExplosionDmgMin, GloriousEnd.PlayerExplosionDmgMax + 1);
 
@@ -41,19 +53,6 @@ namespace CalamityMod.Projectiles.Magic
             modifiers.SourceDamage.Flat += intendedDamage.ScaleWithDifficulty();
             if (Projectile.ai[0] == 1f)
                 modifiers.SourceDamage.Flat /= 2;
-        }
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (target.townNPC)
-            {
-                int intendedDamage = Main.rand.Next(GloriousEnd.PlayerExplosionDmgMin, GloriousEnd.PlayerExplosionDmgMax + 1);
-
-                modifiers.SourceDamage *= 0f;
-                modifiers.SourceDamage.Flat += intendedDamage.ScaleWithDifficulty();
-                if (Projectile.ai[0] == 1f)
-                    modifiers.SourceDamage.Flat /= 2;
-            }
         }
     }
 }

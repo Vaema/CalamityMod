@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class OrthoceraBanner : BaseBanner
 {
-    public class OrthoceraBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 112;
-    }
+    public override int BannerTileStyle => 112;
 }

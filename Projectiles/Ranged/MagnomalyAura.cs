@@ -2,58 +2,57 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Ranged
+namespace CalamityMod.Projectiles.Ranged;
+
+public class MagnomalyAura : ModProjectile, ILocalizedModType
 {
-    public class MagnomalyAura : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Ranged";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    private int radius = 100;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        private int radius = 100;
-
-        public override void SetDefaults()
-        {
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
-            Projectile.width = 200;
-            Projectile.height = 200;
-            Projectile.friendly = true;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
-            Projectile.alpha = 255;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 300;
-        }
-
-        public override void AI()
-        {
-            Projectile parent = Main.projectile[0];
-            bool active = false;
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.identity == Projectile.ai[0] && p.active && p.type == ModContent.ProjectileType<MagnomalyRocket>())
-                {
-                    parent = p;
-                    active = true;
-                }
-            }
-
-            if (active)
-            {
-                Projectile.Center = parent.Center;
-            }
-            else
-            {
-                Projectile.Kill();
-            }
-
-            if (!parent.active)
-            {
-                Projectile.Kill();
-            }
-        }
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);
+        Projectile.DamageType = DamageClass.Ranged;
+        Projectile.usesIDStaticNPCImmunity = true;
+        Projectile.idStaticNPCHitCooldown = 10;
+        Projectile.width = 200;
+        Projectile.height = 200;
+        Projectile.friendly = true;
+        Projectile.tileCollide = false;
+        Projectile.penetrate = -1;
+        Projectile.alpha = 255;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 300;
     }
+
+    public override void AI()
+    {
+        Projectile parent = Main.projectile[0];
+        bool active = false;
+        foreach (Projectile p in Main.ActiveProjectiles)
+        {
+            if (p.identity == Projectile.ai[0] && p.active && p.type == ModContent.ProjectileType<MagnomalyRocket>())
+            {
+                parent = p;
+                active = true;
+            }
+        }
+
+        if (active)
+        {
+            Projectile.Center = parent.Center;
+        }
+        else
+        {
+            Projectile.Kill();
+        }
+
+        if (!parent.active)
+        {
+            Projectile.Kill();
+        }
+    }
+
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);
 }

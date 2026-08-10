@@ -15,251 +15,250 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace CalamityMod.Items.Weapons.Melee
+namespace CalamityMod.Items.Weapons.Melee;
+
+public class ArkoftheCosmos : ModItem, ILocalizedModType
 {
-    public class ArkoftheCosmos : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Melee";
+    public float Combo = 0f;
+    public float Charge = 0f;
+
+    public static float NeedleDamageMultiplier = 0.7f; //Damage on the non-homing needle projectile
+    public static float MaxThrowReach = 760;
+    public static float SnapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
+
+    public static float MaxCharge = 16f; // Maximum charge value AKA how much charge you get from a parry
+    public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
+    public static float chainDamageMultiplier = 0.1f;
+    public static float SnapBoltsDamageMultiplier = 0.1f;
+
+    public static float BlastDamageMultiplier = 2f; //Damage multiplier for the blast attack
+    public static float BlastBoltsDamageMultiplier = 0.2f;
+
+    public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during the swirl attack
+    public static float SwirlBoltDamageMultiplier = 0.7f; //This is the damage multiplier for ALL THE BOLTS: Aka, said damage multiplier is divided by the amount of bolts in a swirl and the full damage multiplier is gotten if you hit all the bolts
+
+    public override void ModifyTooltips(List<TooltipLine> tooltips)
     {
-        public new string LocalizationCategory => "Items.Weapons.Melee";
-        public float Combo = 0f;
-        public float Charge = 0f;
+        if (tooltips == null)
+            return;
 
-        public static float NeedleDamageMultiplier = 0.7f; //Damage on the non-homing needle projectile
-        public static float MaxThrowReach = 760;
-        public static float SnapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
+        Player player = Main.LocalPlayer;
+        if (player is null)
+            return;
 
-        public static float MaxCharge = 16f; // Maximum charge value AKA how much charge you get from a parry
-        public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
-        public static float chainDamageMultiplier = 0.1f;
-        public static float SnapBoltsDamageMultiplier = 0.1f;
-
-        public static float BlastDamageMultiplier = 2f; //Damage multiplier for the blast attack
-        public static float BlastBoltsDamageMultiplier = 0.2f;
-
-        public static float SwirlBoltAmount = 6f; //The amount of cosmic bolts produced during the swirl attack
-        public static float SwirlBoltDamageMultiplier = 0.7f; //This is the damage multiplier for ALL THE BOLTS: Aka, said damage multiplier is divided by the amount of bolts in a swirl and the full damage multiplier is gotten if you hit all the bolts
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        var comboTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[COMBO]") && x.Mod == "Terraria");
+        if (comboTooltip != null)
         {
-            if (tooltips == null)
-                return;
-
-            Player player = Main.LocalPlayer;
-            if (player is null)
-                return;
-
-            var comboTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[COMBO]") && x.Mod == "Terraria");
-            if (comboTooltip != null)
-            {
-                comboTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ComboInfo"));
-                comboTooltip.OverrideColor = Color.Lerp(Color.Gold, Color.Goldenrod, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.5f);
-            }
-
-            var parryTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[PARRY]") && x.Mod == "Terraria");
-            if (parryTooltip != null)
-            {
-                parryTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ParryInfo"));
-                parryTooltip.OverrideColor = Color.Lerp(Color.Cyan, Color.DeepSkyBlue, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.75f);
-            }
-
-            var blastTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[BLAST]") && x.Mod == "Terraria");
-            if (blastTooltip != null)
-            {
-                var key = Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode);
-                if (key.Count > 0)
-                    blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfoKeybind"));
-                else
-                    blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
-                blastTooltip.OverrideColor = Color.Lerp(Color.HotPink, Color.Crimson, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.625f);
-            }
-            tooltips.IntegrateDynamicHotkey(Item);
+            comboTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ComboInfo"));
+            comboTooltip.OverrideColor = Color.Lerp(Color.Gold, Color.Goldenrod, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.5f);
         }
 
-        public override void SetDefaults()
+        var parryTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[PARRY]") && x.Mod == "Terraria");
+        if (parryTooltip != null)
         {
-            Item.width = Item.height = 136;
-            Item.damage = 1700;
-            Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.crit = 15;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 15;
-            Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 9.5f;
-            Item.UseSound = null;
-            Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.shoot = ProjectileID.PurificationPowder;
-            Item.shootSpeed = 28f;
-            Item.rare = RarityType<BurnishedAuric>();
+            parryTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("ParryInfo"));
+            parryTooltip.OverrideColor = Color.Lerp(Color.Cyan, Color.DeepSkyBlue, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.75f);
         }
 
-        public override bool AltFunctionUse(Player player) => true;
-
-        public override void HoldItem(Player player)
+        var blastTooltip = tooltips.FirstOrDefault(x => x.Text.Contains("[BLAST]") && x.Mod == "Terraria");
+        if (blastTooltip != null)
         {
-            player.Calamity().mouseWorldListener = true;
-
-            if (CanUseItem(player) && Combo != 4)
-                Item.channel = false;
-
-            if (Combo == 4)
-                Item.channel = true;
-
-            if (Main.myPlayer == player.whoAmI && Item.CurrentlyPressingKeybind() && Charge > 0)
-            {
-                Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
-
-                if (blast == null)
-                {
-                    float speed = Item.shootSpeed;
-                    int dmg = (int)player.GetTotalDamage(Item.DamageType).ApplyTo(Item.damage);
-                    Vector2 pos = player.Center;
-                    int shoot = Item.shoot;
-                    float kb = Item.knockBack;
-                    var velocity = player.DirectionTo(Main.MouseWorld) * Item.shootSpeed;
-                    PlayerLoader.ModifyShootStats(player, Item, ref pos, ref velocity, ref shoot, ref dmg, ref kb);
-                    float angle = velocity.ToRotation();
-                    Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(dmg * BlastDamageMultiplier), 0, player.whoAmI, Charge);
-                    Charge = 0;
-                }
-            }
+            var key = Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode);
+            if (key.Count > 0)
+                blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfoKeybind"));
+            else
+                blastTooltip.Text = Lang.SupportGlyphs(this.GetLocalizedValue("BlastInfo"));
+            blastTooltip.OverrideColor = Color.Lerp(Color.HotPink, Color.Crimson, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.625f);
         }
+        tooltips.IntegrateDynamicHotkey(Item);
+    }
 
-        public override bool CanUseItem(Player player)
+    public override void SetDefaults()
+    {
+        Item.width = Item.height = 136;
+        Item.damage = 1700;
+        Item.DamageType = DamageClass.MeleeNoSpeed;
+        Item.crit = 15;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.useAnimation = Item.useTime = 15;
+        Item.useTurn = true;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.knockBack = 9.5f;
+        Item.UseSound = null;
+        Item.autoReuse = true;
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+        Item.shoot = ProjectileID.PurificationPowder;
+        Item.shootSpeed = 28f;
+        Item.rare = RarityType<BurnishedAuric>();
+    }
+
+    public override bool AltFunctionUse(Player player) => true;
+
+    public override void HoldItem(Player player)
+    {
+        player.Calamity().mouseWorldListener = true;
+
+        if (CanUseItem(player) && Combo != 4)
+            Item.channel = false;
+
+        if (Combo == 4)
+            Item.channel = true;
+
+        if (Main.myPlayer == player.whoAmI && Item.CurrentlyPressingKeybind() && Charge > 0)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<ArkoftheCosmosSwungBlade>());
-        }
+            Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
 
-        // Right clicks for parries execute extremely fast (3 or less frames) and intentionally so.
-        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? 5f : 1f;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (player.altFunctionUse == 2)
+            if (blast == null)
             {
-
-                // Check if a parry holdout or blast is already present.
-                Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
-                Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
-
-                bool canExecuteBlast = Charge > 0 && blast is null;
-                bool canExecuteParry = parrier is null && !canExecuteBlast;
-                //Disable blast usage if hotkey is bound
-                if (Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count > 0)
-                    canExecuteBlast = false;
-
-                // The blast is checked first, so that it overrides the first right click triggering a parry. Blasts delete any active parry holdouts on use.
-                if (canExecuteBlast)
-                {
-                    // Fire the super blast, then set charge back to zero.
-                    float angle = velocity.ToRotation();
-                    Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
-                    Charge = 0;
-                }
-
-                // If the blast cannot be executed, then the parry is executed, assuming no existing holdout is present.
-                else if (canExecuteParry)
-                {
-                    // Checks for parries from any Ark weapon, presumably to prevent some kind of abuse.
-                    bool anyArkParryExists = Main.projectile.Any(n =>
-                        n.active && n.owner == player.whoAmI && (
-                            n.type == ProjectileType<ArkoftheAncientsParryHoldout>() ||
-                            n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() ||
-                            n.type == ProjectileType<ArkoftheElementsParryHoldout>() ||
-                            n.type == ProjectileType<ArkoftheCosmosParryHoldout>()));
-
-                    if (!anyArkParryExists)
-                        Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
-                }
-                return false;
-            }
-
-            if (Charge > 0)
-                damage = (int)(chargeDamageMultiplier * damage);
-
-            float scissorState = Combo == 4 ? 2 : Combo % 2;
-
-            Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosSwungBlade>(), damage, knockback, player.whoAmI, scissorState, Charge);
-
-
-            //Shoot projectiles
-            if (scissorState != 2)
-            {
-                Projectile.NewProjectile(source, player.Center + Utils.SafeNormalize(velocity, Vector2.Zero) * 20, velocity * 1.4f, ProjectileType<RendingNeedle>(), (int)(damage * NeedleDamageMultiplier), knockback, player.whoAmI);
-            }
-
-            Combo += 1;
-            if (Combo > 4)
-                Combo = 0;
-
-            Charge--;
-            if (Charge < 0)
+                float speed = Item.shootSpeed;
+                int dmg = (int)player.GetTotalDamage(Item.DamageType).ApplyTo(Item.damage);
+                Vector2 pos = player.Center;
+                int shoot = Item.shoot;
+                float kb = Item.knockBack;
+                var velocity = player.DirectionTo(Main.MouseWorld) * Item.shootSpeed;
+                PlayerLoader.ModifyShootStats(player, Item, ref pos, ref velocity, ref shoot, ref dmg, ref kb);
+                float angle = velocity.ToRotation();
+                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(dmg * BlastDamageMultiplier), 0, player.whoAmI, Charge);
                 Charge = 0;
+            }
+        }
+    }
 
+    public override bool CanUseItem(Player player)
+    {
+        return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<ArkoftheCosmosSwungBlade>());
+    }
+
+    // Right clicks for parries execute extremely fast (3 or less frames) and intentionally so.
+    public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? 5f : 1f;
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (player.altFunctionUse == 2)
+        {
+
+            // Check if a parry holdout or blast is already present.
+            Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
+            Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
+
+            bool canExecuteBlast = Charge > 0 && blast is null;
+            bool canExecuteParry = parrier is null && !canExecuteBlast;
+            //Disable blast usage if hotkey is bound
+            if (Item.GetDynamicModHotkey().GetAssignedKeysOrEmpty(PlayerInput.CurrentInputMode).Count > 0)
+                canExecuteBlast = false;
+
+            // The blast is checked first, so that it overrides the first right click triggering a parry. Blasts delete any active parry holdouts on use.
+            if (canExecuteBlast)
+            {
+                // Fire the super blast, then set charge back to zero.
+                float angle = velocity.ToRotation();
+                Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
+                Charge = 0;
+            }
+
+            // If the blast cannot be executed, then the parry is executed, assuming no existing holdout is present.
+            else if (canExecuteParry)
+            {
+                // Checks for parries from any Ark weapon, presumably to prevent some kind of abuse.
+                bool anyArkParryExists = Main.projectile.Any(n =>
+                    n.active && n.owner == player.whoAmI && (
+                        n.type == ProjectileType<ArkoftheAncientsParryHoldout>() ||
+                        n.type == ProjectileType<TrueArkoftheAncientsParryHoldout>() ||
+                        n.type == ProjectileType<ArkoftheElementsParryHoldout>() ||
+                        n.type == ProjectileType<ArkoftheCosmosParryHoldout>()));
+
+                if (!anyArkParryExists)
+                    Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosParryHoldout>(), damage, 0, player.whoAmI, 0, 0);
+            }
             return false;
         }
 
-        public override ModItem Clone(Item item)
+        if (Charge > 0)
+            damage = (int)(chargeDamageMultiplier * damage);
+
+        float scissorState = Combo == 4 ? 2 : Combo % 2;
+
+        Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<ArkoftheCosmosSwungBlade>(), damage, knockback, player.whoAmI, scissorState, Charge);
+
+
+        //Shoot projectiles
+        if (scissorState != 2)
         {
-            var clone = base.Clone(item);
-
-            if (clone is ArkoftheCosmos a && item.ModItem is ArkoftheCosmos a2)
-                a.Charge = a2.Charge;
-
-            return clone;
+            Projectile.NewProjectile(source, player.Center + Utils.SafeNormalize(velocity, Vector2.Zero) * 20, velocity * 1.4f, ProjectileType<RendingNeedle>(), (int)(damage * NeedleDamageMultiplier), knockback, player.whoAmI);
         }
 
-        public override void NetSend(BinaryWriter writer)
-        {
-            writer.Write(Charge);
-        }
+        Combo += 1;
+        if (Combo > 4)
+            Combo = 0;
 
-        public override void NetReceive(BinaryReader reader)
-        {
-            Charge = reader.ReadSingle();
-        }
+        Charge--;
+        if (Charge < 0)
+            Charge = 0;
 
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            Texture2D handleTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ArkoftheCosmosHandle").Value;
-            Texture2D bladeTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ArkoftheCosmosGlow").Value;
+        return false;
+    }
 
-            float bladeOpacity = (Charge > 0) ? 1f : MathHelper.Clamp((float)Math.Sin(Main.GlobalTimeWrappedHourly % MathHelper.Pi) * 2f, 0, 1) * 0.7f + 0.3f;
+    public override ModItem Clone(Item item)
+    {
+        var clone = base.Clone(item);
 
-            spriteBatch.Draw(handleTexture, position, null, drawColor, 0f, origin, scale, SpriteEffects.None, 0f); //Make the back scissor slightly transparent if the ark isnt charged
-            spriteBatch.Draw(bladeTexture, position, null, drawColor * bladeOpacity, 0f, origin, scale, SpriteEffects.None, 0f);
+        if (clone is ArkoftheCosmos a && item.ModItem is ArkoftheCosmos a2)
+            a.Charge = a2.Charge;
 
-            return false;
-        }
+        return clone;
+    }
 
-        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            if (Charge <= 0)
-                return;
+    public override void NetSend(BinaryWriter writer)
+    {
+        writer.Write(Charge);
+    }
 
-            var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
-            var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
+    public override void NetReceive(BinaryReader reader)
+    {
+        Charge = reader.ReadSingle();
+    }
 
-            float barScale = 4f;
-            Vector2 barOrigin = barBG.Size() * 0.5f;
-            float yOffset = 50f;
-            Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
-            Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / MaxCharge * barFG.Width), barFG.Height);
-            Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.75f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f);
+    public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        Texture2D handleTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ArkoftheCosmosHandle").Value;
+        Texture2D bladeTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ArkoftheCosmosGlow").Value;
 
-            spriteBatch.Draw(barBG, drawPos, null, color, 0f, barOrigin, scale * barScale, 0f, 0f);
-            spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, barOrigin, scale * barScale, 0f, 0f);
-        }
+        float bladeOpacity = (Charge > 0) ? 1f : MathHelper.Clamp((float)Math.Sin(Main.GlobalTimeWrappedHourly % MathHelper.Pi) * 2f, 0, 1) * 0.7f + 0.3f;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<FourSeasonsGalaxia>().
-                AddIngredient<ArkoftheElements>().
-                AddIngredient<AuricBar>(5).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
+        spriteBatch.Draw(handleTexture, position, null, drawColor, 0f, origin, scale, SpriteEffects.None, 0f); //Make the back scissor slightly transparent if the ark isnt charged
+        spriteBatch.Draw(bladeTexture, position, null, drawColor * bladeOpacity, 0f, origin, scale, SpriteEffects.None, 0f);
+
+        return false;
+    }
+
+    public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        if (Charge <= 0)
+            return;
+
+        var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
+        var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
+
+        float barScale = 4f;
+        Vector2 barOrigin = barBG.Size() * 0.5f;
+        float yOffset = 50f;
+        Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
+        Rectangle frameCrop = new Rectangle(0, 0, (int)(Charge / MaxCharge * barFG.Width), barFG.Height);
+        Color color = Main.hslToRgb((Main.GlobalTimeWrappedHourly * 0.6f) % 1, 1, 0.75f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f);
+
+        spriteBatch.Draw(barBG, drawPos, null, color, 0f, barOrigin, scale * barScale, 0f, 0f);
+        spriteBatch.Draw(barFG, drawPos, frameCrop, color * 0.8f, 0f, barOrigin, scale * barScale, 0f, 0f);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<FourSeasonsGalaxia>().
+            AddIngredient<ArkoftheElements>().
+            AddIngredient<AuricBar>(5).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

@@ -1,9 +1,8 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Furniture.BossTrophies
+namespace CalamityMod.Tiles.Furniture.BossTrophies;
+
+public class ThanatosTrophyTile : ModTile
 {
-    public class ThanatosTrophyTile : ModTile
-    {
-        public override void SetStaticDefaults() => this.SetUpTrophy();
-    }
+    public override void SetStaticDefaults() => this.SetUpTrophy();
 }

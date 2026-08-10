@@ -4,57 +4,56 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Enemy
+namespace CalamityMod.Projectiles.Enemy;
+
+public class IceClasperEnemyProjectile : ModProjectile, ILocalizedModType
 {
-    public class IceClasperEnemyProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Enemy";
+
+    public override string Texture => "CalamityMod/Projectiles/Melee/DarkIceZero";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Enemy";
+        ProjectileID.Sets.TrailingMode[Type] = 2;
+        ProjectileID.Sets.TrailCacheLength[Type] = 4;
+    }
 
-        public override string Texture => "CalamityMod/Projectiles/Melee/DarkIceZero";
+    public override void SetDefaults()
+    {
+        Projectile.width = 28;
+        Projectile.height = 28;
+        Projectile.aiStyle = ProjAIStyleID.Arrow;
+        AIType = ProjectileID.Bullet;
+        Projectile.timeLeft = 600;
+        Projectile.DamageType = DamageClass.Melee;
+        Projectile.ignoreWater = true;
+        Projectile.coldDamage = true;
+        Projectile.hostile = true;
+        Projectile.tileCollide = false;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailingMode[Type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Type] = 4;
-        }
+    public override void AI()
+    {
+        Projectile.velocity *= 1.01f;
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 28;
-            Projectile.height = 28;
-            Projectile.aiStyle = ProjAIStyleID.Arrow;
-            AIType = ProjectileID.Bullet;
-            Projectile.timeLeft = 600;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.ignoreWater = true;
-            Projectile.coldDamage = true;
-            Projectile.hostile = true;
-            Projectile.tileCollide = false;
-        }
+        // Trail dust.
+        int trailDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
+        Main.dust[trailDust].noGravity = true;
+    }
 
-        public override void AI()
-        {
-            Projectile.velocity *= 1.01f;
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 180);
 
-            // Trail dust.
-            int trailDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
-            Main.dust[trailDust].noGravity = true;
-        }
+    public override void OnKill(int timeLeft)
+    {
+        if (timeLeft > 0)
+            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 180);
+    public override bool PreDraw(ref Color lightColor)
+    {
+        if (CalamityClientConfig.Instance.Afterimages)
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
 
-        public override void OnKill(int timeLeft)
-        {
-            if (timeLeft > 0)
-                SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (CalamityClientConfig.Instance.Afterimages)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
-
-            return true;
-        }
+        return true;
     }
 }

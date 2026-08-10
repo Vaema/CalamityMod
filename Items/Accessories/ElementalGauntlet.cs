@@ -6,40 +6,39 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
+public class ElementalGauntlet : ModItem, ILocalizedModType
 {
-    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
-    public class ElementalGauntlet : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public override void SetDefaults()
-        {
-            Item.width = 22;
-            Item.height = 38;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.accessory = true;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-        }
+        Item.width = 22;
+        Item.height = 38;
+        Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+        Item.accessory = true;
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+    }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.eGauntlet = true;
-            player.kbGlove = true;
-            player.autoReuseGlove = true;
-            player.meleeScaleGlove = true;
-            modPlayer.gloveLevel = 5;
-            player.GetDamage<TrueMeleeDamageClass>() += 0.10f;
-            modPlayer.eGauntletVisuals = !hideVisual; // hides the rainbow dust when hiding the accessory
-        }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.eGauntlet = true;
+        player.kbGlove = true;
+        player.autoReuseGlove = true;
+        player.meleeScaleGlove = true;
+        modPlayer.gloveLevel = 5;
+        player.GetDamage<TrueMeleeDamageClass>() += 0.10f;
+        modPlayer.eGauntletVisuals = !hideVisual; // hides the rainbow dust when hiding the accessory
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.FireGauntlet).
-                AddIngredient<AscendantSpiritEssence>(4).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.FireGauntlet).
+            AddIngredient<AscendantSpiritEssence>(4).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

@@ -7,68 +7,67 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+[LegacyName("MagnaStriker")]
+public class ArcNovaDiffuser : ModItem, ILocalizedModType
 {
-    [LegacyName("MagnaStriker")]
-    public class ArcNovaDiffuser : ModItem, ILocalizedModType
+    public static readonly SoundStyle ChargeLV1 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1") { Volume = 0.6f };
+    public static readonly SoundStyle ChargeLV2 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2") { Volume = 0.6f };
+    public static readonly SoundStyle ChargeStart = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeStart") { Volume = 0.6f };
+    public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLoop") { Volume = 0.6f };
+    internal static readonly int ChargeLoopSoundFrames = 151;
+    public static readonly SoundStyle SmallShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserSmallShot") { PitchVariance = 0.3f, Volume = 0.5f };
+    public static readonly SoundStyle BigShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserBigShot") { PitchVariance = 0.3f, Volume = 0.8f };
+
+    public static int AftershotCooldownFrames = 9;
+    public static int Charge1Frames = 156;
+    public static int Charge2Frames = 308;
+    public static Color mainColor = new Color(116, 225, 0);
+
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+    public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+
+    public override void SetDefaults()
     {
-        public static readonly SoundStyle ChargeLV1 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV1") { Volume = 0.6f };
-        public static readonly SoundStyle ChargeLV2 = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLV2") { Volume = 0.6f };
-        public static readonly SoundStyle ChargeStart = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeStart") { Volume = 0.6f };
-        public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/ArcNovaDiffuserChargeLoop") { Volume = 0.6f };
-        internal static readonly int ChargeLoopSoundFrames = 151;
-        public static readonly SoundStyle SmallShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserSmallShot") { PitchVariance = 0.3f, Volume = 0.5f };
-        public static readonly SoundStyle BigShot = new("CalamityMod/Sounds/Item/ArcNovaDiffuserBigShot") { PitchVariance = 0.3f, Volume = 0.8f };
+        Item.width = 58;
+        Item.height = 28;
+        Item.damage = 125;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useAnimation = Item.useTime = AftershotCooldownFrames;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.channel = true;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.knockBack = 4f;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.UseSound = null;
+        Item.autoReuse = false;
+        Item.shoot = ModContent.ProjectileType<ArcNovaDiffuserHoldout>();
+        Item.shootSpeed = 12f;
+    }
 
-        public static int AftershotCooldownFrames = 9;
-        public static int Charge1Frames = 156;
-        public static int Charge2Frames = 308;
-        public static Color mainColor = new Color(116, 225, 0);
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
+    public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 
-        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ArcNovaDiffuserHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+        holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
+        return false;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 58;
-            Item.height = 28;
-            Item.damage = 125;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useAnimation = Item.useTime = AftershotCooldownFrames;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.channel = true;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.UseSound = null;
-            Item.autoReuse = false;
-            Item.shoot = ModContent.ProjectileType<ArcNovaDiffuserHoldout>();
-            Item.shootSpeed = 12f;
-        }
-
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ArcNovaDiffuserHoldout>(), damage, knockback, player.whoAmI, 0, 1);
-            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
-            return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<OpalStriker>().
-                AddIngredient<MagnaCannon>().
-                AddIngredient<CoreofCalamity>().
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<OpalStriker>().
+            AddIngredient<MagnaCannon>().
+            AddIngredient<CoreofCalamity>().
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

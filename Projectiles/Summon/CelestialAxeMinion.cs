@@ -8,80 +8,79 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Summon
+namespace CalamityMod.Projectiles.Summon;
+
+public class CelestialAxeMinion : ModProjectile, ILocalizedModType
 {
-    public class CelestialAxeMinion : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Summon";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Summon";
-        public override void SetStaticDefaults()
-        {
-            Main.projPet[Type] = true;
-            ProjectileID.Sets.MinionSacrificable[Type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
-        }
+        Main.projPet[Type] = true;
+        ProjectileID.Sets.MinionSacrificable[Type] = true;
+        ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 100;
-            Projectile.height = 110;
-            Projectile.netImportant = true;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.minionSlots = 1;
-            Projectile.timeLeft = 18000;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft *= 5;
-            Projectile.minion = true;
-            Projectile.tileCollide = false;
-            Projectile.extraUpdates = 1;
-            Projectile.scale = 0.75f;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
-            Projectile.DamageType = DamageClass.Summon;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = 100;
+        Projectile.height = 110;
+        Projectile.netImportant = true;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.minionSlots = 1;
+        Projectile.timeLeft = 18000;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft *= 5;
+        Projectile.minion = true;
+        Projectile.tileCollide = false;
+        Projectile.extraUpdates = 1;
+        Projectile.scale = 0.75f;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 30;
+        Projectile.DamageType = DamageClass.Summon;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        Player player = Main.player[Projectile.owner];
+        CalamityPlayer modPlayer = player.Calamity();
+        bool isMinion = Projectile.type == ModContent.ProjectileType<CelestialAxeMinion>();
+        player.AddBuff(ModContent.BuffType<LegionofCelestiaBuff>(), 3600);
+        if (isMinion)
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            bool isMinion = Projectile.type == ModContent.ProjectileType<CelestialAxeMinion>();
-            player.AddBuff(ModContent.BuffType<LegionofCelestiaBuff>(), 3600);
-            if (isMinion)
+            if (player.dead)
             {
-                if (player.dead)
-                {
-                    modPlayer.eAxe = false;
-                }
-                if (modPlayer.eAxe)
-                {
-                    Projectile.timeLeft = 2;
-                }
+                modPlayer.eAxe = false;
             }
-            Projectile.rotation += 0.075f;
-
-            Projectile.ChargingMinionAI(1600f, 1800f, 2500f, 400f, 1, 30f, 24f, 12f, new Vector2(0f, -60f), 30f, 16f, true, true);
-
-            // Destroy trees in GFB, because it's an axe, and axes should do that
-            if (Main.zenithWorld)
+            if (modPlayer.eAxe)
             {
-                Point pointToCheck = (Projectile.position + Projectile.Size * 0.5f).ToTileCoordinates();
-                var prismTooth = new PrismTooth(); // Grrrr CS0120
-                prismTooth.AbsolutelyFuckingAnnihilateTrees(pointToCheck.X, pointToCheck.Y);
+                Projectile.timeLeft = 2;
             }
         }
+        Projectile.rotation += 0.075f;
 
-        public override bool PreDraw(ref Color lightColor)
+        Projectile.ChargingMinionAI(1600f, 1800f, 2500f, 400f, 1, 30f, 24f, 12f, new Vector2(0f, -60f), 30f, 16f, true, true);
+
+        // Destroy trees in GFB, because it's an axe, and axes should do that
+        if (Main.zenithWorld)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            return false;
+            Point pointToCheck = (Projectile.position + Projectile.Size * 0.5f).ToTileCoordinates();
+            var prismTooth = new PrismTooth(); // Grrrr CS0120
+            prismTooth.AbsolutelyFuckingAnnihilateTrees(pointToCheck.X, pointToCheck.Y);
         }
+    }
 
-        public override bool MinionContactDamage() => true;
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+        return false;
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
-        }
+    public override bool MinionContactDamage() => true;
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
     }
 }

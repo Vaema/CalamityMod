@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class TrasherBanner : BaseBanner
 {
-    public class TrasherBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 3;
-    }
+    public override int BannerTileStyle => 3;
 }

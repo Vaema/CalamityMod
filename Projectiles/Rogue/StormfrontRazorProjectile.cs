@@ -6,161 +6,160 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class StormfrontRazorProjectile : ModProjectile, ILocalizedModType
 {
-    public class StormfrontRazorProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/StormfrontRazor";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/StormfrontRazor";
+        Main.projFrames[Type] = 4;
+        ProjectileID.Sets.TrailCacheLength[Type] = 4;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 20;
+        Projectile.height = 20;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = 1;
+        Projectile.timeLeft = 300;
+        Projectile.extraUpdates = 1;
+        Projectile.DamageType = RogueDamageClass.Instance;
+    }
+
+    public override void AI()
+    {
+        if (Main.rand.NextBool(10))
         {
-            Main.projFrames[Type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Type] = 4;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+            Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
+            Main.dust[d].noGravity = true;
+            Main.dust[d].position = Projectile.Center;
         }
-
-        public override void SetDefaults()
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter >= 6)
         {
-            Projectile.width = 20;
-            Projectile.height = 20;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
-            Projectile.extraUpdates = 1;
-            Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
         }
-
-        public override void AI()
+        if (Projectile.frame >= 4)
         {
-            if (Main.rand.NextBool(10))
-            {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
-                Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
-                Main.dust[d].noGravity = true;
-                Main.dust[d].position = Projectile.Center;
-            }
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter >= 6)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= 4)
-            {
-                Projectile.frame = 0;
-            }
-            DrawOriginOffsetX = 50;
-            DrawOriginOffsetY = 20;
-            Projectile.ai[0]++;
-            Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
-            Projectile.rotation += Projectile.spriteDirection * MathHelper.ToRadians(45f);
-
+            Projectile.frame = 0;
         }
+        DrawOriginOffsetX = 50;
+        DrawOriginOffsetY = 20;
+        Projectile.ai[0]++;
+        Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+        Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
+        Projectile.rotation += Projectile.spriteDirection * MathHelper.ToRadians(45f);
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
+        if (Main.rand.NextBool(10))
         {
-            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
-            if (Main.rand.NextBool(10))
+            int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+            Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
+            Main.dust[d].noGravity = true;
+            Main.dust[d].position = Projectile.Center;
+        }
+        int times = 1;
+        if (Projectile.Calamity().stealthStrike)
+        {
+            times = 3;
+        }
+        // Create lightning, uses some of Dom's Heavenly Gale code
+        for (int i = 0; i < times; i++)
+        {
+            int lightningDamage = (int)(Projectile.damage * StormfrontRazor.LightningDamageFactor);
+            Vector2 lightningSpawnPosition = Projectile.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 1000f;
+            Vector2 lightningShootVelocity = (target.Center - lightningSpawnPosition + target.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 15f;
+            int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<StormfrontLightning>(), lightningDamage, 0f, Projectile.owner);
+            if (Main.projectile.IndexInRange(lightning))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
-                Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
-                Main.dust[d].noGravity = true;
-                Main.dust[d].position = Projectile.Center;
-            }
-            int times = 1;
-            if (Projectile.Calamity().stealthStrike)
-            {
-                times = 3;
-            }
-            // Create lightning, uses some of Dom's Heavenly Gale code
-            for (int i = 0; i < times; i++)
-            {
-                int lightningDamage = (int)(Projectile.damage * StormfrontRazor.LightningDamageFactor);
-                Vector2 lightningSpawnPosition = Projectile.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 1000f;
-                Vector2 lightningShootVelocity = (target.Center - lightningSpawnPosition + target.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 15f;
-                int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<StormfrontLightning>(), lightningDamage, 0f, Projectile.owner);
-                if (Main.projectile.IndexInRange(lightning))
-                {
-                    Main.projectile[lightning].CritChance = Projectile.CritChance;
-                    Main.projectile[lightning].ai[0] = lightningShootVelocity.ToRotation();
-                    Main.projectile[lightning].ai[1] = Main.rand.Next(100);
-                    //I'll probably need some delay here
-                }
+                Main.projectile[lightning].CritChance = Projectile.CritChance;
+                Main.projectile[lightning].ai[0] = lightningShootVelocity.ToRotation();
+                Main.projectile[lightning].ai[1] = Main.rand.Next(100);
+                //I'll probably need some delay here
             }
         }
+    }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
+        if (Main.rand.NextBool(10))
         {
-            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
-            if (Main.rand.NextBool(10))
+            int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+            Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
+            Main.dust[d].noGravity = true;
+            Main.dust[d].position = Projectile.Center;
+        }
+        int times = 1;
+        if (Projectile.Calamity().stealthStrike)
+        {
+            times = 3;
+        }
+        // Create lightning, uses some of Dom's Heavenly Gale code
+        for (int i = 0; i < times; i++)
+        {
+            int lightningDamage = (int)(Projectile.damage * StormfrontRazor.LightningDamageFactor);
+            Vector2 lightningSpawnPosition = Projectile.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 1000f;
+            Vector2 lightningShootVelocity = (target.Center - lightningSpawnPosition + target.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 15f;
+            int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<StormfrontLightning>(), lightningDamage, 0f, Projectile.owner);
+            if (Main.projectile.IndexInRange(lightning))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
-                Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
-                Main.dust[d].noGravity = true;
-                Main.dust[d].position = Projectile.Center;
-            }
-            int times = 1;
-            if (Projectile.Calamity().stealthStrike)
-            {
-                times = 3;
-            }
-            // Create lightning, uses some of Dom's Heavenly Gale code
-            for (int i = 0; i < times; i++)
-            {
-                int lightningDamage = (int)(Projectile.damage * StormfrontRazor.LightningDamageFactor);
-                Vector2 lightningSpawnPosition = Projectile.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 1000f;
-                Vector2 lightningShootVelocity = (target.Center - lightningSpawnPosition + target.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 15f;
-                int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<StormfrontLightning>(), lightningDamage, 0f, Projectile.owner);
-                if (Main.projectile.IndexInRange(lightning))
-                {
-                    Main.projectile[lightning].CritChance = Projectile.CritChance;
-                    Main.projectile[lightning].ai[0] = lightningShootVelocity.ToRotation();
-                    Main.projectile[lightning].ai[1] = Main.rand.Next(100);
-                    //I'll probably need some delay here
-                }
+                Main.projectile[lightning].CritChance = Projectile.CritChance;
+                Main.projectile[lightning].ai[0] = lightningShootVelocity.ToRotation();
+                Main.projectile[lightning].ai[1] = Main.rand.Next(100);
+                //I'll probably need some delay here
             }
         }
+    }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        if (Main.rand.NextBool(10))
         {
-            if (Main.rand.NextBool(10))
-            {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
-                Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
-                Main.dust[d].noGravity = true;
-                Main.dust[d].position = Projectile.Center;
-            }
-            Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
-            int times = 1;
-            if (Projectile.Calamity().stealthStrike)
-            {
-                times = 3;
-            }
-            // Create lightning, uses some of Dom's Heavenly Gale code
-            for (int i = 0; i < times; i++)
-            {
-                int lightningDamage = (int)(Projectile.damage * StormfrontRazor.LightningDamageFactor);
-                Vector2 lightningSpawnPosition = Projectile.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 1100f;
-                Vector2 lightningShootVelocity = (Projectile.Center - lightningSpawnPosition + Projectile.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 14f;
-                int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<StormfrontLightning>(), lightningDamage, 0f, Projectile.owner);
-                if (Main.projectile.IndexInRange(lightning))
-                {
-                    Main.projectile[lightning].CritChance = Projectile.CritChance;
-                    Main.projectile[lightning].ai[0] = lightningShootVelocity.ToRotation();
-                    Main.projectile[lightning].ai[1] = Main.rand.Next(100);
-                }
-            }
-            return true;
+            int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+            Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
+            Main.dust[d].noGravity = true;
+            Main.dust[d].position = Projectile.Center;
         }
+        Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
+        SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+        int times = 1;
+        if (Projectile.Calamity().stealthStrike)
+        {
+            times = 3;
+        }
+        // Create lightning, uses some of Dom's Heavenly Gale code
+        for (int i = 0; i < times; i++)
+        {
+            int lightningDamage = (int)(Projectile.damage * StormfrontRazor.LightningDamageFactor);
+            Vector2 lightningSpawnPosition = Projectile.Center - Vector2.UnitY.RotatedByRandom(0.2f) * 1100f;
+            Vector2 lightningShootVelocity = (Projectile.Center - lightningSpawnPosition + Projectile.velocity * 7.5f).SafeNormalize(Vector2.UnitY) * 14f;
+            int lightning = Projectile.NewProjectile(Projectile.GetSource_FromThis(), lightningSpawnPosition, lightningShootVelocity, ModContent.ProjectileType<StormfrontLightning>(), lightningDamage, 0f, Projectile.owner);
+            if (Main.projectile.IndexInRange(lightning))
+            {
+                Main.projectile[lightning].CritChance = Projectile.CritChance;
+                Main.projectile[lightning].ai[0] = lightningShootVelocity.ToRotation();
+                Main.projectile[lightning].ai[1] = Main.rand.Next(100);
+            }
+        }
+        return true;
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

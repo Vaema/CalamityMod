@@ -6,40 +6,39 @@ using Terraria;
 using Terraria.Graphics;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Waters
+namespace CalamityMod.Waters;
+
+public class VoidWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
 {
-    public class VoidWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
+    public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, false);
+}
+
+public class VoidWater : ModWaterStyle, IWaterStyleModifyColor
+{
+    public static ModWaterStyle Instance { get; private set; }
+    public static ModWaterfallStyle WaterfallStyle { get; private set; }
+    public static int SplashDust { get; private set; }
+    public static int DropletGore { get; private set; }
+
+    public override void SetStaticDefaults()
     {
-        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, false);
+        Instance = this;
+        WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/VoidWaterflow");
+        SplashDust = ModContent.DustType<VoidSplash>();
+        DropletGore = ModContent.GoreType<VoidWaterDroplet>();
     }
 
-    public class VoidWater : ModWaterStyle, IWaterStyleModifyColor
+    public override void Unload()
     {
-        public static ModWaterStyle Instance { get; private set; }
-        public static ModWaterfallStyle WaterfallStyle { get; private set; }
-        public static int SplashDust { get; private set; }
-        public static int DropletGore { get; private set; }
-
-        public override void SetStaticDefaults()
-        {
-            Instance = this;
-            WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/VoidWaterflow");
-            SplashDust = ModContent.DustType<VoidSplash>();
-            DropletGore = ModContent.GoreType<VoidWaterDroplet>();
-        }
-
-        public override void Unload()
-        {
-            Instance = null;
-            WaterfallStyle = null;
-            SplashDust = 0;
-            DropletGore = 0;
-        }
-
-        public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
-        public override int GetSplashDust() => SplashDust;
-        public override int GetDropletGore() => DropletGore;
-        public override Color BiomeHairColor() => new Color(16, 8, 30);
-        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
+        Instance = null;
+        WaterfallStyle = null;
+        SplashDust = 0;
+        DropletGore = 0;
     }
+
+    public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
+    public override int GetSplashDust() => SplashDust;
+    public override int GetDropletGore() => DropletGore;
+    public override Color BiomeHairColor() => new Color(16, 8, 30);
+    public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
 }

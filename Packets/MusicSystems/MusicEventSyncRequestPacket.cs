@@ -2,29 +2,28 @@
 using Terraria;
 using Terraria.ID;
 
-namespace CalamityMod.Packets
+namespace CalamityMod.Packets;
+
+internal sealed class MusicEventSyncRequestPacket : CalamityPacket
 {
-    internal sealed class MusicEventSyncRequestPacket : CalamityPacket
+    public static MusicEventSyncRequestPacket Instance { get; private set; }
+
+    public static void Send(int toClient = -1, int ignoreClient = -1)
     {
-        public static MusicEventSyncRequestPacket Instance { get; private set; }
+        // Only MP Client should send request!
+        if (Main.netMode != NetmodeID.MultiplayerClient)
+            return;
 
-        public static void Send(int toClient = -1, int ignoreClient = -1)
-        {
-            // Only MP Client should send request!
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                return;
+        var packet = Instance.CreateBasePacket();
+        packet.Send(toClient, ignoreClient);
+    }
 
-            var packet = Instance.CreateBasePacket();
-            packet.Send(toClient, ignoreClient);
-        }
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        // Only fulfill requests as the server host
+        if (!Main.dedServ)
+            return;
 
-        public override void HandlePacket(BinaryReader packet, int sender)
-        {
-            // Only fulfill requests as the server host
-            if (!Main.dedServ)
-                return;
-
-            MusicEventSyncResponsePacket.Send(toClient: sender);
-        }
+        MusicEventSyncResponsePacket.Send(toClient: sender);
     }
 }

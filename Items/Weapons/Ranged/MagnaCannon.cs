@@ -6,65 +6,64 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+public class MagnaCannon : ModItem, ILocalizedModType
 {
-    public class MagnaCannon : ModItem, ILocalizedModType
+    public static readonly SoundStyle ChargeFull = new("CalamityMod/Sounds/Item/MagnaCannonChargeFull") { Volume = 0.5f };
+    internal static readonly int ChargeFullSoundFrames = 42;
+    public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/MagnaCannonChargeLoop") { Volume = 0.5f };
+    internal static readonly int ChargeLoopSoundFrames = 153;
+    public static readonly SoundStyle ChargeStart = new("CalamityMod/Sounds/Item/MagnaCannonChargeStart") { Volume = 0.5f };
+    public static readonly SoundStyle Fire = new("CalamityMod/Sounds/Item/MagnaCannonShot") { PitchVariance = 0.3f, Volume = 0.4f };
+
+    public static int AftershotCooldownFrames = 30;
+    public static int FullChargeFrames = 138; //126 frames is duration of charge sound
+
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+    public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+
+    public override void SetDefaults()
     {
-        public static readonly SoundStyle ChargeFull = new("CalamityMod/Sounds/Item/MagnaCannonChargeFull") { Volume = 0.5f };
-        internal static readonly int ChargeFullSoundFrames = 42;
-        public static readonly SoundStyle ChargeLoop = new("CalamityMod/Sounds/Item/MagnaCannonChargeLoop") { Volume = 0.5f };
-        internal static readonly int ChargeLoopSoundFrames = 153;
-        public static readonly SoundStyle ChargeStart = new("CalamityMod/Sounds/Item/MagnaCannonChargeStart") { Volume = 0.5f };
-        public static readonly SoundStyle Fire = new("CalamityMod/Sounds/Item/MagnaCannonShot") { PitchVariance = 0.3f, Volume = 0.4f };
+        Item.width = 56;
+        Item.height = 34;
+        Item.damage = 25;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useAnimation = Item.useTime = AftershotCooldownFrames;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.channel = true;
+        Item.knockBack = 2.5f;
+        Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+        Item.rare = ItemRarityID.Green;
+        Item.UseSound = null;
+        Item.autoReuse = false;
+        Item.shootSpeed = 12f;
+        Item.shoot = ModContent.ProjectileType<MagnaCannonHoldout>();
+    }
 
-        public static int AftershotCooldownFrames = 30;
-        public static int FullChargeFrames = 138; //126 frames is duration of charge sound
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
+    public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
-        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter);
+        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+        Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter), ModContent.ProjectileType<MagnaCannonHoldout>(), damage, knockback, player.whoAmI);
+        return false;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 56;
-            Item.height = 34;
-            Item.damage = 25;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useAnimation = Item.useTime = AftershotCooldownFrames;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.channel = true;
-            Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
-            Item.UseSound = null;
-            Item.autoReuse = false;
-            Item.shootSpeed = 12f;
-            Item.shoot = ModContent.ProjectileType<MagnaCannonHoldout>();
-        }
-
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter);
-            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter), ModContent.ProjectileType<MagnaCannonHoldout>(), damage, knockback, player.whoAmI);
-            return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.Granite, 25).
-                AddIngredient(ItemID.MeteoriteBar, 12).
-                AddIngredient(ItemID.Diamond, 3).
-                AddIngredient(ItemID.Sapphire, 5).
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.Granite, 25).
+            AddIngredient(ItemID.MeteoriteBar, 12).
+            AddIngredient(ItemID.Diamond, 3).
+            AddIngredient(ItemID.Sapphire, 5).
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

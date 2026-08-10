@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class BelchingCoralBanner : BaseBanner
 {
-    public class BelchingCoralBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 121;
-    }
+    public override int BannerTileStyle => 121;
 }

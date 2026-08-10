@@ -5,43 +5,42 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Pets
+namespace CalamityMod.Items.Pets;
+
+[LegacyName("SparksSummon")]
+public class EnchantedButterfly : ModItem, ILocalizedModType
 {
-    [LegacyName("SparksSummon")]
-    public class EnchantedButterfly : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Pets";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Pets";
-        public override void SetDefaults()
-        {
-            Item.DefaultToVanitypet(ModContent.ProjectileType<Sparks>(), ModContent.BuffType<SparksBuff>());
-            Item.value = Item.sellPrice(gold: 2);
-            Item.rare = ItemRarityID.Orange;
-            Item.Calamity().donorItem = true;
-        }
+        Item.DefaultToVanitypet(ModContent.ProjectileType<Sparks>(), ModContent.BuffType<SparksBuff>());
+        Item.value = Item.sellPrice(gold: 2);
+        Item.rare = ItemRarityID.Orange;
+        Item.Calamity().donorItem = true;
+    }
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
+    public override void UseStyle(Player player, Rectangle heldItemFrame)
+    {
+        if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
         {
-            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
-            {
-                player.AddBuff(Item.buffType, 3600, true);
-            }
+            player.AddBuff(Item.buffType, 3600, true);
         }
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(). //Oh my god this recipe is terrible no wonder no one knows this item exists
-                AddIngredient(ItemID.GoldButterfly).
-                AddIngredient(ItemID.MonarchButterfly).
-                AddIngredient(ItemID.PurpleEmperorButterfly).
-                AddIngredient(ItemID.RedAdmiralButterfly).
-                AddIngredient(ItemID.UlyssesButterfly).
-                AddIngredient(ItemID.SulphurButterfly).
-                AddIngredient(ItemID.TreeNymphButterfly).
-                AddIngredient(ItemID.ZebraSwallowtailButterfly).
-                AddIngredient(ItemID.JuliaButterfly).
-                AddIngredient(ItemID.HellButterfly).
-                AddTile(TileID.CrystalBall).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(). //Oh my god this recipe is terrible no wonder no one knows this item exists
+            AddIngredient(ItemID.GoldButterfly).
+            AddIngredient(ItemID.MonarchButterfly).
+            AddIngredient(ItemID.PurpleEmperorButterfly).
+            AddIngredient(ItemID.RedAdmiralButterfly).
+            AddIngredient(ItemID.UlyssesButterfly).
+            AddIngredient(ItemID.SulphurButterfly).
+            AddIngredient(ItemID.TreeNymphButterfly).
+            AddIngredient(ItemID.ZebraSwallowtailButterfly).
+            AddIngredient(ItemID.JuliaButterfly).
+            AddIngredient(ItemID.HellButterfly).
+            AddTile(TileID.CrystalBall).
+            Register();
     }
 }

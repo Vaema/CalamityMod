@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class CrimulanBlightSlimeBanner : BaseBanner
 {
-    public class CrimulanBlightSlimeBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 89;
-    }
+    public override int BannerTileStyle => 89;
 }

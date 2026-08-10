@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Systems;
 using Terraria.ID;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class SandstoneMerge : TileBlendTexture
 {
-    public sealed class SandstoneMerge : TileBlendTexture
-    {
-        public override int TileType => TileID.Sandstone;
-    }
+    public override int TileType => TileID.Sandstone;
 }

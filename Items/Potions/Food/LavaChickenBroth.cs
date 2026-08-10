@@ -7,70 +7,69 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions.Food
+namespace CalamityMod.Items.Potions.Food;
+
+[LegacyName("Fabsoup")]
+public class LavaChickenBroth : ModItem, ILocalizedModType
 {
-    [LegacyName("Fabsoup")]
-    public class LavaChickenBroth : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Potions";
+    public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/SoupConsumption");
+    public static readonly SoundStyle MisophonicUseSound = new("CalamityMod/Sounds/Item/SoupConsumptionMisophonic");
+
+    public SlotId DrinkSoundSlot;
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Potions";
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/SoupConsumption");
-        public static readonly SoundStyle MisophonicUseSound = new("CalamityMod/Sounds/Item/SoupConsumptionMisophonic");
+        Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
+        ItemID.Sets.IsFood[Type] = true;
+    }
 
-        public SlotId DrinkSoundSlot;
+    public override void SetDefaults()
+    {
+        Item.width = 56;
+        Item.height = 50;
+        Item.value = 0;
+        Item.rare = ModContent.RarityType<ExoticRainbow>();
+        Item.maxStack = 1;
+        Item.consumable = false;
+        Item.useAnimation = 901;
+        Item.useTime = 901;
+        Item.UseSound = null;
+        Item.useStyle = ItemUseStyleID.EatFood;
+        Item.useTurn = true;
+    }
+    public override bool? UseItem(Player player)
+    {
+        if (!CalamityClientConfig.Instance.MisophoniaSupport)
+            DrinkSoundSlot = SoundEngine.PlaySound(UseSound, player.Center);
+        else
+            DrinkSoundSlot = SoundEngine.PlaySound(MisophonicUseSound, player.Center);
+        return true;
+    }
 
-        public override void SetStaticDefaults()
+    public override void UseItemFrame(Player player)
+    {
+        int time = CalamityUtils.MinutesToFrames(25) + CalamityUtils.SecondsToFrames(25);
+        if (player.itemAnimation == 180)
         {
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
-            ItemID.Sets.IsFood[Type] = true;
+            player.AddBuff(BuffID.WellFed3, time);
+        }
+        // ow hot
+        if (player.itemAnimation == 60)
+        {
+            player.AddBuff(BuffID.WellFed3, time);
+            player.AddBuff(BuffID.OnFire, time);
+            player.AddBuff(BuffID.Frostburn, time);
+            player.AddBuff(BuffID.CursedInferno, time);
+            player.AddBuff(ModContent.BuffType<Shadowflame>(), time);
+            player.AddBuff(ModContent.BuffType<BrimstoneFlames>(), time);
+            player.AddBuff(ModContent.BuffType<HolyFlames>(), time);
+            player.AddBuff(ModContent.BuffType<GodSlayerInferno>(), time);
+            player.AddBuff(ModContent.BuffType<Dragonfire>(), time);
+            player.AddBuff(ModContent.BuffType<VulnerabilityHex>(), time);
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 56;
-            Item.height = 50;
-            Item.value = 0;
-            Item.rare = ModContent.RarityType<ExoticRainbow>();
-            Item.maxStack = 1;
-            Item.consumable = false;
-            Item.useAnimation = 901;
-            Item.useTime = 901;
-            Item.UseSound = null;
-            Item.useStyle = ItemUseStyleID.EatFood;
-            Item.useTurn = true;
-        }
-        public override bool? UseItem(Player player)
-        {
-            if (!CalamityClientConfig.Instance.MisophoniaSupport)
-                DrinkSoundSlot = SoundEngine.PlaySound(UseSound, player.Center);
-            else
-                DrinkSoundSlot = SoundEngine.PlaySound(MisophonicUseSound, player.Center);
-            return true;
-        }
-
-        public override void UseItemFrame(Player player)
-        {
-            int time = CalamityUtils.MinutesToFrames(25) + CalamityUtils.SecondsToFrames(25);
-            if (player.itemAnimation == 180)
-            {
-                player.AddBuff(BuffID.WellFed3, time);
-            }
-            // ow hot
-            if (player.itemAnimation == 60)
-            {
-                player.AddBuff(BuffID.WellFed3, time);
-                player.AddBuff(BuffID.OnFire, time);
-                player.AddBuff(BuffID.Frostburn, time);
-                player.AddBuff(BuffID.CursedInferno, time);
-                player.AddBuff(ModContent.BuffType<Shadowflame>(), time);
-                player.AddBuff(ModContent.BuffType<BrimstoneFlames>(), time);
-                player.AddBuff(ModContent.BuffType<HolyFlames>(), time);
-                player.AddBuff(ModContent.BuffType<GodSlayerInferno>(), time);
-                player.AddBuff(ModContent.BuffType<Dragonfire>(), time);
-                player.AddBuff(ModContent.BuffType<VulnerabilityHex>(), time);
-            }
-
-            if (SoundEngine.TryGetActiveSound(DrinkSoundSlot, out var drinkSound) && drinkSound.IsPlaying)
-                drinkSound.Position = player.Center;
-        }
+        if (SoundEngine.TryGetActiveSound(DrinkSoundSlot, out var drinkSound) && drinkSound.IsPlaying)
+            drinkSound.Position = player.Center;
     }
 }

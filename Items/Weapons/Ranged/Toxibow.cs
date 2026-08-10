@@ -7,47 +7,46 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+public class Toxibow : ModItem, ILocalizedModType
 {
-    public class Toxibow : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public override void SetDefaults()
-        {
-            Item.width = 22;
-            Item.height = 60;
-            Item.damage = 15;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useAnimation = Item.useTime = 28;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.Item5;
-            Item.autoReuse = true;
-            Item.shoot = ProjectileID.PurificationPowder;
-            Item.shootSpeed = 15f;
-            Item.useAmmo = AmmoID.Arrow;
-        }
+        Item.width = 22;
+        Item.height = 60;
+        Item.damage = 15;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useAnimation = Item.useTime = 28;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 3f;
+        Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+        Item.rare = ItemRarityID.Green;
+        Item.UseSound = SoundID.Item5;
+        Item.autoReuse = true;
+        Item.shoot = ProjectileID.PurificationPowder;
+        Item.shootSpeed = 15f;
+        Item.useAmmo = AmmoID.Arrow;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if (CalamityUtils.CheckWoodenAmmo(type, player))
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ToxicArrow>(), damage, 0f, player.whoAmI);
-            else
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        if (CalamityUtils.CheckWoodenAmmo(type, player))
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ToxicArrow>(), damage, 0f, player.whoAmI);
+        else
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
 
-            return false;
-        }
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<Acidwood>(15).
-                AddIngredient<SulphuricScale>(12).
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<Acidwood>(15).
+            AddIngredient<SulphuricScale>(12).
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

@@ -8,133 +8,132 @@ using Terraria.ID;
 using Terraria.WorldBuilding;
 using static CalamityMod.Schematics.SchematicManager;
 
-namespace CalamityMod.World
+namespace CalamityMod.World;
+
+public class DungeonArchive
 {
-    public class DungeonArchive
+    public static void PlaceArchive()
     {
-        public static void PlaceArchive()
+        int worldThird = Main.maxTilesX / 3;
+
+        int dungeonArchiveColor = 0; //0 = blue, 1 = green, 2 = pink
+
+        //start much higher above the top of hell so it doesnt get nuked by the crags generation, and so it wont generate too low
+        for (int j = Main.maxTilesY - 380; j > 0; j--)
         {
-            int worldThird = Main.maxTilesX / 3;
-
-            int dungeonArchiveColor = 0; //0 = blue, 1 = green, 2 = pink
-
-            //start much higher above the top of hell so it doesnt get nuked by the crags generation, and so it wont generate too low
-            for (int j = Main.maxTilesY - 380; j > 0; j--)
+            int i = 100;
+            if (GenVars.dungeonSide == 1)
             {
-                int i = 100;
+                i = Main.maxTilesX - 100;
+            }
+
+            bool shouldContinue = true;
+            bool placedArchive = false;
+
+            while (shouldContinue)
+            {
                 if (GenVars.dungeonSide == 1)
                 {
-                    i = Main.maxTilesX - 100;
-                }
-
-                bool shouldContinue = true;
-                bool placedArchive = false;
-
-                while (shouldContinue)
-                {
-                    if (GenVars.dungeonSide == 1)
+                    i--;
+                    if (i < Main.maxTilesX - worldThird)
                     {
-                        i--;
-                        if (i < Main.maxTilesX - worldThird)
-                        {
-                            shouldContinue = false;
-                        }
+                        shouldContinue = false;
                     }
-                    else
-                    {
-                        i++;
-                        if (i > worldThird)
-                        {
-                            shouldContinue = false;
-                        }
-                    }
-
-                    Tile tile = Main.tile[i, j];
-                    Tile tileUp1 = Main.tile[i, j - 1];
-                    Tile tileUp2 = Main.tile[i, j - 2];
-                    Tile tileUp3 = Main.tile[i, j - 3];
-                    Tile tileUp4 = Main.tile[i, j - 4];
-                    Tile tileUp5 = Main.tile[i, j - 5];
-
-                    if (Main.tileDungeon[tile.TileType] && !tileUp1.HasTile && !tileUp2.HasTile && !tileUp3.HasTile && !tileUp4.HasTile && !tileUp5.HasTile)
-                    {
-                        //determine the archive brick color
-                        if (tile.TileType == TileID.BlueDungeonBrick)
-                            dungeonArchiveColor = 0;
-                        else if (tile.TileType == TileID.GreenDungeonBrick)
-                            dungeonArchiveColor = 1;
-                        else if (tile.TileType == TileID.PinkDungeonBrick)
-                            dungeonArchiveColor = 2;
-
-                        placedArchive = true;
-                        break;
-                    }
-                }
-
-                if (placedArchive)
-                {
-                    WorldgenManagementSystem.DungeonArchivePos = new Point(i, j);
-
-                    bool firstItem = false;
-
-                    if (dungeonArchiveColor == 0)
-                    {
-                        PlaceSchematic(BlueArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
-                        ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
-                    }
-                    if (dungeonArchiveColor == 1)
-                    {
-                        PlaceSchematic(GreenArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
-                        ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
-                    }
-                    if (dungeonArchiveColor == 2)
-                    {
-                        PlaceSchematic(PinkArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
-                        ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
-                    }
-                    break;
-                }
-            }
-        }
-
-        public static void FillArchiveChests(Chest chest, int Type, bool firstItem)
-        {
-            int potionType1 = Utils.SelectRandom(WorldGen.genRand, ItemID.HunterPotion, ItemID.IronskinPotion);
-            int potionType2 = Utils.SelectRandom(WorldGen.genRand, ItemID.ShinePotion, ItemID.SwiftnessPotion);
-            List<ChestItem> contents1 = new List<ChestItem>()
-            {
-                new ChestItem(ItemID.ShadowKey, 1),
-                new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 20)),
-                new ChestItem(ItemID.ManaPotion, WorldGen.genRand.Next(10, 20)),
-                new ChestItem(potionType1, WorldGen.genRand.Next(4, 8)),
-                new ChestItem(potionType2, WorldGen.genRand.Next(4, 8)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 10)),
-            };
-
-            List<ChestItem> contents2 = new List<ChestItem>()
-            {
-                new ChestItem(ItemID.SpellTome, WorldGen.genRand.Next(2, 3)),
-                new ChestItem(ItemID.Book, WorldGen.genRand.Next(12, 25)),
-                new ChestItem(ItemID.TallyCounter, 1),
-                new ChestItem(potionType1, WorldGen.genRand.Next(4, 8)),
-                new ChestItem(potionType2, WorldGen.genRand.Next(4, 8)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 10)),
-            };
-
-            //this is normally not a good idea with separate items lists, but both lists are the same size so it is fine here
-            for (int i = 0; i < contents1.Count; i++)
-            {
-                if (!firstItem)
-                {
-                    chest.item[i].SetDefaults(contents1[i].Type);
-                    chest.item[i].stack = contents1[i].Stack;
                 }
                 else
                 {
-                    chest.item[i].SetDefaults(contents2[i].Type);
-                    chest.item[i].Prefix(-1);
-                    chest.item[i].stack = contents2[i].Stack;
+                    i++;
+                    if (i > worldThird)
+                    {
+                        shouldContinue = false;
+                    }
                 }
+
+                Tile tile = Main.tile[i, j];
+                Tile tileUp1 = Main.tile[i, j - 1];
+                Tile tileUp2 = Main.tile[i, j - 2];
+                Tile tileUp3 = Main.tile[i, j - 3];
+                Tile tileUp4 = Main.tile[i, j - 4];
+                Tile tileUp5 = Main.tile[i, j - 5];
+
+                if (Main.tileDungeon[tile.TileType] && !tileUp1.HasTile && !tileUp2.HasTile && !tileUp3.HasTile && !tileUp4.HasTile && !tileUp5.HasTile)
+                {
+                    //determine the archive brick color
+                    if (tile.TileType == TileID.BlueDungeonBrick)
+                        dungeonArchiveColor = 0;
+                    else if (tile.TileType == TileID.GreenDungeonBrick)
+                        dungeonArchiveColor = 1;
+                    else if (tile.TileType == TileID.PinkDungeonBrick)
+                        dungeonArchiveColor = 2;
+
+                    placedArchive = true;
+                    break;
+                }
+            }
+
+            if (placedArchive)
+            {
+                WorldgenManagementSystem.DungeonArchivePos = new Point(i, j);
+
+                bool firstItem = false;
+
+                if (dungeonArchiveColor == 0)
+                {
+                    PlaceSchematic(BlueArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
+                    ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
+                }
+                if (dungeonArchiveColor == 1)
+                {
+                    PlaceSchematic(GreenArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
+                    ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
+                }
+                if (dungeonArchiveColor == 2)
+                {
+                    PlaceSchematic(PinkArchiveKey, new Point(i, j), SchematicAnchor.TopCenter,
+                    ref firstItem, new Action<Chest, int, bool>(FillArchiveChests));
+                }
+                break;
+            }
+        }
+    }
+
+    public static void FillArchiveChests(Chest chest, int Type, bool firstItem)
+    {
+        int potionType1 = Utils.SelectRandom(WorldGen.genRand, ItemID.HunterPotion, ItemID.IronskinPotion);
+        int potionType2 = Utils.SelectRandom(WorldGen.genRand, ItemID.ShinePotion, ItemID.SwiftnessPotion);
+        List<ChestItem> contents1 = new List<ChestItem>()
+        {
+            new ChestItem(ItemID.ShadowKey, 1),
+            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 20)),
+            new ChestItem(ItemID.ManaPotion, WorldGen.genRand.Next(10, 20)),
+            new ChestItem(potionType1, WorldGen.genRand.Next(4, 8)),
+            new ChestItem(potionType2, WorldGen.genRand.Next(4, 8)),
+            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 10)),
+        };
+
+        List<ChestItem> contents2 = new List<ChestItem>()
+        {
+            new ChestItem(ItemID.SpellTome, WorldGen.genRand.Next(2, 3)),
+            new ChestItem(ItemID.Book, WorldGen.genRand.Next(12, 25)),
+            new ChestItem(ItemID.TallyCounter, 1),
+            new ChestItem(potionType1, WorldGen.genRand.Next(4, 8)),
+            new ChestItem(potionType2, WorldGen.genRand.Next(4, 8)),
+            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 10)),
+        };
+
+        //this is normally not a good idea with separate items lists, but both lists are the same size so it is fine here
+        for (int i = 0; i < contents1.Count; i++)
+        {
+            if (!firstItem)
+            {
+                chest.item[i].SetDefaults(contents1[i].Type);
+                chest.item[i].stack = contents1[i].Stack;
+            }
+            else
+            {
+                chest.item[i].SetDefaults(contents2[i].Type);
+                chest.item[i].Prefix(-1);
+                chest.item[i].stack = contents2[i].Stack;
             }
         }
     }

@@ -6,45 +6,44 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[AutoloadEquip(EquipType.Shield)]
+public class AsgardsValor : ModItem, ILocalizedModType
 {
-    [AutoloadEquip(EquipType.Shield)]
-    public class AsgardsValor : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+
+    public Color? TooltipExtensionColor => new(195, 223, 255);
+
+    public const int ShieldSlamDamage = 200;
+    public const float ShieldSlamKnockback = 9f;
+    public const int ShieldSlamIFrames = 12;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
+        Item.width = 50;
+        Item.height = 48;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.defense = 4;
+        Item.accessory = true;
+    }
 
-        public Color? TooltipExtensionColor => new(195, 223, 255);
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.DashID = AsgardsValorDash.ID;
+        player.dashType = 0;
+        player.noKnockback = true;
+    }
 
-        public const int ShieldSlamDamage = 200;
-        public const float ShieldSlamKnockback = 9f;
-        public const int ShieldSlamIFrames = 12;
-
-        public override void SetDefaults()
-        {
-            Item.width = 50;
-            Item.height = 48;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.defense = 4;
-            Item.accessory = true;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.DashID = AsgardsValorDash.ID;
-            player.dashType = 0;
-            player.noKnockback = true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<OrnateShield>().
-                AddIngredient(ItemID.HallowedBar, 5).
-                AddIngredient<CoreofCalamity>().
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<OrnateShield>().
+            AddIngredient(ItemID.HallowedBar, 5).
+            AddIngredient<CoreofCalamity>().
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

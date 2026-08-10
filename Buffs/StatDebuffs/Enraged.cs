@@ -4,23 +4,22 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.StatDebuffs
+namespace CalamityMod.Buffs.StatDebuffs;
+
+public class Enraged : ModBuff
 {
-    public class Enraged : ModBuff
+    public override LocalizedText Description => base.Description.WithFormatArgs((1D + DemonshadeHelm.MultDamageBoost).ToString(), (1D + DemonshadeHelm.MultDamageTakenBoost).ToString());
+
+    public override void SetStaticDefaults()
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs((1D + DemonshadeHelm.MultDamageBoost).ToString(), (1D + DemonshadeHelm.MultDamageTakenBoost).ToString());
+        Main.debuff[Type] = true;
+        Main.pvpBuff[Type] = true;
+        Main.buffNoSave[Type] = false;
+        BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
 
-        public override void SetStaticDefaults()
-        {
-            Main.debuff[Type] = true;
-            Main.pvpBuff[Type] = true;
-            Main.buffNoSave[Type] = false;
-            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
-
-            // Demonshade Enrage is a tag buff. Nothing is immune to it.
-            BuffID.Sets.IsATagBuff[Type] = true;
-        }
-
-        public override void Update(Player player, ref int buffIndex) => player.Calamity().enraged = true;
+        // Demonshade Enrage is a tag buff. Nothing is immune to it.
+        BuffID.Sets.IsATagBuff[Type] = true;
     }
+
+    public override void Update(Player player, ref int buffIndex) => player.Calamity().enraged = true;
 }

@@ -3,18 +3,17 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Furniture.Trophies
+namespace CalamityMod.Items.Placeables.Furniture.Trophies;
+
+[LegacyName("BumblebirbTrophy")]
+public class DragonfollyTrophy : ModItem, ILocalizedModType
 {
-    [LegacyName("BumblebirbTrophy")]
-    public class DragonfollyTrophy : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<DragonfollyTrophyTile>());
-            Item.width = Item.height = 30;
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Blue;
-        }
+        Item.DefaultToPlaceableTile(ModContent.TileType<DragonfollyTrophyTile>());
+        Item.width = Item.height = 30;
+        Item.value = Item.sellPrice(gold: 1);
+        Item.rare = ItemRarityID.Blue;
     }
 }

@@ -3,17 +3,16 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights
-{
-    public class MiniAgedBlacklightItem : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MiniCagedBlacklightItem>();
+namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<MiniAgedBlacklight>());
-            Item.value = Item.sellPrice(silver: 1);
-        }
+public class MiniAgedBlacklightItem : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MiniCagedBlacklightItem>();
+
+        Item.DefaultToPlaceableTile(ModContent.TileType<MiniAgedBlacklight>());
+        Item.value = Item.sellPrice(silver: 1);
     }
 }

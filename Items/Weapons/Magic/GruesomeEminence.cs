@@ -6,43 +6,42 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+public class GruesomeEminence : ExhumedItem, ILocalizedModType
 {
-    public class GruesomeEminence : ExhumedItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetDefaults()
-        {
-            Item.width = 42;
-            Item.height = 74;
-            Item.damage = 666;
-            Item.DamageType = DamageClass.Magic;
-            Item.noUseGraphic = true;
-            Item.channel = true;
-            Item.mana = 30;
-            Item.useAnimation = Item.useTime = 27;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 5f;
-            Item.shootSpeed = 9f;
-            Item.shoot = ModContent.ProjectileType<GruesomeEminenceHoldout>();
+        Item.width = 42;
+        Item.height = 74;
+        Item.damage = 666;
+        Item.DamageType = DamageClass.Magic;
+        Item.noUseGraphic = true;
+        Item.channel = true;
+        Item.mana = 30;
+        Item.useAnimation = Item.useTime = 27;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 5f;
+        Item.shootSpeed = 9f;
+        Item.shoot = ModContent.ProjectileType<GruesomeEminenceHoldout>();
 
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<CalamityRed>();
-        }
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+        Item.rare = ModContent.RarityType<CalamityRed>();
+    }
 
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GhastlyVisage>();
-        }
+    public override void SetStaticDefaults()
+    {
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GhastlyVisage>();
+    }
 
-        // This weapon uses a holdout projectile.
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+    // This weapon uses a holdout projectile.
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
-            return false;
-        }
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Projectile.NewProjectile(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
+        return false;
     }
 }

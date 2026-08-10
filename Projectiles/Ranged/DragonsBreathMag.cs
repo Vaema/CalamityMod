@@ -5,73 +5,72 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Ranged
-{
-    public class DragonsBreathMag : ModProjectile, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/DragonsBreathMag";
-        public int Time = 0;
-        public bool TouchedGrass = false;
+namespace CalamityMod.Projectiles.Ranged;
 
-        public override void SetDefaults()
+public class DragonsBreathMag : ModProjectile, ILocalizedModType
+{
+    public new string LocalizationCategory => "Projectiles.Ranged";
+    public override string Texture => "CalamityMod/Projectiles/Ranged/DragonsBreathMag";
+    public int Time = 0;
+    public bool TouchedGrass = false;
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 16;
+        Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = false;
+        Projectile.DamageType = DamageClass.Ranged;
+        Projectile.aiStyle = ProjAIStyleID.GroundProjectile;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 700;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+    }
+    public override void SetStaticDefaults()
+    {
+        // Unsure if it will look good with these
+        //ProjectileID.Sets.TrailCacheLength[Type] = 8;
+        //ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DragonsBreathMag").Value);
+        return true;
+    }
+    public override void AI()
+    {
+        Projectile.extraUpdates = 0;
+        Time++;
+        Player Owner = Main.player[Projectile.owner];
+        if (!TouchedGrass)
         {
-            Projectile.width = 16;
-            Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = false;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.aiStyle = ProjAIStyleID.GroundProjectile;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 700;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.rotation += 0.5f * (float)Projectile.direction;
         }
-        public override void SetStaticDefaults()
+        Projectile.velocity.Y -= 0.055f;
+        Projectile.velocity.X *= 0.992f;
+    }
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Projectile.damage = 0;
+        TouchedGrass = true;
+        Projectile.velocity *= 0.98f;
+        return false;
+    }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (Main.zenithWorld)
         {
-            // Unsure if it will look good with these
-            //ProjectileID.Sets.TrailCacheLength[Type] = 8;
-            //ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DragonsBreathMag").Value);
-            return true;
-        }
-        public override void AI()
-        {
-            Projectile.extraUpdates = 0;
-            Time++;
-            Player Owner = Main.player[Projectile.owner];
-            if (!TouchedGrass)
+            for (int i = 0; i <= 30; i++)
             {
-                Projectile.rotation += 0.5f * (float)Projectile.direction;
+                SparkParticle spark1 = new SparkParticle(Projectile.Center, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2.8f), false, 45, 1.4f, Main.rand.NextBool(4) ? Color.Orange : Color.OrangeRed);
+                GeneralParticleHandler.SpawnParticle(spark1);
             }
-            Projectile.velocity.Y -= 0.055f;
-            Projectile.velocity.X *= 0.992f;
+            Particle explosion = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.DarkOrange, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 2.8f, 33);
+            GeneralParticleHandler.SpawnParticle(explosion);
+            Particle explosion2 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.OrangeRed, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 3f, 33, false);
+            GeneralParticleHandler.SpawnParticle(explosion2);
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.damage = 0;
-            TouchedGrass = true;
-            Projectile.velocity *= 0.98f;
-            return false;
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Main.zenithWorld)
-            {
-                for (int i = 0; i <= 30; i++)
-                {
-                    SparkParticle spark1 = new SparkParticle(Projectile.Center, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2.8f), false, 45, 1.4f, Main.rand.NextBool(4) ? Color.Orange : Color.OrangeRed);
-                    GeneralParticleHandler.SpawnParticle(spark1);
-                }
-                Particle explosion = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.DarkOrange, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 2.8f, 33);
-                GeneralParticleHandler.SpawnParticle(explosion);
-                Particle explosion2 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.OrangeRed, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 3f, 33, false);
-                GeneralParticleHandler.SpawnParticle(explosion2);
-            }
-            target.AddBuff(ModContent.BuffType<Dragonfire>(), 20);
-        }
+        target.AddBuff(ModContent.BuffType<Dragonfire>(), 20);
     }
 }

@@ -6,50 +6,49 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.UI
+namespace CalamityMod.UI;
+
+public class BossRushUI : InvasionProgressUI
 {
-    public class BossRushUI : InvasionProgressUI
+    public override int SecondaryDigitPrecision => 1;
+    public override bool IsActive => BossRushEvent.BossRushActive;
+    public override float CompletionRatio
     {
-        public override int SecondaryDigitPrecision => 1;
-        public override bool IsActive => BossRushEvent.BossRushActive;
-        public override float CompletionRatio
+        get
         {
-            get
+            float invasionBasedCompletion = BossRushEvent.BossRushStage / (float)BossRushEvent.Bosses.Count;
+            if (!CalamityPlayer.areThereAnyDamnBosses || !BossRushEvent.Bosses.IndexInRange(BossRushEvent.BossRushStage))
+                return invasionBasedCompletion;
+
+            int bossIndex = NPC.FindFirstNPC(BossRushEvent.CurrentlyFoughtBoss);
+
+            if (!Main.npc.IndexInRange(bossIndex))
+                return invasionBasedCompletion;
+
+            // Yes, this could be cached, but I personally don't see the need for it. In a typical situation, there won't be two of the same boss active during Boss Rush.
+            NPC currentBoss = Main.npc[bossIndex];
+            float bossBasedCompletion = 1f - currentBoss.life / (float)currentBoss.lifeMax;
+            return invasionBasedCompletion + bossBasedCompletion / BossRushEvent.Bosses.Count;
+        }
+    }
+    public override string InvasionName => CalamityUtils.GetTextValue("Events.BossRush");
+    public override Color InvasionBarColor => Color.DarkSlateBlue;
+    public override Texture2D IconTexture => ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/BossRushIcon").Value;
+
+    public static float EvaluationLifeRatioFromNPCTypes(params int[] types)
+    {
+        int totalLife = 0;
+        int totalLifeMax = 0;
+        foreach (NPC n in Main.ActiveNPCs)
+        {
+            if (types.Contains(n.type))
             {
-                float invasionBasedCompletion = BossRushEvent.BossRushStage / (float)BossRushEvent.Bosses.Count;
-                if (!CalamityPlayer.areThereAnyDamnBosses || !BossRushEvent.Bosses.IndexInRange(BossRushEvent.BossRushStage))
-                    return invasionBasedCompletion;
-
-                int bossIndex = NPC.FindFirstNPC(BossRushEvent.CurrentlyFoughtBoss);
-
-                if (!Main.npc.IndexInRange(bossIndex))
-                    return invasionBasedCompletion;
-
-                // Yes, this could be cached, but I personally don't see the need for it. In a typical situation, there won't be two of the same boss active during Boss Rush.
-                NPC currentBoss = Main.npc[bossIndex];
-                float bossBasedCompletion = 1f - currentBoss.life / (float)currentBoss.lifeMax;
-                return invasionBasedCompletion + bossBasedCompletion / BossRushEvent.Bosses.Count;
+                totalLife += n.life;
+                totalLifeMax += n.lifeMax;
             }
         }
-        public override string InvasionName => CalamityUtils.GetTextValue("Events.BossRush");
-        public override Color InvasionBarColor => Color.DarkSlateBlue;
-        public override Texture2D IconTexture => ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/BossRushIcon").Value;
 
-        public static float EvaluationLifeRatioFromNPCTypes(params int[] types)
-        {
-            int totalLife = 0;
-            int totalLifeMax = 0;
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (types.Contains(n.type))
-                {
-                    totalLife += n.life;
-                    totalLifeMax += n.lifeMax;
-                }
-            }
-
-            // Avoid division by zero, just in case.
-            return totalLifeMax == 0 ? 0f : totalLife / (float)totalLifeMax;
-        }
+        // Avoid division by zero, just in case.
+        return totalLifeMax == 0 ? 0f : totalLife / (float)totalLifeMax;
     }
 }

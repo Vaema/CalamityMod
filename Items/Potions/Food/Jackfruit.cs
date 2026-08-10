@@ -4,8 +4,8 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions.Food
-{
+namespace CalamityMod.Items.Potions.Food;
+
 	public class Jackfruit : ModItem, ILocalizedModType
 	{
 		public new string LocalizationCategory => "Items.Potions";
@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Potions.Food
 				new Color(147, 176, 54)
 			};
 			ItemID.Sets.IsFood[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Ambrosia;
-        }
+        ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Ambrosia;
+    }
 
 		public override void SetDefaults()
 		{
@@ -29,4 +29,3 @@ namespace CalamityMod.Items.Potions.Food
 			Item.rare = ItemRarityID.Blue;
 		}
 	}
-}

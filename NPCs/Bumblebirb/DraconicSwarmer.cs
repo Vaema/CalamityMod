@@ -8,346 +8,345 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.NPCs.Bumblebirb
+namespace CalamityMod.NPCs.Bumblebirb;
+
+public class DraconicSwarmer : ModNPC
 {
-    public class DraconicSwarmer : ModNPC
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
+        Main.npcFrameCount[Type] = 5;
+        NPCID.Sets.TrailingMode[Type] = 1;
+        this.HideFromBestiary();
+    }
+
+    public override string Texture => "CalamityMod/NPCs/Bumblebirb/BumbleFolly";
+
+    public override void SetDefaults()
+    {
+        NPC.damage = 96; // 192
+        NPC.npcSlots = 1f;
+        NPC.aiStyle = -1;
+        AIType = -1;
+        NPC.width = 120;
+        NPC.height = 80;
+        NPC.defense = 20;
+        NPC.LifeMaxNERB(9375, 11250, 5000);
+        NPC.knockBackResist = 0.15f;
+        NPC.lavaImmune = true;
+        NPC.noTileCollide = true;
+        NPC.noGravity = true;
+        NPC.HitSound = SoundID.NPCHit51;
+        NPC.DeathSound = SoundID.NPCDeath46;
+        NPC.Calamity().VulnerableToHeat = true;
+        NPC.Calamity().VulnerableToCold = true;
+        NPC.Calamity().VulnerableToSickness = true;
+    }
+
+    public override void AI()
+    {
+        Player player = Main.player[NPC.target];
+
+        float rotationMult = 4f;
+        float rotationAmt = 0.04f;
+
+        if (Vector2.Distance(player.Center, NPC.Center) > 5600f)
         {
-            Main.npcFrameCount[Type] = 5;
-            NPCID.Sets.TrailingMode[Type] = 1;
-            this.HideFromBestiary();
+            if (NPC.timeLeft > 5)
+                NPC.timeLeft = 5;
         }
 
-        public override string Texture => "CalamityMod/NPCs/Bumblebirb/BumbleFolly";
+        NPC.rotation = (NPC.rotation * rotationMult + NPC.velocity.X * rotationAmt * 1.25f) / 10f;
 
-        public override void SetDefaults()
+        if (NPC.ai[0] == 0f || NPC.ai[0] == 1f)
         {
-            NPC.damage = 96; // 192
-            NPC.npcSlots = 1f;
-            NPC.aiStyle = -1;
-            AIType = -1;
-            NPC.width = 120;
-            NPC.height = 80;
-            NPC.defense = 20;
-            NPC.LifeMaxNERB(9375, 11250, 5000);
-            NPC.knockBackResist = 0.15f;
-            NPC.lavaImmune = true;
-            NPC.noTileCollide = true;
-            NPC.noGravity = true;
-            NPC.HitSound = SoundID.NPCHit51;
-            NPC.DeathSound = SoundID.NPCDeath46;
-            NPC.Calamity().VulnerableToHeat = true;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToSickness = true;
-        }
-
-        public override void AI()
-        {
-            Player player = Main.player[NPC.target];
-
-            float rotationMult = 4f;
-            float rotationAmt = 0.04f;
-
-            if (Vector2.Distance(player.Center, NPC.Center) > 5600f)
+            for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (NPC.timeLeft > 5)
-                    NPC.timeLeft = 5;
-            }
-
-            NPC.rotation = (NPC.rotation * rotationMult + NPC.velocity.X * rotationAmt * 1.25f) / 10f;
-
-            if (NPC.ai[0] == 0f || NPC.ai[0] == 1f)
-            {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                if (i != NPC.whoAmI && Main.npc[i].active && Main.npc[i].type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].active && Main.npc[i].type == NPC.type)
+                    Vector2 otherSwarmerDirection = Main.npc[i].Center - NPC.Center;
+                    if (otherSwarmerDirection.Length() < (NPC.width + NPC.height))
                     {
-                        Vector2 otherSwarmerDirection = Main.npc[i].Center - NPC.Center;
-                        if (otherSwarmerDirection.Length() < (NPC.width + NPC.height))
-                        {
-                            otherSwarmerDirection.Normalize();
-                            otherSwarmerDirection *= -0.1f;
-                            NPC.velocity += otherSwarmerDirection;
-                            NPC nPC6 = Main.npc[i];
-                            nPC6.velocity -= otherSwarmerDirection;
-                        }
+                        otherSwarmerDirection.Normalize();
+                        otherSwarmerDirection *= -0.1f;
+                        NPC.velocity += otherSwarmerDirection;
+                        NPC nPC6 = Main.npc[i];
+                        nPC6.velocity -= otherSwarmerDirection;
                     }
                 }
             }
+        }
 
-            if (NPC.target < 0 || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
-            {
-                NPC.TargetClosest(true);
-                Vector2 swarmerTargetDist = Main.player[NPC.target].Center - NPC.Center;
-                if (Main.player[NPC.target].dead || swarmerTargetDist.Length() > 5600f)
-                    NPC.ai[0] = -1f;
-            }
-            else
-            {
-                Vector2 swarmerCatchUpTargetDist = Main.player[NPC.target].Center - NPC.Center;
-                if (NPC.ai[0] > 1f && swarmerCatchUpTargetDist.Length() > 3600f)
-                    NPC.ai[0] = 1f;
-            }
+        if (NPC.target < 0 || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+        {
+            NPC.TargetClosest(true);
+            Vector2 swarmerTargetDist = Main.player[NPC.target].Center - NPC.Center;
+            if (Main.player[NPC.target].dead || swarmerTargetDist.Length() > 5600f)
+                NPC.ai[0] = -1f;
+        }
+        else
+        {
+            Vector2 swarmerCatchUpTargetDist = Main.player[NPC.target].Center - NPC.Center;
+            if (NPC.ai[0] > 1f && swarmerCatchUpTargetDist.Length() > 3600f)
+                NPC.ai[0] = 1f;
+        }
 
-            if (NPC.ai[0] == -1f)
+        if (NPC.ai[0] == -1f)
+        {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
+            Vector2 swarmerDespawnVelMult = new Vector2(0f, -8f);
+            NPC.velocity = (NPC.velocity * 21f + swarmerDespawnVelMult) / 10f;
+            return;
+        }
+
+        if (NPC.ai[0] == 0f)
+        {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
+            NPC.TargetClosest(true);
+            NPC.spriteDirection = NPC.direction;
+
+            Vector2 swarmerIdleTargetDist = Main.player[NPC.target].Center - NPC.Center;
+            if (swarmerIdleTargetDist.Length() > 2800f)
+            {
+                NPC.ai[0] = 1f;
+                NPC.ai[1] = 0f;
+                NPC.ai[2] = 0f;
+                NPC.ai[3] = 0f;
+            }
+            else if (swarmerIdleTargetDist.Length() > 400f)
+            {
+                float swarmerIdleSpeed = 9f + swarmerIdleTargetDist.Length() / 100f + NPC.ai[1] / 15f;
+                swarmerIdleTargetDist.Normalize();
+                swarmerIdleTargetDist *= swarmerIdleSpeed;
+                NPC.velocity = (NPC.velocity * 29f + swarmerIdleTargetDist) / 30f;
+            }
+            else if (NPC.velocity.Length() > 2f)
+                NPC.velocity *= 0.95f;
+            else if (NPC.velocity.Length() < 1f)
+                NPC.velocity *= 1.05f;
+
+            NPC.ai[1] += 1f;
+            if (NPC.ai[1] >= 90f)
+            {
+                NPC.ai[1] = 0f;
+                NPC.ai[0] = 2f;
+            }
+        }
+        else
+        {
+            if (NPC.ai[0] == 1f)
             {
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                Vector2 swarmerDespawnVelMult = new Vector2(0f, -8f);
-                NPC.velocity = (NPC.velocity * 21f + swarmerDespawnVelMult) / 10f;
-                return;
-            }
+                if (NPC.target < 0 || !Main.player[NPC.target].active || Main.player[NPC.target].dead)
+                    NPC.TargetClosest(true);
 
-            if (NPC.ai[0] == 0f)
-            {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
+                if (NPC.velocity.X < 0f)
+                    NPC.direction = -1;
+                else if (NPC.velocity.X > 0f)
+                    NPC.direction = 1;
 
-                NPC.TargetClosest(true);
                 NPC.spriteDirection = NPC.direction;
+                NPC.rotation = (NPC.rotation * rotationMult + NPC.velocity.X * rotationAmt) / 10f;
 
-                Vector2 swarmerIdleTargetDist = Main.player[NPC.target].Center - NPC.Center;
-                if (swarmerIdleTargetDist.Length() > 2800f)
+                Vector2 swarmerChargeTargetDist = Main.player[NPC.target].Center - NPC.Center;
+                if (swarmerChargeTargetDist.Length() < 800f && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                 {
-                    NPC.ai[0] = 1f;
+                    NPC.ai[0] = 0f;
                     NPC.ai[1] = 0f;
                     NPC.ai[2] = 0f;
                     NPC.ai[3] = 0f;
                 }
-                else if (swarmerIdleTargetDist.Length() > 400f)
-                {
-                    float swarmerIdleSpeed = 9f + swarmerIdleTargetDist.Length() / 100f + NPC.ai[1] / 15f;
-                    swarmerIdleTargetDist.Normalize();
-                    swarmerIdleTargetDist *= swarmerIdleSpeed;
-                    NPC.velocity = (NPC.velocity * 29f + swarmerIdleTargetDist) / 30f;
-                }
-                else if (NPC.velocity.Length() > 2f)
-                    NPC.velocity *= 0.95f;
-                else if (NPC.velocity.Length() < 1f)
-                    NPC.velocity *= 1.05f;
+
+                NPC.ai[2] += 0.0166666675f;
+                float swarmerChargeSpeed = 12f + NPC.ai[2] + swarmerChargeTargetDist.Length() / 150f;
+                float swarmerChargeVelMult = 25f;
+                swarmerChargeTargetDist.Normalize();
+                swarmerChargeTargetDist *= swarmerChargeSpeed;
+                NPC.velocity = (NPC.velocity * (swarmerChargeVelMult - 1f) + swarmerChargeTargetDist) / swarmerChargeVelMult;
+
+                NPC.ForceNetUpdate();
+
+                return;
+            }
+
+            if (NPC.ai[0] == 2f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                if (NPC.velocity.X < 0f)
+                    NPC.direction = -1;
+                else if (NPC.velocity.X > 0f)
+                    NPC.direction = 1;
+
+                NPC.spriteDirection = NPC.direction;
+                NPC.rotation = (NPC.rotation * rotationMult * 0.75f + NPC.velocity.X * rotationAmt * 1.25f) / 8f;
+
+                Vector2 swarmerDecelerateTargetDist = Main.player[NPC.target].Center - NPC.Center;
+                swarmerDecelerateTargetDist.Y -= 8f;
+                float swarmerDecelerateSpeed = 18f;
+                float swarmerDecelerateVelMult = 8f;
+                swarmerDecelerateTargetDist.Normalize();
+                swarmerDecelerateTargetDist *= swarmerDecelerateSpeed;
+                NPC.velocity = (NPC.velocity * (swarmerDecelerateVelMult - 1f) + swarmerDecelerateTargetDist) / swarmerDecelerateVelMult;
+
+                if (NPC.velocity.X < 0f)
+                    NPC.direction = -1;
+                else
+                    NPC.direction = 1;
+
+                NPC.spriteDirection = NPC.direction;
 
                 NPC.ai[1] += 1f;
-                if (NPC.ai[1] >= 90f)
+                if (NPC.ai[1] > 10f)
                 {
-                    NPC.ai[1] = 0f;
-                    NPC.ai[0] = 2f;
-                }
-            }
-            else
-            {
-                if (NPC.ai[0] == 1f)
-                {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
 
-                    if (NPC.target < 0 || !Main.player[NPC.target].active || Main.player[NPC.target].dead)
-                        NPC.TargetClosest(true);
-
-                    if (NPC.velocity.X < 0f)
-                        NPC.direction = -1;
-                    else if (NPC.velocity.X > 0f)
-                        NPC.direction = 1;
-
-                    NPC.spriteDirection = NPC.direction;
-                    NPC.rotation = (NPC.rotation * rotationMult + NPC.velocity.X * rotationAmt) / 10f;
-
-                    Vector2 swarmerChargeTargetDist = Main.player[NPC.target].Center - NPC.Center;
-                    if (swarmerChargeTargetDist.Length() < 800f && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                    {
-                        NPC.ai[0] = 0f;
-                        NPC.ai[1] = 0f;
-                        NPC.ai[2] = 0f;
-                        NPC.ai[3] = 0f;
-                    }
-
-                    NPC.ai[2] += 0.0166666675f;
-                    float swarmerChargeSpeed = 12f + NPC.ai[2] + swarmerChargeTargetDist.Length() / 150f;
-                    float swarmerChargeVelMult = 25f;
-                    swarmerChargeTargetDist.Normalize();
-                    swarmerChargeTargetDist *= swarmerChargeSpeed;
-                    NPC.velocity = (NPC.velocity * (swarmerChargeVelMult - 1f) + swarmerChargeTargetDist) / swarmerChargeVelMult;
-
-                    NPC.ForceNetUpdate();
-
-                    return;
-                }
-
-                if (NPC.ai[0] == 2f)
-                {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
-                    if (NPC.velocity.X < 0f)
-                        NPC.direction = -1;
-                    else if (NPC.velocity.X > 0f)
-                        NPC.direction = 1;
-
-                    NPC.spriteDirection = NPC.direction;
-                    NPC.rotation = (NPC.rotation * rotationMult * 0.75f + NPC.velocity.X * rotationAmt * 1.25f) / 8f;
-
-                    Vector2 swarmerDecelerateTargetDist = Main.player[NPC.target].Center - NPC.Center;
-                    swarmerDecelerateTargetDist.Y -= 8f;
-                    float swarmerDecelerateSpeed = 18f;
-                    float swarmerDecelerateVelMult = 8f;
-                    swarmerDecelerateTargetDist.Normalize();
-                    swarmerDecelerateTargetDist *= swarmerDecelerateSpeed;
-                    NPC.velocity = (NPC.velocity * (swarmerDecelerateVelMult - 1f) + swarmerDecelerateTargetDist) / swarmerDecelerateVelMult;
-
+                    NPC.velocity = swarmerDecelerateTargetDist;
                     if (NPC.velocity.X < 0f)
                         NPC.direction = -1;
                     else
                         NPC.direction = 1;
 
-                    NPC.spriteDirection = NPC.direction;
+                    NPC.ai[0] = 2.1f;
+                    NPC.ai[1] = 0f;
+                }
+            }
+            else if (NPC.ai[0] == 2.1f)
+            {
+                // Set damage
+                NPC.damage = NPC.defDamage;
 
-                    NPC.ai[1] += 1f;
-                    if (NPC.ai[1] > 10f)
+                if (NPC.velocity.X < 0f)
+                    NPC.direction = -1;
+                else if (NPC.velocity.X > 0f)
+                    NPC.direction = 1;
+
+                NPC.spriteDirection = NPC.direction;
+
+                NPC.velocity *= 1.01f;
+
+                NPC.ai[1] += 1f;
+                if (NPC.ai[1] > 30f)
+                {
+                    if (!Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                     {
-                        // Set damage
-                        NPC.damage = NPC.defDamage;
-
-                        NPC.velocity = swarmerDecelerateTargetDist;
-                        if (NPC.velocity.X < 0f)
-                            NPC.direction = -1;
-                        else
-                            NPC.direction = 1;
-
-                        NPC.ai[0] = 2.1f;
+                        NPC.ai[0] = 0f;
                         NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
+                        return;
                     }
-                }
-                else if (NPC.ai[0] == 2.1f)
-                {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
 
-                    if (NPC.velocity.X < 0f)
-                        NPC.direction = -1;
-                    else if (NPC.velocity.X > 0f)
-                        NPC.direction = 1;
-
-                    NPC.spriteDirection = NPC.direction;
-
-                    NPC.velocity *= 1.01f;
-
-                    NPC.ai[1] += 1f;
-                    if (NPC.ai[1] > 30f)
+                    if (NPC.ai[1] > 60f)
                     {
-                        if (!Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                        {
-                            NPC.ai[0] = 0f;
-                            NPC.ai[1] = 0f;
-                            NPC.ai[2] = 0f;
-                            return;
-                        }
-
-                        if (NPC.ai[1] > 60f)
-                        {
-                            NPC.ai[0] = 1f;
-                            NPC.ai[1] = 0f;
-                            NPC.ai[2] = 0f;
-                        }
+                        NPC.ai[0] = 1f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
                 }
             }
         }
+    }
 
-        public override void OnKill()
+    public override void OnKill()
+    {
+        int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
+        if (Main.rand.NextBool(4) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
+            Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
+
+        if (Main.zenithWorld)
         {
-            int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
-            if (Main.rand.NextBool(4) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
-                Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
-
-            if (Main.zenithWorld)
+            SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, NPC.Center - Vector2.UnitY * 300f);
+            if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, NPC.Center - Vector2.UnitY * 300f);
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                for (int i = 0; i < 5; i++)
                 {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        Vector2 fireFrom = new Vector2(NPC.Center.X + (40 * i) - 120, NPC.Center.Y - 900f);
-                        Vector2 ai0 = NPC.Center - fireFrom;
-                        float ai = Main.rand.Next(100);
-                        Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), Dragonfolly.LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
-                    }
+                    Vector2 fireFrom = new Vector2(NPC.Center.X + (40 * i) - 120, NPC.Center.Y - 900f);
+                    Vector2 ai0 = NPC.Center - fireFrom;
+                    float ai = Main.rand.Next(100);
+                    Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), Dragonfolly.LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                 }
             }
         }
+    }
 
-        public override void FindFrame(int frameHeight)
+    public override void FindFrame(int frameHeight)
+    {
+        NPC.frameCounter += NPC.ai[0] == 2.1f ? 1.5 : 1D;
+        if (Main.zenithWorld)
         {
-            NPC.frameCounter += NPC.ai[0] == 2.1f ? 1.5 : 1D;
-            if (Main.zenithWorld)
+            NPC.frameCounter += 2D;
+        }
+        if (NPC.frameCounter > 4D) //iban said the time between frames was 5 so using that as a base
+        {
+            NPC.frameCounter = 0D;
+            NPC.frame.Y += frameHeight;
+        }
+        if (NPC.frame.Y >= frameHeight * 4)
+        {
+            NPC.frame.Y = 0;
+        }
+    }
+
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        SpriteEffects spriteEffects = SpriteEffects.None;
+        if (NPC.spriteDirection == 1)
+            spriteEffects = SpriteEffects.FlipHorizontally;
+
+        Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+        Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
+        int afterimageAmt = NPC.ai[0] == 2.1f ? 7 : 0;
+
+        if (CalamityClientConfig.Instance.Afterimages)
+        {
+            for (int i = 1; i < afterimageAmt; i += 2)
             {
-                NPC.frameCounter += 2D;
-            }
-            if (NPC.frameCounter > 4D) //iban said the time between frames was 5 so using that as a base
-            {
-                NPC.frameCounter = 0D;
-                NPC.frame.Y += frameHeight;
-            }
-            if (NPC.frame.Y >= frameHeight * 4)
-            {
-                NPC.frame.Y = 0;
+                Color afterimageColor = drawColor;
+                afterimageColor = Color.Lerp(afterimageColor, Color.Gold, 0.5f);
+                afterimageColor = NPC.GetAlpha(afterimageColor);
+                afterimageColor *= (afterimageAmt - i) / 15f;
+                Vector2 afterimageDrawPos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                afterimageDrawPos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+                afterimageDrawPos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                spriteBatch.Draw(texture2D15, afterimageDrawPos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        Vector2 drawLocation = NPC.Center - screenPos;
+        drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+        drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+        spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+        return false;
+    }
+
+    public override void ModifyTypeName(ref string typeName)
+    {
+        if (Main.zenithWorld)
         {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
-            int afterimageAmt = NPC.ai[0] == 2.1f ? 7 : 0;
-
-            if (CalamityClientConfig.Instance.Afterimages)
-            {
-                for (int i = 1; i < afterimageAmt; i += 2)
-                {
-                    Color afterimageColor = drawColor;
-                    afterimageColor = Color.Lerp(afterimageColor, Color.Gold, 0.5f);
-                    afterimageColor = NPC.GetAlpha(afterimageColor);
-                    afterimageColor *= (afterimageAmt - i) / 15f;
-                    Vector2 afterimageDrawPos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimageDrawPos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-                    afterimageDrawPos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, afterimageDrawPos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-                }
-            }
-
-            Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-            return false;
+            typeName = CalamityUtils.GetTextValue("NPCs.Bumblebirb");
         }
+    }
 
-        public override void ModifyTypeName(ref string typeName)
+    public override void HitEffect(NPC.HitInfo hit)
+    {
+        for (int k = 0; k < 5; k++)
         {
-            if (Main.zenithWorld)
-            {
-                typeName = CalamityUtils.GetTextValue("NPCs.Bumblebirb");
-            }
+            Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
         }
-
-        public override void HitEffect(NPC.HitInfo hit)
+        if (NPC.life <= 0)
         {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 50; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
-            }
-            if (NPC.life <= 0)
-            {
-                for (int k = 0; k < 50; k++)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.CopperCoin, hit.HitDirection, -1f, 0, default, 1f);
-                }
             }
         }
     }

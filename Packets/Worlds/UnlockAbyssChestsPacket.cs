@@ -1,21 +1,20 @@
 ﻿using System.IO;
 using CalamityMod.World;
 
-namespace CalamityMod.Packets
+namespace CalamityMod.Packets;
+
+internal sealed class UnlockAbyssChestsPacket : CalamityPacket
 {
-    internal sealed class UnlockAbyssChestsPacket : CalamityPacket
+    public static UnlockAbyssChestsPacket Instance { get; private set; }
+
+    public static void Send(int toClient = -1, int ignoreClient = -1)
     {
-        public static UnlockAbyssChestsPacket Instance { get; private set; }
+        var packet = Instance.CreateBasePacket();
+        packet.Send(toClient, ignoreClient);
+    }
 
-        public static void Send(int toClient = -1, int ignoreClient = -1)
-        {
-            var packet = Instance.CreateBasePacket();
-            packet.Send(toClient, ignoreClient);
-        }
-
-        public override void HandlePacket(BinaryReader packet, int sender)
-        {
-            Abyss.DoUnlockAllAbyssChests();
-        }
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        Abyss.DoUnlockAllAbyssChests();
     }
 }

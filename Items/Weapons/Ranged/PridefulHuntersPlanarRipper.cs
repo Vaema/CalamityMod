@@ -5,68 +5,67 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+[LegacyName("PrideHuntersPlanarRipper")]
+public class PridefulHuntersPlanarRipper : ModItem, ILocalizedModType
 {
-    [LegacyName("PrideHuntersPlanarRipper")]
-    public class PridefulHuntersPlanarRipper : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+    private int counter = 0;
+
+    public static int AmmoSavedPercent = 50;
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
-        private int counter = 0;
+        Item.width = 68;
+        Item.height = 32;
+        Item.damage = 79;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useTime = 5;
+        Item.useAnimation = 5;
+        Item.autoReuse = true;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 1f;
 
-        public static int AmmoSavedPercent = 50;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+        Item.UseSound = SoundID.Item11;
+        Item.shoot = ProjectileID.Bullet;
+        Item.useAmmo = AmmoID.Bullet;
+        Item.shootSpeed = 15f;
 
-        public override void SetDefaults()
+        Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
+        Item.rare = ItemRarityID.Purple;
+        Item.Calamity().donorItem = true;
+    }
+
+    public override Vector2? HoldoutOffset() => new Vector2(-12, -6);
+
+    public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
+
+    public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+    {
+        // If using standard musket balls (or Silver Bullets actually), fire the special lightning bolts and have special properties.
+        if (type == ProjectileID.Bullet)
+            type = ModContent.ProjectileType<PlanarRipperBolt>();
+
+        // Every 4th shot deals 35% increased damage and resets the counter.
+        counter++;
+        if (counter == 4)
         {
-            Item.width = 68;
-            Item.height = 32;
-            Item.damage = 79;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 5;
-            Item.useAnimation = 5;
-            Item.autoReuse = true;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 1f;
-
-            Item.UseSound = SoundID.Item11;
-            Item.shoot = ProjectileID.Bullet;
-            Item.useAmmo = AmmoID.Bullet;
-            Item.shootSpeed = 15f;
-
-            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
-            Item.rare = ItemRarityID.Purple;
-            Item.Calamity().donorItem = true;
+            damage = (int)(damage * 1.35f);
+            counter = 0;
         }
+    }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-12, -6);
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
-
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
-            // If using standard musket balls (or Silver Bullets actually), fire the special lightning bolts and have special properties.
-            if (type == ProjectileID.Bullet)
-                type = ModContent.ProjectileType<PlanarRipperBolt>();
-
-            // Every 4th shot deals 35% increased damage and resets the counter.
-            counter++;
-            if (counter == 4)
-            {
-                damage = (int)(damage * 1.35f);
-                counter = 0;
-            }
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<P90>().
-                AddIngredient(ItemID.Uzi).
-                AddIngredient(ItemID.LunarBar, 5).
-                AddIngredient(ItemID.FragmentVortex, 10).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<P90>().
+            AddIngredient(ItemID.Uzi).
+            AddIngredient(ItemID.LunarBar, 5).
+            AddIngredient(ItemID.FragmentVortex, 10).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

@@ -3,32 +3,31 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Materials
+namespace CalamityMod.Items.Materials;
+
+public class BloodOrb : ModItem, ILocalizedModType
 {
-    public class BloodOrb : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Materials";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Materials";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 100;
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(6, 4));
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
-        }
+        Item.ResearchUnlockCount = 100;
+        Main.RegisterItemAnimation(Type, new DrawAnimationVertical(6, 4));
+        ItemID.Sets.AnimatesAsSoul[Type] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 16;
-            Item.height = 28;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.value = Item.sellPrice(copper: 40);
-            Item.rare = ItemRarityID.Green;
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 16;
+        Item.height = 28;
+        Item.maxStack = Item.CommonMaxStack;
+        Item.value = Item.sellPrice(copper: 40);
+        Item.rare = ItemRarityID.Green;
+    }
 
-        public override void Update(ref float gravity, ref float maxFallSpeed)
-        {
-            float brightness = Main.rand.Next(90, 111) * 0.01f;
-            brightness *= Main.essScale;
-            Lighting.AddLight((int)((Item.position.X + (Item.width / 2)) / 16f), (int)((Item.position.Y + (Item.height / 2)) / 16f), 0.75f * brightness, 0f, 0f);
-        }
+    public override void Update(ref float gravity, ref float maxFallSpeed)
+    {
+        float brightness = Main.rand.Next(90, 111) * 0.01f;
+        brightness *= Main.essScale;
+        Lighting.AddLight((int)((Item.position.X + (Item.width / 2)) / 16f), (int)((Item.position.Y + (Item.height / 2)) / 16f), 0.75f * brightness, 0f, 0f);
     }
 }

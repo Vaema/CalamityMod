@@ -15,74 +15,73 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.TreasureBags
+namespace CalamityMod.Items.TreasureBags;
+
+public class HiveMindBag : ModItem, ILocalizedModType
 {
-    public class HiveMindBag : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.TreasureBags";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.TreasureBags";
-        public override void SetStaticDefaults()
+        Item.ResearchUnlockCount = 3;
+        ItemID.Sets.BossBag[Type] = true;
+        ItemID.Sets.PreHardmodeLikeBossBag[Type] = true;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.width = 24;
+        Item.height = 24;
+        Item.maxStack = Item.CommonMaxStack;
+        Item.consumable = true;
+        Item.rare = ItemRarityID.Cyan;
+        Item.expert = true;
+    }
+
+    public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+    {
+        itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+    }
+
+    public override bool CanRightClick() => true;
+
+    public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+
+    public override void PostUpdate() => Item.TreasureBagLightAndDust();
+
+    public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+    {
+        return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
+    }
+
+    public override void ModifyItemLoot(ItemLoot itemLoot)
+    {
+        // Money
+        itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<HiveMind>()));
+
+        // Materials
+        itemLoot.Add(ItemID.DemoniteBar, 1, 15, 20);
+        itemLoot.Add(ItemID.RottenChunk, 1, 15, 20);
+        itemLoot.AddIf(() => Main.hardMode, ItemID.CursedFlame, 1, 25, 30);
+        itemLoot.Add(ItemID.CorruptSeeds, 1, 10, 15);
+
+        // Weapons
+        itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new WeightedItemStack[]
         {
-            Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Type] = true;
-            ItemID.Sets.PreHardmodeLikeBossBag[Type] = true;
-        }
+            ModContent.ItemType<PerfectDark>(),
+            ModContent.ItemType<Shadethrower>(),
+            ModContent.ItemType<ShaderainStaff>(),
+            ModContent.ItemType<DankStaff>(),
+            ModContent.ItemType<RotBall>(),
+        }));
 
-        public override void SetDefaults()
-        {
-            Item.width = 24;
-            Item.height = 24;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.rare = ItemRarityID.Cyan;
-            Item.expert = true;
-        }
+        // Equipment
+        itemLoot.Add(ModContent.ItemType<FilthyGlove>(), DropHelper.BagWeaponDropRateFraction);
+        itemLoot.Add(ModContent.ItemType<RottenBrain>());
+        itemLoot.AddRevBagAccessories();
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-        }
-
-        public override bool CanRightClick() => true;
-
-        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
-
-        public override void PostUpdate() => Item.TreasureBagLightAndDust();
-
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
-            return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
-        }
-
-        public override void ModifyItemLoot(ItemLoot itemLoot)
-        {
-            // Money
-            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<HiveMind>()));
-
-            // Materials
-            itemLoot.Add(ItemID.DemoniteBar, 1, 15, 20);
-            itemLoot.Add(ItemID.RottenChunk, 1, 15, 20);
-            itemLoot.AddIf(() => Main.hardMode, ItemID.CursedFlame, 1, 25, 30);
-            itemLoot.Add(ItemID.CorruptSeeds, 1, 10, 15);
-
-            // Weapons
-            itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new WeightedItemStack[]
-            {
-                ModContent.ItemType<PerfectDark>(),
-                ModContent.ItemType<Shadethrower>(),
-                ModContent.ItemType<ShaderainStaff>(),
-                ModContent.ItemType<DankStaff>(),
-                ModContent.ItemType<RotBall>(),
-            }));
-
-            // Equipment
-            itemLoot.Add(ModContent.ItemType<FilthyGlove>(), DropHelper.BagWeaponDropRateFraction);
-            itemLoot.Add(ModContent.ItemType<RottenBrain>());
-            itemLoot.AddRevBagAccessories();
-
-            // Vanity
-            itemLoot.Add(ModContent.ItemType<HiveMindMask>(), 7);
-            itemLoot.Add(ModContent.ItemType<RottingEyeball>(), 10);
-            itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-        }
+        // Vanity
+        itemLoot.Add(ModContent.ItemType<HiveMindMask>(), 7);
+        itemLoot.Add(ModContent.ItemType<RottingEyeball>(), 10);
+        itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
     }
 }

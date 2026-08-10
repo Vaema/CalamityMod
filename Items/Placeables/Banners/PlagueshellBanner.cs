@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class PlagueshellBanner : BaseBanner
 {
-    public class PlagueshellBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 80;
-    }
+    public override int BannerTileStyle => 80;
 }

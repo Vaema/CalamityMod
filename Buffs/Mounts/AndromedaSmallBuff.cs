@@ -1,14 +1,13 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Mounts
+namespace CalamityMod.Buffs.Mounts;
+
+public class AndromedaSmallBuff : ModBuff
 {
-    public class AndromedaSmallBuff : ModBuff
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-        }
+        Main.buffNoTimeDisplay[Type] = true;
+        Main.buffNoSave[Type] = true;
     }
 }

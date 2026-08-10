@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class AmethystCrawlerBanner : BaseBanner
 {
-    public class AmethystCrawlerBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 66;
-    }
+    public override int BannerTileStyle => 66;
 }

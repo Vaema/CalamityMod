@@ -4,62 +4,61 @@ using System.Reflection;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Packets
+namespace CalamityMod.Packets;
+
+internal abstract class CalamityPacket : ILoadable
 {
-    internal abstract class CalamityPacket : ILoadable
+    public abstract void HandlePacket(BinaryReader packet, int sender);
+
+    private ushort _NetID;
+    private PropertyInfo _Prop_Static_Instance;
+
+    public void Load(Mod mod)
     {
-        public abstract void HandlePacket(BinaryReader packet, int sender);
+        _NetID = CalamityNetcode.RegisterHandler(this);
 
-        private ushort _NetID;
-        private PropertyInfo _Prop_Static_Instance;
+        var type = GetType();
+        var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
 
-        public void Load(Mod mod)
-        {
-            _NetID = CalamityNetcode.RegisterHandler(this);
+        if (instanceProperty == null)
+            return;
 
-            var type = GetType();
-            var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+        if (!instanceProperty.PropertyType.IsAssignableFrom(type))
+            CalamityMod.Log.Error($"Packet instance's 'Instance' property is not asssignable with given type! [Failed On: '{type.FullName}']");
 
-            if (instanceProperty == null)
-                return;
+        instanceProperty.SetValue(null, this);
+        _Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
+    }
 
-            if (!instanceProperty.PropertyType.IsAssignableFrom(type))
-                CalamityMod.Log.Error($"Packet instance's 'Instance' property is not asssignable with given type! [Failed On: '{type.FullName}']");
+    public virtual void Unload()
+    {
+        _Prop_Static_Instance?.SetValue(null, null);
+        _Prop_Static_Instance = null;
+    }
 
-            instanceProperty.SetValue(null, this);
-            _Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
-        }
+    public void CloneAndBroadcast(BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
+    {
+        if (!Main.dedServ)
+            return;
 
-        public virtual void Unload()
-        {
-            _Prop_Static_Instance?.SetValue(null, null);
-            _Prop_Static_Instance = null;
-        }
+        if (startIndex < 0)
+            return;
 
-        public void CloneAndBroadcast(BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
-        {
-            if (!Main.dedServ)
-                return;
+        packet.BaseStream.Position = startIndex;
 
-            if (startIndex < 0)
-                return;
+        // Limit stackalloc size to 256 bytes
+        Span<byte> buffer = length <= 256 ? stackalloc byte[length] : new byte[length];
+        packet.BaseStream.Read(buffer);
 
-            packet.BaseStream.Position = startIndex;
+        var newPacket = CreateBasePacket();
+        newPacket.Write(buffer);
+        newPacket.Send(ignoreClient);
+    }
 
-            // Limit stackalloc size to 256 bytes
-            Span<byte> buffer = length <= 256 ? stackalloc byte[length] : new byte[length];
-            packet.BaseStream.Read(buffer);
-
-            var newPacket = CreateBasePacket();
-            newPacket.Write(buffer);
-            newPacket.Send(ignoreClient);
-        }
-
-        public ModPacket CreateBasePacket()
-        {
-            var packet = CalamityMod.Instance.GetPacket();
-            CalamityNetcode.WriteHandlerNetID(packet, _NetID);
-            return packet;
-        }
+    public ModPacket CreateBasePacket()
+    {
+        var packet = CalamityMod.Instance.GetPacket();
+        CalamityNetcode.WriteHandlerNetID(packet, _NetID);
+        return packet;
     }
 }

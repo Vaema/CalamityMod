@@ -1,9 +1,8 @@
 ﻿using Terraria;
 
-namespace CalamityMod.Systems.Graphic.LiquidSystem
+namespace CalamityMod.Systems.Graphic.LiquidSystem;
+
+public interface IWaterStylePostDrawEffect
 {
-    public interface IWaterStylePostDrawEffect
-    {
-        public void PostDrawEffect(in Tile tile, int x, int y);
-    }
+    public void PostDrawEffect(in Tile tile, int x, int y);
 }

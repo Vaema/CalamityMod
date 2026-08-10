@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class EidolistBanner : BaseBanner
 {
-    public class EidolistBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 25;
-    }
+    public override int BannerTileStyle => 25;
 }

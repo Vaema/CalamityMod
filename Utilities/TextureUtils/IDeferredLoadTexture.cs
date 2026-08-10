@@ -1,8 +1,7 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public interface IDeferredLoadTexture
 {
-    public interface IDeferredLoadTexture
-    {
-        bool IsAssetLoaded { get; }
-        void OnTextureLoaded();
-    }
+    bool IsAssetLoaded { get; }
+    void OnTextureLoaded();
 }

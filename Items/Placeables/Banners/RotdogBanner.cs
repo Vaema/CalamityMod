@@ -1,10 +1,9 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Banners
+namespace CalamityMod.Items.Placeables.Banners;
+
+[LegacyName("PitbullBanner")]
+public class RotdogBanner : BaseBanner
 {
-    [LegacyName("PitbullBanner")]
-    public class RotdogBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 53;
-    }
+    public override int BannerTileStyle => 53;
 }

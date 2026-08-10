@@ -7,35 +7,34 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[LegacyName("DimensionalSoulArtifact")]
+public class CrushingEgo : ModItem, ILocalizedModType
 {
-    [LegacyName("DimensionalSoulArtifact")]
-    public class CrushingEgo : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public override void SetDefaults()
-        {
-            Item.width = 28;
-            Item.height = 28;
-            Item.accessory = true;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-        }
+        Item.width = 28;
+        Item.height = 28;
+        Item.accessory = true;
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+        Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+    }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.crushingEgo = true;
-        }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.crushingEgo = true;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<CosmiliteBar>(10).
-                AddIngredient<Elumplate>(25).
-                AddIngredient<ExodiumCluster>(25).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<CosmiliteBar>(10).
+            AddIngredient<Elumplate>(25).
+            AddIngredient<ExodiumCluster>(25).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

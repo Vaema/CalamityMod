@@ -2,35 +2,34 @@
 using Terraria;
 using Terraria.ID;
 
-namespace CalamityMod.Packets
+namespace CalamityMod.Packets;
+
+internal sealed class SyncNPCMotionDataToServerPacket : CalamityPacket
 {
-    internal sealed class SyncNPCMotionDataToServerPacket : CalamityPacket
+    public static SyncNPCMotionDataToServerPacket Instance { get; private set; }
+
+    public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
     {
-        public static SyncNPCMotionDataToServerPacket Instance { get; private set; }
+        if (npc is null)
+            return;
 
-        public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
+        var packet = Instance.CreateBasePacket();
+        packet.WriteWhoAmI(npc);
+        packet.WriteVector2(npc.Center);
+        packet.WriteVector2(npc.velocity);
+        packet.Send(toClient, ignoreClient);
+    }
+
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        var npc = packet.ReadNPC();
+        var center = packet.ReadVector2();
+        var velocity = packet.ReadVector2();
+        if (Main.dedServ && npc is not null)
         {
-            if (npc is null)
-                return;
-
-            var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(npc);
-            packet.WriteVector2(npc.Center);
-            packet.WriteVector2(npc.velocity);
-            packet.Send(toClient, ignoreClient);
-        }
-
-        public override void HandlePacket(BinaryReader packet, int sender)
-        {
-            var npc = packet.ReadNPC();
-            var center = packet.ReadVector2();
-            var velocity = packet.ReadVector2();
-            if (Main.dedServ && npc is not null)
-            {
-                npc.Center = center;
-                npc.velocity = velocity;
-                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
-            }
+            npc.Center = center;
+            npc.velocity = velocity;
+            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
         }
     }
 }

@@ -4,51 +4,50 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Tools
+namespace CalamityMod.Items.Tools;
+
+public class Gelpick : ModItem, ILocalizedModType
 {
-    public class Gelpick : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Tools";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Tools";
-        public override void SetDefaults()
-        {
-            Item.width = 46;
-            Item.height = 48;
-            Item.damage = 19;
-            Item.knockBack = 2.5f;
-            Item.useTime = 9;
-            Item.useAnimation = 12;
-            Item.pick = 105;
-            Item.tileBoost += 1;
+        Item.width = 46;
+        Item.height = 48;
+        Item.damage = 19;
+        Item.knockBack = 2.5f;
+        Item.useTime = 9;
+        Item.useAnimation = 12;
+        Item.pick = 105;
+        Item.tileBoost += 1;
 
-            Item.DamageType = DamageClass.Melee;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = Item.sellPrice(silver: 75);
-            Item.rare = ItemRarityID.LightRed;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-        }
+        Item.DamageType = DamageClass.Melee;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.value = Item.sellPrice(silver: 75);
+        Item.rare = ItemRarityID.LightRed;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
+        Item.useTurn = true;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<PurifiedGel>(18).
-                AddIngredient<BlightedGel>(18).
-                AddTile(TileID.Solidifier).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<PurifiedGel>(18).
+            AddIngredient<BlightedGel>(18).
+            AddTile(TileID.Solidifier).
+            Register();
+    }
 
-        public override void MeleeEffects(Player player, Rectangle hitbox)
+    public override void MeleeEffects(Player player, Rectangle hitbox)
+    {
+        if (Main.rand.NextBool(4))
         {
-            if (Main.rand.NextBool(4))
-            {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PurificationPowder);
-            }
+            int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PurificationPowder);
         }
+    }
 
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.Slimed, 180);
-        }
+    public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.Slimed, 180);
     }
 }

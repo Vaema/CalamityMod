@@ -5,44 +5,43 @@ using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Skies
+namespace CalamityMod.Skies;
+
+public class DrunkCrabScreenShaderData : ScreenShaderData
 {
-    public class DrunkCrabScreenShaderData : ScreenShaderData
+    public int CrabIndex;
+
+    public DrunkCrabScreenShaderData(string passName)
+        : base(passName)
     {
-        public int CrabIndex;
+    }
 
-        public DrunkCrabScreenShaderData(string passName)
-            : base(passName)
-        {
-        }
+    public void UpdateBossIndex()
+    {
+        int CrabType = ModContent.NPCType<Crabulon>();
+        if (CrabIndex >= 0 && Main.npc[CrabIndex].active && Main.npc[CrabIndex].type == CrabType)
+            return;
 
-        public void UpdateBossIndex()
-        {
-            int CrabType = ModContent.NPCType<Crabulon>();
-            if (CrabIndex >= 0 && Main.npc[CrabIndex].active && Main.npc[CrabIndex].type == CrabType)
-                return;
+        CrabIndex = NPC.FindFirstNPC(CrabType);
+    }
 
-            CrabIndex = NPC.FindFirstNPC(CrabType);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            if (CrabIndex == -1 || !Main.zenithWorld)
-            {
-                UpdateBossIndex();
-                if (CrabIndex == -1 || !Main.zenithWorld)
-                    Filters.Scene["CalamityMod:DrunkCrabulon"].Deactivate();
-            }            
-        }
-
-        public override void Apply()
+    public override void Update(GameTime gameTime)
+    {
+        if (CrabIndex == -1 || !Main.zenithWorld)
         {
             UpdateBossIndex();
+            if (CrabIndex == -1 || !Main.zenithWorld)
+                Filters.Scene["CalamityMod:DrunkCrabulon"].Deactivate();
+        }            
+    }
 
-            if (CrabIndex != -1)
-                UseTargetPosition(Main.npc[CrabIndex].Center);
+    public override void Apply()
+    {
+        UpdateBossIndex();
 
-            base.Apply();
-        }
+        if (CrabIndex != -1)
+            UseTargetPosition(Main.npc[CrabIndex].Center);
+
+        base.Apply();
     }
 }

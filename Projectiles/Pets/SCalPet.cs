@@ -5,153 +5,152 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Pets
+namespace CalamityMod.Projectiles.Pets;
+
+public class SCalPet : ModProjectile, ILocalizedModType
 {
-    public class SCalPet : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Pets";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Pets";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 6;
-            Main.projPet[Type] = true;
+        Main.projFrames[Type] = 6;
+        Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
-            .WithOffset(-12f, -18).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+        ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
+        .WithOffset(-12f, -18).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.netImportant = true;
+        Projectile.width = 30;
+        Projectile.height = 30;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft *= 5;
+    }
+
+    public override void AI()
+    {
+        Player player = Main.player[Projectile.owner];
+        CalamityPlayer modPlayer = player.Calamity();
+        if (!player.active)
+        {
+            Projectile.active = false;
+            return;
         }
-
-        public override void SetDefaults()
+        if (player.dead)
         {
-            Projectile.netImportant = true;
-            Projectile.width = 30;
-            Projectile.height = 30;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft *= 5;
+            modPlayer.scalPet = false;
         }
-
-        public override void AI()
+        if (modPlayer.scalPet)
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (!player.active)
+            Projectile.timeLeft = 2;
+        }
+        float passiveMvtFloat = 0.5f;
+        Projectile.tileCollide = false;
+        int range = 300;
+        Vector2 center = Projectile.Center;
+        float distX = player.Center.X - center.X;
+        float distY = player.Center.Y - center.Y;
+        float playerDist = player.Distance(center);
+        float returnSpeed = 18f;
+        float maxDist = 2000f;
+        bool tooFar = playerDist > maxDist;
+        if (playerDist < (float)range && Main.player[Projectile.owner].velocity.Y == 0f && Projectile.position.Y + (float)Projectile.height <= Main.player[Projectile.owner].position.Y + (float)Main.player[Projectile.owner].height && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
+        {
+            Projectile.ai[0] = 0f;
+            if (Projectile.velocity.Y < -6f)
             {
-                Projectile.active = false;
-                return;
+                Projectile.velocity.Y = -6f;
             }
-            if (player.dead)
+        }
+        if (playerDist < 150f)
+        {
+            if (Math.Abs(Projectile.velocity.X) > 2f || Math.Abs(Projectile.velocity.Y) > 2f)
             {
-                modPlayer.scalPet = false;
+                Projectile.velocity *= 0.99f;
             }
-            if (modPlayer.scalPet)
+            passiveMvtFloat = 0.01f;
+            if (distX < -2f)
             {
-                Projectile.timeLeft = 2;
+                distX = -2f;
             }
-            float passiveMvtFloat = 0.5f;
-            Projectile.tileCollide = false;
-            int range = 300;
-            Vector2 center = Projectile.Center;
-            float distX = player.Center.X - center.X;
-            float distY = player.Center.Y - center.Y;
-            float playerDist = player.Distance(center);
-            float returnSpeed = 18f;
-            float maxDist = 2000f;
-            bool tooFar = playerDist > maxDist;
-            if (playerDist < (float)range && Main.player[Projectile.owner].velocity.Y == 0f && Projectile.position.Y + (float)Projectile.height <= Main.player[Projectile.owner].position.Y + (float)Main.player[Projectile.owner].height && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
+            if (distX > 2f)
             {
-                Projectile.ai[0] = 0f;
-                if (Projectile.velocity.Y < -6f)
-                {
-                    Projectile.velocity.Y = -6f;
-                }
+                distX = 2f;
             }
-            if (playerDist < 150f)
+            if (distY < -2f)
             {
-                if (Math.Abs(Projectile.velocity.X) > 2f || Math.Abs(Projectile.velocity.Y) > 2f)
-                {
-                    Projectile.velocity *= 0.99f;
-                }
-                passiveMvtFloat = 0.01f;
-                if (distX < -2f)
-                {
-                    distX = -2f;
-                }
-                if (distX > 2f)
-                {
-                    distX = 2f;
-                }
-                if (distY < -2f)
-                {
-                    distY = -2f;
-                }
-                if (distY > 2f)
-                {
-                    distY = 2f;
-                }
+                distY = -2f;
             }
-            else
+            if (distY > 2f)
             {
-                if (playerDist > 300f)
-                {
-                    passiveMvtFloat = 0.2f;
-                }
-                playerDist = returnSpeed / playerDist;
-                distX *= playerDist;
-                distY *= playerDist;
+                distY = 2f;
             }
-            if (tooFar)
+        }
+        else
+        {
+            if (playerDist > 300f)
             {
-                Projectile.Center = Main.player[Projectile.owner].Center;
-                Projectile.velocity = Vector2.Zero;
-                if (Main.myPlayer == Projectile.owner)
-                {
-                    Projectile.netUpdate = true;
-                }
+                passiveMvtFloat = 0.2f;
             }
-            if (Math.Abs(distX) > Math.Abs(distY) || passiveMvtFloat == 0.05f)
+            playerDist = returnSpeed / playerDist;
+            distX *= playerDist;
+            distY *= playerDist;
+        }
+        if (tooFar)
+        {
+            Projectile.Center = Main.player[Projectile.owner].Center;
+            Projectile.velocity = Vector2.Zero;
+            if (Main.myPlayer == Projectile.owner)
             {
-                if (Projectile.velocity.X < distX)
+                Projectile.netUpdate = true;
+            }
+        }
+        if (Math.Abs(distX) > Math.Abs(distY) || passiveMvtFloat == 0.05f)
+        {
+            if (Projectile.velocity.X < distX)
+            {
+                Projectile.velocity.X += passiveMvtFloat;
+                if (passiveMvtFloat > 0.05f && Projectile.velocity.X < 0f)
                 {
                     Projectile.velocity.X += passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && Projectile.velocity.X < 0f)
-                    {
-                        Projectile.velocity.X += passiveMvtFloat;
-                    }
                 }
-                if (Projectile.velocity.X > distX)
+            }
+            if (Projectile.velocity.X > distX)
+            {
+                Projectile.velocity.X -= passiveMvtFloat;
+                if (passiveMvtFloat > 0.05f && Projectile.velocity.X > 0f)
                 {
                     Projectile.velocity.X -= passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && Projectile.velocity.X > 0f)
-                    {
-                        Projectile.velocity.X -= passiveMvtFloat;
-                    }
                 }
             }
-            if (Math.Abs(distX) <= Math.Abs(distY) || passiveMvtFloat == 0.05f)
+        }
+        if (Math.Abs(distX) <= Math.Abs(distY) || passiveMvtFloat == 0.05f)
+        {
+            if (Projectile.velocity.Y < distY)
             {
-                if (Projectile.velocity.Y < distY)
+                Projectile.velocity.Y += passiveMvtFloat;
+                if (passiveMvtFloat > 0.05f && Projectile.velocity.Y < 0f)
                 {
                     Projectile.velocity.Y += passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && Projectile.velocity.Y < 0f)
-                    {
-                        Projectile.velocity.Y += passiveMvtFloat;
-                    }
                 }
-                if (Projectile.velocity.Y > distY)
+            }
+            if (Projectile.velocity.Y > distY)
+            {
+                Projectile.velocity.Y -= passiveMvtFloat;
+                if (passiveMvtFloat > 0.05f && Projectile.velocity.Y > 0f)
                 {
                     Projectile.velocity.Y -= passiveMvtFloat;
-                    if (passiveMvtFloat > 0.05f && Projectile.velocity.Y > 0f)
-                    {
-                        Projectile.velocity.Y -= passiveMvtFloat;
-                    }
                 }
             }
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
-            {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
-                Projectile.frameCounter = 0;
-            }
+        }
+        Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 6)
+        {
+            Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
+            Projectile.frameCounter = 0;
         }
     }
 }

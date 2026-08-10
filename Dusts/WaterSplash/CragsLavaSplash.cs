@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace CalamityMod.Dusts.WaterSplash
+namespace CalamityMod.Dusts.WaterSplash;
+
+public class CragsLavaSplash : LavaSplashDust
 {
-    public class CragsLavaSplash : LavaSplashDust
-    {
-        public override Vector3 LightColor => new(0.95f, 0.41f, 0.41f);
-    }
+    public override Vector3 LightColor => new(0.95f, 0.41f, 0.41f);
 }

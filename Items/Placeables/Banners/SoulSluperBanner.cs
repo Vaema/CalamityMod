@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class SoulSlurperBanner : BaseBanner
 {
-    public class SoulSlurperBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 47;
-    }
+    public override int BannerTileStyle => 47;
 }

@@ -1,49 +1,48 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Melee;
+
+public class YinYoDark : ModProjectile, ILocalizedModType
 {
-    public class YinYoDark : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Melee";
+    private const int speedTimerMax = 30;
+    private int speedTimer = speedTimerMax;
+    public override string Texture => "Terraria/Images/Item_527";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
-        private const int speedTimerMax = 30;
-        private int speedTimer = speedTimerMax;
-        public override string Texture => "Terraria/Images/Item_527";
+        ProjectileID.Sets.TrailCacheLength[Type] = 10;
+        ProjectileID.Sets.TrailingMode[Type] = 1;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 10;
-            ProjectileID.Sets.TrailingMode[Type] = 1;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.MeleeNoSpeed;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.penetrate = 3;
+        Projectile.timeLeft = 120;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 30;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Projectile.rotation += 0.5f;
+        speedTimer--;
+        if (speedTimer <= 0)
         {
-            Projectile.width = Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.MeleeNoSpeed;
-            Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = 3;
-            Projectile.timeLeft = 120;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
+            speedTimer = speedTimerMax;
+            Projectile.velocity *= -1f;
         }
+    }
 
-        public override void AI()
-        {
-            Projectile.rotation += 0.5f;
-            speedTimer--;
-            if (speedTimer <= 0)
-            {
-                speedTimer = speedTimerMax;
-                Projectile.velocity *= -1f;
-            }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
+        return false;
     }
 }

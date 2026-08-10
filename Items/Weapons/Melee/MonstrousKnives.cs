@@ -5,89 +5,88 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Melee
+namespace CalamityMod.Items.Weapons.Melee;
+
+public class MonstrousKnives : ModItem, ILocalizedModType
 {
-    public class MonstrousKnives : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Melee";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetDefaults()
+        Item.width = 18;
+        Item.height = 20;
+        Item.damage = 8;
+        Item.DamageType = DamageClass.MeleeNoSpeed;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.useAnimation = 21;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useTime = 21;
+        Item.knockBack = 3f;
+        Item.UseSound = SoundID.Item39;
+        Item.autoReuse = true;
+
+        Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+        Item.rare = ItemRarityID.Green;
+        Item.Calamity().donorItem = true;
+
+        Item.shoot = ModContent.ProjectileType<MonstrousKnife>();
+        Item.shootSpeed = 15f;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        float speed = Item.shootSpeed;
+        Vector2 playerPos = player.RotatedRelativePoint(player.MountedCenter, true);
+        float xDist = Main.mouseX + Main.screenPosition.X - playerPos.X;
+        float yDist = Main.mouseY + Main.screenPosition.Y - playerPos.Y;
+        if (player.gravDir == -1f)
         {
-            Item.width = 18;
-            Item.height = 20;
-            Item.damage = 8;
-            Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.useAnimation = 21;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 21;
-            Item.knockBack = 3f;
-            Item.UseSound = SoundID.Item39;
-            Item.autoReuse = true;
-
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
-            Item.Calamity().donorItem = true;
-
-            Item.shoot = ModContent.ProjectileType<MonstrousKnife>();
-            Item.shootSpeed = 15f;
+            yDist = Main.screenPosition.Y + Main.screenHeight - Main.mouseY - playerPos.Y;
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        Vector2 vector = new Vector2(xDist, yDist);
+        float speedMult = vector.Length();
+        if ((float.IsNaN(xDist) && float.IsNaN(yDist)) || (xDist == 0f && yDist == 0f))
         {
-            float speed = Item.shootSpeed;
-            Vector2 playerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float xDist = Main.mouseX + Main.screenPosition.X - playerPos.X;
-            float yDist = Main.mouseY + Main.screenPosition.Y - playerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                yDist = Main.screenPosition.Y + Main.screenHeight - Main.mouseY - playerPos.Y;
-            }
-
-            Vector2 vector = new Vector2(xDist, yDist);
-            float speedMult = vector.Length();
-            if ((float.IsNaN(xDist) && float.IsNaN(yDist)) || (xDist == 0f && yDist == 0f))
-            {
-                xDist = player.direction;
-                yDist = 0f;
-                speedMult = speed;
-            }
-            else
-            {
-                speedMult = speed / speedMult;
-            }
-
-            xDist *= speedMult;
-            yDist *= speedMult;
-
-            int knifeAmt = Main.rand.Next(3, 5);
-            for (int i = 0; i < knifeAmt; i++)
-            {
-                float xVec = xDist;
-                float yVec = yDist;
-                float spreadMult = 0.05f * i;
-                xVec += Main.rand.NextFloat(-25f, 25f) * spreadMult;
-                yVec += Main.rand.NextFloat(-25f, 25f) * spreadMult;
-                Vector2 directionToShoot = new Vector2(xVec, yVec);
-                speedMult = directionToShoot.Length();
-                speedMult = speed / speedMult;
-                xVec *= speedMult;
-                yVec *= speedMult;
-                directionToShoot = new Vector2(xVec, yVec);
-                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI);
-            }
-
-            return false;
+            xDist = player.direction;
+            yDist = 0f;
+            speedMult = speed;
+        }
+        else
+        {
+            speedMult = speed / speedMult;
         }
 
-        public override void AddRecipes()
+        xDist *= speedMult;
+        yDist *= speedMult;
+
+        int knifeAmt = Main.rand.Next(3, 5);
+        for (int i = 0; i < knifeAmt; i++)
         {
-            CreateRecipe().
-                AddIngredient(ItemID.ThrowingKnife, 50).
-                AddIngredient(ItemID.LifeCrystal).
-                AddIngredient(ItemID.LesserHealingPotion, 5).
-                AddTile(TileID.Anvils).
-                Register();
+            float xVec = xDist;
+            float yVec = yDist;
+            float spreadMult = 0.05f * i;
+            xVec += Main.rand.NextFloat(-25f, 25f) * spreadMult;
+            yVec += Main.rand.NextFloat(-25f, 25f) * spreadMult;
+            Vector2 directionToShoot = new Vector2(xVec, yVec);
+            speedMult = directionToShoot.Length();
+            speedMult = speed / speedMult;
+            xVec *= speedMult;
+            yVec *= speedMult;
+            directionToShoot = new Vector2(xVec, yVec);
+            Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI);
         }
+
+        return false;
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.ThrowingKnife, 50).
+            AddIngredient(ItemID.LifeCrystal).
+            AddIngredient(ItemID.LesserHealingPotion, 5).
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

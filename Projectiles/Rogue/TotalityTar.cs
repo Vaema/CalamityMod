@@ -5,99 +5,98 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class TotalityTar : ModProjectile, ILocalizedModType
 {
-    public class TotalityTar : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetDefaults()
-        {
-            Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 30;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.DamageType = RogueDamageClass.Instance;
-        }
+        Projectile.width = 14;
+        Projectile.height = 14;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 30;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 10;
+        Projectile.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        if (Projectile.velocity.X != Projectile.velocity.X)
         {
-            if (Projectile.velocity.X != Projectile.velocity.X)
+            Projectile.velocity.X *= -0.1f;
+        }
+        if (Projectile.velocity.X != Projectile.velocity.X)
+        {
+            Projectile.velocity.X *= -0.5f;
+        }
+        if (Projectile.velocity.Y != Projectile.velocity.Y && Projectile.velocity.Y > 1f)
+        {
+            Projectile.velocity.Y *= -0.5f;
+        }
+        Projectile.ai[0] += 1f;
+        if (Projectile.ai[0] > 5f)
+        {
+            Projectile.ai[0] = 5f;
+            if (Projectile.velocity.Y == 0f && Projectile.velocity.X != 0f)
             {
-                Projectile.velocity.X *= -0.1f;
-            }
-            if (Projectile.velocity.X != Projectile.velocity.X)
-            {
-                Projectile.velocity.X *= -0.5f;
-            }
-            if (Projectile.velocity.Y != Projectile.velocity.Y && Projectile.velocity.Y > 1f)
-            {
-                Projectile.velocity.Y *= -0.5f;
-            }
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] > 5f)
-            {
-                Projectile.ai[0] = 5f;
-                if (Projectile.velocity.Y == 0f && Projectile.velocity.X != 0f)
+                Projectile.velocity.X *= 0.97f;
+                if (Math.Abs(Projectile.velocity.X) < 0.01f)
                 {
-                    Projectile.velocity.X *= 0.97f;
-                    if (Math.Abs(Projectile.velocity.X) < 0.01f)
-                    {
-                        Projectile.velocity.X = 0f;
-                        Projectile.netUpdate = true;
-                    }
+                    Projectile.velocity.X = 0f;
+                    Projectile.netUpdate = true;
                 }
-                Projectile.velocity.Y += 0.2f;
             }
-            Projectile.rotation += Projectile.velocity.X * 0.1f;
-            if (Projectile.velocity.Y < 0.25f && Projectile.velocity.Y > 0.15f)
-            {
-                Projectile.velocity.X *= 0.8f;
-            }
-            Projectile.rotation = -Projectile.velocity.X * 0.05f;
-            if (Projectile.velocity.Y > 16f)
-            {
-                Projectile.velocity.Y = 16f;
-            }
+            Projectile.velocity.Y += 0.2f;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        Projectile.rotation += Projectile.velocity.X * 0.1f;
+        if (Projectile.velocity.Y < 0.25f && Projectile.velocity.Y > 0.15f)
         {
-            if (target.buffImmune[BuffID.Oiled])
-            {
-                target.buffImmune[BuffID.Oiled] = false;
-            }
-            target.AddBuff(BuffID.Oiled, 600);
-            target.AddBuff(BuffID.OnFire3, 300);
+            Projectile.velocity.X *= 0.8f;
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 300);
-
-        public override void OnKill(int timeLeft)
+        Projectile.rotation = -Projectile.velocity.X * 0.05f;
+        if (Projectile.velocity.Y > 16f)
         {
-            SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
-            Vector2 vector2 = new Vector2(20f, 20f);
-            for (int i = 0; i < 3; ++i)
-                Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.SpookyWood, 0.0f, 0.0f, 0, Color.Red, 1f);
-            for (int j = 0; j < 5; ++j)
-            {
-                Dust smoke = Dust.NewDustDirect(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
-                smoke.velocity *= 1.4f;
+            Projectile.velocity.Y = 16f;
+        }
+    }
 
-                Dust fire = Dust.NewDustDirect(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
-                fire.noGravity = true;
-                fire.velocity *= 5f;
-            }
-            int fireAmt = Main.rand.Next(2, 4);
-            if (Projectile.owner == Main.myPlayer)
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (target.buffImmune[BuffID.Oiled])
+        {
+            target.buffImmune[BuffID.Oiled] = false;
+        }
+        target.AddBuff(BuffID.Oiled, 600);
+        target.AddBuff(BuffID.OnFire3, 300);
+    }
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 300);
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
+        Vector2 vector2 = new Vector2(20f, 20f);
+        for (int i = 0; i < 3; ++i)
+            Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.SpookyWood, 0.0f, 0.0f, 0, Color.Red, 1f);
+        for (int j = 0; j < 5; ++j)
+        {
+            Dust smoke = Dust.NewDustDirect(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
+            smoke.velocity *= 1.4f;
+
+            Dust fire = Dust.NewDustDirect(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
+            fire.noGravity = true;
+            fire.velocity *= 5f;
+        }
+        int fireAmt = Main.rand.Next(2, 4);
+        if (Projectile.owner == Main.myPlayer)
+        {
+            for (int f = 0; f < fireAmt; f++)
             {
-                for (int f = 0; f < fireAmt; f++)
-                {
-                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TotalityFire>(), Projectile.damage, 1f, Main.myPlayer, 0f, 0f);
-                }
+                Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<TotalityFire>(), Projectile.damage, 1f, Main.myPlayer, 0f, 0f);
             }
         }
     }

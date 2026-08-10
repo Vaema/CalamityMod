@@ -3,46 +3,45 @@ using CalamityMod.Systems;
 using Terraria;
 using Terraria.ID;
 
-namespace CalamityMod.Packets
+namespace CalamityMod.Packets;
+
+internal sealed class MusicEventSyncResponsePacket : CalamityPacket
 {
-    internal sealed class MusicEventSyncResponsePacket : CalamityPacket
+    public static MusicEventSyncResponsePacket Instance { get; private set; }
+
+    public static void Send(int toClient = -1, int ignoreClient = -1)
     {
-        public static MusicEventSyncResponsePacket Instance { get; private set; }
+        // Only Server should send Reponse to Clients
+        if (!Main.dedServ)
+            return;
 
-        public static void Send(int toClient = -1, int ignoreClient = -1)
+        var packet = Instance.CreateBasePacket();
+        int trackCount = MusicEventSystem.PlayedEvents.Count;
+        packet.Write(trackCount);
+
+        foreach (string playedEvent in MusicEventSystem.PlayedEvents)
+            packet.Write(playedEvent);
+
+        packet.Send(toClient, ignoreClient);
+    }
+
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        // Only receive info as clients
+        if (Main.netMode != NetmodeID.MultiplayerClient)
         {
-            // Only Server should send Reponse to Clients
-            if (!Main.dedServ)
-                return;
+            // Still consume the packet anyways
+            int c = packet.ReadInt32();
+            for (int i = 0; i < c; i++)
+                _ = packet.ReadString();
 
-            var packet = Instance.CreateBasePacket();
-            int trackCount = MusicEventSystem.PlayedEvents.Count;
-            packet.Write(trackCount);
-
-            foreach (string playedEvent in MusicEventSystem.PlayedEvents)
-                packet.Write(playedEvent);
-
-            packet.Send(toClient, ignoreClient);
+            return;
         }
 
-        public override void HandlePacket(BinaryReader packet, int sender)
-        {
-            // Only receive info as clients
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                // Still consume the packet anyways
-                int c = packet.ReadInt32();
-                for (int i = 0; i < c; i++)
-                    _ = packet.ReadString();
+        MusicEventSystem.PlayedEvents.Clear();
 
-                return;
-            }
-
-            MusicEventSystem.PlayedEvents.Clear();
-
-            int trackCount = packet.ReadInt32();
-            for (int i = 0; i < trackCount; i++)
-                MusicEventSystem.PlayedEvents.Add(packet.ReadString());
-        }
+        int trackCount = packet.ReadInt32();
+        for (int i = 0; i < trackCount; i++)
+            MusicEventSystem.PlayedEvents.Add(packet.ReadString());
     }
 }

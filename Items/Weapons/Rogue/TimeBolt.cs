@@ -8,52 +8,51 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Rogue
+namespace CalamityMod.Items.Weapons.Rogue;
+
+public class TimeBolt : RogueWeapon
 {
-    public class TimeBolt : RogueWeapon
+    public override void SetDefaults()
     {
-        public override void SetDefaults()
-        {
-            Item.width = 24;
-            Item.height = 46;
-            Item.damage = 303;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
-            Item.useAnimation = 20;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 20;
-            Item.knockBack = 4f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.Calamity().donorItem = true;
-            Item.shoot = ModContent.ProjectileType<TimeBoltKnife>();
-            Item.shootSpeed = 16f;
-            Item.DamageType = RogueDamageClass.Instance;
-        }
+        Item.width = 24;
+        Item.height = 46;
+        Item.damage = 303;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
+        Item.useAnimation = 20;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useTime = 20;
+        Item.knockBack = 4f;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
+        Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+        Item.Calamity().donorItem = true;
+        Item.shoot = ModContent.ProjectileType<TimeBoltKnife>();
+        Item.shootSpeed = 16f;
+        Item.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+        if (player.Calamity().StealthStrikeAvailable() && proj.WithinBounds(Main.maxProjectiles))
         {
-            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && proj.WithinBounds(Main.maxProjectiles))
-            {
-                Main.projectile[proj].Calamity().stealthStrike = true;
-                Main.projectile[proj].penetrate = 11;
-            }
-            return false;
+            Main.projectile[proj].Calamity().stealthStrike = true;
+            Main.projectile[proj].penetrate = 11;
         }
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<LunarKunai>().
-                AddIngredient<StellarKnife>().
-                AddIngredient(ItemID.GoldWatch).
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<EndothermicEnergy>(20).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<LunarKunai>().
+            AddIngredient<StellarKnife>().
+            AddIngredient(ItemID.GoldWatch).
+            AddIngredient<CosmiliteBar>(8).
+            AddIngredient<EndothermicEnergy>(20).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

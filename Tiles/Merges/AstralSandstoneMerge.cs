@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.AstralDesert;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class AstralSandstoneMerge : TileBlendTexture
 {
-    public sealed class AstralSandstoneMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<AstralSandstone>();
-    }
+    public override int TileType => ModContent.TileType<AstralSandstone>();
 }

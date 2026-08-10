@@ -5,27 +5,26 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights
+namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+
+public class MiniCagedLablightItem : ModItem, ILocalizedModType
 {
-    public class MiniCagedLablightItem : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MiniAgedLablightItem>();
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MiniAgedLablightItem>();
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<MiniCagedLablight>());
-            Item.value = Item.sellPrice(silver: 1);
-        }
+        Item.DefaultToPlaceableTile(ModContent.TileType<MiniCagedLablight>());
+        Item.value = Item.sellPrice(silver: 1);
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(20).
-                AddIngredient<DubiousPlating>().
-                AddIngredient<MysteriousCircuitry>(2).
-                AddIngredient<DraedonPowerCell>().
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(20).
+            AddIngredient<DubiousPlating>().
+            AddIngredient<MysteriousCircuitry>(2).
+            AddIngredient<DraedonPowerCell>().
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

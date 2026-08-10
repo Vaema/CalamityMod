@@ -1,37 +1,36 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class SandDollarProj : ModProjectile, ILocalizedModType
 {
-    public class SandDollarProj : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/SandDollar";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/SandDollar";
+        Projectile.width = 30;
+        Projectile.height = 28;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.aiStyle = ProjAIStyleID.Boomerang;
+        Projectile.timeLeft = 300;
+        AIType = ProjectileID.Bananarang;
+    }
 
-        public override void SetDefaults()
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Projectile.ai[0] += 0.1f;
+        if (Projectile.velocity.X != oldVelocity.X)
         {
-            Projectile.width = 30;
-            Projectile.height = 28;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.aiStyle = ProjAIStyleID.Boomerang;
-            Projectile.timeLeft = 300;
-            AIType = ProjectileID.Bananarang;
+            Projectile.velocity.X = -oldVelocity.X;
         }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        if (Projectile.velocity.Y != oldVelocity.Y)
         {
-            Projectile.ai[0] += 0.1f;
-            if (Projectile.velocity.X != oldVelocity.X)
-            {
-                Projectile.velocity.X = -oldVelocity.X;
-            }
-            if (Projectile.velocity.Y != oldVelocity.Y)
-            {
-                Projectile.velocity.Y = -oldVelocity.Y;
-            }
-            return false;
+            Projectile.velocity.Y = -oldVelocity.Y;
         }
+        return false;
     }
 }

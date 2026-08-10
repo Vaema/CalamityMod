@@ -8,131 +8,130 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Melee;
+
+public class PolarisGazeStar : ModProjectile, ILocalizedModType
 {
-    public class PolarisGazeStar : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Melee";
+    public override string Texture => "CalamityMod/Particles/Sparkle";
+    private bool initialized = false;
+    Vector2 direction = Vector2.Zero;
+    public ref float Shred => ref Projectile.ai[0];
+    public float ShredRatio => MathHelper.Clamp(Shred / (PolarisGaze.maxShred * 0.5f), 0f, 1f);
+    public Player Owner => Main.player[Projectile.owner];
+
+    public float Timer => MaxTime - Projectile.timeLeft;
+    public const int MaxTime = 120;
+
+    public Particle PolarStar; // Using a particle on top of it since the smoke particles would otherwise go over it
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Particles/Sparkle";
-        private bool initialized = false;
-        Vector2 direction = Vector2.Zero;
-        public ref float Shred => ref Projectile.ai[0];
-        public float ShredRatio => MathHelper.Clamp(Shred / (PolarisGaze.maxShred * 0.5f), 0f, 1f);
-        public Player Owner => Main.player[Projectile.owner];
+        Projectile.DamageType = DamageClass.Melee;
+        Projectile.width = Projectile.height = 45;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.MaxUpdates = 4;
+        Projectile.timeLeft = MaxTime;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
+    }
 
-        public float Timer => MaxTime - Projectile.timeLeft;
-        public const int MaxTime = 120;
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+    {
+        float collisionPoint = 0f;
+        float bladeLength = 84 * Projectile.scale;
+        float bladeWidth = 76 * Projectile.scale;
 
-        public Particle PolarStar; // Using a particle on top of it since the smoke particles would otherwise go over it
+        return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - direction * bladeLength / 2, Projectile.Center + direction * bladeLength / 2, bladeWidth, ref collisionPoint);
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        if (!initialized)
         {
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.width = Projectile.height = 45;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.MaxUpdates = 4;
-            Projectile.timeLeft = MaxTime;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
+            SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
+            initialized = true;
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
+            direction.Normalize();
+            Projectile.rotation = direction.ToRotation();
+            Projectile.scale = 1f + ShredRatio; //SWAGGER
+            Projectile.netUpdate = true;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        if (PolarStar == null)
         {
-            float collisionPoint = 0f;
-            float bladeLength = 84 * Projectile.scale;
-            float bladeWidth = 76 * Projectile.scale;
+            PolarStar = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Color.CornflowerBlue, Projectile.scale * 2f, 2, 0.1f, 5f, true);
+            GeneralParticleHandler.SpawnParticle(PolarStar);
 
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - direction * bladeLength / 2, Projectile.Center + direction * bladeLength / 2, bladeWidth, ref collisionPoint);
+            CustomPulse poof = new(Projectile.Center, Vector2.Zero, Color.Indigo, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 0.2f, 10);
+            GeneralParticleHandler.SpawnParticle(poof);
+        }
+        else
+        {
+            PolarStar.Time = 0;
+            PolarStar.Position = Projectile.Center;
+            PolarStar.Scale = Projectile.scale * 2f;
         }
 
-        public override void AI()
+        Vector2 smokeSpeed = Main.rand.NextVector2Circular(10f, 10f);
+        Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f), 0.8f, 0, false, 0, true);
+        GeneralParticleHandler.SpawnParticle(smoke);
+
+        if (Main.rand.NextBool(3))
         {
-            if (!initialized)
-            {
-                SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
-                initialized = true;
+            Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(0.4f, 0.7f), 0.8f, 0, true, 0.01f, true);
+            GeneralParticleHandler.SpawnParticle(smokeGlow);
+        }
 
-                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
-                direction.Normalize();
-                Projectile.rotation = direction.ToRotation();
-                Projectile.scale = 1f + ShredRatio; //SWAGGER
-                Projectile.netUpdate = true;
-            }
+        if (Timer % (MaxTime / 6) == 0 && Main.myPlayer == Projectile.owner)
+        {
+            Vector2 starVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * 25f;
+            Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, starVel, ProjectileType<GalaxiaBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f, MathHelper.Pi / 20f);
+            if (star.ModProjectile is GalaxiaBolt bolt)
+                bolt.StrongerHoming = true;
+        }
+    }
 
-            if (PolarStar == null)
-            {
-                PolarStar = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Color.CornflowerBlue, Projectile.scale * 2f, 2, 0.1f, 5f, true);
-                GeneralParticleHandler.SpawnParticle(PolarStar);
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-                CustomPulse poof = new(Projectile.Center, Vector2.Zero, Color.Indigo, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 0.2f, 10);
-                GeneralParticleHandler.SpawnParticle(poof);
-            }
-            else
-            {
-                PolarStar.Time = 0;
-                PolarStar.Position = Projectile.Center;
-                PolarStar.Scale = Projectile.scale * 2f;
-            }
+        var tex = Request<Texture2D>("CalamityMod/Particles/Sparkle").Value;
+        float opacityFade = Projectile.timeLeft > 15 ? 1 : Projectile.timeLeft / 15f;
 
-            Vector2 smokeSpeed = Main.rand.NextVector2Circular(10f, 10f);
-            Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f), 0.8f, 0, false, 0, true);
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.White, lightColor, 0.5f) * 0.5f * opacityFade, Main.GlobalTimeWrappedHourly * 10f + MathHelper.PiOver4, tex.Size() / 2f, Projectile.scale * 1.5f, 0f, 0);
+
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.White, lightColor, 0.5f) * 0.8f * opacityFade, Main.GlobalTimeWrappedHourly * 10f, tex.Size() / 2f, Projectile.scale * 2f, 0f, 0);
+
+        //Back to normal
+        Main.spriteBatch.End();
+        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Item60, Projectile.Center);
+        for (int i = 0; i < 10; i++)
+        {
+            Particle Sparkle = new CritSpark(Projectile.Center, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(17.5f, 25f) * Projectile.scale, Color.White, Main.rand.NextBool() ? Color.CornflowerBlue : Color.MediumSlateBlue, 0.4f + Main.rand.NextFloat(0f, 3.5f), 20 + Main.rand.Next(30), 1, 3f);
+            GeneralParticleHandler.SpawnParticle(Sparkle);
+
+            Vector2 smokeSpeed = Main.rand.NextVector2Circular(20f, 20f);
+            Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.DarkRed, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(1.5f, 2.2f), 0.8f, 0, false, 0, true);
             GeneralParticleHandler.SpawnParticle(smoke);
 
             if (Main.rand.NextBool(3))
             {
-                Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(0.4f, 0.7f), 0.8f, 0, true, 0.01f, true);
+                Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(1.4f, 1.5f), 0.8f, 0, true, 0.01f, true);
                 GeneralParticleHandler.SpawnParticle(smokeGlow);
-            }
-
-            if (Timer % (MaxTime / 6) == 0 && Main.myPlayer == Projectile.owner)
-            {
-                Vector2 starVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * 25f;
-                Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, starVel, ProjectileType<GalaxiaBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f, MathHelper.Pi / 20f);
-                if (star.ModProjectile is GalaxiaBolt bolt)
-                    bolt.StrongerHoming = true;
-            }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-
-            var tex = Request<Texture2D>("CalamityMod/Particles/Sparkle").Value;
-            float opacityFade = Projectile.timeLeft > 15 ? 1 : Projectile.timeLeft / 15f;
-
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.White, lightColor, 0.5f) * 0.5f * opacityFade, Main.GlobalTimeWrappedHourly * 10f + MathHelper.PiOver4, tex.Size() / 2f, Projectile.scale * 1.5f, 0f, 0);
-
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.White, lightColor, 0.5f) * 0.8f * opacityFade, Main.GlobalTimeWrappedHourly * 10f, tex.Size() / 2f, Projectile.scale * 2f, 0f, 0);
-
-            //Back to normal
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-
-            return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item60, Projectile.Center);
-            for (int i = 0; i < 10; i++)
-            {
-                Particle Sparkle = new CritSpark(Projectile.Center, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(17.5f, 25f) * Projectile.scale, Color.White, Main.rand.NextBool() ? Color.CornflowerBlue : Color.MediumSlateBlue, 0.4f + Main.rand.NextFloat(0f, 3.5f), 20 + Main.rand.Next(30), 1, 3f);
-                GeneralParticleHandler.SpawnParticle(Sparkle);
-
-                Vector2 smokeSpeed = Main.rand.NextVector2Circular(20f, 20f);
-                Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.DarkRed, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(1.5f, 2.2f), 0.8f, 0, false, 0, true);
-                GeneralParticleHandler.SpawnParticle(smoke);
-
-                if (Main.rand.NextBool(3))
-                {
-                    Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(1.4f, 1.5f), 0.8f, 0, true, 0.01f, true);
-                    GeneralParticleHandler.SpawnParticle(smokeGlow);
-                }
             }
         }
     }

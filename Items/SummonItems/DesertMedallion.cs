@@ -6,54 +6,53 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.SummonItems
+namespace CalamityMod.Items.SummonItems;
+
+[LegacyName("DriedSeafood")]
+public class DesertMedallion : ModItem, ILocalizedModType
 {
-    [LegacyName("DriedSeafood")]
-    public class DesertMedallion : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.SummonItems";
+    public static readonly SoundStyle SummonSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeSummon");
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.SummonItems";
-        public static readonly SoundStyle SummonSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeSummon");
+        ItemID.Sets.SortingPriorityBossSpawns[Type] = 1; // Suspicious Looking Eye
+    }
 
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 1; // Suspicious Looking Eye
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 28;
+        Item.height = 28;
+        Item.rare = ItemRarityID.Green;
+        Item.useAnimation = 10;
+        Item.useTime = 10;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.consumable = false;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 28;
-            Item.height = 28;
-            Item.rare = ItemRarityID.Green;
-            Item.useAnimation = 10;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.consumable = false;
-        }
+    public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+    {
+        itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+    }
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-        }
+    public override bool CanUseItem(Player player)
+    {
+        return player.ZoneDesert && !NPC.AnyNPCs(ModContent.NPCType<DesertScourgeHead>()) && !BossRushEvent.BossRushActive;
+    }
 
-        public override bool CanUseItem(Player player)
-        {
-            return player.ZoneDesert && !NPC.AnyNPCs(ModContent.NPCType<DesertScourgeHead>()) && !BossRushEvent.BossRushActive;
-        }
+    public override bool? UseItem(Player player)
+    {
+        CalamityUtils.SpawnBossUsingItem<DesertScourgeHead>(player, SummonSound);
+        return true;
+    }
 
-        public override bool? UseItem(Player player)
-        {
-            CalamityUtils.SpawnBossUsingItem<DesertScourgeHead>(player, SummonSound);
-            return true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddRecipeGroup("Sand", 40).
-                AddIngredient(ItemID.AntlionMandible, 4).
-                AddIngredient<StormlionMandible>(2).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddRecipeGroup("Sand", 40).
+            AddIngredient(ItemID.AntlionMandible, 4).
+            AddIngredient<StormlionMandible>(2).
+            AddTile(TileID.DemonAltar).
+            Register();
     }
 }

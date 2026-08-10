@@ -4,34 +4,33 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
+namespace CalamityMod.Items.Placeables.Furniture.CraftingStations;
+
+public class DraedonsForge : ModItem, ILocalizedModType
 {
-    public class DraedonsForge : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CraftingStations.DraedonsForge>());
-            Item.value = Item.sellPrice(platinum: 4);
-            Item.rare = ModContent.RarityType<ExoticRainbow>();
-        }
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CraftingStations.DraedonsForge>());
+        Item.value = Item.sellPrice(platinum: 4);
+        Item.rare = ModContent.RarityType<ExoticRainbow>();
+    }
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-        }
+    public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+    {
+        itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<CosmicAnvilItem>().
-                AddRecipeGroup("HardmodeForge").
-                AddIngredient(ItemID.TinkerersWorkshop).
-                AddIngredient(ItemID.LunarCraftingStation).
-                AddIngredient<AuricBar>(15).
-                AddIngredient<ExoPrism>(12).
-                AddIngredient<AscendantSpiritEssence>(15).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<CosmicAnvilItem>().
+            AddRecipeGroup("HardmodeForge").
+            AddIngredient(ItemID.TinkerersWorkshop).
+            AddIngredient(ItemID.LunarCraftingStation).
+            AddIngredient<AuricBar>(15).
+            AddIngredient<ExoPrism>(12).
+            AddIngredient<AscendantSpiritEssence>(15).
+            Register();
     }
 }

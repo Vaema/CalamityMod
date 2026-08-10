@@ -5,56 +5,55 @@ using Terraria.ModLoader;
 
 using SandstormEvent = Terraria.GameContent.Events.Sandstorm;
 
-namespace CalamityMod.Items.Tools.ClimateChange
+namespace CalamityMod.Items.Tools.ClimateChange;
+
+
+
+public class AridArtifact : ModItem, ILocalizedModType
 {
-    
-
-    public class AridArtifact : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Tools";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Tools";
-        public override void SetDefaults()
-        {
-            Item.width = 20;
-            Item.height = 20;
-            Item.rare = ItemRarityID.Pink;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item66;
-        }
+        Item.width = 20;
+        Item.height = 20;
+        Item.rare = ItemRarityID.Pink;
+        Item.useAnimation = 20;
+        Item.useTime = 20;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.UseSound = SoundID.Item66;
+    }
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-        }
+    public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+    {
+        itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+    }
 
-        public override bool CanUseItem(Player player)
-        {
-            return DownedBossSystem.downedDesertScourge || Main.hardMode;
-        }
+    public override bool CanUseItem(Player player)
+    {
+        return DownedBossSystem.downedDesertScourge || Main.hardMode;
+    }
 
-        public override bool? UseItem(Player player)
-        {
-            // Only SinglePlayer and Server need to sync those parameters
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-                return true;
-
-            if (SandstormEvent.Happening)
-                CalamityWorld.StopSandstorm();
-            else
-                CalamityWorld.StartSandstorm();
-
+    public override bool? UseItem(Player player)
+    {
+        // Only SinglePlayer and Server need to sync those parameters
+        if (Main.netMode == NetmodeID.MultiplayerClient)
             return true;
-        }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddRecipeGroup("Sand", 50).
-                AddRecipeGroup("AnyAdamantiteBar", 10).
-                AddIngredient(ItemID.AncientCloth, 3).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+        if (SandstormEvent.Happening)
+            CalamityWorld.StopSandstorm();
+        else
+            CalamityWorld.StartSandstorm();
+
+        return true;
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddRecipeGroup("Sand", 50).
+            AddRecipeGroup("AnyAdamantiteBar", 10).
+            AddIngredient(ItemID.AncientCloth, 3).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

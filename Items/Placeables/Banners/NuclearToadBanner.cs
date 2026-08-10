@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class NuclearToadBanner : BaseBanner
 {
-    public class NuclearToadBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 116;
-    }
+    public override int BannerTileStyle => 116;
 }

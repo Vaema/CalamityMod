@@ -5,89 +5,88 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+public class HyphaeRod : ModItem, ILocalizedModType
 {
-    public class HyphaeRod : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetStaticDefaults()
+        Item.staff[Type] = true;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.width = 34;
+        Item.height = 34;
+        Item.damage = 22;
+        Item.DamageType = DamageClass.Magic;
+        Item.mana = 10;
+        Item.useAnimation = Item.useTime = 24;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 2f;
+        Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+        Item.rare = ItemRarityID.Green;
+        Item.UseSound = SoundID.Item8;
+        Item.autoReuse = true;
+        Item.shoot = ProjectileID.TruffleSpore;
+        Item.shootSpeed = 1f;
+    }
+
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo projSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        float speed = Item.shootSpeed;
+        Vector2 source = player.RotatedRelativePoint(player.MountedCenter, true);
+        float xDist = (float)Main.mouseX + Main.screenPosition.X + source.X;
+        float yDist = (float)Main.mouseY + Main.screenPosition.Y + source.Y;
+        Vector2 spawnVec = new Vector2(xDist, yDist);
+        if (player.gravDir == -1f)
         {
-            Item.staff[Type] = true;
+            spawnVec.Y = Main.screenPosition.Y + (float)Main.screenHeight + (float)Main.mouseY + source.Y;
+        }
+        float distance = spawnVec.Length();
+        if ((float.IsNaN(spawnVec.X) && float.IsNaN(spawnVec.Y)) || (spawnVec.X == 0f && spawnVec.Y == 0f))
+        {
+            spawnVec.X = (float)player.direction;
+            spawnVec.Y = 0f;
+            distance = speed;
+        }
+        else
+        {
+            distance = speed / distance;
         }
 
-        public override void SetDefaults()
+        int projAmt = 3;
+        for (int projIndex = 0; projIndex < projAmt; projIndex++)
         {
-            Item.width = 34;
-            Item.height = 34;
-            Item.damage = 22;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
-            Item.useAnimation = Item.useTime = 24;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
-            Item.UseSound = SoundID.Item8;
-            Item.autoReuse = true;
-            Item.shoot = ProjectileID.TruffleSpore;
-            Item.shootSpeed = 1f;
+            source = new Vector2(player.Center.X + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y);
+            source.X = (source.X + player.Center.X) / 2f + (float)Main.rand.Next(-100, 101);
+            source.Y -= (float)(50 * projIndex);
+            spawnVec.X = (float)Main.mouseX + Main.screenPosition.X - source.X;
+            spawnVec.Y = (float)Main.mouseY + Main.screenPosition.Y - source.Y;
+            if (spawnVec.Y < 0f)
+            {
+                spawnVec.Y *= -1f;
+            }
+            if (spawnVec.Y < 20f)
+            {
+                spawnVec.Y = 20f;
+            }
+            distance = spawnVec.Length();
+            distance = speed / distance;
+            spawnVec.X *= distance;
+            spawnVec.Y *= distance;
+            spawnVec.X += (float)Main.rand.Next(-180, 181) * 0.02f;
+            spawnVec.Y += (float)Main.rand.Next(-180, 181) * 0.02f;
+            int proj = Projectile.NewProjectile(projSource, source, spawnVec, type, damage, knockback, player.whoAmI, 0f, Main.rand.Next(3));
+            if (proj.WithinBounds(Main.maxProjectiles))
+            {
+                Main.projectile[proj].DamageType = DamageClass.Magic;
+                Main.projectile[proj].timeLeft = CalamityUtils.SecondsToFrames(3f);
+            }
         }
-
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo projSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            float speed = Item.shootSpeed;
-            Vector2 source = player.RotatedRelativePoint(player.MountedCenter, true);
-            float xDist = (float)Main.mouseX + Main.screenPosition.X + source.X;
-            float yDist = (float)Main.mouseY + Main.screenPosition.Y + source.Y;
-            Vector2 spawnVec = new Vector2(xDist, yDist);
-            if (player.gravDir == -1f)
-            {
-                spawnVec.Y = Main.screenPosition.Y + (float)Main.screenHeight + (float)Main.mouseY + source.Y;
-            }
-            float distance = spawnVec.Length();
-            if ((float.IsNaN(spawnVec.X) && float.IsNaN(spawnVec.Y)) || (spawnVec.X == 0f && spawnVec.Y == 0f))
-            {
-                spawnVec.X = (float)player.direction;
-                spawnVec.Y = 0f;
-                distance = speed;
-            }
-            else
-            {
-                distance = speed / distance;
-            }
-
-            int projAmt = 3;
-            for (int projIndex = 0; projIndex < projAmt; projIndex++)
-            {
-                source = new Vector2(player.Center.X + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y);
-                source.X = (source.X + player.Center.X) / 2f + (float)Main.rand.Next(-100, 101);
-                source.Y -= (float)(50 * projIndex);
-                spawnVec.X = (float)Main.mouseX + Main.screenPosition.X - source.X;
-                spawnVec.Y = (float)Main.mouseY + Main.screenPosition.Y - source.Y;
-                if (spawnVec.Y < 0f)
-                {
-                    spawnVec.Y *= -1f;
-                }
-                if (spawnVec.Y < 20f)
-                {
-                    spawnVec.Y = 20f;
-                }
-                distance = spawnVec.Length();
-                distance = speed / distance;
-                spawnVec.X *= distance;
-                spawnVec.Y *= distance;
-                spawnVec.X += (float)Main.rand.Next(-180, 181) * 0.02f;
-                spawnVec.Y += (float)Main.rand.Next(-180, 181) * 0.02f;
-                int proj = Projectile.NewProjectile(projSource, source, spawnVec, type, damage, knockback, player.whoAmI, 0f, Main.rand.Next(3));
-                if (proj.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[proj].DamageType = DamageClass.Magic;
-                    Main.projectile[proj].timeLeft = CalamityUtils.SecondsToFrames(3f);
-                }
-            }
-            return false;
-        }
+        return false;
     }
 }

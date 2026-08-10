@@ -4,27 +4,26 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.DraedonStructures
+namespace CalamityMod.Tiles.DraedonStructures;
+
+public class RustedPipes : ModTile
 {
-    public class RustedPipes : ModTile
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
-            Main.tileMerge[Type][ModContent.TileType<LaboratoryPipePlating>()] = true;
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
+        Main.tileMerge[Type][ModContent.TileType<LaboratoryPipePlating>()] = true;
 
-            HitSound = SoundID.Item52;
-            DustType = DustID.Sand;
-            MinPick = 30;
-            AddMapEntry(new Color(128, 90, 77));
-        }
+        HitSound = SoundID.Item52;
+        DustType = DustID.Sand;
+        MinPick = 30;
+        AddMapEntry(new Color(128, 90, 77));
+    }
 
-        public override bool CanExplode(int i, int j) => false;
+    public override bool CanExplode(int i, int j) => false;
 
-        public override void PlaceInWorld(int i, int j, Item item)
-        {
-            SoundEngine.PlaySound(SoundID.Item52 with { Volume = SoundID.Item52.Volume * 0.75f, Pitch = SoundID.Item52.Pitch - 0.5f }, new Vector2(i * 16, j * 16));
-        }
+    public override void PlaceInWorld(int i, int j, Item item)
+    {
+        SoundEngine.PlaySound(SoundID.Item52 with { Volume = SoundID.Item52.Volume * 0.75f, Pitch = SoundID.Item52.Pitch - 0.5f }, new Vector2(i * 16, j * 16));
     }
 }

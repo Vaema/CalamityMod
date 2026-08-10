@@ -3,48 +3,47 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Environment
-{
-    public class BarrelCactusProjectile : ModProjectile, ILocalizedModType
-    {   //I tried, someone else figure it out I bet YuH could do it
-        public new string LocalizationCategory => "Projectiles.Misc";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 1;
-        }
+namespace CalamityMod.Projectiles.Environment;
 
-        public override void SetDefaults()
-        {
-            Projectile.CloneDefaults(ProjectileID.RollingCactus);
+public class BarrelCactusProjectile : ModProjectile, ILocalizedModType
+{   //I tried, someone else figure it out I bet YuH could do it
+    public new string LocalizationCategory => "Projectiles.Misc";
+    public override void SetStaticDefaults()
+    {
+        Main.projFrames[Type] = 1;
+    }
 
-            Projectile.width = 32;
-            Projectile.height = 32;
+    public override void SetDefaults()
+    {
+        Projectile.CloneDefaults(ProjectileID.RollingCactus);
 
-            Projectile.damage = 70;
-            Projectile.knockBack = 6f;
+        Projectile.width = 32;
+        Projectile.height = 32;
 
-            Projectile.friendly = false;
-            Projectile.hostile = true;
-        }
+        Projectile.damage = 70;
+        Projectile.knockBack = 6f;
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle frame = tex.Bounds;
-            Vector2 origin = frame.Size() * 0.5f;
+        Projectile.friendly = false;
+        Projectile.hostile = true;
+    }
 
-            Main.EntitySpriteDraw(
-                tex,
-                Projectile.Center - Main.screenPosition,
-                frame,
-                lightColor,
-                Projectile.rotation,
-                origin,
-                Projectile.scale,
-                SpriteEffects.None,
-                0);
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+        Rectangle frame = tex.Bounds;
+        Vector2 origin = frame.Size() * 0.5f;
 
-            return false;
-        }
+        Main.EntitySpriteDraw(
+            tex,
+            Projectile.Center - Main.screenPosition,
+            frame,
+            lightColor,
+            Projectile.rotation,
+            origin,
+            Projectile.scale,
+            SpriteEffects.None,
+            0);
+
+        return false;
     }
 }

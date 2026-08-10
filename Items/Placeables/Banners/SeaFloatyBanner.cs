@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class SeaFloatyBanner : BaseBanner
 {
-    public class SeaFloatyBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 103;
-    }
+    public override int BannerTileStyle => 103;
 }

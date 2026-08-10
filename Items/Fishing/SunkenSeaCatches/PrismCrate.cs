@@ -5,58 +5,57 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Fishing.SunkenSeaCatches
+namespace CalamityMod.Items.Fishing.SunkenSeaCatches;
+
+public class PrismCrate : ModItem, ILocalizedModType
 {
-    public class PrismCrate : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Fishing";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Fishing";
-        public override void SetStaticDefaults()
+        Item.ResearchUnlockCount = 5;
+        ItemID.Sets.IsFishingCrate[Type] = true;
+        ItemID.Sets.IsFishingCrateHardmode[Type] = true;
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EutrophicCrate>();
+    }
+
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<PrismCrateTile>());
+        Item.width = Item.height = 32;
+        Item.value = Item.sellPrice(gold: 1);
+        Item.rare = ItemRarityID.Green;
+    }
+
+    public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+    {
+        itemGroup = ContentSamples.CreativeHelper.ItemGroup.Crates;
+    }
+
+    public override bool CanRightClick() => true;
+    public override void ModifyItemLoot(ItemLoot itemLoot)
+    {
+        // 20-50 Blocks @ 100%; Individually 33.33%
+        itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[3]
         {
-            Item.ResearchUnlockCount = 5;
-            ItemID.Sets.IsFishingCrate[Type] = true;
-            ItemID.Sets.IsFishingCrateHardmode[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EutrophicCrate>();
-        }
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.Navystone>(), 1, 20, 50),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>(), 1, 20, 50),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.FurnitureDriftwood.Driftwood>(), 1, 20, 50)
+        }));
 
-        public override void SetDefaults()
+        // 10-20 Coral Blocks @ 100%; Individually 20%
+        itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[5]
         {
-            Item.DefaultToPlaceableTile(ModContent.TileType<PrismCrateTile>());
-            Item.width = Item.height = 32;
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Green;
-        }
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.CyanCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.OrangeCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.LimeCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.MagentaCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.YellowCoral>(), 1, 10, 20)
+        }));
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Crates;
-        }
+        // 4-10 Prism Shards @ 50%
+        // This is our equivalent to Crystal Shards/Ichor
+        itemLoot.Add(ModContent.ItemType<PrismShard>(), 2, 4, 10);
 
-        public override bool CanRightClick() => true;
-        public override void ModifyItemLoot(ItemLoot itemLoot)
-        {
-            // 20-50 Blocks @ 100%; Individually 33.33%
-            itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[3]
-            {
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.Navystone>(), 1, 20, 50),
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>(), 1, 20, 50),
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.FurnitureDriftwood.Driftwood>(), 1, 20, 50)
-            }));
-
-            // 10-20 Coral Blocks @ 100%; Individually 20%
-            itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[5]
-            {
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.CyanCoral>(), 1, 10, 20),
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.OrangeCoral>(), 1, 10, 20),
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.LimeCoral>(), 1, 10, 20),
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.MagentaCoral>(), 1, 10, 20),
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.YellowCoral>(), 1, 10, 20)
-            }));
-
-            // 4-10 Prism Shards @ 50%
-            // This is our equivalent to Crystal Shards/Ichor
-            itemLoot.Add(ModContent.ItemType<PrismShard>(), 2, 4, 10);
-
-            itemLoot.AddBiomeCrateLootRules();
-        }
+        itemLoot.AddBiomeCrateLootRules();
     }
 }

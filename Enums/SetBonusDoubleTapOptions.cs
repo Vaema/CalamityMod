@@ -1,9 +1,8 @@
-﻿namespace CalamityMod.Enums
+﻿namespace CalamityMod.Enums;
+
+public enum SetBonusDoubleTapOptions
 {
-    public enum SetBonusDoubleTapOptions
-    {
-        On,
-        Auto,
-        Off
-    }
+    On,
+    Auto,
+    Off
 }

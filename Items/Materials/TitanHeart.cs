@@ -2,23 +2,22 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Materials
-{
-    public class TitanHeart : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Materials";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 3;
-        }
+namespace CalamityMod.Items.Materials;
 
-        public override void SetDefaults()
-        {
-            Item.width = 10;
-            Item.height = 10;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.value = Item.sellPrice(silver: 30);
-            Item.rare = ItemRarityID.LightRed;
-        }
+public class TitanHeart : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Materials";
+    public override void SetStaticDefaults()
+    {
+        Item.ResearchUnlockCount = 3;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.width = 10;
+        Item.height = 10;
+        Item.maxStack = Item.CommonMaxStack;
+        Item.value = Item.sellPrice(silver: 30);
+        Item.rare = ItemRarityID.LightRed;
     }
 }

@@ -8,42 +8,41 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Pets
+namespace CalamityMod.Items.Pets;
+
+[LegacyName("RotomRemote")]
+public class TheEtomer : ModItem, ILocalizedModType
 {
-    [LegacyName("RotomRemote")]
-    public class TheEtomer : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Pets";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Pets";
-        public override void SetDefaults()
-        {
-            Item.DefaultToVanitypet(ModContent.ProjectileType<RotomPet>(), ModContent.BuffType<ElectricTroublemaker>());
-            Item.UseSound = SoundID.Item113;
-            Item.value = Item.sellPrice(gold: 2);
-            Item.rare = ItemRarityID.Orange;
-            Item.Calamity().devItem = true;
-        }
+        Item.DefaultToVanitypet(ModContent.ProjectileType<RotomPet>(), ModContent.BuffType<ElectricTroublemaker>());
+        Item.UseSound = SoundID.Item113;
+        Item.value = Item.sellPrice(gold: 2);
+        Item.rare = ItemRarityID.Orange;
+        Item.Calamity().devItem = true;
+    }
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
+    public override void UseStyle(Player player, Rectangle heldItemFrame)
+    {
+        if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
         {
-            if (player.whoAmI == Main.myPlayer && player.itemTime == 0)
-            {
-                player.AddBuff(Item.buffType, 3600, true);
-            }
+            player.AddBuff(Item.buffType, 3600, true);
         }
+    }
 
-        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
-        {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Pets/TheEtomerGlow").Value);
-        }
+    public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+    {
+        Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Pets/TheEtomerGlow").Value);
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddRecipeGroup("AnyGoldBar", 8).
-                AddIngredient<PrismShard>(5).
-                AddIngredient<ScorchedBone>(5).
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddRecipeGroup("AnyGoldBar", 8).
+            AddIngredient<PrismShard>(5).
+            AddIngredient<ScorchedBone>(5).
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

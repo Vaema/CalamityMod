@@ -5,89 +5,88 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class HypothermiaShard : ModProjectile, ILocalizedModType
 {
-    public class HypothermiaShard : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    private int counter = 0;
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        private int counter = 0;
-        public override void SetDefaults()
+        Projectile.width = 6;
+        Projectile.height = 6;
+        Projectile.scale = 1f;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = 1;
+        Projectile.timeLeft = 600;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.extraUpdates = 3;
+    }
+
+    public override void AI()
+    {
+        Lighting.AddLight(Projectile.Center, 0.1f, 0f, 0.5f);
+        Projectile.rotation += Projectile.velocity.X * 0.2f;
+        if (Main.rand.NextBool(10))
         {
-            Projectile.width = 6;
-            Projectile.height = 6;
-            Projectile.scale = 1f;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 600;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.extraUpdates = 3;
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Cryocore, 0f, 0f, Scale: 0.8f);
+            Main.dust[dust].noGravity = true;
+            Main.dust[dust].velocity *= 0.2f;
         }
 
-        public override void AI()
+        Projectile.velocity *= 0.996f;
+        counter++;
+        if (counter > 400)
         {
-            Lighting.AddLight(Projectile.Center, 0.1f, 0f, 0.5f);
-            Projectile.rotation += Projectile.velocity.X * 0.2f;
-            if (Main.rand.NextBool(10))
+            Projectile.scale -= 0.05f;
+            if (Projectile.scale <= 0.2f)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Cryocore, 0f, 0f, Scale: 0.8f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity *= 0.2f;
+                Projectile.scale = 0.2f;
+                Projectile.Kill();
             }
-
-            Projectile.velocity *= 0.996f;
-            counter++;
-            if (counter > 400)
-            {
-                Projectile.scale -= 0.05f;
-                if (Projectile.scale <= 0.2f)
-                {
-                    Projectile.scale = 0.2f;
-                    Projectile.Kill();
-                }
-                Projectile.width = (int)(6f * Projectile.scale);
-                Projectile.height = (int)(6f * Projectile.scale);
-            }
+            Projectile.width = (int)(6f * Projectile.scale);
+            Projectile.height = (int)(6f * Projectile.scale);
         }
+    }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        if (Projectile.velocity.X != oldVelocity.X)
+            Projectile.velocity.X = -oldVelocity.X;
+        if (Projectile.velocity.Y != oldVelocity.Y)
+            Projectile.velocity.Y = -oldVelocity.Y;
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        for (int k = 0; k < 3; k++)
         {
-            if (Projectile.velocity.X != oldVelocity.X)
-                Projectile.velocity.X = -oldVelocity.X;
-            if (Projectile.velocity.Y != oldVelocity.Y)
-                Projectile.velocity.Y = -oldVelocity.Y;
-            return false;
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Cryocore, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 0.8f);
         }
+    }
 
-        public override void OnKill(int timeLeft)
+    public override bool PreDraw(ref Color lightColor)
+    {
+        //Changes the texture of the projectile
+        Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        switch (Projectile.ai[0])
         {
-            for (int k = 0; k < 3; k++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Cryocore, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, 0, default, 0.8f);
-            }
+            case 0:
+                texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                break;
+            case 1:
+                texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard2").Value;
+                break;
+            case 2:
+                texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard3").Value;
+                break;
+            case 3:
+                texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard4").Value;
+                break;
         }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            //Changes the texture of the projectile
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            switch (Projectile.ai[0])
-            {
-                case 0:
-                    texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-                    break;
-                case 1:
-                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard2").Value;
-                    break;
-                case 2:
-                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard3").Value;
-                    break;
-                case 3:
-                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard4").Value;
-                    break;
-            }
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None);
-            return false;
-        }
+        Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None);
+        return false;
     }
 }

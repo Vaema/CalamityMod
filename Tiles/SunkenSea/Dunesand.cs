@@ -6,51 +6,50 @@ using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.SunkenSea;
+
+[LegacyName("RuneSand")]
+public class Dunesand : ModTile
 {
-    [LegacyName("RuneSand")]
-    public class Dunesand : ModTile
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            TileID.Sets.GeneralPlacementTiles[Type] = false;
+        TileID.Sets.GeneralPlacementTiles[Type] = false;
 
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
 
-            CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeWithDesert(Type);
+        CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.MergeWithDesert(Type);
 
-            TileID.Sets.HasSlopeFrames[Type] = true;
-            TileID.Sets.ChecksForMerge[Type] = true;
-            TileID.Sets.CanBeDugByShovel[Type] = true;
-            Main.tileShine2[Type] = false;
+        TileID.Sets.HasSlopeFrames[Type] = true;
+        TileID.Sets.ChecksForMerge[Type] = true;
+        TileID.Sets.CanBeDugByShovel[Type] = true;
+        Main.tileShine2[Type] = false;
 
-            DustType = DustID.Hive;
-            AddMapEntry(new Color(231, 135, 100));
+        DustType = DustID.Hive;
+        AddMapEntry(new Color(231, 135, 100));
 
-            Main.tileSand[Type] = true;
-            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
-            TileID.Sets.Suffocate[Type] = true;
-            TileID.Sets.CanBeDugByShovel[Type] = true;
-            TileID.Sets.Conversion.Sand[Type] = true;
-            TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
-            TileID.Sets.Falling[Type] = true;
-            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<DunesandBallFalling>(), 10);
+        Main.tileSand[Type] = true;
+        TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
+        TileID.Sets.Suffocate[Type] = true;
+        TileID.Sets.CanBeDugByShovel[Type] = true;
+        TileID.Sets.Conversion.Sand[Type] = true;
+        TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
+        TileID.Sets.Falling[Type] = true;
+        TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<DunesandBallFalling>(), 10);
 
-            this.RegisterBlendMergeWith(TileID.Sandstone);
-            this.RegisterBlendMergeWith(TileID.Sand);
-            this.RegisterBlendMergeWith(TileID.HardenedSand);
-        }
+        this.RegisterBlendMergeWith(TileID.Sandstone);
+        this.RegisterBlendMergeWith(TileID.Sand);
+        this.RegisterBlendMergeWith(TileID.HardenedSand);
+    }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
+    }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
-        }
+    public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+    {
+        return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
     }
 }

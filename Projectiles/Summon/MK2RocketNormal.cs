@@ -4,56 +4,55 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Summon
+namespace CalamityMod.Projectiles.Summon;
+
+public class MK2RocketNormal : ModProjectile, ILocalizedModType
 {
-    public class MK2RocketNormal : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Summon";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Summon";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 3;
-            ProjectileID.Sets.MinionShot[Type] = true;
-        }
+        Main.projFrames[Type] = 3;
+        ProjectileID.Sets.MinionShot[Type] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = Projectile.height = 14;
-            Projectile.light = 0.5f;
-            Projectile.extraUpdates = 1;
-            Projectile.tileCollide = false;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 600;
-            Projectile.DamageType = DamageClass.Summon;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = Projectile.height = 14;
+        Projectile.light = 0.5f;
+        Projectile.extraUpdates = 1;
+        Projectile.tileCollide = false;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 600;
+        Projectile.DamageType = DamageClass.Summon;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 8)
         {
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 8)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= Main.projFrames[Type])
-            {
-                Projectile.frame = 0;
-            }
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
-
-        public override void OnKill(int timeLeft)
+        if (Projectile.frame >= Main.projFrames[Type])
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
+            Projectile.frame = 0;
         }
+        Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Projectile.timeLeft > 599)
-                return false;
-            return true;
-        }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 180);
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        if (Projectile.timeLeft > 599)
+            return false;
+        return true;
     }
 }

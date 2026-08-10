@@ -4,73 +4,72 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Boss
+namespace CalamityMod.Projectiles.Boss;
+
+public class MajesticSparkle : ModProjectile, ILocalizedModType
 {
-    public class MajesticSparkle : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Boss";
+    public ref float Time => ref Projectile.ai[0];
+    public ref float ColorSpectrumHue => ref Projectile.ai[1];
+    public const int Lifetime = 90;
+    public const int FadeinTime = 18;
+    public const int FadeoutTime = 18;
+    public override string Texture => "CalamityMod/Projectiles/StarProj";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Boss";
-        public ref float Time => ref Projectile.ai[0];
-        public ref float ColorSpectrumHue => ref Projectile.ai[1];
-        public const int Lifetime = 90;
-        public const int FadeinTime = 18;
-        public const int FadeoutTime = 18;
-        public override string Texture => "CalamityMod/Projectiles/StarProj";
-        public override void SetDefaults()
+        Projectile.width = 72;
+        Projectile.height = 72;
+        Projectile.penetrate = -1;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = Lifetime;
+        Projectile.scale = 0.001f;
+    }
+
+    public override void AI()
+    {
+        if (Time == 1f)
         {
-            Projectile.width = 72;
-            Projectile.height = 72;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = Lifetime;
-            Projectile.scale = 0.001f;
+            Projectile.scale = Main.rand.NextFloat(0.3f, 0.75f);
+            Projectile.ExpandHitboxBy((int)(Projectile.scale * 72f));
+
+            ColorSpectrumHue = Main.rand.NextFloat(0f, 0.9999f);
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.netUpdate = true;
         }
 
-        public override void AI()
-        {
-            if (Time == 1f)
-            {
-                Projectile.scale = Main.rand.NextFloat(0.3f, 0.75f);
-                Projectile.ExpandHitboxBy((int)(Projectile.scale * 72f));
+        Projectile.velocity *= 0.96f;
+        Projectile.rotation = Projectile.rotation.AngleLerp(MathHelper.PiOver2, 0.085f);
 
-                ColorSpectrumHue = Main.rand.NextFloat(0f, 0.9999f);
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-                Projectile.netUpdate = true;
-            }
+        // Go 33% across the color spectrum throughout the sparkle's lifetime instead of using a static color.
+        ColorSpectrumHue = (ColorSpectrumHue + 0.333f / Lifetime) % 0.999f;
 
-            Projectile.velocity *= 0.96f;
-            Projectile.rotation = Projectile.rotation.AngleLerp(MathHelper.PiOver2, 0.085f);
+        Projectile.Opacity = Utils.GetLerpValue(0f, FadeinTime, Time, true) * Utils.GetLerpValue(Lifetime, Lifetime - FadeoutTime, Time, true);
+        Projectile.velocity = Projectile.velocity.RotatedBy(Math.Sin(Time / 30f) * 0.0125f);
 
-            // Go 33% across the color spectrum throughout the sparkle's lifetime instead of using a static color.
-            ColorSpectrumHue = (ColorSpectrumHue + 0.333f / Lifetime) % 0.999f;
+        Time++;
+    }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D sparkleTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
-            Projectile.Opacity = Utils.GetLerpValue(0f, FadeinTime, Time, true) * Utils.GetLerpValue(Lifetime, Lifetime - FadeoutTime, Time, true);
-            Projectile.velocity = Projectile.velocity.RotatedBy(Math.Sin(Time / 30f) * 0.0125f);
+        Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
+        Color sparkleColor = Main.hslToRgb(ColorSpectrumHue, 1f, 0.5f) * Projectile.Opacity * 0.5f;
+        sparkleColor.A = 0;
 
-            Time++;
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D sparkleTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        sparkleColor *= MathHelper.Lerp(1f, 1.5f, Utils.GetLerpValue(Lifetime * 0.5f - 15f, Lifetime * 0.5f + 15f, Time, true));
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
-            Color sparkleColor = Main.hslToRgb(ColorSpectrumHue, 1f, 0.5f) * Projectile.Opacity * 0.5f;
-            sparkleColor.A = 0;
+        Color orthogonalSparkleColor = Color.Lerp(sparkleColor, Color.White, 0.5f) * 0.5f;
 
-            sparkleColor *= MathHelper.Lerp(1f, 1.5f, Utils.GetLerpValue(Lifetime * 0.5f - 15f, Lifetime * 0.5f + 15f, Time, true));
+        Vector2 origin = sparkleTexture.Size() * 0.5f;
 
-            Color orthogonalSparkleColor = Color.Lerp(sparkleColor, Color.White, 0.5f) * 0.5f;
+        Vector2 sparkleScale = new Vector2(0.3f, 1f) * Projectile.Opacity * Projectile.scale;
+        Vector2 orthogonalsparkleScale = new Vector2(0.3f, 2f) * Projectile.Opacity * Projectile.scale;
 
-            Vector2 origin = sparkleTexture.Size() * 0.5f;
-
-            Vector2 sparkleScale = new Vector2(0.3f, 1f) * Projectile.Opacity * Projectile.scale;
-            Vector2 orthogonalsparkleScale = new Vector2(0.3f, 2f) * Projectile.Opacity * Projectile.scale;
-
-            Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, sparkleColor, MathHelper.PiOver2 + Projectile.rotation, origin, orthogonalsparkleScale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, sparkleColor, Projectile.rotation, origin, sparkleScale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, orthogonalSparkleColor, MathHelper.PiOver2 + Projectile.rotation, origin, orthogonalsparkleScale * 0.6f, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, orthogonalSparkleColor, Projectile.rotation, origin, sparkleScale * 0.6f, SpriteEffects.None, 0);
-            return false;
-        }
+        Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, sparkleColor, MathHelper.PiOver2 + Projectile.rotation, origin, orthogonalsparkleScale, SpriteEffects.None, 0);
+        Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, sparkleColor, Projectile.rotation, origin, sparkleScale, SpriteEffects.None, 0);
+        Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, orthogonalSparkleColor, MathHelper.PiOver2 + Projectile.rotation, origin, orthogonalsparkleScale * 0.6f, SpriteEffects.None, 0);
+        Main.EntitySpriteDraw(sparkleTexture, drawPosition, null, orthogonalSparkleColor, Projectile.rotation, origin, sparkleScale * 0.6f, SpriteEffects.None, 0);
+        return false;
     }
 }

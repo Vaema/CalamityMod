@@ -1,12 +1,11 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum GemTechArmorGemType
 {
-    public enum GemTechArmorGemType
-    {
-        Melee,
-        Ranged,
-        Magic,
-        Summoner,
-        Rogue,
-        Base
-    }
+    Melee,
+    Ranged,
+    Magic,
+    Summoner,
+    Rogue,
+    Base
 }

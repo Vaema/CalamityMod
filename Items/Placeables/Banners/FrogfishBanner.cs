@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class FrogfishBanner : BaseBanner
 {
-    public class FrogfishBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 8;
-    }
+    public override int BannerTileStyle => 8;
 }

@@ -9,220 +9,219 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Ranged
+namespace CalamityMod.Projectiles.Ranged;
+
+public class BloodBoilerFire : ModProjectile, ILocalizedModType
 {
-    public class BloodBoilerFire : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Ranged";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    private bool playedSound = false;
+    public int Time = 0;
+    public float particleSize = 15;
+    public Vector2 bloodCloudReturn;
+    public bool improvedHeal = false;
+    public bool setHomingVelocity = false;
+    public float HomingVelocity = 0.18f;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Projectile.width = 43;
+        Projectile.height = 43;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.DamageType = DamageClass.Ranged;
+        Projectile.tileCollide = false;
+        Projectile.penetrate = -1;
+        Projectile.extraUpdates = 4;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+        Projectile.timeLeft = 300;
+    }
 
-        private bool playedSound = false;
-        public int Time = 0;
-        public float particleSize = 15;
-        public Vector2 bloodCloudReturn;
-        public bool improvedHeal = false;
-        public bool setHomingVelocity = false;
-        public float HomingVelocity = 0.18f;
+    public override void AI()
+    {
+        if (Projectile.timeLeft > 220) // Main visual size changes
+            particleSize += 0.5f;
+        else
+            particleSize -= 1f;
+        particleSize = MathHelper.Clamp(particleSize, 0, 1000);
 
-        public override void SetDefaults()
+        Time++;
+
+        if (Projectile.timeLeft == 295) // Blood produced from the muzzle when firing the weapon
         {
-            Projectile.width = 43;
-            Projectile.height = 43;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
-            Projectile.extraUpdates = 4;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-            Projectile.timeLeft = 300;
+            int bloodLifetime = Main.rand.Next(22, 36);
+            float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
+            Color bloodColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool() ? Color.Firebrick : Color.Red));
+
+            float randomSpeedMultiplier = Main.rand.NextFloat(0.8f, 1.55f);
+            Vector2 bloodVelocity = Projectile.velocity.RotatedByRandom(0.5) * randomSpeedMultiplier + new Vector2(0, -3);
+            BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
+            GeneralParticleHandler.SpawnParticle(blood);
         }
 
-        public override void AI()
+        if (Projectile.timeLeft < 296) // The main visual of the projectile and the blood mist it produces before turning around
         {
-            if (Projectile.timeLeft > 220) // Main visual size changes
-                particleSize += 0.5f;
-            else
-                particleSize -= 1f;
-            particleSize = MathHelper.Clamp(particleSize, 0, 1000);
+            //BloodBoilerMetaball2.SpawnParticle(Projectile.Center, particleSize * 2.3f);
+            //BloodBoilerMetaball.SpawnParticle(Projectile.Center, particleSize * 1.7f);
 
-            Time++;
+            Particle beam3 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed), new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
+            GeneralParticleHandler.SpawnParticle(beam3);
 
-            if (Projectile.timeLeft == 295) // Blood produced from the muzzle when firing the weapon
+            if (Main.rand.NextBool(8))
             {
-                int bloodLifetime = Main.rand.Next(22, 36);
-                float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
-                Color bloodColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool() ? Color.Firebrick : Color.Red));
-
-                float randomSpeedMultiplier = Main.rand.NextFloat(0.8f, 1.55f);
-                Vector2 bloodVelocity = Projectile.velocity.RotatedByRandom(0.5) * randomSpeedMultiplier + new Vector2(0, -3);
-                BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
-                GeneralParticleHandler.SpawnParticle(blood);
+                Particle beam4 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red), new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
+                GeneralParticleHandler.SpawnParticle(beam4);
             }
 
-            if (Projectile.timeLeft < 296) // The main visual of the projectile and the blood mist it produces before turning around
+
+            if (Main.rand.NextBool(6) && Projectile.ai[1] == 0f)
             {
-                //BloodBoilerMetaball2.SpawnParticle(Projectile.Center, particleSize * 2.3f);
-                //BloodBoilerMetaball.SpawnParticle(Projectile.Center, particleSize * 1.7f);
-
-                Particle beam3 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed), new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
-                GeneralParticleHandler.SpawnParticle(beam3);
-
-                if (Main.rand.NextBool(8))
-                {
-                    Particle beam4 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red), new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
-                    GeneralParticleHandler.SpawnParticle(beam4);
-                }
-
-
-                if (Main.rand.NextBool(6) && Projectile.ai[1] == 0f)
-                {
-                    Color smokeColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool() ? Color.Firebrick : Color.Red));
-                    Vector2 smokePosition = Projectile.Center + Main.rand.NextVector2Circular(5 + Time * 0.3f, 5 + Time * 0.3f);
-                    float smokeScale = Main.rand.NextFloat(0.5f, 1.6f);
-                    float smokeOpacity = 170 + -Time * 0.6f;
-                    Particle smoke = new MediumMistParticle(smokePosition, Vector2.Zero, smokeColor, Color.Black, smokeScale, smokeOpacity, Main.rand.NextFloat(0.2f, -0.2f));
-                    GeneralParticleHandler.SpawnParticle(smoke);
-                }
+                Color smokeColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool() ? Color.Firebrick : Color.Red));
+                Vector2 smokePosition = Projectile.Center + Main.rand.NextVector2Circular(5 + Time * 0.3f, 5 + Time * 0.3f);
+                float smokeScale = Main.rand.NextFloat(0.5f, 1.6f);
+                float smokeOpacity = 170 + -Time * 0.6f;
+                Particle smoke = new MediumMistParticle(smokePosition, Vector2.Zero, smokeColor, Color.Black, smokeScale, smokeOpacity, Main.rand.NextFloat(0.2f, -0.2f));
+                GeneralParticleHandler.SpawnParticle(smoke);
             }
+        }
 
-            if (Projectile.ai[1] == 0f) // Blood pulses on the projectile before it turns around
+        if (Projectile.ai[1] == 0f) // Blood pulses on the projectile before it turns around
+        {
+            if (Main.rand.NextBool(9))
             {
-                if (Main.rand.NextBool(9))
-                {
-                    DirectionalPulseRing pulse = new DirectionalPulseRing(Projectile.Center + Main.rand.NextVector2Circular(7 + Time * 0.4f, 7 + Time * 0.4f), Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool(3) ? Color.Red : Color.Firebrick)), new Vector2(1, 1), 0, Main.rand.NextFloat(0.02f, 0.07f) + Time * 0.0006f, 0f, 35);
-                    GeneralParticleHandler.SpawnParticle(pulse);
-                }
+                DirectionalPulseRing pulse = new DirectionalPulseRing(Projectile.Center + Main.rand.NextVector2Circular(7 + Time * 0.4f, 7 + Time * 0.4f), Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool(3) ? Color.Red : Color.Firebrick)), new Vector2(1, 1), 0, Main.rand.NextFloat(0.02f, 0.07f) + Time * 0.0006f, 0f, 35);
+                GeneralParticleHandler.SpawnParticle(pulse);
             }
+        }
 
-            if (!playedSound)
+        if (!playedSound)
+        {
+            SoundEngine.PlaySound(SoundID.Item34, Projectile.position);
+            playedSound = true;
+        }
+
+        Lighting.AddLight(Projectile.Center, 1f, 0f, 0f);
+
+        // A bunch of small things mostly for visuals when the projectile starts turning around before it homes on the player
+        if (Projectile.timeLeft == 235)
+            bloodCloudReturn = Projectile.velocity;
+
+        if (Projectile.timeLeft <= 235 && Projectile.ai[1] == 0f)
+            Projectile.velocity *= 0.98f;
+
+        if (Projectile.timeLeft == 220)
+        {
+            Projectile.velocity = -bloodCloudReturn.RotatedBy(Projectile.ai[2] == 5 ? -0.7f : 0.7f) * 1.2f;
+            for (int i = 0; i <= 5; i++)
             {
-                SoundEngine.PlaySound(SoundID.Item34, Projectile.position);
-                playedSound = true;
-            }
-
-            Lighting.AddLight(Projectile.Center, 1f, 0f, 0f);
-
-            // A bunch of small things mostly for visuals when the projectile starts turning around before it homes on the player
-            if (Projectile.timeLeft == 235)
-                bloodCloudReturn = Projectile.velocity;
-
-            if (Projectile.timeLeft <= 235 && Projectile.ai[1] == 0f)
-                Projectile.velocity *= 0.98f;
-
-            if (Projectile.timeLeft == 220)
-            {
-                Projectile.velocity = -bloodCloudReturn.RotatedBy(Projectile.ai[2] == 5 ? -0.7f : 0.7f) * 1.2f;
-                for (int i = 0; i <= 5; i++)
-                {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), !ChildSafety.Disabled ? DustID.Cloud : Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(0.5f)) * Main.rand.NextFloat(1.7f, 3.2f));
-                    dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(1.2f, 2f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), !ChildSafety.Disabled ? DustID.Cloud : Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.7f));
-                    dust2.noGravity = true;
-                    dust2.scale = Main.rand.NextFloat(1.2f, 2f);
-                }
-            }
-
-            if (Projectile.timeLeft == 209) // Begin returning to player
-            {
-                Projectile.ai[1] = 1f;
-            }
-
-            if (Projectile.ai[1] == 1f) // Dusts as the projectile homes back in on the player
-            {
-                if (!setHomingVelocity)
-                {
-                    HomingVelocity = Main.rand.NextFloat(0.29f, 0.32f);
-                    setHomingVelocity = true;
-                }
-
-                Projectile.extraUpdates = 5;
-                bool dustEffect = Main.rand.NextBool(3) ? false : true;
-                int dustColor = (!ChildSafety.Disabled ? DustID.Cloud : (dustEffect ? 296 : 60));
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(dustEffect ? 0 : 5, dustEffect ? 0 : 5), dustColor);
-                dust.scale = dustEffect ? Main.rand.NextFloat(1.1f, 1.45f) : Main.rand.NextFloat(0.9f, 1.2f);
-                dust.velocity = dustEffect ? Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f) : Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.7f, 1.2f);
-                dust.alpha = 100;
-                dust.noLight = true;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), !ChildSafety.Disabled ? DustID.Cloud : Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(0.5f)) * Main.rand.NextFloat(1.7f, 3.2f));
                 dust.noGravity = true;
-
-                Player player = Main.player[Projectile.owner];
-
-                // Delete the projectile if it's excessively far away.
-                Vector2 playerCenter = player.Center;
-                float xDist = playerCenter.X - Projectile.Center.X;
-                float yDist = playerCenter.Y - Projectile.Center.Y;
-                float dist = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
-                if (dist > 3000f)
-                    Projectile.Kill();
-
-                dist = 20f / dist;
-                xDist *= dist;
-                yDist *= dist;
-
-                // Home back in on the player.
-                if (Projectile.velocity.X < xDist)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X + HomingVelocity;
-                    if (Projectile.velocity.X < 0f && xDist > 0f)
-                        Projectile.velocity.X += HomingVelocity;
-                }
-                else if (Projectile.velocity.X > xDist)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X - HomingVelocity;
-                    if (Projectile.velocity.X > 0f && xDist < 0f)
-                        Projectile.velocity.X -= HomingVelocity;
-                }
-                if (Projectile.velocity.Y < yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y + HomingVelocity;
-                    if (Projectile.velocity.Y < 0f && yDist > 0f)
-                        Projectile.velocity.Y += HomingVelocity;
-                }
-                else if (Projectile.velocity.Y > yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y - HomingVelocity;
-                    if (Projectile.velocity.Y > 0f && yDist < 0f)
-                        Projectile.velocity.Y -= HomingVelocity;
-                }
-
-                if (Projectile.timeLeft == 5) // Absolutely make sure the player gets the chance to heal
-                    Projectile.Center = playerCenter;
-
-                // Delete the projectile if it touches its owner. Has a chance to heal the player again
-                if (Main.myPlayer == Projectile.owner)
-                {
-                    if (Projectile.Hitbox.Intersects(player.Hitbox))
-                    {
-                        if (improvedHeal)
-                        {
-                            BloodstoneHealOrb.Heal(player, 6);
-                        }
-
-                        Projectile.Kill();
-                    }
-                }
+                dust.scale = Main.rand.NextFloat(1.2f, 2f);
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), !ChildSafety.Disabled ? DustID.Cloud : Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.7f));
+                dust2.noGravity = true;
+                dust2.scale = Main.rand.NextFloat(1.2f, 2f);
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        if (Projectile.timeLeft == 209) // Begin returning to player
         {
-
-            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
-            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
-            target.AddBuff(ModContent.BuffType<BurningBlood>(), 1200);
-            target.AddBuff(ModContent.BuffType<Laceration>(), 1200);
-            improvedHeal = true;
+            Projectile.ai[1] = 1f;
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        if (Projectile.ai[1] == 1f) // Dusts as the projectile homes back in on the player
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.85f); // 15% damage nerf for every enemy hit
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            if (!setHomingVelocity)
+            {
+                HomingVelocity = Main.rand.NextFloat(0.29f, 0.32f);
+                setHomingVelocity = true;
+            }
+
+            Projectile.extraUpdates = 5;
+            bool dustEffect = Main.rand.NextBool(3) ? false : true;
+            int dustColor = (!ChildSafety.Disabled ? DustID.Cloud : (dustEffect ? 296 : 60));
+            Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(dustEffect ? 0 : 5, dustEffect ? 0 : 5), dustColor);
+            dust.scale = dustEffect ? Main.rand.NextFloat(1.1f, 1.45f) : Main.rand.NextFloat(0.9f, 1.2f);
+            dust.velocity = dustEffect ? Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f) : Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.7f, 1.2f);
+            dust.alpha = 100;
+            dust.noLight = true;
+            dust.noGravity = true;
+
+            Player player = Main.player[Projectile.owner];
+
+            // Delete the projectile if it's excessively far away.
+            Vector2 playerCenter = player.Center;
+            float xDist = playerCenter.X - Projectile.Center.X;
+            float yDist = playerCenter.Y - Projectile.Center.Y;
+            float dist = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
+            if (dist > 3000f)
+                Projectile.Kill();
+
+            dist = 20f / dist;
+            xDist *= dist;
+            yDist *= dist;
+
+            // Home back in on the player.
+            if (Projectile.velocity.X < xDist)
+            {
+                Projectile.velocity.X = Projectile.velocity.X + HomingVelocity;
+                if (Projectile.velocity.X < 0f && xDist > 0f)
+                    Projectile.velocity.X += HomingVelocity;
+            }
+            else if (Projectile.velocity.X > xDist)
+            {
+                Projectile.velocity.X = Projectile.velocity.X - HomingVelocity;
+                if (Projectile.velocity.X > 0f && xDist < 0f)
+                    Projectile.velocity.X -= HomingVelocity;
+            }
+            if (Projectile.velocity.Y < yDist)
+            {
+                Projectile.velocity.Y = Projectile.velocity.Y + HomingVelocity;
+                if (Projectile.velocity.Y < 0f && yDist > 0f)
+                    Projectile.velocity.Y += HomingVelocity;
+            }
+            else if (Projectile.velocity.Y > yDist)
+            {
+                Projectile.velocity.Y = Projectile.velocity.Y - HomingVelocity;
+                if (Projectile.velocity.Y > 0f && yDist < 0f)
+                    Projectile.velocity.Y -= HomingVelocity;
+            }
+
+            if (Projectile.timeLeft == 5) // Absolutely make sure the player gets the chance to heal
+                Projectile.Center = playerCenter;
+
+            // Delete the projectile if it touches its owner. Has a chance to heal the player again
+            if (Main.myPlayer == Projectile.owner)
+            {
+                if (Projectile.Hitbox.Intersects(player.Hitbox))
+                {
+                    if (improvedHeal)
+                    {
+                        BloodstoneHealOrb.Heal(player, 6);
+                    }
+
+                    Projectile.Kill();
+                }
+            }
         }
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+
+        //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+        //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+        target.AddBuff(ModContent.BuffType<BurningBlood>(), 1200);
+        target.AddBuff(ModContent.BuffType<Laceration>(), 1200);
+        improvedHeal = true;
+    }
+
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    {
+        if (Projectile.numHits > 0)
+            Projectile.damage = (int)(Projectile.damage * 0.85f); // 15% damage nerf for every enemy hit
+        if (Projectile.damage < 1)
+            Projectile.damage = 1;
     }
 }

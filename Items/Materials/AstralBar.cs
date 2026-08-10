@@ -5,34 +5,33 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Materials
+namespace CalamityMod.Items.Materials;
+
+public class AstralBar : ModItem, ILocalizedModType
 {
-    public class AstralBar : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Materials";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Materials";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 25;
-            ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.MeteoriteBar, 1);
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
-        }
+        Item.ResearchUnlockCount = 25;
+        ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
+        ItemID.Sets.AnimatesAsSoul[Type] = true;
+        ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.MeteoriteBar, 1);
+        Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
+    }
 
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.AstralBar>());
-            Item.rare = ItemRarityID.Cyan;
-            Item.value = Item.sellPrice(gold: 1, silver: 20);
-        }
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.AstralBar>());
+        Item.rare = ItemRarityID.Cyan;
+        Item.value = Item.sellPrice(gold: 1, silver: 20);
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<AstralOre>(2).
-                AddIngredient<StarblightSoot>(3).
-                AddTile(TileID.LunarCraftingStation).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<AstralOre>(2).
+            AddIngredient<StarblightSoot>(3).
+            AddTile(TileID.LunarCraftingStation).
+            Register();
     }
 }

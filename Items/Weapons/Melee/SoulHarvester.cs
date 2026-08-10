@@ -9,108 +9,107 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Melee
+namespace CalamityMod.Items.Weapons.Melee;
+
+public class SoulHarvester : ModItem, ILocalizedModType
 {
-    public class SoulHarvester : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Melee";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.CursedInferno, ModContent.BuffType<Plague>()];
-        }
-        public override void SetDefaults()
-        {
-            Item.width = 62;
-            Item.height = 64;
-            Item.damage = 77;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 22;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.knockBack = 7.5f;
-            Item.UseSound = SoundID.Item71;
-            Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.shoot = ModContent.ProjectileType<SoulScythe>();
-            Item.shootSpeed = 18f;
-        }
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.CursedInferno, ModContent.BuffType<Plague>()];
+    }
+    public override void SetDefaults()
+    {
+        Item.width = 62;
+        Item.height = 64;
+        Item.damage = 77;
+        Item.DamageType = DamageClass.Melee;
+        Item.useAnimation = Item.useTime = 22;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useTurn = true;
+        Item.knockBack = 7.5f;
+        Item.UseSound = SoundID.Item71;
+        Item.autoReuse = true;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.shoot = ModContent.ProjectileType<SoulScythe>();
+        Item.shootSpeed = 18f;
+    }
 
-        public override void MeleeEffects(Player player, Rectangle hitbox)
+    public override void MeleeEffects(Player player, Rectangle hitbox)
+    {
+        if (Main.rand.NextBool(3))
         {
-            if (Main.rand.NextBool(3))
-            {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.CursedTorch);
-            }
+            int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.CursedTorch);
         }
+    }
 
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+    public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(ModContent.BuffType<Plague>(), 240);
+        target.AddBuff(BuffID.CursedInferno, 120);
+        if (target.life <= (target.lifeMax * 0.15f))
         {
-            target.AddBuff(ModContent.BuffType<Plague>(), 240);
-            target.AddBuff(BuffID.CursedInferno, 120);
-            if (target.life <= (target.lifeMax * 0.15f))
+            SoundEngine.PlaySound(SoundID.Item14, target.Center);
+            int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
+            Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
+            blast.DamageType = Item.DamageType;
+            for (int i = 0; i < 10; i++)
             {
-                SoundEngine.PlaySound(SoundID.Item14, target.Center);
-                int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-                Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
-                blast.DamageType = Item.DamageType;
-                for (int i = 0; i < 10; i++)
+                int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
+                Main.dust[plagueDust].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
-                    Main.dust[plagueDust].velocity *= 3f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[plagueDust].scale = 0.5f;
-                        Main.dust[plagueDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                    }
-                }
-                for (int j = 0; j < 20; j++)
-                {
-                    int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
-                    Main.dust[plagueDust2].noGravity = true;
-                    Main.dust[plagueDust2].velocity *= 5f;
-                    plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
-                    Main.dust[plagueDust2].velocity *= 2f;
+                    Main.dust[plagueDust].scale = 0.5f;
+                    Main.dust[plagueDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            target.AddBuff(ModContent.BuffType<Plague>(), 240);
-            target.AddBuff(BuffID.CursedInferno, 120);
-            if (target.statLife <= (target.statLifeMax * 0.15f))
+            for (int j = 0; j < 20; j++)
             {
-                SoundEngine.PlaySound(SoundID.Item14, target.Center);
-                for (int i = 0; i < 10; i++)
-                {
-                    int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
-                    Main.dust[plagueDust].velocity *= 3f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[plagueDust].scale = 0.5f;
-                        Main.dust[plagueDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                    }
-                }
-                for (int j = 0; j < 20; j++)
-                {
-                    int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
-                    Main.dust[plagueDust2].noGravity = true;
-                    Main.dust[plagueDust2].velocity *= 5f;
-                    plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
-                    Main.dust[plagueDust2].velocity *= 2f;
-                }
+                int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
+                Main.dust[plagueDust2].noGravity = true;
+                Main.dust[plagueDust2].velocity *= 5f;
+                plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
+                Main.dust[plagueDust2].velocity *= 2f;
             }
         }
+    }
 
-        public override void AddRecipes()
+    public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
+    {
+        target.AddBuff(ModContent.BuffType<Plague>(), 240);
+        target.AddBuff(BuffID.CursedInferno, 120);
+        if (target.statLife <= (target.statLifeMax * 0.15f))
         {
-            CreateRecipe().
-                AddIngredient(ItemID.DeathSickle).
-                AddIngredient<PlagueCellCanister>(10).
-                AddIngredient(ItemID.CursedFlame, 20).
-                AddTile(TileID.MythrilAnvil).
-                Register();
+            SoundEngine.PlaySound(SoundID.Item14, target.Center);
+            for (int i = 0; i < 10; i++)
+            {
+                int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
+                Main.dust[plagueDust].velocity *= 3f;
+                if (Main.rand.NextBool())
+                {
+                    Main.dust[plagueDust].scale = 0.5f;
+                    Main.dust[plagueDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                }
+            }
+            for (int j = 0; j < 20; j++)
+            {
+                int plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
+                Main.dust[plagueDust2].noGravity = true;
+                Main.dust[plagueDust2].velocity *= 5f;
+                plagueDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
+                Main.dust[plagueDust2].velocity *= 2f;
+            }
         }
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.DeathSickle).
+            AddIngredient<PlagueCellCanister>(10).
+            AddIngredient(ItemID.CursedFlame, 20).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

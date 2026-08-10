@@ -3,47 +3,46 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Summon
+namespace CalamityMod.Projectiles.Summon;
+
+public class EndoHydraRay : ModProjectile, ILocalizedModType
 {
-    public class EndoHydraRay : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Summon";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        ProjectileID.Sets.MinionShot[Type] = true;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.MinionShot[Type] = true;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = Projectile.height = 4;
+        Projectile.friendly = true;
+        Projectile.penetrate = 10;
+        Projectile.extraUpdates = 100;
+        Projectile.timeLeft = 265;
+        Projectile.coldDamage = true;
+        Projectile.tileCollide = false;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 100;
+        Projectile.DamageType = DamageClass.Summon;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Projectile.localAI[0] += 1f;
+        if (Projectile.localAI[0] > 5f)
         {
-            Projectile.width = Projectile.height = 4;
-            Projectile.friendly = true;
-            Projectile.penetrate = 10;
-            Projectile.extraUpdates = 100;
-            Projectile.timeLeft = 265;
-            Projectile.coldDamage = true;
-            Projectile.tileCollide = false;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 100;
-            Projectile.DamageType = DamageClass.Summon;
-        }
-
-        public override void AI()
-        {
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 5f)
+            for (int i = 0; i < 3; i++)
             {
-                for (int i = 0; i < 3; i++)
-                {
-                    Vector2 spawnPosition = Projectile.position;
-                    spawnPosition -= Projectile.velocity * i * 0.25f;
-                    int idx = Dust.NewDust(spawnPosition, 1, 1, DustID.Clentaminator_Blue, 0f, 0f, 0, default, 1.25f);
-                    Main.dust[idx].position = spawnPosition;
-                    Main.dust[idx].scale = Main.rand.NextFloat(0.71f, 0.93f);
-                    Main.dust[idx].velocity *= 0.1f;
-                    Main.dust[idx].noGravity = true;
-                }
+                Vector2 spawnPosition = Projectile.position;
+                spawnPosition -= Projectile.velocity * i * 0.25f;
+                int idx = Dust.NewDust(spawnPosition, 1, 1, DustID.Clentaminator_Blue, 0f, 0f, 0, default, 1.25f);
+                Main.dust[idx].position = spawnPosition;
+                Main.dust[idx].scale = Main.rand.NextFloat(0.71f, 0.93f);
+                Main.dust[idx].velocity *= 0.1f;
+                Main.dust[idx].noGravity = true;
             }
         }
     }

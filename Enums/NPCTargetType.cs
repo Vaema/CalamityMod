@@ -1,9 +1,8 @@
-﻿namespace CalamityMod.Enums
+﻿namespace CalamityMod.Enums;
+
+public enum NPCTargetType
 {
-    public enum NPCTargetType
-    {
-        Anyone = 0,
-        PreferSame = 1,
-        ForceSwitch = 2,
-    }
+    Anyone = 0,
+    PreferSame = 1,
+    ForceSwitch = 2,
 }

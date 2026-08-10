@@ -12,557 +12,556 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.NPCs.Polterghast
+namespace CalamityMod.NPCs.Polterghast;
+
+[AutoloadBossHead]
+public class PolterPhantom : ModNPC
 {
-    [AutoloadBossHead]
-    public class PolterPhantom : ModNPC
+    private int despawnTimer = 600;
+    private bool reachedChargingPoint = false;
+
+    public static Asset<Texture2D> GlowTexture;
+
+    public override void SetStaticDefaults()
     {
-        private int despawnTimer = 600;
-        private bool reachedChargingPoint = false;
-
-        public static Asset<Texture2D> GlowTexture;
-
-        public override void SetStaticDefaults()
+        Main.npcFrameCount[Type] = 4;
+        NPCID.Sets.TrailingMode[Type] = 1;
+        NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
+        NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
+        if (!Main.dedServ)
         {
-            Main.npcFrameCount[Type] = 4;
-            NPCID.Sets.TrailingMode[Type] = 1;
-            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
-            NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
-            if (!Main.dedServ)
+            GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+        }
+    }
+
+    public override void SetDefaults()
+    {
+        NPC.BossBar = Main.BigBossProgressBar.NeverValid;
+        NPC.Calamity().canBreakPlayerDefense = true;
+        NPC.damage = 180; // 360
+        NPC.width = 90;
+        NPC.height = 120;
+        NPC.defense = 45;
+        NPC.DR_NERD(0.1f);
+        NPC.LifeMaxNERB(62500, 75000, 60000);
+        if (Main.zenithWorld)
+            NPC.lifeMax *= 4;
+
+        NPC.knockBackResist = 0f;
+        NPC.aiStyle = -1;
+        AIType = -1;
+        NPC.Opacity = 0f;
+        NPC.noGravity = true;
+        NPC.noTileCollide = true;
+        NPC.netAlways = true;
+        NPC.HitSound = SoundID.NPCHit36;
+        NPC.DeathSound = SoundID.NPCDeath39;
+        NPC.Calamity().VulnerableToSickness = false;
+    }
+
+    public override void BossHeadRotation(ref float rotation)
+    {
+        bool polterHasTarget = CalamityGlobalNPC.ghostBoss.WithinBounds(Main.maxNPCs) && Main.npc[CalamityGlobalNPC.ghostBoss].active && Main.npc[CalamityGlobalNPC.ghostBoss].HasValidTarget;
+        if (polterHasTarget && NPC.Calamity().newAI[3] == 0f)
+            rotation = (Main.player[Main.npc[CalamityGlobalNPC.ghostBoss].target].Center - NPC.Center).ToRotation() + MathHelper.PiOver2;
+        else
+            rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(despawnTimer);
+        writer.Write(reachedChargingPoint);
+        CalamityGlobalNPC cgn = NPC.Calamity();
+        writer.Write(cgn.newAI[0]);
+        writer.Write(cgn.newAI[1]);
+        writer.Write(cgn.newAI[2]);
+        writer.Write(cgn.newAI[3]);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        despawnTimer = reader.ReadInt32();
+        reachedChargingPoint = reader.ReadBoolean();
+        CalamityGlobalNPC cgn = NPC.Calamity();
+        cgn.newAI[0] = reader.ReadSingle();
+        cgn.newAI[1] = reader.ReadSingle();
+        cgn.newAI[2] = reader.ReadSingle();
+        cgn.newAI[3] = reader.ReadSingle();
+    }
+
+    public override void AI()
+    {
+        CalamityGlobalNPC.ghostBossClone = NPC.whoAmI;
+
+        bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+        bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+        bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+
+        if (CalamityGlobalNPC.ghostBoss < 0 || !Main.npc[CalamityGlobalNPC.ghostBoss].active)
+        {
+            NPC.life = 0;
+            NPC.HitEffect();
+            NPC.active = false;
+            NPC.netUpdate = true;
+            return;
+        }
+
+        Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.5f, 0.25f, 0.75f);
+
+        Player player = Main.player[Main.npc[CalamityGlobalNPC.ghostBoss].target];
+
+        // Percent life remaining, Polter
+        float lifeRatio = Main.npc[CalamityGlobalNPC.ghostBoss].life / Main.npc[CalamityGlobalNPC.ghostBoss].lifeMax;
+
+        Vector2 vector = NPC.Center;
+
+        float chargePhaseGateValue = 480f;
+        if (Main.getGoodWorld)
+            chargePhaseGateValue *= 0.5f;
+
+        float colorChangeTime = 180f;
+        float changeColorGateValue = chargePhaseGateValue - colorChangeTime;
+
+        // Scale multiplier based on nearby active tiles
+        float tileEnrageMult = Main.npc[CalamityGlobalNPC.ghostBoss].ai[3];
+        bool chargePhase = Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] >= chargePhaseGateValue - 60f || NPC.Calamity().newAI[3] == 1f;
+        float chargeVelocity = 24f;
+        float chargeAcceleration = 0.6f;
+        float chargeDistance = 480f;
+
+        bool speedBoost = false;
+        bool despawnBoost = false;
+
+        if (NPC.timeLeft < 1500)
+            NPC.timeLeft = 1500;
+
+        float velocity = 3f;
+        float acceleration = 0.03f;
+        if (!player.ZoneDungeon && !BossRushEvent.BossRushActive && player.position.Y < Main.worldSurface * 16.0)
+        {
+            despawnTimer--;
+            if (despawnTimer <= 0)
             {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                despawnBoost = true;
+                NPC.ai[1] = 0f;
+                NPC.Calamity().newAI[0] = 0f;
+                NPC.Calamity().newAI[1] = 0f;
+                NPC.Calamity().newAI[2] = 0f;
+                NPC.Calamity().newAI[3] = 0f;
             }
+
+            speedBoost = true;
+            velocity += 8f;
+            acceleration = 0.15f;
+        }
+        else
+            despawnTimer++;
+
+        if (Main.npc[CalamityGlobalNPC.ghostBoss].ai[2] < changeColorGateValue)
+        {
+            velocity = 21f;
+            acceleration = 0.13f;
         }
 
-        public override void SetDefaults()
+        if (expertMode)
         {
-            NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 180; // 360
-            NPC.width = 90;
-            NPC.height = 120;
-            NPC.defense = 45;
-            NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(62500, 75000, 60000);
-            if (Main.zenithWorld)
-                NPC.lifeMax *= 4;
-
-            NPC.knockBackResist = 0f;
-            NPC.aiStyle = -1;
-            AIType = -1;
-            NPC.Opacity = 0f;
-            NPC.noGravity = true;
-            NPC.noTileCollide = true;
-            NPC.netAlways = true;
-            NPC.HitSound = SoundID.NPCHit36;
-            NPC.DeathSound = SoundID.NPCDeath39;
-            NPC.Calamity().VulnerableToSickness = false;
+            chargeVelocity += revenge ? 4f : 2f;
+            velocity += revenge ? 5f : 3.5f;
+            acceleration += revenge ? 0.035f : 0.025f;
         }
 
-        public override void BossHeadRotation(ref float rotation)
+        // Reset contact damage every frame
+        NPC.damage = NPC.defDamage;
+
+        // Predictiveness
+        Vector2 lookAt = player.Center;
+        Vector2 rotationVector = lookAt - vector;
+
+        // Rotation
+        if (NPC.Calamity().newAI[3] == 0f)
         {
-            bool polterHasTarget = CalamityGlobalNPC.ghostBoss.WithinBounds(Main.maxNPCs) && Main.npc[CalamityGlobalNPC.ghostBoss].active && Main.npc[CalamityGlobalNPC.ghostBoss].HasValidTarget;
-            if (polterHasTarget && NPC.Calamity().newAI[3] == 0f)
-                rotation = (Main.player[Main.npc[CalamityGlobalNPC.ghostBoss].target].Center - NPC.Center).ToRotation() + MathHelper.PiOver2;
-            else
-                rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
+            float playerXDestination = player.Center.X - vector.X;
+            float playerYDestination = player.Center.Y - vector.Y;
+            NPC.rotation = (float)Math.Atan2(playerYDestination, playerXDestination) + MathHelper.PiOver2;
         }
+        else
+            NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
 
-        public override void SendExtraAI(BinaryWriter writer)
+        if (!chargePhase)
         {
-            writer.Write(despawnTimer);
-            writer.Write(reachedChargingPoint);
-            CalamityGlobalNPC cgn = NPC.Calamity();
-            writer.Write(cgn.newAI[0]);
-            writer.Write(cgn.newAI[1]);
-            writer.Write(cgn.newAI[2]);
-            writer.Write(cgn.newAI[3]);
-        }
+            // Set this here to avoid despawn issues
+            reachedChargingPoint = false;
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            despawnTimer = reader.ReadInt32();
-            reachedChargingPoint = reader.ReadBoolean();
-            CalamityGlobalNPC cgn = NPC.Calamity();
-            cgn.newAI[0] = reader.ReadSingle();
-            cgn.newAI[1] = reader.ReadSingle();
-            cgn.newAI[2] = reader.ReadSingle();
-            cgn.newAI[3] = reader.ReadSingle();
-        }
+            NPC.ai[0] = 0f;
 
-        public override void AI()
-        {
-            CalamityGlobalNPC.ghostBossClone = NPC.whoAmI;
+            NPC.Opacity += 0.02f;
+            if (NPC.Opacity > 0.8f)
+                NPC.Opacity = 0.8f;
 
-            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
-
-            if (CalamityGlobalNPC.ghostBoss < 0 || !Main.npc[CalamityGlobalNPC.ghostBoss].active)
+            float movementLimitX = 0f;
+            float movementLimitY = 0f;
+            int numHooks = 4;
+            foreach (var n in Main.ActiveNPCs)
             {
-                NPC.life = 0;
-                NPC.HitEffect();
-                NPC.active = false;
-                NPC.netUpdate = true;
-                return;
-            }
-
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.5f, 0.25f, 0.75f);
-
-            Player player = Main.player[Main.npc[CalamityGlobalNPC.ghostBoss].target];
-
-            // Percent life remaining, Polter
-            float lifeRatio = Main.npc[CalamityGlobalNPC.ghostBoss].life / Main.npc[CalamityGlobalNPC.ghostBoss].lifeMax;
-
-            Vector2 vector = NPC.Center;
-
-            float chargePhaseGateValue = 480f;
-            if (Main.getGoodWorld)
-                chargePhaseGateValue *= 0.5f;
-
-            float colorChangeTime = 180f;
-            float changeColorGateValue = chargePhaseGateValue - colorChangeTime;
-
-            // Scale multiplier based on nearby active tiles
-            float tileEnrageMult = Main.npc[CalamityGlobalNPC.ghostBoss].ai[3];
-            bool chargePhase = Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] >= chargePhaseGateValue - 60f || NPC.Calamity().newAI[3] == 1f;
-            float chargeVelocity = 24f;
-            float chargeAcceleration = 0.6f;
-            float chargeDistance = 480f;
-
-            bool speedBoost = false;
-            bool despawnBoost = false;
-
-            if (NPC.timeLeft < 1500)
-                NPC.timeLeft = 1500;
-
-            float velocity = 3f;
-            float acceleration = 0.03f;
-            if (!player.ZoneDungeon && !BossRushEvent.BossRushActive && player.position.Y < Main.worldSurface * 16.0)
-            {
-                despawnTimer--;
-                if (despawnTimer <= 0)
+                if (n.type == ModContent.NPCType<PolterghastHook>())
                 {
-                    despawnBoost = true;
-                    NPC.ai[1] = 0f;
-                    NPC.Calamity().newAI[0] = 0f;
-                    NPC.Calamity().newAI[1] = 0f;
-                    NPC.Calamity().newAI[2] = 0f;
-                    NPC.Calamity().newAI[3] = 0f;
+                    movementLimitX += n.Center.X;
+                    movementLimitY += n.Center.Y;
                 }
+            }
+            movementLimitX /= numHooks;
+            movementLimitY /= numHooks;
 
-                speedBoost = true;
+            Vector2 movementLimitVector = new Vector2(movementLimitX, movementLimitY);
+            float movementLimitedXDist = player.Center.X - movementLimitVector.X;
+            float movementLimitedYDist = player.Center.Y - movementLimitVector.Y;
+
+            if (despawnBoost)
+            {
+                movementLimitedYDist *= -1f;
+                movementLimitedXDist *= -1f;
                 velocity += 8f;
-                acceleration = 0.15f;
+            }
+
+            float movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
+            float maxDistanceFromHooks = expertMode ? 650f : 500f;
+            if (speedBoost)
+                maxDistanceFromHooks += 250f;
+            if (death)
+                maxDistanceFromHooks += maxDistanceFromHooks * 0.1f * (1f - lifeRatio);
+
+            // Increase speed based on nearby active tiles
+            velocity *= tileEnrageMult;
+            acceleration *= tileEnrageMult;
+
+            if (death)
+            {
+                velocity += velocity * 0.15f * (1f - lifeRatio);
+                acceleration += acceleration * 0.15f * (1f - lifeRatio);
+            }
+
+            if (movementLimitedDistance >= maxDistanceFromHooks)
+            {
+                movementLimitedDistance = maxDistanceFromHooks / movementLimitedDistance;
+                movementLimitedXDist *= movementLimitedDistance;
+                movementLimitedYDist *= movementLimitedDistance;
+            }
+
+            movementLimitX += movementLimitedXDist;
+            movementLimitY += movementLimitedYDist;
+            movementLimitVector = vector;
+            movementLimitedXDist = movementLimitX - movementLimitVector.X;
+            movementLimitedYDist = movementLimitY - movementLimitVector.Y;
+            movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
+
+            if (movementLimitedDistance < velocity)
+            {
+                movementLimitedXDist = NPC.velocity.X;
+                movementLimitedYDist = NPC.velocity.Y;
             }
             else
-                despawnTimer++;
-
-            if (Main.npc[CalamityGlobalNPC.ghostBoss].ai[2] < changeColorGateValue)
             {
-                velocity = 21f;
-                acceleration = 0.13f;
+                movementLimitedDistance = velocity / movementLimitedDistance;
+                movementLimitedXDist *= movementLimitedDistance;
+                movementLimitedYDist *= movementLimitedDistance;
             }
 
-            if (expertMode)
+            if (NPC.velocity.X < movementLimitedXDist)
             {
-                chargeVelocity += revenge ? 4f : 2f;
-                velocity += revenge ? 5f : 3.5f;
-                acceleration += revenge ? 0.035f : 0.025f;
+                NPC.velocity.X += acceleration;
+                if (NPC.velocity.X < 0f && movementLimitedXDist > 0f)
+                    NPC.velocity.X += acceleration * 2f;
             }
-
-            // Reset contact damage every frame
-            NPC.damage = NPC.defDamage;
-
-            // Predictiveness
-            Vector2 lookAt = player.Center;
-            Vector2 rotationVector = lookAt - vector;
-
-            // Rotation
-            if (NPC.Calamity().newAI[3] == 0f)
+            else if (NPC.velocity.X > movementLimitedXDist)
             {
-                float playerXDestination = player.Center.X - vector.X;
-                float playerYDestination = player.Center.Y - vector.Y;
-                NPC.rotation = (float)Math.Atan2(playerYDestination, playerXDestination) + MathHelper.PiOver2;
+                NPC.velocity.X -= acceleration;
+                if (NPC.velocity.X > 0f && movementLimitedXDist < 0f)
+                    NPC.velocity.X -= acceleration * 2f;
             }
-            else
-                NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
-
-            if (!chargePhase)
+            if (NPC.velocity.Y < movementLimitedYDist)
             {
-                // Set this here to avoid despawn issues
+                NPC.velocity.Y += acceleration;
+                if (NPC.velocity.Y < 0f && movementLimitedYDist > 0f)
+                    NPC.velocity.Y += acceleration * 2f;
+            }
+            else if (NPC.velocity.Y > movementLimitedYDist)
+            {
+                NPC.velocity.Y -= acceleration;
+                if (NPC.velocity.Y > 0f && movementLimitedYDist < 0f)
+                    NPC.velocity.Y -= acceleration * 2f;
+            }
+        }
+        else
+        {
+            // Charge
+            if (NPC.Calamity().newAI[3] == 1f)
+            {
                 reachedChargingPoint = false;
 
-                NPC.ai[0] = 0f;
-
-                NPC.Opacity += 0.02f;
+                NPC.Opacity += 0.06f;
                 if (NPC.Opacity > 0.8f)
                     NPC.Opacity = 0.8f;
 
-                float movementLimitX = 0f;
-                float movementLimitY = 0f;
-                int numHooks = 4;
-                foreach (var n in Main.ActiveNPCs)
+                if (NPC.Calamity().newAI[1] == 0f)
                 {
-                    if (n.type == ModContent.NPCType<PolterghastHook>())
-                    {
-                        movementLimitX += n.Center.X;
-                        movementLimitY += n.Center.Y;
-                    }
-                }
-                movementLimitX /= numHooks;
-                movementLimitY /= numHooks;
-
-                Vector2 movementLimitVector = new Vector2(movementLimitX, movementLimitY);
-                float movementLimitedXDist = player.Center.X - movementLimitVector.X;
-                float movementLimitedYDist = player.Center.Y - movementLimitVector.Y;
-
-                if (despawnBoost)
-                {
-                    movementLimitedYDist *= -1f;
-                    movementLimitedXDist *= -1f;
-                    velocity += 8f;
-                }
-
-                float movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
-                float maxDistanceFromHooks = expertMode ? 650f : 500f;
-                if (speedBoost)
-                    maxDistanceFromHooks += 250f;
-                if (death)
-                    maxDistanceFromHooks += maxDistanceFromHooks * 0.1f * (1f - lifeRatio);
-
-                // Increase speed based on nearby active tiles
-                velocity *= tileEnrageMult;
-                acceleration *= tileEnrageMult;
-
-                if (death)
-                {
-                    velocity += velocity * 0.15f * (1f - lifeRatio);
-                    acceleration += acceleration * 0.15f * (1f - lifeRatio);
-                }
-
-                if (movementLimitedDistance >= maxDistanceFromHooks)
-                {
-                    movementLimitedDistance = maxDistanceFromHooks / movementLimitedDistance;
-                    movementLimitedXDist *= movementLimitedDistance;
-                    movementLimitedYDist *= movementLimitedDistance;
-                }
-
-                movementLimitX += movementLimitedXDist;
-                movementLimitY += movementLimitedYDist;
-                movementLimitVector = vector;
-                movementLimitedXDist = movementLimitX - movementLimitVector.X;
-                movementLimitedYDist = movementLimitY - movementLimitVector.Y;
-                movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
-
-                if (movementLimitedDistance < velocity)
-                {
-                    movementLimitedXDist = NPC.velocity.X;
-                    movementLimitedYDist = NPC.velocity.Y;
+                    NPC.velocity = Vector2.Normalize(rotationVector) * chargeVelocity;
+                    NPC.Calamity().newAI[1] = 1f;
                 }
                 else
                 {
-                    movementLimitedDistance = velocity / movementLimitedDistance;
-                    movementLimitedXDist *= movementLimitedDistance;
-                    movementLimitedYDist *= movementLimitedDistance;
-                }
+                    NPC.Calamity().newAI[2] += 1f;
 
-                if (NPC.velocity.X < movementLimitedXDist)
-                {
-                    NPC.velocity.X += acceleration;
-                    if (NPC.velocity.X < 0f && movementLimitedXDist > 0f)
-                        NPC.velocity.X += acceleration * 2f;
-                }
-                else if (NPC.velocity.X > movementLimitedXDist)
-                {
-                    NPC.velocity.X -= acceleration;
-                    if (NPC.velocity.X > 0f && movementLimitedXDist < 0f)
-                        NPC.velocity.X -= acceleration * 2f;
-                }
-                if (NPC.velocity.Y < movementLimitedYDist)
-                {
-                    NPC.velocity.Y += acceleration;
-                    if (NPC.velocity.Y < 0f && movementLimitedYDist > 0f)
-                        NPC.velocity.Y += acceleration * 2f;
-                }
-                else if (NPC.velocity.Y > movementLimitedYDist)
-                {
-                    NPC.velocity.Y -= acceleration;
-                    if (NPC.velocity.Y > 0f && movementLimitedYDist < 0f)
-                        NPC.velocity.Y -= acceleration * 2f;
+                    // Slow down for a few frames
+                    float totalChargeTime = chargeDistance * 4f / chargeVelocity;
+                    float slowDownTime = chargeVelocity;
+                    {
+                        if (NPC.Calamity().newAI[2] >= totalChargeTime - slowDownTime)
+                            NPC.velocity *= 0.9f;
+                    }
+
+                    // Reset and either go back to normal or charge again
+                    if (NPC.Calamity().newAI[2] >= totalChargeTime)
+                    {
+                        NPC.Calamity().newAI[1] = 0f;
+                        NPC.Calamity().newAI[2] = 0f;
+                        NPC.Calamity().newAI[3] = 0f;
+                        NPC.ai[0] = 0f;
+                        NPC.ai[1] += 1f;
+
+                        if (NPC.ai[1] >= 3f)
+                        {
+                            // Reset and return to normal movement
+                            NPC.Calamity().newAI[0] = 0f;
+                            NPC.ai[1] = 0f;
+                        }
+                    }
                 }
             }
             else
             {
-                // Charge
-                if (NPC.Calamity().newAI[3] == 1f)
-                {
-                    reachedChargingPoint = false;
+                // Do not deal damage during movement to avoid cheap bullshit
+                NPC.damage = 0;
 
+                // Random location choice
+                if (NPC.ai[0] == 0f)
+                {
+                    NPC.velocity = Vector2.Zero;
+                    NPC.ai[0] = Main.rand.Next(2) + 1;
+                    NPC.netUpdate = true;
+                }
+
+                // Pick a charging location
+                // Set charge locations X
+                if (Main.npc[CalamityGlobalNPC.ghostBoss].Center.X >= player.Center.X)
+                    NPC.Calamity().newAI[1] = NPC.ai[0] == 1f ? player.Center.X - chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[1];
+                else
+                    NPC.Calamity().newAI[1] = NPC.ai[0] == 1f ? player.Center.X + chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[1];
+
+                // Set charge locations Y
+                if (Main.npc[CalamityGlobalNPC.ghostBoss].Center.Y >= player.Center.Y)
+                    NPC.Calamity().newAI[2] = NPC.ai[0] == 2f ? player.Center.Y - chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[2];
+                else
+                    NPC.Calamity().newAI[2] = NPC.ai[0] == 2f ? player.Center.Y + chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[2];
+
+                // Charge location
+                Vector2 chargeVector = new Vector2(NPC.Calamity().newAI[1], NPC.Calamity().newAI[2]);
+                Vector2 chargeLocationVelocity = Vector2.Normalize(chargeVector - vector) * chargeVelocity;
+
+                // Line up a charge
+                float chargeDistanceGateValue = 32f;
+
+                if (Vector2.Distance(vector, chargeVector) <= chargeDistanceGateValue * 3f)
+                {
                     NPC.Opacity += 0.06f;
                     if (NPC.Opacity > 0.8f)
                         NPC.Opacity = 0.8f;
-
-                    if (NPC.Calamity().newAI[1] == 0f)
-                    {
-                        NPC.velocity = Vector2.Normalize(rotationVector) * chargeVelocity;
-                        NPC.Calamity().newAI[1] = 1f;
-                    }
-                    else
-                    {
-                        NPC.Calamity().newAI[2] += 1f;
-
-                        // Slow down for a few frames
-                        float totalChargeTime = chargeDistance * 4f / chargeVelocity;
-                        float slowDownTime = chargeVelocity;
-                        {
-                            if (NPC.Calamity().newAI[2] >= totalChargeTime - slowDownTime)
-                                NPC.velocity *= 0.9f;
-                        }
-
-                        // Reset and either go back to normal or charge again
-                        if (NPC.Calamity().newAI[2] >= totalChargeTime)
-                        {
-                            NPC.Calamity().newAI[1] = 0f;
-                            NPC.Calamity().newAI[2] = 0f;
-                            NPC.Calamity().newAI[3] = 0f;
-                            NPC.ai[0] = 0f;
-                            NPC.ai[1] += 1f;
-
-                            if (NPC.ai[1] >= 3f)
-                            {
-                                // Reset and return to normal movement
-                                NPC.Calamity().newAI[0] = 0f;
-                                NPC.ai[1] = 0f;
-                            }
-                        }
-                    }
                 }
                 else
                 {
-                    // Do not deal damage during movement to avoid cheap bullshit
-                    NPC.damage = 0;
+                    NPC.Opacity -= 0.06f;
+                    if (NPC.Opacity < 0f)
+                        NPC.Opacity = 0f;
+                }
 
-                    // Random location choice
-                    if (NPC.ai[0] == 0f)
+                if (Vector2.Distance(vector, chargeVector) <= chargeDistanceGateValue || reachedChargingPoint)
+                {
+                    // Emit dust
+                    if (!reachedChargingPoint)
                     {
-                        NPC.velocity = Vector2.Zero;
-                        NPC.ai[0] = Main.rand.Next(2) + 1;
-                        NPC.netUpdate = true;
-                    }
-
-                    // Pick a charging location
-                    // Set charge locations X
-                    if (Main.npc[CalamityGlobalNPC.ghostBoss].Center.X >= player.Center.X)
-                        NPC.Calamity().newAI[1] = NPC.ai[0] == 1f ? player.Center.X - chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[1];
-                    else
-                        NPC.Calamity().newAI[1] = NPC.ai[0] == 1f ? player.Center.X + chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[1];
-
-                    // Set charge locations Y
-                    if (Main.npc[CalamityGlobalNPC.ghostBoss].Center.Y >= player.Center.Y)
-                        NPC.Calamity().newAI[2] = NPC.ai[0] == 2f ? player.Center.Y - chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[2];
-                    else
-                        NPC.Calamity().newAI[2] = NPC.ai[0] == 2f ? player.Center.Y + chargeDistance : Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[2];
-
-                    // Charge location
-                    Vector2 chargeVector = new Vector2(NPC.Calamity().newAI[1], NPC.Calamity().newAI[2]);
-                    Vector2 chargeLocationVelocity = Vector2.Normalize(chargeVector - vector) * chargeVelocity;
-
-                    // Line up a charge
-                    float chargeDistanceGateValue = 32f;
-
-                    if (Vector2.Distance(vector, chargeVector) <= chargeDistanceGateValue * 3f)
-                    {
-                        NPC.Opacity += 0.06f;
-                        if (NPC.Opacity > 0.8f)
-                            NPC.Opacity = 0.8f;
-                    }
-                    else
-                    {
-                        NPC.Opacity -= 0.06f;
-                        if (NPC.Opacity < 0f)
-                            NPC.Opacity = 0f;
-                    }
-
-                    if (Vector2.Distance(vector, chargeVector) <= chargeDistanceGateValue || reachedChargingPoint)
-                    {
-                        // Emit dust
-                        if (!reachedChargingPoint)
+                        SoundEngine.PlaySound(SoundID.Item125, NPC.Center);
+                        for (int i = 0; i < 30; i++)
                         {
-                            SoundEngine.PlaySound(SoundID.Item125, NPC.Center);
-                            for (int i = 0; i < 30; i++)
-                            {
-                                int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
-                                Main.dust[dust].noGravity = true;
-                                Main.dust[dust].velocity *= 5f;
-                            }
+                            int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 3f);
+                            Main.dust[dust].noGravity = true;
+                            Main.dust[dust].velocity *= 5f;
                         }
-
-                        reachedChargingPoint = true;
-                        NPC.velocity = Vector2.Zero;
-                        NPC.Center = chargeVector;
                     }
+
+                    reachedChargingPoint = true;
+                    NPC.velocity = Vector2.Zero;
+                    NPC.Center = chargeVector;
+                }
+                else
+                {
+                    // Reduce velocity and acceleration to allow for smoother movement inside this loop
+                    if (Vector2.Distance(vector, chargeVector) > 1200f)
+                        NPC.velocity = chargeLocationVelocity;
                     else
-                    {
-                        // Reduce velocity and acceleration to allow for smoother movement inside this loop
-                        if (Vector2.Distance(vector, chargeVector) > 1200f)
-                            NPC.velocity = chargeLocationVelocity;
-                        else
-                            NPC.SimpleFlyMovement(chargeLocationVelocity, chargeAcceleration);
-                    }
+                        NPC.SimpleFlyMovement(chargeLocationVelocity, chargeAcceleration);
                 }
+            }
 
-                NPC.ForceNetUpdate(false);
+            NPC.ForceNetUpdate(false);
 
-                if (Main.dedServ)
-                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+            if (Main.dedServ)
+                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+        }
+    }
+
+    public override Color? GetAlpha(Color drawColor) => new Color(200, 150, 255) * NPC.Opacity;
+
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        SpriteEffects spriteEffects = SpriteEffects.None;
+        if (NPC.spriteDirection == 1)
+            spriteEffects = SpriteEffects.FlipHorizontally;
+
+        float chargePhaseGateValue = 480f;
+        if (Main.getGoodWorld)
+            chargePhaseGateValue *= 0.5f;
+
+        float timeToReachFullColor = 120f;
+        float colorChangeTime = 180f;
+        float changeColorGateValue = chargePhaseGateValue - colorChangeTime;
+
+        Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+        Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
+        Color lightRed = new Color(255, 100, 100, 255) * NPC.Opacity;
+        int afterimageAmt = 7;
+
+        if (CalamityClientConfig.Instance.Afterimages)
+        {
+            for (int i = 1; i < afterimageAmt; i += 2)
+            {
+                Color afterimageColor = drawColor;
+
+                if (!NPC.IsABestiaryIconDummy && Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
+                    afterimageColor = Color.Lerp(afterimageColor, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
+
+                afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
+                afterimageColor = NPC.GetAlpha(afterimageColor);
+                afterimageColor *= (afterimageAmt - i) / 15f;
+                Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+                afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
         }
 
-        public override Color? GetAlpha(Color drawColor) => new Color(200, 150, 255) * NPC.Opacity;
+        Color color = NPC.GetAlpha(drawColor);
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        if (!NPC.IsABestiaryIconDummy && Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
+            color = Color.Lerp(color, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
+
+        Vector2 drawLocation = NPC.Center - screenPos;
+        drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+        drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+        spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+        Color c = Color.Red;
+        if (!NPC.IsABestiaryIconDummy && (Main.npc[CalamityGlobalNPC.ghostBoss].ai[2] < changeColorGateValue || Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue))
+            c = Color.Black;
+
+        Color blackWhiteLerp = Color.Lerp(Color.White, c, 0.5f);
+
+        if (CalamityClientConfig.Instance.Afterimages)
         {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            float chargePhaseGateValue = 480f;
-            if (Main.getGoodWorld)
-                chargePhaseGateValue *= 0.5f;
-
-            float timeToReachFullColor = 120f;
-            float colorChangeTime = 180f;
-            float changeColorGateValue = chargePhaseGateValue - colorChangeTime;
-
-            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
-            Color lightRed = new Color(255, 100, 100, 255) * NPC.Opacity;
-            int afterimageAmt = 7;
-
-            if (CalamityClientConfig.Instance.Afterimages)
+            for (int j = 1; j < afterimageAmt; j++)
             {
-                for (int i = 1; i < afterimageAmt; i += 2)
+                Vector2 otherAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+                otherAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                Color otherAfterimageColor = blackWhiteLerp;
+                otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
+                otherAfterimageColor = NPC.GetAlpha(otherAfterimageColor);
+                otherAfterimageColor *= (afterimageAmt - j) / 15f;
+                spriteBatch.Draw(GlowTexture.Value, otherAfterimagePos, NPC.frame, otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            }
+        }
+
+        spriteBatch.Draw(GlowTexture.Value, drawLocation, NPC.frame, blackWhiteLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+        return false;
+    }
+
+    public override void FindFrame(int frameHeight)
+    {
+        if (NPC.IsABestiaryIconDummy)
+            NPC.Opacity = 1f;
+
+        NPC.frameCounter += 1.0;
+        if (NPC.frameCounter > 6.0)
+        {
+            NPC.frameCounter = 0.0;
+            NPC.frame.Y = NPC.frame.Y + frameHeight;
+        }
+        if (NPC.frame.Y > frameHeight * 3)
+        {
+            NPC.frame.Y = 0;
+        }
+    }
+
+    public override bool CheckActive()
+    {
+        return false;
+    }
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+    {
+        if (hurtInfo.Damage > 0)
+            target.AddBuff(BuffID.MoonLeech, 360, true);
+    }
+
+    public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+    {
+        cooldownSlot = ImmunityCooldownID.Bosses;
+        return true;
+    }
+
+    public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+    {
+        NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
+    }
+
+    public override void HitEffect(NPC.HitInfo hit)
+    {
+        Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
+        if (NPC.life <= 0)
+        {
+            NPC.position.X = NPC.position.X + (NPC.width / 2);
+            NPC.position.Y = NPC.position.Y + (NPC.height / 2);
+            NPC.width = 90;
+            NPC.height = 90;
+            NPC.position.X = NPC.position.X - (NPC.width / 2);
+            NPC.position.Y = NPC.position.Y - (NPC.height / 2);
+            for (int i = 0; i < 10; i++)
+            {
+                int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
+                Main.dust[ghostDust].velocity *= 3f;
+                if (Main.rand.NextBool())
                 {
-                    Color afterimageColor = drawColor;
-
-                    if (!NPC.IsABestiaryIconDummy && Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
-                        afterimageColor = Color.Lerp(afterimageColor, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
-
-                    afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
-                    afterimageColor = NPC.GetAlpha(afterimageColor);
-                    afterimageColor *= (afterimageAmt - i) / 15f;
-                    Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-                    afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                    Main.dust[ghostDust].scale = 0.5f;
+                    Main.dust[ghostDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                 }
             }
-
-            Color color = NPC.GetAlpha(drawColor);
-
-            if (!NPC.IsABestiaryIconDummy && Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
-                color = Color.Lerp(color, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
-
-            Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-            Color c = Color.Red;
-            if (!NPC.IsABestiaryIconDummy && (Main.npc[CalamityGlobalNPC.ghostBoss].ai[2] < changeColorGateValue || Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue))
-                c = Color.Black;
-
-            Color blackWhiteLerp = Color.Lerp(Color.White, c, 0.5f);
-
-            if (CalamityClientConfig.Instance.Afterimages)
+            for (int j = 0; j < 60; j++)
             {
-                for (int j = 1; j < afterimageAmt; j++)
-                {
-                    Vector2 otherAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-                    otherAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    Color otherAfterimageColor = blackWhiteLerp;
-                    otherAfterimageColor = Color.Lerp(otherAfterimageColor, Color.White, 0.5f);
-                    otherAfterimageColor = NPC.GetAlpha(otherAfterimageColor);
-                    otherAfterimageColor *= (afterimageAmt - j) / 15f;
-                    spriteBatch.Draw(GlowTexture.Value, otherAfterimagePos, NPC.frame, otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-                }
-            }
-
-            spriteBatch.Draw(GlowTexture.Value, drawLocation, NPC.frame, blackWhiteLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-            return false;
-        }
-
-        public override void FindFrame(int frameHeight)
-        {
-            if (NPC.IsABestiaryIconDummy)
-                NPC.Opacity = 1f;
-
-            NPC.frameCounter += 1.0;
-            if (NPC.frameCounter > 6.0)
-            {
-                NPC.frameCounter = 0.0;
-                NPC.frame.Y = NPC.frame.Y + frameHeight;
-            }
-            if (NPC.frame.Y > frameHeight * 3)
-            {
-                NPC.frame.Y = 0;
-            }
-        }
-
-        public override bool CheckActive()
-        {
-            return false;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.MoonLeech, 360, true);
-        }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            cooldownSlot = ImmunityCooldownID.Bosses;
-            return true;
-        }
-
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
-        {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
-        }
-
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
-            if (NPC.life <= 0)
-            {
-                NPC.position.X = NPC.position.X + (NPC.width / 2);
-                NPC.position.Y = NPC.position.Y + (NPC.height / 2);
-                NPC.width = 90;
-                NPC.height = 90;
-                NPC.position.X = NPC.position.X - (NPC.width / 2);
-                NPC.position.Y = NPC.position.Y - (NPC.height / 2);
-                for (int i = 0; i < 10; i++)
-                {
-                    int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
-                    Main.dust[ghostDust].velocity *= 3f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[ghostDust].scale = 0.5f;
-                        Main.dust[ghostDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                    }
-                }
-                for (int j = 0; j < 60; j++)
-                {
-                    int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 3f);
-                    Main.dust[ghostDust2].noGravity = true;
-                    Main.dust[ghostDust2].velocity *= 5f;
-                    ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 2f);
-                    Main.dust[ghostDust2].velocity *= 2f;
-                }
+                int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 3f);
+                Main.dust[ghostDust2].noGravity = true;
+                Main.dust[ghostDust2].velocity *= 5f;
+                ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 2f);
+                Main.dust[ghostDust2].velocity *= 2f;
             }
         }
     }

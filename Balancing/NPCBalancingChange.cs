@@ -1,13 +1,12 @@
-﻿namespace CalamityMod.Balancing
+﻿namespace CalamityMod.Balancing;
+
+public struct NPCBalancingChange
 {
-    public struct NPCBalancingChange
+    public int NPCType;
+    public IBalancingRule[] BalancingRules;
+    public NPCBalancingChange(int npcType, params IBalancingRule[] balancingRules)
     {
-        public int NPCType;
-        public IBalancingRule[] BalancingRules;
-        public NPCBalancingChange(int npcType, params IBalancingRule[] balancingRules)
-        {
-            NPCType = npcType;
-            BalancingRules = balancingRules;
-        }
+        NPCType = npcType;
+        BalancingRules = balancingRules;
     }
 }

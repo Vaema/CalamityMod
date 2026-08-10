@@ -7,82 +7,81 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Typeless
+namespace CalamityMod.Projectiles.Typeless;
+
+[PierceResistException]
+public class CryonicShield : ModProjectile, ILocalizedModType
 {
-    [PierceResistException]
-    public class CryonicShield : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Typeless";
+    public Player Owner => Main.player[Projectile.owner];
+    public override string Texture => "CalamityMod/NPCs/Cryogen/CryogenShield";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
-        public Player Owner => Main.player[Projectile.owner];
-        public override string Texture => "CalamityMod/NPCs/Cryogen/CryogenShield";
+        ProjectileID.Sets.MinionSacrificable[Type] = true;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 222;
+        Projectile.height = 216;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 90000;
+        Projectile.tileCollide = false;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 25;
+    }
+
+    public override void AI()
+    {
+        Player player = Main.player[Projectile.owner];
+        CalamityPlayer modPlayer = player.Calamity();
+
+        // Protect against projectile reflection.
+        Projectile.friendly = true;
+        Projectile.hostile = false;
+
+        // Spin around.
+        Projectile.rotation += MathHelper.Pi / 48f;
+
+        Projectile.Center = Owner.Center;
+        if (!modPlayer.CryoStoneVanity)
+            Lighting.AddLight(Projectile.Center, Projectile.Opacity * 0.2f, Projectile.Opacity * 0.45f, Projectile.Opacity * 0.5f);
+
+        if (Owner is null || !Owner.active || Owner.dead)
+            Projectile.Kill();
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        Player player = Main.player[Projectile.owner];
+        if (!player.Calamity().CryoStoneVanity)
         {
-            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            target.AddBuff(BuffID.Frostburn2, 180);
+            target.AddBuff(BuffID.Frozen, 30);
         }
+    }
+    // CIT 2MAY2025: Replaced old manual knockback code with setting HitDirectionOverride
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        Player player = Main.player[Projectile.owner];
+        CalamityPlayer modPlayer = player.Calamity();
+        if (!modPlayer.CryoStoneVanity)
+            target.AddBuff(BuffID.Frostburn2, 180);
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 222;
-            Projectile.height = 216;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 90000;
-            Projectile.tileCollide = false;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 25;
-        }
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.Size.Length() * 0.5f, targetHitbox);
 
-        public override void AI()
-        {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
+    public override bool? CanHitNPC(NPC target)
+    {
+        Player player = Main.player[Projectile.owner];
+        CalamityPlayer modPlayer = player.Calamity();
+        if ((target.catchItem != 0 && target.type != ModContent.NPCType<Radiator>()) || modPlayer.CryoStoneVanity)
+            return false;
 
-            // Protect against projectile reflection.
-            Projectile.friendly = true;
-            Projectile.hostile = false;
-
-            // Spin around.
-            Projectile.rotation += MathHelper.Pi / 48f;
-
-            Projectile.Center = Owner.Center;
-            if (!modPlayer.CryoStoneVanity)
-                Lighting.AddLight(Projectile.Center, Projectile.Opacity * 0.2f, Projectile.Opacity * 0.45f, Projectile.Opacity * 0.5f);
-
-            if (Owner is null || !Owner.active || Owner.dead)
-                Projectile.Kill();
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            Player player = Main.player[Projectile.owner];
-            if (!player.Calamity().CryoStoneVanity)
-            {
-                target.AddBuff(BuffID.Frostburn2, 180);
-                target.AddBuff(BuffID.Frozen, 30);
-            }
-        }
-        // CIT 2MAY2025: Replaced old manual knockback code with setting HitDirectionOverride
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.CryoStoneVanity)
-                target.AddBuff(BuffID.Frostburn2, 180);
-        }
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.Size.Length() * 0.5f, targetHitbox);
-
-        public override bool? CanHitNPC(NPC target)
-        {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if ((target.catchItem != 0 && target.type != ModContent.NPCType<Radiator>()) || modPlayer.CryoStoneVanity)
-                return false;
-
-            return null;
-        }
+        return null;
     }
 }

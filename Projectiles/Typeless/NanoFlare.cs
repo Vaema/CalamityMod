@@ -4,83 +4,82 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Typeless
+namespace CalamityMod.Projectiles.Typeless;
+
+public class NanoFlare : ModProjectile, ILocalizedModType
 {
-    public class NanoFlare : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Typeless";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Projectile.width = 12;
+        Projectile.height = 12;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.extraUpdates = 10;
+        Projectile.timeLeft = 60;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        for (int i = 0; i < 3; i++)
         {
-            Projectile.width = 12;
-            Projectile.height = 12;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;
-            Projectile.extraUpdates = 10;
-            Projectile.timeLeft = 60;
+            Dust dint = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, Scale: 0.75f);
+            dint.velocity = Projectile.velocity * Main.rand.NextFloat(-0.3f, 0.3f);
+            dint.color = Main.hslToRgb(Main.rand.NextFloat(0.2f, 0.6f), 0.9f, 0.5f);
+            dint.color = Color.Lerp(dint.color, Color.White, 0.3f);
         }
+    }
 
-        public override void AI()
+    public override void OnKill(int timeLeft)
+    {
+        for (int i = 0; i < 20; i++)
         {
-            for (int i = 0; i < 3; i++)
-            {
-                Dust dint = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, Scale: 0.75f);
-                dint.velocity = Projectile.velocity * Main.rand.NextFloat(-0.3f, 0.3f);
-                dint.color = Main.hslToRgb(Main.rand.NextFloat(0.2f, 0.6f), 0.9f, 0.5f);
-                dint.color = Color.Lerp(dint.color, Color.White, 0.3f);
-            }
+            Vector2 dspeed = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-6f, 6f));
+            Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TerraBlade, dspeed.X, dspeed.Y, 0, default, 0.7f);
+            dust.color = Main.hslToRgb(Main.rand.NextFloat(0.2f, 0.6f), 0.9f, 0.5f);
+            dust.color = Color.Lerp(dust.color, Color.White, 0.3f);
         }
+        SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
-        public override void OnKill(int timeLeft)
+        if (!Main.dedServ)
         {
-            for (int i = 0; i < 20; i++)
+            Vector2 goreVec = new Vector2(Projectile.Center.X - 24f, Projectile.Center.Y - 24f);
+            float smokeScale = 0.66f;
+            for (int i = 0; i < 2; i++)
             {
-                Vector2 dspeed = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-6f, 6f));
-                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TerraBlade, dspeed.X, dspeed.Y, 0, default, 0.7f);
-                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.2f, 0.6f), 0.9f, 0.5f);
-                dust.color = Color.Lerp(dust.color, Color.White, 0.3f);
-            }
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-
-            if (!Main.dedServ)
-            {
-                Vector2 goreVec = new Vector2(Projectile.Center.X - 24f, Projectile.Center.Y - 24f);
-                float smokeScale = 0.66f;
-                for (int i = 0; i < 2; i++)
+                switch (Main.rand.Next(1, 5))
                 {
-                    switch (Main.rand.Next(1, 5))
-                    {
-                        case 1:
-                            int idx1 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
-                            Main.gore[idx1].velocity *= smokeScale;
-                            Main.gore[idx1].velocity.X += 1f;
-                            Main.gore[idx1].velocity.Y += 1f;
-                            break;
+                    case 1:
+                        int idx1 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
+                        Main.gore[idx1].velocity *= smokeScale;
+                        Main.gore[idx1].velocity.X += 1f;
+                        Main.gore[idx1].velocity.Y += 1f;
+                        break;
 
-                        case 2:
-                            int idx2 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
-                            Main.gore[idx2].velocity *= smokeScale;
-                            Main.gore[idx2].velocity.X -= 1f;
-                            Main.gore[idx2].velocity.Y += 1f;
-                            break;
+                    case 2:
+                        int idx2 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
+                        Main.gore[idx2].velocity *= smokeScale;
+                        Main.gore[idx2].velocity.X -= 1f;
+                        Main.gore[idx2].velocity.Y += 1f;
+                        break;
 
-                        case 3:
-                            int idx3 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
-                            Main.gore[idx3].velocity *= smokeScale;
-                            Main.gore[idx3].velocity.X += 1f;
-                            Main.gore[idx3].velocity.Y -= 1f;
-                            break;
+                    case 3:
+                        int idx3 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
+                        Main.gore[idx3].velocity *= smokeScale;
+                        Main.gore[idx3].velocity.X += 1f;
+                        Main.gore[idx3].velocity.Y -= 1f;
+                        break;
 
-                        case 4:
-                            int idx4 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
-                            Main.gore[idx4].velocity *= smokeScale;
-                            Main.gore[idx4].velocity.X -= 1f;
-                            Main.gore[idx4].velocity.Y -= 1f;
-                            break;
-                        default: break;
-                    }
+                    case 4:
+                        int idx4 = Gore.NewGore(Projectile.GetSource_Death(), goreVec, default, Main.rand.Next(61, 64), 1f);
+                        Main.gore[idx4].velocity *= smokeScale;
+                        Main.gore[idx4].velocity.X -= 1f;
+                        Main.gore[idx4].velocity.Y -= 1f;
+                        break;
+                    default: break;
                 }
             }
         }

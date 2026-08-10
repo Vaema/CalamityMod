@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class ShroombleBanner : BaseBanner
 {
-    public class ShroombleBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 51;
-    }
+    public override int BannerTileStyle => 51;
 }

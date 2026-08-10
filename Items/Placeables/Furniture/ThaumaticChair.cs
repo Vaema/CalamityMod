@@ -24,44 +24,43 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Furniture
-{
-    public class ThaumaticChair : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<ThaumaticChairTile>());
-            Item.value = Item.sellPrice(gold: 10);
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
-            Item.Calamity().donorItem = true;
-        }
+namespace CalamityMod.Items.Placeables.Furniture;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-            AddIngredient<AbyssChair>().
-            AddIngredient<AcidwoodChair>().
-            AddIngredient<AncientChair>().
-            AddIngredient<AshenChair>().
-            AddIngredient<BotanicChair>().
-            AddIngredient<CosmiliteChair>().
-            AddIngredient<NavystoneChair>().
-            AddIngredient<ExoChair>().
-            AddIngredient<MarniteChair>().
-            AddIngredient<MonolithChair>().
-            AddIngredient<SacrilegiousChair>().
-            AddIngredient<OtherworldlyChair>().
-            AddIngredient<PlaguedPlateChair>().
-            AddIngredient<ProfanedChair>().
-            AddIngredient<SilvaChair>().
-            AddIngredient<StatigelChair>().
-            AddIngredient<StratusChair>().
-            AddIngredient<VoidChair>().
-            AddIngredient<WulfrumChair>().
-            AddIngredient<AuricBar>().
-            AddTile<CosmicAnvil>().
-            Register();
-        }
+public class ThaumaticChair : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<ThaumaticChairTile>());
+        Item.value = Item.sellPrice(gold: 10);
+        Item.rare = ModContent.RarityType<BurnishedAuric>();
+        Item.Calamity().donorItem = true;
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+        AddIngredient<AbyssChair>().
+        AddIngredient<AcidwoodChair>().
+        AddIngredient<AncientChair>().
+        AddIngredient<AshenChair>().
+        AddIngredient<BotanicChair>().
+        AddIngredient<CosmiliteChair>().
+        AddIngredient<NavystoneChair>().
+        AddIngredient<ExoChair>().
+        AddIngredient<MarniteChair>().
+        AddIngredient<MonolithChair>().
+        AddIngredient<SacrilegiousChair>().
+        AddIngredient<OtherworldlyChair>().
+        AddIngredient<PlaguedPlateChair>().
+        AddIngredient<ProfanedChair>().
+        AddIngredient<SilvaChair>().
+        AddIngredient<StatigelChair>().
+        AddIngredient<StratusChair>().
+        AddIngredient<VoidChair>().
+        AddIngredient<WulfrumChair>().
+        AddIngredient<AuricBar>().
+        AddTile<CosmicAnvil>().
+        Register();
     }
 }

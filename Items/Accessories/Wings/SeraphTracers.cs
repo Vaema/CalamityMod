@@ -13,125 +13,124 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
-namespace CalamityMod.Items.Accessories.Wings
+namespace CalamityMod.Items.Accessories.Wings;
+
+[AutoloadEquip(EquipType.Wings)]
+[LegacyName("CelestialTracers", "TracersSeraph")]
+public class SeraphTracers : BaseWings
 {
-    [AutoloadEquip(EquipType.Wings)]
-    [LegacyName("CelestialTracers", "TracersSeraph")]
-    public class SeraphTracers : BaseWings
+    public override float BonusAscentWhileFalling => 0.95f;
+    public override float BonusAscentWhileRising => 0.16f;
+    public override float RisingSpeedThreshold => 1.2f;
+    public override float MaxAscentSpeed => 2.9f;
+    public override float BaseAscent => 0.145f;
+
+    public static int wingSlot = 0;
+
+    public override void SetStaticDefaults()
     {
-        public override float BonusAscentWhileFalling => 0.95f;
-        public override float BonusAscentWhileRising => 0.16f;
-        public override float RisingSpeedThreshold => 1.2f;
-        public override float MaxAscentSpeed => 2.9f;
-        public override float BaseAscent => 0.145f;
-
-        public static int wingSlot = 0;
-
-        public override void SetStaticDefaults()
+        ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(250, 11f, 2.8f);
+        wingSlot = Item.wingSlot;
+    }
+    public override void SetDefaults()
+    {
+        base.SetDefaults();
+        Item.width = 36;
+        Item.height = 32;
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+        Item.rare = ModContent.RarityType<BurnishedAuric>();
+    }
+    #region Toggleable Wings
+    bool toggleEnabled
+    {
+        get { return Item.wingSlot != -1; }
+        set
         {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(250, 11f, 2.8f);
-            wingSlot = Item.wingSlot;
+            if (value)
+                Item.wingSlot = wingSlot;
+            else
+                Item.wingSlot = -1;
         }
-        public override void SetDefaults()
+    }
+    public override void ModifyTooltips(List<TooltipLine> tooltips)
+    {
+        if (!toggleEnabled)
+            tooltips.RemoveAll(x => x.Name == "Tooltip0");
+        base.ModifyTooltips(tooltips);
+    }
+    public override bool CanRightClick() => Main.keyState.PressingShift();
+    public override void RightClick(Player player)
+    {
+        toggleEnabled = !toggleEnabled;
+        Item.NetStateChanged();
+    }
+    public override bool ConsumeItem(Player player) => false;
+    public override void SaveData(TagCompound tag)
+    {
+        tag.Add("toggleEffect", toggleEnabled);
+    }
+    public override void LoadData(TagCompound tag)
+    {
+        toggleEnabled = tag.GetBool("toggleEffect");
+    }
+    public override void NetSend(BinaryWriter writer)
+    {
+        writer.Write(toggleEnabled);
+    }
+    public override void NetReceive(BinaryReader reader)
+    {
+        toggleEnabled = reader.ReadBoolean();
+    }
+    public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        Item.SetNameOverride(CalamityUtils.GetTextValue($"Items.Accessories.Wings.SeraphTracers.{(toggleEnabled ? "DisplayName" : "TreadsName")}"));
+        CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
+    }
+    #endregion
+
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual && toggleEnabled)
         {
-            base.SetDefaults();
-            Item.width = 36;
-            Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
-        }
-        #region Toggleable Wings
-        bool toggleEnabled
-        {
-            get { return Item.wingSlot != -1; }
-            set
+            int dustXOffset = 4;
+            if (player.direction == 1)
             {
-                if (value)
-                    Item.wingSlot = wingSlot;
-                else
-                    Item.wingSlot = -1;
+                dustXOffset = -40;
             }
-        }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            if (!toggleEnabled)
-                tooltips.RemoveAll(x => x.Name == "Tooltip0");
-            base.ModifyTooltips(tooltips);
-        }
-        public override bool CanRightClick() => Main.keyState.PressingShift();
-        public override void RightClick(Player player)
-        {
-            toggleEnabled = !toggleEnabled;
-            Item.NetStateChanged();
-        }
-        public override bool ConsumeItem(Player player) => false;
-        public override void SaveData(TagCompound tag)
-        {
-            tag.Add("toggleEffect", toggleEnabled);
-        }
-        public override void LoadData(TagCompound tag)
-        {
-            toggleEnabled = tag.GetBool("toggleEffect");
-        }
-        public override void NetSend(BinaryWriter writer)
-        {
-            writer.Write(toggleEnabled);
-        }
-        public override void NetReceive(BinaryReader reader)
-        {
-            toggleEnabled = reader.ReadBoolean();
-        }
-        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            Item.SetNameOverride(CalamityUtils.GetTextValue($"Items.Accessories.Wings.SeraphTracers.{(toggleEnabled ? "DisplayName" : "TreadsName")}"));
-            CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
-        }
-        #endregion
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual && toggleEnabled)
+            int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.GemDiamond, 0f, 0f, 100, default, 2.4f);
+            Main.dust[flightDust].noGravity = true;
+            Main.dust[flightDust].velocity *= 0.3f;
+            if (Main.rand.NextBool(10))
             {
-                int dustXOffset = 4;
-                if (player.direction == 1)
-                {
-                    dustXOffset = -40;
-                }
-                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.GemDiamond, 0f, 0f, 100, default, 2.4f);
-                Main.dust[flightDust].noGravity = true;
-                Main.dust[flightDust].velocity *= 0.3f;
-                if (Main.rand.NextBool(10))
-                {
-                    Main.dust[flightDust].fadeIn = 2f;
-                }
-                Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
+                Main.dust[flightDust].fadeIn = 2f;
             }
-            CalamityPlayer modPlayer = player.Calamity();
-            player.accRunSpeed = 9f;
-            player.moveSpeed += 0.18f;
-            player.iceSkate = true;
-            player.waterWalk = true;
-            player.fireWalk = true;
-            player.lavaImmune = true;
-            player.buffImmune[BuffID.OnFire] = true;
-            player.noFallDmg = true;
-            if (!toggleEnabled) //Both these effects just boost flight time, but we don't want Tracers to boost it's own flight time when functioning as wings. All other Angel Tread effects are covered above.
-            {
-                player.rocketBoots = player.vanityRocketBoots = 2;
-                modPlayer.angelTreads = true;
-            }
-            modPlayer.tracersDust = !hideVisual && toggleEnabled;
-            modPlayer.seraphTracers = true; // Grants immunity to Auric Rejection and other walk-on-block effects
+            Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
         }
-
-        public override void AddRecipes()
+        CalamityPlayer modPlayer = player.Calamity();
+        player.accRunSpeed = 9f;
+        player.moveSpeed += 0.18f;
+        player.iceSkate = true;
+        player.waterWalk = true;
+        player.fireWalk = true;
+        player.lavaImmune = true;
+        player.buffImmune[BuffID.OnFire] = true;
+        player.noFallDmg = true;
+        if (!toggleEnabled) //Both these effects just boost flight time, but we don't want Tracers to boost it's own flight time when functioning as wings. All other Angel Tread effects are covered above.
         {
-            CreateRecipe().
-                AddIngredient<VoidStriders>().
-                AddIngredient<AuricBar>(5).
-                AddIngredient<AscendantSpiritEssence>(3).
-                AddTile<CosmicAnvil>().
-                Register();
+            player.rocketBoots = player.vanityRocketBoots = 2;
+            modPlayer.angelTreads = true;
         }
+        modPlayer.tracersDust = !hideVisual && toggleEnabled;
+        modPlayer.seraphTracers = true; // Grants immunity to Auric Rejection and other walk-on-block effects
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<VoidStriders>().
+            AddIngredient<AuricBar>(5).
+            AddIngredient<AscendantSpiritEssence>(3).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

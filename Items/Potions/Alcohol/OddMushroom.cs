@@ -4,28 +4,27 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions.Alcohol
+namespace CalamityMod.Items.Potions.Alcohol;
+
+public class OddMushroom : ModItem, ILocalizedModType
 {
-    public class OddMushroom : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Potions";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Potions";
+        Item.ResearchUnlockCount = 20;
+        ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
+            new Color(232, 100, 90),
+            new Color(230, 215, 117),
+            new Color(143, 83, 64)
+        };
+    }
 
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 20;
-            ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
-                new Color(232, 100, 90),
-                new Color(230, 215, 117),
-                new Color(143, 83, 64)
-            };
-        }
+    public override void SetDefaults()
+    {
+        Item.DefaultToFood(38, 50, ModContent.BuffType<Trippy>(), CalamityUtils.MinutesToFrames(60));
 
-        public override void SetDefaults()
-        {
-            Item.DefaultToFood(38, 50, ModContent.BuffType<Trippy>(), CalamityUtils.MinutesToFrames(60));
-
-            Item.value = Item.buyPrice(gold: 5); // Sold by Truffle
-            Item.rare = ItemRarityID.LightRed;
-        }
+        Item.value = Item.buyPrice(gold: 5); // Sold by Truffle
+        Item.rare = ItemRarityID.LightRed;
     }
 }

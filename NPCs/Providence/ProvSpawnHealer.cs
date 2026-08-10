@@ -9,191 +9,190 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.NPCs.Providence
+namespace CalamityMod.NPCs.Providence;
+
+[AutoloadBossHead]
+public class ProvSpawnHealer : ModNPC
 {
-    [AutoloadBossHead]
-    public class ProvSpawnHealer : ModNPC
+    private bool start = true;
+    public override string Texture => "CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianHealer";
+
+    public override void SetStaticDefaults()
     {
-        private bool start = true;
-        public override string Texture => "CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianHealer";
+        this.HideFromBestiary();
+        Main.npcFrameCount[Type] = 10;
+        NPCID.Sets.NeedsExpertScaling[Type] = true;
+        NPCID.Sets.TrailingMode[Type] = 1;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        NPC.BossBar = Main.BigBossProgressBar.NeverValid;
+        NPC.npcSlots = 1f;
+        NPC.aiStyle = -1;
+        NPC.damage = 0;
+        NPC.width = 228;
+        NPC.height = 164;
+        NPC.defense = 30;
+        NPC.DR_NERD(0.2f);
+        NPC.lifeMax = 15000;
+        if (BossRushEvent.BossRushActive)
         {
-            this.HideFromBestiary();
-            Main.npcFrameCount[Type] = 10;
-            NPCID.Sets.NeedsExpertScaling[Type] = true;
-            NPCID.Sets.TrailingMode[Type] = 1;
+            NPC.lifeMax = 20000;
+        }
+        NPC.knockBackResist = 0f;
+        NPC.noGravity = true;
+        NPC.noTileCollide = true;
+        AIType = -1;
+        NPC.HitSound = SoundID.NPCHit52;
+        NPC.DeathSound = SoundID.NPCDeath55;
+        NPC.Calamity().VulnerableToHeat = false;
+        NPC.Calamity().VulnerableToCold = true;
+        NPC.Calamity().VulnerableToSickness = false;
+        NPC.Calamity().VulnerableToWater = true;
+    }
+
+    public override void FindFrame(int frameHeight)
+    {
+        if (CalamityGlobalNPC.holyBoss < 0 || !Main.npc[CalamityGlobalNPC.holyBoss].active)
+            NPC.frameCounter += 0.2f;
+        else
+            NPC.frameCounter += 0.12f + Main.npc[CalamityGlobalNPC.holyBoss].velocity.Length() / 120f;
+
+        NPC.frameCounter %= Main.npcFrameCount[Type];
+        int frame = (int)NPC.frameCounter;
+        NPC.frame.Y = frame * frameHeight;
+    }
+
+    public override void AI()
+    {
+        CalamityGlobalNPC.holyBossHealer = NPC.whoAmI;
+
+        if (CalamityGlobalNPC.holyBoss < 0 || !Main.npc[CalamityGlobalNPC.holyBoss].active)
+        {
+            NPC.life = 0;
+            NPC.HitEffect();
+            NPC.active = false;
+            NPC.netUpdate = true;
+            return;
         }
 
-        public override void SetDefaults()
+        // Rotation
+        NPC.rotation = Main.npc[CalamityGlobalNPC.holyBoss].velocity.X * 0.005f;
+
+        NPC parent = Main.npc[CalamityGlobalNPC.holyBoss];
+        if (start)
         {
-            NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.npcSlots = 1f;
-            NPC.aiStyle = -1;
-            NPC.damage = 0;
-            NPC.width = 228;
-            NPC.height = 164;
-            NPC.defense = 30;
-            NPC.DR_NERD(0.2f);
-            NPC.lifeMax = 15000;
-            if (BossRushEvent.BossRushActive)
+            for (int d = 0; d < 30; d++)
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, 0f, 0f, 100, default, 2f);
+
+            NPC.ai[1] = NPC.ai[0];
+            start = false;
+        }
+
+        float playerLocation = NPC.Center.X - Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target].Center.X;
+        NPC.direction = playerLocation < 0 ? 1 : -1;
+        NPC.spriteDirection = NPC.direction;
+
+        double deg = NPC.ai[1];
+        double rad = deg * (Math.PI / 180);
+        double dist = 450;
+        NPC.position.X = parent.Center.X - (int)(Math.Cos(rad) * dist) - NPC.width / 2;
+        NPC.position.Y = parent.Center.Y - (int)(Math.Sin(rad) * dist) - NPC.height / 2;
+        NPC.ai[1] += 1f;
+    }
+
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        SpriteEffects spriteEffects = SpriteEffects.None;
+        if (NPC.spriteDirection == 1)
+            spriteEffects = SpriteEffects.FlipHorizontally;
+
+        Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+        Texture2D texture2D16 = ProfanedGuardianHealer.Texture_Glow2.Value;
+        Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
+        int afterimageAmt = 5;
+
+        if (CalamityClientConfig.Instance.Afterimages)
+        {
+            for (int i = 1; i < afterimageAmt; i += 2)
             {
-                NPC.lifeMax = 20000;
+                Color afterimageColor = drawColor;
+                afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
+                afterimageColor = NPC.GetAlpha(afterimageColor);
+                afterimageColor *= (float)(afterimageAmt - i) / 15f;
+                Vector2 afterimagePos = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
+                afterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
+                afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
-            NPC.knockBackResist = 0f;
-            NPC.noGravity = true;
-            NPC.noTileCollide = true;
-            AIType = -1;
-            NPC.HitSound = SoundID.NPCHit52;
-            NPC.DeathSound = SoundID.NPCDeath55;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToCold = true;
-            NPC.Calamity().VulnerableToSickness = false;
-            NPC.Calamity().VulnerableToWater = true;
         }
 
-        public override void FindFrame(int frameHeight)
+        Vector2 drawLocation = NPC.Center - screenPos;
+        drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
+        drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+        spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+        texture2D15 = ProfanedGuardianHealer.Texture_Glow.Value;
+        Color yellowLerp = Color.Lerp(Color.White, Color.Yellow, 0.5f);
+        Color violetLerp = Color.Lerp(Color.White, Color.Violet, 0.5f);
+
+        if (CalamityClientConfig.Instance.Afterimages)
         {
-            if (CalamityGlobalNPC.holyBoss < 0 || !Main.npc[CalamityGlobalNPC.holyBoss].active)
-                NPC.frameCounter += 0.2f;
-            else
-                NPC.frameCounter += 0.12f + Main.npc[CalamityGlobalNPC.holyBoss].velocity.Length() / 120f;
-
-            NPC.frameCounter %= Main.npcFrameCount[Type];
-            int frame = (int)NPC.frameCounter;
-            NPC.frame.Y = frame * frameHeight;
-        }
-
-        public override void AI()
-        {
-            CalamityGlobalNPC.holyBossHealer = NPC.whoAmI;
-
-            if (CalamityGlobalNPC.holyBoss < 0 || !Main.npc[CalamityGlobalNPC.holyBoss].active)
+            for (int j = 1; j < afterimageAmt; j++)
             {
-                NPC.life = 0;
-                NPC.HitEffect();
-                NPC.active = false;
-                NPC.netUpdate = true;
-                return;
+                Color yellowAfterimageColor = yellowLerp;
+                yellowAfterimageColor = Color.Lerp(yellowAfterimageColor, Color.White, 0.5f);
+                yellowAfterimageColor = NPC.GetAlpha(yellowAfterimageColor);
+                yellowAfterimageColor *= (float)(afterimageAmt - j) / 15f;
+                Vector2 yellowAfterimagePos = NPC.oldPos[j] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
+                yellowAfterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
+                yellowAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                spriteBatch.Draw(texture2D15, yellowAfterimagePos, NPC.frame, yellowAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+                Color violetAfterimageColor = violetLerp;
+                violetAfterimageColor = Color.Lerp(violetAfterimageColor, Color.White, 0.5f);
+                violetAfterimageColor = NPC.GetAlpha(violetAfterimageColor);
+                violetAfterimageColor *= (float)(afterimageAmt - j) / 15f;
+                spriteBatch.Draw(texture2D16, yellowAfterimagePos, NPC.frame, violetAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
-
-            // Rotation
-            NPC.rotation = Main.npc[CalamityGlobalNPC.holyBoss].velocity.X * 0.005f;
-
-            NPC parent = Main.npc[CalamityGlobalNPC.holyBoss];
-            if (start)
-            {
-                for (int d = 0; d < 30; d++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, 0f, 0f, 100, default, 2f);
-
-                NPC.ai[1] = NPC.ai[0];
-                start = false;
-            }
-
-            float playerLocation = NPC.Center.X - Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target].Center.X;
-            NPC.direction = playerLocation < 0 ? 1 : -1;
-            NPC.spriteDirection = NPC.direction;
-
-            double deg = NPC.ai[1];
-            double rad = deg * (Math.PI / 180);
-            double dist = 450;
-            NPC.position.X = parent.Center.X - (int)(Math.Cos(rad) * dist) - NPC.width / 2;
-            NPC.position.Y = parent.Center.Y - (int)(Math.Sin(rad) * dist) - NPC.height / 2;
-            NPC.ai[1] += 1f;
         }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        NPC.DrawBackglow(new Color(255, 64, 0, 0), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+        spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetColorBasedOnEnrage(false, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+        spriteBatch.Draw(texture2D16, drawLocation, NPC.frame, violetLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+        return false;
+    }
+
+    public override void OnKill()
+    {
+        int heartAmt = Main.rand.Next(3) + 3;
+        for (int i = 0; i < heartAmt; i++)
+            Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
+    }
+
+    public override bool CheckActive() => false;
+
+    public override void HitEffect(NPC.HitInfo hit)
+    {
+        for (int k = 0; k < 3; k++)
+            Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
+
+        if (NPC.life <= 0)
         {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
-            Texture2D texture2D16 = ProfanedGuardianHealer.Texture_Glow2.Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
-            int afterimageAmt = 5;
-
-            if (CalamityClientConfig.Instance.Afterimages)
+            if (!Main.dedServ)
             {
-                for (int i = 1; i < afterimageAmt; i += 2)
-                {
-                    Color afterimageColor = drawColor;
-                    afterimageColor = Color.Lerp(afterimageColor, Color.White, 0.5f);
-                    afterimageColor = NPC.GetAlpha(afterimageColor);
-                    afterimageColor *= (float)(afterimageAmt - i) / 15f;
-                    Vector2 afterimagePos = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
-                    afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-                }
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH2").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH3").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH4").Type, 1f);
             }
 
-            Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
-            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-            texture2D15 = ProfanedGuardianHealer.Texture_Glow.Value;
-            Color yellowLerp = Color.Lerp(Color.White, Color.Yellow, 0.5f);
-            Color violetLerp = Color.Lerp(Color.White, Color.Violet, 0.5f);
-
-            if (CalamityClientConfig.Instance.Afterimages)
-            {
-                for (int j = 1; j < afterimageAmt; j++)
-                {
-                    Color yellowAfterimageColor = yellowLerp;
-                    yellowAfterimageColor = Color.Lerp(yellowAfterimageColor, Color.White, 0.5f);
-                    yellowAfterimageColor = NPC.GetAlpha(yellowAfterimageColor);
-                    yellowAfterimageColor *= (float)(afterimageAmt - j) / 15f;
-                    Vector2 yellowAfterimagePos = NPC.oldPos[j] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    yellowAfterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
-                    yellowAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(texture2D15, yellowAfterimagePos, NPC.frame, yellowAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-                    Color violetAfterimageColor = violetLerp;
-                    violetAfterimageColor = Color.Lerp(violetAfterimageColor, Color.White, 0.5f);
-                    violetAfterimageColor = NPC.GetAlpha(violetAfterimageColor);
-                    violetAfterimageColor *= (float)(afterimageAmt - j) / 15f;
-                    spriteBatch.Draw(texture2D16, yellowAfterimagePos, NPC.frame, violetAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-                }
-            }
-
-            NPC.DrawBackglow(new Color(255, 64, 0, 0), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
-
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetColorBasedOnEnrage(false, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-            spriteBatch.Draw(texture2D16, drawLocation, NPC.frame, violetLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-            return false;
-        }
-
-        public override void OnKill()
-        {
-            int heartAmt = Main.rand.Next(3) + 3;
-            for (int i = 0; i < heartAmt; i++)
-                Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
-        }
-
-        public override bool CheckActive() => false;
-
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            for (int k = 0; k < 3; k++)
+            for (int k = 0; k < 50; k++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
-
-            if (NPC.life <= 0)
-            {
-                if (!Main.dedServ)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH3").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossH4").Type, 1f);
-                }
-
-                for (int k = 0; k < 50; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
-            }
         }
     }
 }

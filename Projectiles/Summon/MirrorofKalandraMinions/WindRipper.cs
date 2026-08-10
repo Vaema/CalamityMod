@@ -9,111 +9,110 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
+namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions;
+
+public class WindRipper : ModProjectile, ILocalizedModType
 {
-    public class WindRipper : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Summon";
+
+    public Player Owner => Main.player[Projectile.owner];
+    public CalamityPlayer ModdedOwner => Owner.Calamity();
+    public NPC Target => Projectile.Center.MinionHoming(MirrorofKalandra.TargetDistanceDetection, Owner);
+    public ref float Oscillation => ref Projectile.ai[0];
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Summon";
+        ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+        Main.projFrames[Type] = 7;
+    }
 
-        public Player Owner => Main.player[Projectile.owner];
-        public CalamityPlayer ModdedOwner => Owner.Calamity();
-        public NPC Target => Projectile.Center.MinionHoming(MirrorofKalandra.TargetDistanceDetection, Owner);
-        public ref float Oscillation => ref Projectile.ai[0];
+    public override void SetDefaults()
+    {
+        Projectile.minionSlots = 1;
 
-        public override void SetStaticDefaults()
+        Projectile.DamageType = DamageClass.Summon;
+        Projectile.width = Projectile.height = 84;
+        Projectile.minion = true;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.friendly = true;
+    }
+
+    public override void AI()
+    {
+        CheckMinionExistence();
+
+        Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Center + (-MathHelper.PiOver2 - MathHelper.PiOver4 * 1.5f).ToRotationVector2() * (MirrorofKalandra.IdleDistanceFromPlayer + MirrorofKalandra.IdleDistanceFromPlayer * (MathF.Sin(Oscillation) / MirrorofKalandra.OscillationRange)), .4f);
+        Projectile.velocity = Vector2.Zero;
+        Oscillation += MirrorofKalandra.OscillationSpeed;
+
+        if (Target is not null)
         {
-            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
-            Main.projFrames[Type] = 7;
-        }
+            DoAnimation();
+            ShootTarget();
 
-        public override void SetDefaults()
+            Projectile.rotation = Projectile.rotation.AngleTowards(CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed, MirrorofKalandra.Wind_ArrowSpeedMult).ToRotation(), .2f);
+        }
+        else
         {
-            Projectile.minionSlots = 1;
-
-            Projectile.DamageType = DamageClass.Summon;
-            Projectile.width = Projectile.height = 84;
-            Projectile.minion = true;
-            Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;
-            Projectile.friendly = true;
+            Projectile.frame = 0;
+            Projectile.rotation = Projectile.rotation.AngleTowards(-MathHelper.PiOver2 - MathHelper.PiOver4 * 1.5f, .2f);
         }
+    }
 
-        public override void AI()
+    public void DoAnimation()
+    {
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter % MirrorofKalandra.Wind_BowChargeTime == 0)
+            Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
+    }
+
+    public void ShootTarget()
+    {
+        // On the first frame where the projectile is on the firing frame animation, fire an arrow.
+        if (Projectile.frame == 5 && Projectile.frameCounter % MirrorofKalandra.Wind_BowChargeTime == 0 && Main.myPlayer == Projectile.owner)
         {
-            CheckMinionExistence();
+            Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * (Projectile.width / 2);
+            int arrow = Projectile.NewProjectile(Projectile.GetSource_FromThis(),
+                Projectile.Center,
+                CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed, MirrorofKalandra.Wind_ArrowSpeedMult),
+                ModContent.ProjectileType<WindRipperArrow>(),
+                Projectile.damage,
+                Projectile.knockBack,
+                Owner.whoAmI);
 
-            Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Center + (-MathHelper.PiOver2 - MathHelper.PiOver4 * 1.5f).ToRotationVector2() * (MirrorofKalandra.IdleDistanceFromPlayer + MirrorofKalandra.IdleDistanceFromPlayer * (MathF.Sin(Oscillation) / MirrorofKalandra.OscillationRange)), .4f);
-            Projectile.velocity = Vector2.Zero;
-            Oscillation += MirrorofKalandra.OscillationSpeed;
+            if (Main.projectile.IndexInRange(arrow))
+                Main.projectile[arrow].originalDamage = Projectile.originalDamage;
 
-            if (Target is not null)
-            {
-                DoAnimation();
-                ShootTarget();
+            SoundEngine.PlaySound(SoundID.Item5, Owner.Center);
 
-                Projectile.rotation = Projectile.rotation.AngleTowards(CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed, MirrorofKalandra.Wind_ArrowSpeedMult).ToRotation(), .2f);
-            }
-            else
-            {
-                Projectile.frame = 0;
-                Projectile.rotation = Projectile.rotation.AngleTowards(-MathHelper.PiOver2 - MathHelper.PiOver4 * 1.5f, .2f);
-            }
+            Projectile.netUpdate = true;
         }
+    }
 
-        public void DoAnimation()
-        {
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter % MirrorofKalandra.Wind_BowChargeTime == 0)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
-        }
+    public void CheckMinionExistence()
+    {
+        Owner.AddBuff(ModContent.BuffType<KalandraMirrorBuff>(), 3600);
+        if (Projectile.type != ModContent.ProjectileType<WindRipper>())
+            return;
 
-        public void ShootTarget()
-        {
-            // On the first frame where the projectile is on the firing frame animation, fire an arrow.
-            if (Projectile.frame == 5 && Projectile.frameCounter % MirrorofKalandra.Wind_BowChargeTime == 0 && Main.myPlayer == Projectile.owner)
-            {
-                Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * (Projectile.width / 2);
-                int arrow = Projectile.NewProjectile(Projectile.GetSource_FromThis(),
-                    Projectile.Center,
-                    CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Target, MirrorofKalandra.Wind_ArrowSpeed, MirrorofKalandra.Wind_ArrowSpeedMult),
-                    ModContent.ProjectileType<WindRipperArrow>(),
-                    Projectile.damage,
-                    Projectile.knockBack,
-                    Owner.whoAmI);
+        if (Owner.dead)
+            ModdedOwner.KalandraMirror = false;
+        if (ModdedOwner.KalandraMirror)
+            Projectile.timeLeft = 2;
+    }
 
-                if (Main.projectile.IndexInRange(arrow))
-                    Main.projectile[arrow].originalDamage = Projectile.originalDamage;
+    public override bool? CanDamage() => false;
 
-                SoundEngine.PlaySound(SoundID.Item5, Owner.Center);
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+        Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+        Vector2 origin = frame.Size() * 0.5f;
 
-                Projectile.netUpdate = true;
-            }
-        }
+        Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
-        public void CheckMinionExistence()
-        {
-            Owner.AddBuff(ModContent.BuffType<KalandraMirrorBuff>(), 3600);
-            if (Projectile.type != ModContent.ProjectileType<WindRipper>())
-                return;
-
-            if (Owner.dead)
-                ModdedOwner.KalandraMirror = false;
-            if (ModdedOwner.KalandraMirror)
-                Projectile.timeLeft = 2;
-        }
-
-        public override bool? CanDamage() => false;
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
-            Vector2 origin = frame.Size() * 0.5f;
-
-            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
-
-            return false;
-        }
+        return false;
     }
 }

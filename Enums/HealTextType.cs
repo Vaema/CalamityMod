@@ -1,9 +1,8 @@
-﻿namespace CalamityMod.Enums
+﻿namespace CalamityMod.Enums;
+
+public enum HealTextType
 {
-    public enum HealTextType
-    {
-        None,
-        Local,
-        Broadcast
-    }
+    None,
+    Local,
+    Broadcast
 }

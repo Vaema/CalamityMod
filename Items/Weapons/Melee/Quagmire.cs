@@ -5,54 +5,53 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Melee
+namespace CalamityMod.Items.Weapons.Melee;
+
+public class Quagmire : ModItem, ILocalizedModType
 {
-    public class Quagmire : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Melee";
+
+    public static float Reach = 480f;
+    public static float Speed = 36f;
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Melee";
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Venom];
+        ItemID.Sets.Yoyo[Type] = true;
+        ItemID.Sets.GamepadExtraRange[Type] = 15;
+        ItemID.Sets.GamepadSmartQuickReach[Type] = true;
+    }
 
-        public static float Reach = 480f;
-        public static float Speed = 36f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+    public override void SetDefaults()
+    {
+        Item.width = 30;
+        Item.height = 36;
+        Item.DamageType = DamageClass.MeleeNoSpeed;
+        Item.damage = 54;
+        Item.knockBack = 3.5f;
+        Item.useTime = 22;
+        Item.useAnimation = 22;
+        Item.autoReuse = true;
 
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Venom];
-            ItemID.Sets.Yoyo[Type] = true;
-            ItemID.Sets.GamepadExtraRange[Type] = 15;
-            ItemID.Sets.GamepadSmartQuickReach[Type] = true;
-        }
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.UseSound = SoundID.Item1;
+        Item.channel = true;
+        Item.noUseGraphic = true;
+        Item.noMelee = true;
 
-        public override void SetDefaults()
-        {
-            Item.width = 30;
-            Item.height = 36;
-            Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 54;
-            Item.knockBack = 3.5f;
-            Item.useTime = 22;
-            Item.useAnimation = 22;
-            Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<QuagmireYoyo>();
+        Item.shootSpeed = 10f;
 
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.Item1;
-            Item.channel = true;
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
+        Item.rare = ItemRarityID.Lime;
+        Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+    }
 
-            Item.shoot = ModContent.ProjectileType<QuagmireYoyo>();
-            Item.shootSpeed = 10f;
-
-            Item.rare = ItemRarityID.Lime;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<PerennialBar>(10).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<PerennialBar>(10).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

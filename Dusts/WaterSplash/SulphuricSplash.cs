@@ -1,6 +1,5 @@
-﻿namespace CalamityMod.Dusts.WaterSplash
+﻿namespace CalamityMod.Dusts.WaterSplash;
+
+public class SulphuricSplash : SplashDust
 {
-    public class SulphuricSplash : SplashDust
-    {
-    }
 }

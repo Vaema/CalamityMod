@@ -3,27 +3,26 @@ using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Systems
+namespace CalamityMod.Systems;
+
+public class DoGBackgroundScene : ModSceneEffect
 {
-    public class DoGBackgroundScene : ModSceneEffect
+    public override SceneEffectPriority Priority => SceneEffectPriority.BossHigh;
+
+    public override bool IsSceneEffectActive(Player player)
     {
-        public override SceneEffectPriority Priority => SceneEffectPriority.BossHigh;
+        bool monolithIsActive = Main.LocalPlayer.Calamity().monolithDevourerBShader > 0 || Main.LocalPlayer.Calamity().monolithDevourerPShader > 0;
+        bool dogIsAlive = NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>());
 
-        public override bool IsSceneEffectActive(Player player)
-        {
-            bool monolithIsActive = Main.LocalPlayer.Calamity().monolithDevourerBShader > 0 || Main.LocalPlayer.Calamity().monolithDevourerPShader > 0;
-            bool dogIsAlive = NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>());
+        return dogIsAlive || monolithIsActive;
+    }
 
-            return dogIsAlive || monolithIsActive;
-        }
-
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
-            player.ManageSpecialBiomeVisuals("CalamityMod:DevourerofGodsHead", isActive);
-            if (isActive)
-                SkyManager.Instance.Activate("CalamityMod:DevourerofGodsHead");
-            else
-                SkyManager.Instance.Deactivate("CalamityMod:DevourerofGodsHead");
-        }
+    public override void SpecialVisuals(Player player, bool isActive)
+    {
+        player.ManageSpecialBiomeVisuals("CalamityMod:DevourerofGodsHead", isActive);
+        if (isActive)
+            SkyManager.Instance.Activate("CalamityMod:DevourerofGodsHead");
+        else
+            SkyManager.Instance.Deactivate("CalamityMod:DevourerofGodsHead");
     }
 }

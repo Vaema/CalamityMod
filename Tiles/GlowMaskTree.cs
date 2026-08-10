@@ -3,20 +3,19 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles
+namespace CalamityMod.Tiles;
+
+public struct GlowMaskPlantDrawInfo
 {
-    public struct GlowMaskPlantDrawInfo
-    {
-        public Texture2D Texture;
-        public Color Color;
-    }
+    public Texture2D Texture;
+    public Color Color;
+}
 
-    public abstract class GlowMaskTree : ModTree
-    {
-        public abstract Asset<Texture2D> GetGlowTexture();
-        public abstract Asset<Texture2D> GetTopGlowTextures();
-        public abstract Asset<Texture2D> GetBranchGlowTextures();
+public abstract class GlowMaskTree : ModTree
+{
+    public abstract Asset<Texture2D> GetGlowTexture();
+    public abstract Asset<Texture2D> GetTopGlowTextures();
+    public abstract Asset<Texture2D> GetBranchGlowTextures();
 
-        public abstract Color GetGlowColor(int i, int j);
-    }
+    public abstract Color GetGlowColor(int i, int j);
 }

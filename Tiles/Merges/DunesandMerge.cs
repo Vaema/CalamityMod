@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.SunkenSea;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class DunesandMerge : TileBlendTexture
 {
-    public sealed class DunesandMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<Dunesand>();
-    }
+    public override int TileType => ModContent.TileType<Dunesand>();
 }

@@ -4,45 +4,44 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Astral
+namespace CalamityMod.Tiles.Astral;
+
+public class AstralStone : ModTile
 {
-    public class AstralStone : ModTile
+
+    public override void SetStaticDefaults()
     {
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
+        Main.tileBrick[Type] = true;
 
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
-            Main.tileBrick[Type] = true;
+        CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.MergeAstralTiles(Type);
+        CalamityUtils.MergeWithOres(Type);
 
-            CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeAstralTiles(Type);
-            CalamityUtils.MergeWithOres(Type);
+        DustType = ModContent.DustType<AstralBasic>();
 
-            DustType = ModContent.DustType<AstralBasic>();
+        HitSound = SoundID.Tink;
 
-            HitSound = SoundID.Tink;
+        AddMapEntry(new Color(93, 78, 107));
 
-            AddMapEntry(new Color(93, 78, 107));
+        TileID.Sets.Stone[Type] = true;
+        TileID.Sets.Conversion.Stone[Type] = true;
+        TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
 
-            TileID.Sets.Stone[Type] = true;
-            TileID.Sets.Conversion.Stone[Type] = true;
-            TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
+        this.RegisterBlendMergeWith(TileID.Dirt);
+        this.RegisterBlendMergeWith(TileID.Stone);
+        this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
+    }
 
-            this.RegisterBlendMergeWith(TileID.Dirt);
-            this.RegisterBlendMergeWith(TileID.Stone);
-            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
+    }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
-
-        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
-        {
-            sightColor = Color.Cyan;
-            return true;
-        }
+    public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
+    {
+        sightColor = Color.Cyan;
+        return true;
     }
 }

@@ -1,20 +1,19 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.StatBuffs
-{
-    public class AvertorBonus : ModBuff
-    {
-        public override void SetStaticDefaults()
-        {
-            Main.debuff[Type] = false;
-            Main.pvpBuff[Type] = true;
-            Main.buffNoSave[Type] = true;
-        }
+namespace CalamityMod.Buffs.StatBuffs;
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.Calamity().avertorBonus = true;
-        }
+public class AvertorBonus : ModBuff
+{
+    public override void SetStaticDefaults()
+    {
+        Main.debuff[Type] = false;
+        Main.pvpBuff[Type] = true;
+        Main.buffNoSave[Type] = true;
+    }
+
+    public override void Update(Player player, ref int buffIndex)
+    {
+        player.Calamity().avertorBonus = true;
     }
 }

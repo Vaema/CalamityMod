@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace CalamityMod.InverseKinematics
+namespace CalamityMod.InverseKinematics;
+
+public interface IInverseKinematicsUpdateRule
 {
-    public interface IInverseKinematicsUpdateRule
-    {
-        void Update(LimbCollection limbs, Vector2 destination);
-    }
+    void Update(LimbCollection limbs, Vector2 destination);
 }

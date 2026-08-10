@@ -4,45 +4,44 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.FurnitureCosmilite
+namespace CalamityMod.Tiles.FurnitureCosmilite;
+
+public class CosmiliteChandelier : ModTile
 {
-    public class CosmiliteChandelier : ModTile
+    public override void SetStaticDefaults() => this.SetUpChandelier(ModContent.ItemType<Items.Placeables.FurnitureCosmilite.CosmiliteChandelier>(), true);
+
+    public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
+
+    public override bool CreateDust(int i, int j, ref int type)
     {
-        public override void SetStaticDefaults() => this.SetUpChandelier(ModContent.ItemType<Items.Placeables.FurnitureCosmilite.CosmiliteChandelier>(), true);
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Firework_Blue, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Firework_Pink, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+        return false;
+    }
 
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
+    }
 
-        public override bool CreateDust(int i, int j, ref int type)
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+    {
+        if (Main.tile[i, j].TileFrameX < 18)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Firework_Blue, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Firework_Pink, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            return false;
+            r = 1f;
+            g = 0.6f;
+            b = 1f;
         }
-
-        public override void NumDust(int i, int j, bool fail, ref int num)
+        else
         {
-            num = fail ? 1 : 3;
+            r = 0f;
+            g = 0f;
+            b = 0f;
         }
+    }
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            if (Main.tile[i, j].TileFrameX < 18)
-            {
-                r = 1f;
-                g = 0.6f;
-                b = 1f;
-            }
-            else
-            {
-                r = 0f;
-                g = 0f;
-                b = 0f;
-            }
-        }
-
-        public override void HitWire(int i, int j)
-        {
-            FurnitureCommon.LightHitWire(Type, i, j, 3, 3);
-        }
+    public override void HitWire(int i, int j)
+    {
+        FurnitureCommon.LightHitWire(Type, i, j, 3, 3);
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class OverloadedSoldierBanner : BaseBanner
 {
-    public class OverloadedSoldierBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 85;
-    }
+    public override int BannerTileStyle => 85;
 }

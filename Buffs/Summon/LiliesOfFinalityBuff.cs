@@ -1,12 +1,11 @@
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Summon
-{
-    public class LiliesOfFinalityBuff : BaseSummonBuff
-    {
-        protected override int MinionProjectileType => ModContent.ProjectileType<LiliesOfFinalityElster>();
+namespace CalamityMod.Buffs.Summon;
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.LiliesOfFinalityBool;
-    }
+public class LiliesOfFinalityBuff : BaseSummonBuff
+{
+    protected override int MinionProjectileType => ModContent.ProjectileType<LiliesOfFinalityElster>();
+
+    protected override ref bool MinionBool => ref BuffModdedOwner.LiliesOfFinalityBool;
 }

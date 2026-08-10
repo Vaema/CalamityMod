@@ -1,23 +1,22 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.FurnitureNavystone.FurnitureAncientNavystone
+namespace CalamityMod.Items.Placeables.FurnitureNavystone.FurnitureAncientNavystone;
+
+[LegacyName("EutrophicPlatform")]
+public class AncientNavystonePlatform : ModItem, ILocalizedModType
 {
-    [LegacyName("EutrophicPlatform")]
-    public class AncientNavystonePlatform : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 200;
-        }
+        Item.ResearchUnlockCount = 200;
+    }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureNavystone.FurnitureAncientNavystone.AncientNavystonePlatform>());
+    public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureNavystone.FurnitureAncientNavystone.AncientNavystonePlatform>());
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(2).
-                AddIngredient<AncientSmoothNavystone>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(2).
+            AddIngredient<AncientSmoothNavystone>().
+            Register();
     }
 }

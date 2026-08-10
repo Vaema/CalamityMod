@@ -1,32 +1,31 @@
 ﻿using System.IO;
 using Terraria;
 
-namespace CalamityMod.Packets.Entities
+namespace CalamityMod.Packets.Entities;
+
+internal sealed class DemonSwordImpalesSyncPacket : CalamityPacket
 {
-    internal sealed class DemonSwordImpalesSyncPacket : CalamityPacket
+    public static DemonSwordImpalesSyncPacket Instance { get; private set; }
+
+    public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
     {
-        public static DemonSwordImpalesSyncPacket Instance { get; private set; }
+        if (npc is null)
+            return;
 
-        public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
-        {
-            if (npc is null)
-                return;
+        var packet = Instance.CreateBasePacket();
+        packet.WriteWhoAmI(npc);
+        packet.Write(npc.Calamity().demonSwordImpales);
+        packet.Send(toClient, ignoreClient);
+    }
 
-            var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(npc);
-            packet.Write(npc.Calamity().demonSwordImpales);
-            packet.Send(toClient, ignoreClient);
-        }
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        var npc = packet.ReadNPC();
+        var impales = packet.ReadInt32();
 
-        public override void HandlePacket(BinaryReader packet, int sender)
-        {
-            var npc = packet.ReadNPC();
-            var impales = packet.ReadInt32();
+        if (npc is null)
+            return;
 
-            if (npc is null)
-                return;
-
-            npc.Calamity().demonSwordImpales = impales;
-        }
+        npc.Calamity().demonSwordImpales = impales;
     }
 }

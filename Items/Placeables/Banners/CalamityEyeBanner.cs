@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class CalamityEyeBanner : BaseBanner
 {
-    public class CalamityEyeBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 55;
-    }
+    public override int BannerTileStyle => 55;
 }

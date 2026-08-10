@@ -6,142 +6,141 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class EventHorizonStar : ModProjectile, ILocalizedModType
 {
-    public class EventHorizonStar : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    private bool initialized = false;
+    Vector2 initialPosition;
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        private bool initialized = false;
-        Vector2 initialPosition;
+        ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        ProjectileID.Sets.TrailCacheLength[Type] = 3;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 40;
+        Projectile.height = 40;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.tileCollide = false;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 25;
+        Projectile.timeLeft = 300;
+        Projectile.alpha = 180;
+    }
+
+    public override void AI()
+    {
+        //rotation
+        Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.01f * (float)Projectile.direction;
+
+        //sound effects
+        if (Projectile.soundDelay == 0)
         {
-            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Type] = 3;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.soundDelay = 20 + Main.rand.Next(40);
+            if (Main.rand.NextBool(5))
+            {
+                SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
+            }
         }
 
-        public override void SetDefaults()
+        //dust effects
+        if (Main.rand.NextBool(10))
         {
-            Projectile.width = 40;
-            Projectile.height = 40;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.tileCollide = false;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 25;
-            Projectile.timeLeft = 300;
-            Projectile.alpha = 180;
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.AmberBolt, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 0, default, 0.75f);
         }
 
-        public override void AI()
+        Projectile.localAI[0]++;
+
+        Vector2 playerCenter = Main.player[Projectile.owner].Center;
+        float centerX = Projectile.Center.X;
+        float centerY = Projectile.Center.Y;
+
+        if (!initialized)
         {
-            //rotation
-            Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.01f * (float)Projectile.direction;
+            initialPosition = playerCenter;
+            initialized = true;
+        }
+        else if (playerCenter != initialPosition)
+        {
+            playerCenter = initialPosition;
+        }
 
-            //sound effects
-            if (Projectile.soundDelay == 0)
+        float xDist = playerCenter.X - centerX;
+        float yDist = playerCenter.Y - centerY;
+        float radius = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
+
+        if (Projectile.localAI[0] > 10 && Projectile.localAI[0] < 100)
+        {
+            Projectile.ai[1] += 1f / 60f;
+
+            if (Projectile.ai[1] > 0)
             {
-                Projectile.soundDelay = 20 + Main.rand.Next(40);
-                if (Main.rand.NextBool(5))
+                Projectile.ai[0] += MathHelper.ToRadians(5f) / Projectile.ai[1];
+                Projectile.Center = playerCenter + Projectile.ai[0].ToRotationVector2() * radius;
+            }
+        }
+
+        //homing
+        if (Projectile.localAI[0] >= 100)
+        {
+            Vector2 center = Projectile.Center;
+            float homingRange = 325f;
+            bool homeIn = false;
+            float inertia = 25f;
+            float homingSpeed = 23f;
+
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (n.CanBeChasedBy(Projectile, false))
                 {
-                    SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
-                }
-            }
+                    float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
 
-            //dust effects
-            if (Main.rand.NextBool(10))
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.AmberBolt, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 0, default, 0.75f);
-            }
-
-            Projectile.localAI[0]++;
-
-            Vector2 playerCenter = Main.player[Projectile.owner].Center;
-            float centerX = Projectile.Center.X;
-            float centerY = Projectile.Center.Y;
-
-            if (!initialized)
-            {
-                initialPosition = playerCenter;
-                initialized = true;
-            }
-            else if (playerCenter != initialPosition)
-            {
-                playerCenter = initialPosition;
-            }
-
-            float xDist = playerCenter.X - centerX;
-            float yDist = playerCenter.Y - centerY;
-            float radius = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
-
-            if (Projectile.localAI[0] > 10 && Projectile.localAI[0] < 100)
-            {
-                Projectile.ai[1] += 1f / 60f;
-
-                if (Projectile.ai[1] > 0)
-                {
-                    Projectile.ai[0] += MathHelper.ToRadians(5f) / Projectile.ai[1];
-                    Projectile.Center = playerCenter + Projectile.ai[0].ToRotationVector2() * radius;
-                }
-            }
-
-            //homing
-            if (Projectile.localAI[0] >= 100)
-            {
-                Vector2 center = Projectile.Center;
-                float homingRange = 325f;
-                bool homeIn = false;
-                float inertia = 25f;
-                float homingSpeed = 23f;
-
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (n.CanBeChasedBy(Projectile, false))
+                    if (Vector2.Distance(n.Center, Projectile.Center) < (homingRange + extraDistance))
                     {
-                        float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
-
-                        if (Vector2.Distance(n.Center, Projectile.Center) < (homingRange + extraDistance))
-                        {
-                            center = n.Center;
-                            homeIn = true;
-                            break;
-                        }
+                        center = n.Center;
+                        homeIn = true;
+                        break;
                     }
                 }
-
-                if (homeIn)
-                {
-                    Projectile.extraUpdates = 1;
-                    Vector2 homeInVector = Projectile.SafeDirectionTo(center, Vector2.UnitY);
-
-                    Projectile.velocity = (Projectile.velocity * inertia + homeInVector * homingSpeed) / (inertia + 1f);
-                }
-                else
-                    Projectile.extraUpdates = 0;
             }
-        }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.localAI[0] >= 100)
+            if (homeIn)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<EventHorizonBlackhole>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack * 0.5f, Projectile.owner, 0f, 0f);
-                Projectile.Kill();
+                Projectile.extraUpdates = 1;
+                Vector2 homeInVector = Projectile.SafeDirectionTo(center, Vector2.UnitY);
+
+                Projectile.velocity = (Projectile.velocity * inertia + homeInVector * homingSpeed) / (inertia + 1f);
             }
+            else
+                Projectile.extraUpdates = 0;
         }
+    }
 
-        public override bool PreDraw(ref Color lightColor)
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (Projectile.localAI[0] >= 100)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<EventHorizonBlackhole>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack * 0.5f, Projectile.owner, 0f, 0f);
+            Projectile.Kill();
         }
+    }
 
-        public override void PostDraw(Color lightColor)
-        {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), new Color(255, 255, 255, 127), Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
+    }
+
+    public override void PostDraw(Color lightColor)
+    {
+        Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), new Color(255, 255, 255, 127), Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
     }
 }

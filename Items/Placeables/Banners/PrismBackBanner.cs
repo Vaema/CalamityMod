@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class PrismBackBanner : BaseBanner
 {
-    public class PrismBackBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 98;
-    }
+    public override int BannerTileStyle => 98;
 }

@@ -3,22 +3,21 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Potions
+namespace CalamityMod.Buffs.Potions;
+
+public class Soaring : ModBuff
 {
-    public class Soaring : ModBuff
+    public override LocalizedText Description => base.Description.WithFormatArgs(SoaringPotion.FlightTimeBoost.ToPercent());
+
+    public override void SetStaticDefaults()
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(SoaringPotion.FlightTimeBoost.ToPercent());
+        Main.debuff[Type] = false;
+        Main.pvpBuff[Type] = true;
+        Main.buffNoSave[Type] = false;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            Main.debuff[Type] = false;
-            Main.pvpBuff[Type] = true;
-            Main.buffNoSave[Type] = false;
-        }
-
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.Calamity().soaring = true;
-        }
+    public override void Update(Player player, ref int buffIndex)
+    {
+        player.Calamity().soaring = true;
     }
 }

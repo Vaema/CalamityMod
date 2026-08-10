@@ -1,30 +1,29 @@
 ﻿using System.Collections.Generic;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Systems.Graphic.LiquidSystem
+namespace CalamityMod.Systems.Graphic.LiquidSystem;
+
+public class ModLavaStyleLoader : ModSystem
 {
-    public class ModLavaStyleLoader : ModSystem
+    public static IEnumerable<ModLavaStyle> AllStyles => _AllStyles;
+
+    public static int VanillaCount => 1;
+    public static int ModCount => _AllStyles.Count;
+    public static int TotalCount => ModCount + VanillaCount;
+
+    private static readonly List<ModLavaStyle> _AllStyles = [];
+
+    internal static int Register(ModLavaStyle instance)
     {
-        public static IEnumerable<ModLavaStyle> AllStyles => _AllStyles;
+        int type = TotalCount;
 
-        public static int VanillaCount => 1;
-        public static int ModCount => _AllStyles.Count;
-        public static int TotalCount => ModCount + VanillaCount;
+        ModTypeLookup<ModLavaStyle>.Register(instance);
+        _AllStyles.Add(instance);
+        return type;
+    }
 
-        private static readonly List<ModLavaStyle> _AllStyles = [];
-
-        internal static int Register(ModLavaStyle instance)
-        {
-            int type = TotalCount;
-
-            ModTypeLookup<ModLavaStyle>.Register(instance);
-            _AllStyles.Add(instance);
-            return type;
-        }
-
-        public override void Unload()
-        {
-            _AllStyles.Clear();
-        }
+    public override void Unload()
+    {
+        _AllStyles.Clear();
     }
 }

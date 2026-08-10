@@ -7,45 +7,45 @@ using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Astral
+namespace CalamityMod.Tiles.Astral;
+
+public class AstralShortPlants : ModTile
 {
-    public class AstralShortPlants : ModTile
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileCut[Type] = true;
-            Main.tileSolid[Type] = false;
-            Main.tileNoAttach[Type] = true;
-            Main.tileNoFail[Type] = true;
-            Main.tileLavaDeath[Type] = true;
-            Main.tileWaterDeath[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            TileID.Sets.ReplaceTileBreakUp[Type] = true;
-            TileID.Sets.SwaysInWindBasic[Type] = true;
-            TileID.Sets.IgnoredByGrowingSaplings[Type] = true;
-            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+        Main.tileCut[Type] = true;
+        Main.tileSolid[Type] = false;
+        Main.tileNoAttach[Type] = true;
+        Main.tileNoFail[Type] = true;
+        Main.tileLavaDeath[Type] = true;
+        Main.tileWaterDeath[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        TileID.Sets.ReplaceTileBreakUp[Type] = true;
+        TileID.Sets.SwaysInWindBasic[Type] = true;
+        TileID.Sets.IgnoredByGrowingSaplings[Type] = true;
+        TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
-            DustType = ModContent.DustType<AstralBasic>();
+        DustType = ModContent.DustType<AstralBasic>();
 
-            HitSound = SoundID.Grass;
+        HitSound = SoundID.Grass;
 
-            AddMapEntry(new Color(127, 111, 144));
+        AddMapEntry(new Color(127, 111, 144));
 
-            base.SetStaticDefaults();
-        }
+        base.SetStaticDefaults();
+    }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+    public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
 		{
 			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
 			int type = -1;
 
 			if (tileBelow.HasTile)
-            {
+        {
 				type = tileBelow.TileType;
 			}
 
 			if (type == ModContent.TileType<AstralGrass>())
-            {
+        {
 				return true;
 			}
 
@@ -54,39 +54,38 @@ namespace CalamityMod.Tiles.Astral
 			return true;
 		}
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
-        {
-            offsetY = 2;
-        }
+    public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
+    {
+        offsetY = 2;
+    }
 
-        public override void DropCritterChance(int i, int j, ref int wormChance, ref int grassHopperChance, ref int jungleGrubChance)
+    public override void DropCritterChance(int i, int j, ref int wormChance, ref int grassHopperChance, ref int jungleGrubChance)
+    {
+        if (NPC.CountNPCS(NPCID.EnchantedNightcrawler) < 5 && Main.rand.NextBool(400))
         {
-            if (NPC.CountNPCS(NPCID.EnchantedNightcrawler) < 5 && Main.rand.NextBool(400))
-            {
-                int worm = NPC.NewNPC(new EntitySource_TileBreak(i, j), i * 16 + 10, j * 16, NPCID.EnchantedNightcrawler);
-                Main.npc[worm].TargetClosest();
-                Main.npc[worm].velocity.Y = Main.rand.NextFloat(-5f, -2.1f);
-                Main.npc[worm].velocity.X = Main.rand.NextFloat(0f, 2.6f) * (float)(-Main.npc[worm].direction);
-                Main.npc[worm].direction *= -1;
-                Main.npc[worm].netUpdate = true;
-            }
+            int worm = NPC.NewNPC(new EntitySource_TileBreak(i, j), i * 16 + 10, j * 16, NPCID.EnchantedNightcrawler);
+            Main.npc[worm].TargetClosest();
+            Main.npc[worm].velocity.Y = Main.rand.NextFloat(-5f, -2.1f);
+            Main.npc[worm].velocity.X = Main.rand.NextFloat(0f, 2.6f) * (float)(-Main.npc[worm].direction);
+            Main.npc[worm].direction *= -1;
+            Main.npc[worm].netUpdate = true;
         }
+    }
 
-        public override IEnumerable<Item> GetItemDrops(int i, int j)
+    public override IEnumerable<Item> GetItemDrops(int i, int j)
+    {
+        Vector2 worldPosition = new Vector2(i, j).ToWorldCoordinates();
+        Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
+        if (nearestPlayer.active)
         {
-            Vector2 worldPosition = new Vector2(i, j).ToWorldCoordinates();
-            Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
-            if (nearestPlayer.active)
-            {
-                if (nearestPlayer.HeldItem.type == ItemID.Sickle)
-                    yield return new Item(ItemID.Hay, Main.rand.Next(1, 2 + 1));
-            }
+            if (nearestPlayer.HeldItem.type == ItemID.Sickle)
+                yield return new Item(ItemID.Hay, Main.rand.Next(1, 2 + 1));
         }
+    }
 
-        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
-        {
-            sightColor = Color.Cyan;
-            return true;
-        }
+    public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
+    {
+        sightColor = Color.Cyan;
+        return true;
     }
 }

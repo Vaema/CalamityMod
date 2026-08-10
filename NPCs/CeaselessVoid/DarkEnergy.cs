@@ -12,305 +12,304 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.NPCs.CeaselessVoid
+namespace CalamityMod.NPCs.CeaselessVoid;
+
+[HasPierceResist]
+public class DarkEnergy : ModNPC
 {
-    [HasPierceResist]
-    public class DarkEnergy : ModNPC
+    private bool start = true;
+    private const double minDistance = 10D;
+    private double distance = minDistance;
+    private const double minMaxDistance = 800D;
+
+    public const int MaxHP = 12000;
+    public const int MaxBossRushHP = 20000;
+
+    // Texture info. Also used for the projectile variants.
+    public const int HitboxSize = 64;
+    public const int FrameCount = 8;
+
+    public static Asset<Texture2D> GlowTexture;
+
+    public override void SetStaticDefaults()
     {
-        private bool start = true;
-        private const double minDistance = 10D;
-        private double distance = minDistance;
-        private const double minMaxDistance = 800D;
-
-        public const int MaxHP = 12000;
-        public const int MaxBossRushHP = 20000;
-
-        // Texture info. Also used for the projectile variants.
-        public const int HitboxSize = 64;
-        public const int FrameCount = 8;
-
-        public static Asset<Texture2D> GlowTexture;
-
-        public override void SetStaticDefaults()
+        Main.npcFrameCount[Type] = FrameCount;
+        NPCID.Sets.TrailingMode[Type] = 1;
+        NPCID.Sets.BossBestiaryPriority.Add(Type);
+        if (!Main.dedServ)
         {
-            Main.npcFrameCount[Type] = FrameCount;
-            NPCID.Sets.TrailingMode[Type] = 1;
-            NPCID.Sets.BossBestiaryPriority.Add(Type);
-            if (!Main.dedServ)
-            {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-            }
+            GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+        }
+    }
+
+    public override void SetDefaults()
+    {
+        NPC.Calamity().canBreakPlayerDefense = true;
+        NPC.damage = 120; // 240
+        NPC.aiStyle = -1;
+        AIType = -1;
+        NPC.dontTakeDamage = true;
+        NPC.width = NPC.height = HitboxSize;
+        NPC.defense = 50;
+        NPC.lifeMax = BossRushEvent.BossRushActive ? MaxBossRushHP : MaxHP;
+        NPC.knockBackResist = 0f;
+        NPC.Opacity = 0f;
+        NPC.noGravity = true;
+        NPC.noTileCollide = true;
+        NPC.HitSound = SoundID.NPCHit53;
+        NPC.DeathSound = SoundID.NPCDeath44;
+        NPC.Calamity().VulnerableToSickness = false;
+    }
+
+    public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+    {
+        int associatedNPCType = ModContent.NPCType<CeaselessVoid>();
+        bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
+
+        bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+        {
+            BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
+            new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DarkEnergy")
+        });
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(start);
+        writer.Write(distance);
+        writer.Write(NPC.dontTakeDamage);
+        writer.Write(NPC.Opacity);
+        for (int i = 0; i < 4; i++)
+            writer.Write(NPC.Calamity().newAI[i]);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        start = reader.ReadBoolean();
+        distance = reader.ReadDouble();
+        NPC.dontTakeDamage = reader.ReadBoolean();
+        NPC.Opacity = reader.ReadSingle();
+        for (int i = 0; i < 4; i++)
+            NPC.Calamity().newAI[i] = reader.ReadSingle();
+    }
+
+    public override void FindFrame(int frameHeight)
+    {
+        NPC.frameCounter += 0.15f;
+        NPC.frameCounter %= Main.npcFrameCount[Type];
+        int frame = (int)NPC.frameCounter;
+        NPC.frame.Y = frame * frameHeight;
+    }
+
+    public override void AI()
+    {
+        // Set the degrees used for rotation
+        if (start)
+        {
+            start = false;
+            NPC.ai[3] = NPC.ai[0];
         }
 
-        public override void SetDefaults()
+        // Stay invincible for 200 frames to avoid being instantly killed and don't deal damage to avoid unfair hits
+        if (NPC.Opacity < 1f && NPC.dontTakeDamage)
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 120; // 240
-            NPC.aiStyle = -1;
-            AIType = -1;
-            NPC.dontTakeDamage = true;
-            NPC.width = NPC.height = HitboxSize;
-            NPC.defense = 50;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? MaxBossRushHP : MaxHP;
-            NPC.knockBackResist = 0f;
-            NPC.Opacity = 0f;
-            NPC.noGravity = true;
-            NPC.noTileCollide = true;
-            NPC.HitSound = SoundID.NPCHit53;
-            NPC.DeathSound = SoundID.NPCDeath44;
-            NPC.Calamity().VulnerableToSickness = false;
+            NPC.damage = 0;
+
+            NPC.Opacity += 0.005f;
+            if (NPC.Opacity > 1f)
+                NPC.Opacity = 1f;
+
+            NPC.scale = MathHelper.Lerp(0.05f, Main.getGoodWorld ? 0.5f : 1f, NPC.Opacity);
         }
-
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        else
         {
-            int associatedNPCType = ModContent.NPCType<CeaselessVoid>();
-            bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
-
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
-            {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DarkEnergy")
-            });
-        }
-
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(start);
-            writer.Write(distance);
-            writer.Write(NPC.dontTakeDamage);
-            writer.Write(NPC.Opacity);
-            for (int i = 0; i < 4; i++)
-                writer.Write(NPC.Calamity().newAI[i]);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            start = reader.ReadBoolean();
-            distance = reader.ReadDouble();
-            NPC.dontTakeDamage = reader.ReadBoolean();
-            NPC.Opacity = reader.ReadSingle();
-            for (int i = 0; i < 4; i++)
-                NPC.Calamity().newAI[i] = reader.ReadSingle();
-        }
-
-        public override void FindFrame(int frameHeight)
-        {
-            NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[Type];
-            int frame = (int)NPC.frameCounter;
-            NPC.frame.Y = frame * frameHeight;
-        }
-
-        public override void AI()
-        {
-            // Set the degrees used for rotation
-            if (start)
-            {
-                start = false;
-                NPC.ai[3] = NPC.ai[0];
-            }
-
-            // Stay invincible for 200 frames to avoid being instantly killed and don't deal damage to avoid unfair hits
-            if (NPC.Opacity < 1f && NPC.dontTakeDamage)
-            {
-                NPC.damage = 0;
-
-                NPC.Opacity += 0.005f;
-                if (NPC.Opacity > 1f)
-                    NPC.Opacity = 1f;
-
-                NPC.scale = MathHelper.Lerp(0.05f, Main.getGoodWorld ? 0.5f : 1f, NPC.Opacity);
-            }
-            else
-            {
-                if (NPC.dontTakeDamage)
-                {
-                    for (int k = 0; k < 15; k++)
-                    {
-                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0, 0, 0, default, 1f);
-                        Main.dust[dust].noGravity = true;
-                    }
-                }
-
-                NPC.damage = NPC.defDamage;
-                NPC.dontTakeDamage = false;
-                float scalar = (float)Math.Cos(NPC.Calamity().newAI[1] * 0.33f) / 2f + 0.5f;
-                NPC.scale = MathHelper.Lerp(0.8f, 1f, scalar);
-                NPC.Opacity = MathHelper.Lerp(0.5f, 1f, scalar);
-                NPC.Calamity().newAI[1] += 1f;
-            }
-
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.8f * NPC.Opacity, 0f, 1.2f * NPC.Opacity);
-
-            // Force despawn if Ceaseless Void isn't active
-            if (CalamityGlobalNPC.voidBoss < 0 || !Main.npc[CalamityGlobalNPC.voidBoss].active)
-            {
-                NPC.life = 0;
-                NPC.HitEffect();
-                NPC.active = false;
-                NPC.netUpdate = true;
-                return;
-            }
-
-            // Set time left just in case something dumb happens with despawning
-            if (NPC.timeLeft < 1800)
-                NPC.timeLeft = 1800;
-
-            // Difficulty modes
-            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
-            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-
-            // Distance from Ceaseless Void
-            double maxDistance = death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
-            double rateOfChangeIncrease = (maxDistance / minMaxDistance) - 1D;
-            double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + rateOfChangeIncrease;
-            if (NPC.Calamity().newAI[0] == 0f)
-            {
-                distance += rateOfChange;
-                if (distance >= maxDistance)
-                {
-                    distance = maxDistance;
-                    NPC.Calamity().newAI[0] = 1f;
-                }
-            }
-            else
-            {
-                distance -= rateOfChange;
-                if (distance <= minDistance)
-                {
-                    distance = minDistance;
-                    NPC.Calamity().newAI[0] = 0f;
-                }
-            }
-
-            // Rotation velocity
-            float minRotationVelocity = 0.5f;
-            float rotationVelocityIncrease = death ? 0.2f : revenge ? 0.15f : expertMode ? 0.1f : 0f;
-            rotationVelocityIncrease += rotationVelocityIncrease * (NPC.ai[1] * 0.5f);
-
-            // Rotate around Ceaseless Void
-            NPC parent = Main.npc[NPC.FindFirstNPC(ModContent.NPCType<CeaselessVoid>())];
-            double degrees = NPC.ai[3];
-            double radians = degrees * (Math.PI / 180);
-            NPC.position.X = parent.Center.X - (int)(Math.Cos(radians) * distance) - NPC.width / 2;
-            NPC.position.Y = parent.Center.Y - (int)(Math.Sin(radians) * distance) - NPC.height / 2;
-            NPC.ai[3] += minRotationVelocity + rotationVelocityIncrease;
-        }
-
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            Texture2D mainTexture = TextureAssets.Npc[Type].Value;
-            Vector2 drawPos = NPC.Center - screenPos;
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            Vector2 drawOrigin = new Vector2(mainTexture.Width / 2, mainTexture.Height / Main.npcFrameCount[Type] / 2);
-
-            if (NPC.IsABestiaryIconDummy)
-            {
-                float scale = 1f;
-                Main.EntitySpriteDraw(mainTexture, drawPos, NPC.frame, Color.White, NPC.rotation, drawOrigin, scale, spriteEffects, 0);
-                return false;
-            }
-
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Color white = Color.White * NPC.Opacity;
-            int trailCount = 5;
-
-            drawPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-            drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-
-            if (CalamityClientConfig.Instance.Afterimages)
-            {
-                for (int i = 1; i < trailCount; i += 2)
-                {
-                    Color trailColor = drawColor;
-                    trailColor = Color.Lerp(trailColor, white, 0.5f);
-                    trailColor = NPC.GetAlpha(trailColor);
-                    trailColor *= (trailCount - i) / 15f;
-                    Vector2 trailPos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    trailPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-                    trailPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(mainTexture, trailPos, NPC.frame, trailColor, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
-                }
-            }
-
-            spriteBatch.Draw(mainTexture, drawPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
-
             if (NPC.dontTakeDamage)
-                return false;
-
-            Texture2D glowTexture = GlowTexture.Value;
-            Color glowColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f) * NPC.Opacity;
-
-            if (CalamityClientConfig.Instance.Afterimages)
             {
-                for (int i = 1; i < trailCount; i++)
+                for (int k = 0; k < 15; k++)
                 {
-                    Color trailColor2 = glowColor;
-                    trailColor2 = Color.Lerp(trailColor2, white, 0.5f);
-                    trailColor2 = NPC.GetAlpha(trailColor2);
-                    trailColor2 *= (trailCount - i) / 15f;
-                    Vector2 trailPos2 = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    trailPos2 -= new Vector2(glowTexture.Width, glowTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-                    trailPos2 += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-                    spriteBatch.Draw(glowTexture, trailPos2, NPC.frame, trailColor2, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0, 0, 0, default, 1f);
+                    Main.dust[dust].noGravity = true;
                 }
             }
 
-            spriteBatch.Draw(glowTexture, drawPos, NPC.frame, glowColor, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
+            NPC.damage = NPC.defDamage;
+            NPC.dontTakeDamage = false;
+            float scalar = (float)Math.Cos(NPC.Calamity().newAI[1] * 0.33f) / 2f + 0.5f;
+            NPC.scale = MathHelper.Lerp(0.8f, 1f, scalar);
+            NPC.Opacity = MathHelper.Lerp(0.5f, 1f, scalar);
+            NPC.Calamity().newAI[1] += 1f;
+        }
 
+        Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.8f * NPC.Opacity, 0f, 1.2f * NPC.Opacity);
+
+        // Force despawn if Ceaseless Void isn't active
+        if (CalamityGlobalNPC.voidBoss < 0 || !Main.npc[CalamityGlobalNPC.voidBoss].active)
+        {
+            NPC.life = 0;
+            NPC.HitEffect();
+            NPC.active = false;
+            NPC.netUpdate = true;
+            return;
+        }
+
+        // Set time left just in case something dumb happens with despawning
+        if (NPC.timeLeft < 1800)
+            NPC.timeLeft = 1800;
+
+        // Difficulty modes
+        bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+        bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+        bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+        // Distance from Ceaseless Void
+        double maxDistance = death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
+        double rateOfChangeIncrease = (maxDistance / minMaxDistance) - 1D;
+        double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + rateOfChangeIncrease;
+        if (NPC.Calamity().newAI[0] == 0f)
+        {
+            distance += rateOfChange;
+            if (distance >= maxDistance)
+            {
+                distance = maxDistance;
+                NPC.Calamity().newAI[0] = 1f;
+            }
+        }
+        else
+        {
+            distance -= rateOfChange;
+            if (distance <= minDistance)
+            {
+                distance = minDistance;
+                NPC.Calamity().newAI[0] = 0f;
+            }
+        }
+
+        // Rotation velocity
+        float minRotationVelocity = 0.5f;
+        float rotationVelocityIncrease = death ? 0.2f : revenge ? 0.15f : expertMode ? 0.1f : 0f;
+        rotationVelocityIncrease += rotationVelocityIncrease * (NPC.ai[1] * 0.5f);
+
+        // Rotate around Ceaseless Void
+        NPC parent = Main.npc[NPC.FindFirstNPC(ModContent.NPCType<CeaselessVoid>())];
+        double degrees = NPC.ai[3];
+        double radians = degrees * (Math.PI / 180);
+        NPC.position.X = parent.Center.X - (int)(Math.Cos(radians) * distance) - NPC.width / 2;
+        NPC.position.Y = parent.Center.Y - (int)(Math.Sin(radians) * distance) - NPC.height / 2;
+        NPC.ai[3] += minRotationVelocity + rotationVelocityIncrease;
+    }
+
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        Texture2D mainTexture = TextureAssets.Npc[Type].Value;
+        Vector2 drawPos = NPC.Center - screenPos;
+        SpriteEffects spriteEffects = SpriteEffects.None;
+        Vector2 drawOrigin = new Vector2(mainTexture.Width / 2, mainTexture.Height / Main.npcFrameCount[Type] / 2);
+
+        if (NPC.IsABestiaryIconDummy)
+        {
+            float scale = 1f;
+            Main.EntitySpriteDraw(mainTexture, drawPos, NPC.frame, Color.White, NPC.rotation, drawOrigin, scale, spriteEffects, 0);
             return false;
         }
 
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
-        {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.5f * balance);
-        }
+        if (NPC.spriteDirection == 1)
+            spriteEffects = SpriteEffects.FlipHorizontally;
 
-        public override bool CheckActive() => false;
+        Color white = Color.White * NPC.Opacity;
+        int trailCount = 5;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        drawPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+        drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+
+        if (CalamityClientConfig.Instance.Afterimages)
         {
-            if (Main.zenithWorld)
+            for (int i = 1; i < trailCount; i += 2)
             {
-                if (hurtInfo.Damage > 0)
-                    target.AddBuff(BuffID.Blackout, 30, true);
+                Color trailColor = drawColor;
+                trailColor = Color.Lerp(trailColor, white, 0.5f);
+                trailColor = NPC.GetAlpha(trailColor);
+                trailColor *= (trailCount - i) / 15f;
+                Vector2 trailPos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                trailPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+                trailPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                spriteBatch.Draw(mainTexture, trailPos, NPC.frame, trailColor, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
             }
         }
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        spriteBatch.Draw(mainTexture, drawPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
+
+        if (NPC.dontTakeDamage)
+            return false;
+
+        Texture2D glowTexture = GlowTexture.Value;
+        Color glowColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f) * NPC.Opacity;
+
+        if (CalamityClientConfig.Instance.Afterimages)
         {
-            Rectangle targetHitbox = target.Hitbox;
-
-            float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
-            float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
-            float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
-            float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
-
-            float minDist = hitboxTopLeft;
-            if (hitboxTopRight < minDist)
-                minDist = hitboxTopRight;
-            if (hitboxBotLeft < minDist)
-                minDist = hitboxBotLeft;
-            if (hitboxBotRight < minDist)
-                minDist = hitboxBotRight;
-
-            return minDist <= 35f * NPC.scale;
+            for (int i = 1; i < trailCount; i++)
+            {
+                Color trailColor2 = glowColor;
+                trailColor2 = Color.Lerp(trailColor2, white, 0.5f);
+                trailColor2 = NPC.GetAlpha(trailColor2);
+                trailColor2 *= (trailCount - i) / 15f;
+                Vector2 trailPos2 = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                trailPos2 -= new Vector2(glowTexture.Width, glowTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
+                trailPos2 += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+                spriteBatch.Draw(glowTexture, trailPos2, NPC.frame, trailColor2, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
+            }
         }
 
-        public override bool CheckDead() => false;
+        spriteBatch.Draw(glowTexture, drawPos, NPC.frame, glowColor, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
 
-        public override void HitEffect(NPC.HitInfo hit)
+        return false;
+    }
+
+    public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+    {
+        NPC.lifeMax = (int)(NPC.lifeMax * 0.5f * balance);
+    }
+
+    public override bool CheckActive() => false;
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+    {
+        if (Main.zenithWorld)
         {
-            if (NPC.life <= 0)
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.Blackout, 30, true);
+        }
+    }
+
+    public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+    {
+        Rectangle targetHitbox = target.Hitbox;
+
+        float hitboxTopLeft = Vector2.Distance(NPC.Center, targetHitbox.TopLeft());
+        float hitboxTopRight = Vector2.Distance(NPC.Center, targetHitbox.TopRight());
+        float hitboxBotLeft = Vector2.Distance(NPC.Center, targetHitbox.BottomLeft());
+        float hitboxBotRight = Vector2.Distance(NPC.Center, targetHitbox.BottomRight());
+
+        float minDist = hitboxTopLeft;
+        if (hitboxTopRight < minDist)
+            minDist = hitboxTopRight;
+        if (hitboxBotLeft < minDist)
+            minDist = hitboxBotLeft;
+        if (hitboxBotRight < minDist)
+            minDist = hitboxBotRight;
+
+        return minDist <= 35f * NPC.scale;
+    }
+
+    public override bool CheckDead() => false;
+
+    public override void HitEffect(NPC.HitInfo hit)
+    {
+        if (NPC.life <= 0)
+        {
+            for (int k = 0; k < 20; k++)
             {
-                for (int k = 0; k < 20; k++)
-                {
-                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, hit.HitDirection, -1f, 0, default, 1f);
-                    Main.dust[dust].noGravity = true;
-                }
+                int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, hit.HitDirection, -1f, 0, default, 1f);
+                Main.dust[dust].noGravity = true;
             }
         }
     }

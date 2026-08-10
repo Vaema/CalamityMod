@@ -1,9 +1,8 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum AnimationType
 {
-    public enum AnimationType
-    {
-        Idle,
-        Jump,
-        Walk
-    }
+    Idle,
+    Jump,
+    Walk
 }

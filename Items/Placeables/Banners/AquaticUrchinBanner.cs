@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class AquaticUrchinBanner : BaseBanner
 {
-    public class AquaticUrchinBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 7;
-    }
+    public override int BannerTileStyle => 7;
 }

@@ -3,20 +3,19 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls;
+
+public class ShellstoneSlabWall : ModWall, IVisibleThroughWater
 {
-    public class ShellstoneSlabWall : ModWall, IVisibleThroughWater
+    int IVisibleThroughWater.WaterMapEntry { get; set; }
+
+    public override void SetStaticDefaults()
     {
-        int IVisibleThroughWater.WaterMapEntry { get; set; }
+        Main.wallHouse[Type] = true;
+        DustType = DustID.CorruptionThorns;
 
-        public override void SetStaticDefaults()
-        {
-            Main.wallHouse[Type] = true;
-            DustType = DustID.CorruptionThorns;
-
-            this.AddMapEntryWithWaterVisibility(new Color(100, 127, 137));
-        }
-
-        public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
+        this.AddMapEntryWithWaterVisibility(new Color(100, 127, 137));
     }
+
+    public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 }

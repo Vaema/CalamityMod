@@ -5,49 +5,48 @@ using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Abyss.AbyssAmbient
+namespace CalamityMod.Tiles.Abyss.AbyssAmbient;
+
+public class SulphurPireCoral1 : GlowMaskTile
 {
-    public class SulphurPireCoral1 : GlowMaskTile
+    public override void SetupStatic()
     {
-        public override void SetupStatic()
-        {
-            Main.tileLighted[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            TileObjectData.newTile.Width = 3;
-            TileObjectData.newTile.Height = 3;
-            TileObjectData.newTile.Origin = new Point16(1, 2);
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.Table | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.WaterDeath = false;
-            TileObjectData.newTile.LavaDeath = true;
-            TileObjectData.newTile.DrawYOffset = 2;
-            TileObjectData.addTile(Type);
-            AddMapEntry(new Color(91, 128, 13));
-            DustType = DustID.Sand;
-        }
-
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 0.46f;
-            g = 0.51f;
-            b = 0f;
-        }
-
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 2;
-        }
-
-        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
-        {
-            return Color.White;
-        }
+        Main.tileLighted[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        TileObjectData.newTile.Width = 3;
+        TileObjectData.newTile.Height = 3;
+        TileObjectData.newTile.Origin = new Point16(1, 2);
+        TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.Table | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+        TileObjectData.newTile.UsesCustomCanPlace = true;
+        TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
+        TileObjectData.newTile.CoordinateWidth = 16;
+        TileObjectData.newTile.CoordinatePadding = 2;
+        TileObjectData.newTile.WaterDeath = false;
+        TileObjectData.newTile.LavaDeath = true;
+        TileObjectData.newTile.DrawYOffset = 2;
+        TileObjectData.addTile(Type);
+        AddMapEntry(new Color(91, 128, 13));
+        DustType = DustID.Sand;
     }
 
-    public class SulphurPireCoral2 : SulphurPireCoral1;
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+    {
+        r = 0.46f;
+        g = 0.51f;
+        b = 0f;
+    }
 
-    public class SulphurPireCoral3 : SulphurPireCoral1;
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 2;
+    }
+
+    public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
+    {
+        return Color.White;
+    }
 }
+
+public class SulphurPireCoral2 : SulphurPireCoral1;
+
+public class SulphurPireCoral3 : SulphurPireCoral1;

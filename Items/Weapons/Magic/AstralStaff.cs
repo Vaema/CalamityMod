@@ -6,58 +6,57 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+public class AstralStaff : ModItem, ILocalizedModType
 {
-    public class AstralStaff : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetStaticDefaults()
-        {
-            Item.staff[Type] = true;
-        }
+        Item.staff[Type] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 86;
-            Item.height = 72;
-            Item.damage = 245;
-            Item.DamageType = DamageClass.Magic;
-            Item.crit = 15;
-            Item.mana = 26;
-            Item.useTime = 18;
-            Item.useAnimation = 18;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
-            Item.rare = ItemRarityID.Cyan;
-            Item.UseSound = SoundID.Item105;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<AstralCrystal>();
-            Item.shootSpeed = 15f;
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 86;
+        Item.height = 72;
+        Item.damage = 245;
+        Item.DamageType = DamageClass.Magic;
+        Item.crit = 15;
+        Item.mana = 26;
+        Item.useTime = 18;
+        Item.useAnimation = 18;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 5f;
+        Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
+        Item.rare = ItemRarityID.Cyan;
+        Item.UseSound = SoundID.Item105;
+        Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<AstralCrystal>();
+        Item.shootSpeed = 15f;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Vector2 spawnPos = new Vector2(player.MountedCenter.X + Main.rand.Next(-200, 201), player.MountedCenter.Y - 600f);
-            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            Vector2 targetPos = Main.MouseWorld + new Vector2(Main.rand.Next(-30, 31), Main.rand.Next(-30, 31));
-            Vector2 velocityReal = targetPos - spawnPos;
-            velocityReal.Normalize();
-            velocityReal *= 13f;
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Vector2 spawnPos = new Vector2(player.MountedCenter.X + Main.rand.Next(-200, 201), player.MountedCenter.Y - 600f);
+        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+        Vector2 targetPos = Main.MouseWorld + new Vector2(Main.rand.Next(-30, 31), Main.rand.Next(-30, 31));
+        Vector2 velocityReal = targetPos - spawnPos;
+        velocityReal.Normalize();
+        velocityReal *= 13f;
 
-            int p = Projectile.NewProjectile(source, spawnPos, velocityReal, type, damage, knockback, player.whoAmI);
-            Main.projectile[p].ai[0] = targetPos.Y - 120;
+        int p = Projectile.NewProjectile(source, spawnPos, velocityReal, type, damage, knockback, player.whoAmI);
+        Main.projectile[p].ai[0] = targetPos.Y - 120;
 
-            return false;
-        }
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<AstralBar>(12).
-                AddTile(TileID.LunarCraftingStation).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<AstralBar>(12).
+            AddTile(TileID.LunarCraftingStation).
+            Register();
     }
 }

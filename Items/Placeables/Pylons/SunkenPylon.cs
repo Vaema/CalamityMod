@@ -3,17 +3,16 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Pylons
-{
-    public class SunkenPylon : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<SunkenPylonTile>());
+namespace CalamityMod.Items.Placeables.Pylons;
 
-            Item.value = Item.sellPrice(gold: 2);
-            Item.rare = ItemRarityID.Blue;
-        }
+public class SunkenPylon : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<SunkenPylonTile>());
+
+        Item.value = Item.sellPrice(gold: 2);
+        Item.rare = ItemRarityID.Blue;
     }
 }

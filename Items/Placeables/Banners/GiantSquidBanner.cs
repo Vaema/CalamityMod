@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class GiantSquidBanner : BaseBanner
 {
-    public class GiantSquidBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 20;
-    }
+    public override int BannerTileStyle => 20;
 }

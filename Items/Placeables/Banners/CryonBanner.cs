@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class CryonBanner : BaseBanner
 {
-    public class CryonBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 60;
-    }
+    public override int BannerTileStyle => 60;
 }

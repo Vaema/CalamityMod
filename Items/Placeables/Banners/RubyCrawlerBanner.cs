@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class RubyCrawlerBanner : BaseBanner
 {
-    public class RubyCrawlerBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 70;
-    }
+    public override int BannerTileStyle => 70;
 }

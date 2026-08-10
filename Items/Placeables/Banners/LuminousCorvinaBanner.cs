@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class LuminousCorvinaBanner : BaseBanner
 {
-    public class LuminousCorvinaBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 19;
-    }
+    public override int BannerTileStyle => 19;
 }

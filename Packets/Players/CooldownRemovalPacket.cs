@@ -4,53 +4,52 @@ using CalamityMod.Cooldowns;
 using Terraria;
 using Terraria.ID;
 
-namespace CalamityMod.Packets
+namespace CalamityMod.Packets;
+
+internal sealed class CooldownRemovalPacket : CalamityPacket
 {
-    internal sealed class CooldownRemovalPacket : CalamityPacket
+    public static CooldownRemovalPacket Instance { get; private set; }
+
+    public static void Send(CalamityPlayer player, ushort[] netIDsToRemove, int toClient = -1, int ignoreClient = -1)
     {
-        public static CooldownRemovalPacket Instance { get; private set; }
+        if (player is null)
+            return;
 
-        public static void Send(CalamityPlayer player, ushort[] netIDsToRemove, int toClient = -1, int ignoreClient = -1)
+        var packet = Instance.CreateBasePacket();
+        packet.WriteWhoAmI(player);
+        packet.Write(netIDsToRemove.Length);
+        for (int i = 0; i < netIDsToRemove.Length; i++)
         {
-            if (player is null)
-                return;
+            packet.Write(netIDsToRemove[i]);
+        }
+        packet.Send(toClient, ignoreClient);
+    }
 
-            var packet = Instance.CreateBasePacket();
-            packet.WriteWhoAmI(player);
-            packet.Write(netIDsToRemove.Length);
-            for (int i = 0; i < netIDsToRemove.Length; i++)
-            {
-                packet.Write(netIDsToRemove[i]);
-            }
-            packet.Send(toClient, ignoreClient);
+    public override void HandlePacket(BinaryReader packet, int sender)
+    {
+        var player = packet.ReadCalamityPlayer();
+        var count = packet.ReadInt32();
+        var netIDsToRemove = new ushort[count];
+        for (int i = 0; i < count; i++)
+        {
+            netIDsToRemove[i] = packet.ReadUInt16();
         }
 
-        public override void HandlePacket(BinaryReader packet, int sender)
+        if (player is null)
+            return;
+
+        if (Main.netMode == NetmodeID.MultiplayerClient)
         {
-            var player = packet.ReadCalamityPlayer();
-            var count = packet.ReadInt32();
-            var netIDsToRemove = new ushort[count];
-            for (int i = 0; i < count; i++)
+            foreach (var netID in netIDsToRemove)
             {
-                netIDsToRemove[i] = packet.ReadUInt16();
+                player.cooldowns.Remove(CooldownRegistry.registry[netID].ID);
             }
-
-            if (player is null)
-                return;
-
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                foreach (var netID in netIDsToRemove)
-                {
-                    player.cooldowns.Remove(CooldownRegistry.registry[netID].ID);
-                }
-            }
-            else if (Main.dedServ)
-            {
-                // Server should NOT handle cooldown itself!
-                // Server doesn't have information for cooldown netIDs!
-                Send(player, netIDsToRemove, ignoreClient: sender);
-            }
+        }
+        else if (Main.dedServ)
+        {
+            // Server should NOT handle cooldown itself!
+            // Server doesn't have information for cooldown netIDs!
+            Send(player, netIDsToRemove, ignoreClient: sender);
         }
     }
 }

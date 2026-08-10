@@ -5,45 +5,44 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Melee
+namespace CalamityMod.Items.Weapons.Melee;
+
+public class StarnightLance : ModItem, ILocalizedModType
 {
-    public class StarnightLance : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Melee";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn2];
-            ItemID.Sets.Spears[Type] = true;
-        }
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn2];
+        ItemID.Sets.Spears[Type] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 72;
-            Item.height = 72;
-            Item.damage = 80;
-            Item.DamageType = DamageClass.Melee;
-            Item.noMelee = true;
-            Item.useTurn = true;
-            Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 23;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 6;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
-            Item.shoot = ModContent.ProjectileType<StarnightLanceProjectile>();
-            Item.shootSpeed = 6f;
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 72;
+        Item.height = 72;
+        Item.damage = 80;
+        Item.DamageType = DamageClass.Melee;
+        Item.noMelee = true;
+        Item.useTurn = true;
+        Item.noUseGraphic = true;
+        Item.useAnimation = Item.useTime = 23;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.knockBack = 6;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
+        Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+        Item.rare = ItemRarityID.Pink;
+        Item.shoot = ModContent.ProjectileType<StarnightLanceProjectile>();
+        Item.shootSpeed = 6f;
+    }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<CryonicBar>(12).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<CryonicBar>(12).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

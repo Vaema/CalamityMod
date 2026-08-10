@@ -1,6 +1,5 @@
-﻿namespace CalamityMod.Gores.WaterDroplet
+﻿namespace CalamityMod.Gores.WaterDroplet;
+
+public class SulphuricWaterDroplet : LiquidDropletGore
 {
-    public class SulphuricWaterDroplet : LiquidDropletGore
-    {
-    }
 }

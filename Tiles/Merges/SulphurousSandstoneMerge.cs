@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.Abyss;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class SulphurousSandstoneMerge : TileBlendTexture
 {
-    public sealed class SulphurousSandstoneMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<SulphurousSandstone>();
-    }
+    public override int TileType => ModContent.TileType<SulphurousSandstone>();
 }

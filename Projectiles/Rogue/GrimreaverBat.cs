@@ -3,72 +3,71 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class GrimreaverBat : ModProjectile, ILocalizedModType
 {
-    public class GrimreaverBat : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetStaticDefaults()
+        Main.projFrames[Type] = 4;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 20;
+        Projectile.height = 20;
+        Projectile.friendly = true;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.penetrate = 2;
+        Projectile.timeLeft = 210;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 10;
+    }
+
+    public override void AI()
+    {
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 6)
         {
-            Main.projFrames[Type] = 4;
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
+        }
+        if (Projectile.frame >= Main.projFrames[Type])
+            Projectile.frame = 0;
+
+        Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+
+        // Each bounce subtracts from projectile.ai[0] instead of penetration because it shouldn't pierce enemies
+        if (Projectile.ai[0] <= 0)
+        {
+            Projectile.Kill();
         }
 
-        public override void SetDefaults()
+        // Fade out
+        if (Projectile.timeLeft <= 60)
         {
-            Projectile.width = 20;
-            Projectile.height = 20;
-            Projectile.friendly = true;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.penetrate = 2;
-            Projectile.timeLeft = 210;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.alpha += 4;
         }
 
-        public override void AI()
+        // Current bat burst code occasionally has a few duds, so they get an acceleration boost that blends them in (also mildly interesting to look at)
+        if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) < 10)
         {
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= Main.projFrames[Type])
-                Projectile.frame = 0;
-
-            Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-
-            // Each bounce subtracts from projectile.ai[0] instead of penetration because it shouldn't pierce enemies
-            if (Projectile.ai[0] <= 0)
-            {
-                Projectile.Kill();
-            }
-
-            // Fade out
-            if (Projectile.timeLeft <= 60)
-            {
-                Projectile.alpha += 4;
-            }
-
-            // Current bat burst code occasionally has a few duds, so they get an acceleration boost that blends them in (also mildly interesting to look at)
-            if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) < 10)
-            {
-                Projectile.velocity *= 1.1f;
-            }
+            Projectile.velocity *= 1.1f;
         }
+    }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        if (Projectile.velocity.X != oldVelocity.X)
         {
-            if (Projectile.velocity.X != oldVelocity.X)
-            {
-                Projectile.velocity.X = -oldVelocity.X;
-            }
-            if (Projectile.velocity.Y != oldVelocity.Y)
-            {
-                Projectile.velocity.Y = -oldVelocity.Y;
-            }
-            Projectile.ai[0]--;
-            return false;
+            Projectile.velocity.X = -oldVelocity.X;
         }
+        if (Projectile.velocity.Y != oldVelocity.Y)
+        {
+            Projectile.velocity.Y = -oldVelocity.Y;
+        }
+        Projectile.ai[0]--;
+        return false;
     }
 }

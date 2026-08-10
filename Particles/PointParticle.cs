@@ -4,55 +4,54 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Particles
+namespace CalamityMod.Particles;
+
+public class PointParticle : Particle
 {
-    public class PointParticle : Particle
+    public Color InitialColor;
+    public bool AffectedByGravity;
+    public bool UseAltVisual = true;
+    public override bool SetLifetime => true;
+    public override bool UseCustomDraw => true;
+    public override bool UseAdditiveBlend => UseAltVisual;
+
+    public override string Texture => "CalamityMod/Particles/PointParticle";
+
+    public PointParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, bool AddativeBlend = true, bool affectedByLight = false)
     {
-        public Color InitialColor;
-        public bool AffectedByGravity;
-        public bool UseAltVisual = true;
-        public override bool SetLifetime => true;
-        public override bool UseCustomDraw => true;
-        public override bool UseAdditiveBlend => UseAltVisual;
+        Position = relativePosition;
+        Velocity = velocity;
+        AffectedByGravity = affectedByGravity;
+        Scale = scale;
+        Lifetime = lifetime;
+        Color = InitialColor = color;
+        UseAltVisual = AddativeBlend;
+        AffectedByLight = affectedByLight;
+    }
 
-        public override string Texture => "CalamityMod/Particles/PointParticle";
-
-        public PointParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, bool AddativeBlend = true, bool affectedByLight = false)
+    public override void Update()
+    {
+        Scale *= 0.95f;
+        Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
+        if (AffectedByLight)
         {
-            Position = relativePosition;
-            Velocity = velocity;
-            AffectedByGravity = affectedByGravity;
-            Scale = scale;
-            Lifetime = lifetime;
-            Color = InitialColor = color;
-            UseAltVisual = AddativeBlend;
-            AffectedByLight = affectedByLight;
+            Color = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGBA(Color);
         }
-
-        public override void Update()
+        Velocity *= 0.95f;
+        if (Velocity.Length() < 12f && AffectedByGravity)
         {
-            Scale *= 0.95f;
-            Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
-            if (AffectedByLight)
-            {
-                Color = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGBA(Color);
-            }
-            Velocity *= 0.95f;
-            if (Velocity.Length() < 12f && AffectedByGravity)
-            {
-                Velocity.X *= 0.94f;
-                Velocity.Y += 0.25f;
-            }
-            Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
+            Velocity.X *= 0.94f;
+            Velocity.Y += 0.25f;
         }
+        Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
+    }
 
-        public override void CustomDraw(SpriteBatch spriteBatch)
-        {
-            Vector2 scale = new Vector2(0.5f, 1.6f) * Scale;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+    public override void CustomDraw(SpriteBatch spriteBatch)
+    {
+        Vector2 scale = new Vector2(0.5f, 1.6f) * Scale;
+        Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.45f, 1f), 0, 0f);
-        }
+        spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
+        spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale * new Vector2(0.45f, 1f), 0, 0f);
     }
 }

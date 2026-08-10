@@ -4,32 +4,31 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.StatDebuffs
+namespace CalamityMod.Buffs.StatDebuffs;
+
+public class GalvanicCorrosion : ModBuff
 {
-    public class GalvanicCorrosion : ModBuff
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.debuff[Type] = true;
-            Main.pvpBuff[Type] = true;
-            Main.buffNoSave[Type] = false;
-            BuffID.Sets.LongerExpertDebuff[Type] = true;
-            CalamityBuffSets.DebuffDataset[Type] = debuffData;
-        }
-        // Purely to make it get electric color in tooltips
-        public static DebuffData debuffData = new DebuffData()
-        {
-            ElectricDebuffScaling = 1
-        };
+        Main.debuff[Type] = true;
+        Main.pvpBuff[Type] = true;
+        Main.buffNoSave[Type] = false;
+        BuffID.Sets.LongerExpertDebuff[Type] = true;
+        CalamityBuffSets.DebuffDataset[Type] = debuffData;
+    }
+    // Purely to make it get electric color in tooltips
+    public static DebuffData debuffData = new DebuffData()
+    {
+        ElectricDebuffScaling = 1
+    };
 
-        public override void Update(NPC npc, ref int buffIndex)
-        {
-            npc.Calamity().galvanicCorrosion = true;
-        }
+    public override void Update(NPC npc, ref int buffIndex)
+    {
+        npc.Calamity().galvanicCorrosion = true;
+    }
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.Calamity().galvanicCorrosion = true;
-        }
+    public override void Update(Player player, ref int buffIndex)
+    {
+        player.Calamity().galvanicCorrosion = true;
     }
 }

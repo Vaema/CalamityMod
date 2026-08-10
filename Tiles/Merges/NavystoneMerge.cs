@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.SunkenSea;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class NavystoneMerge : TileBlendTexture
 {
-    public sealed class NavystoneMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<Navystone>();
-    }
+    public override int TileType => ModContent.TileType<Navystone>();
 }

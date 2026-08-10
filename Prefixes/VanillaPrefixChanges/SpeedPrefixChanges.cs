@@ -3,55 +3,54 @@ using CalamityMod.Prefixes.VanillaPrefixChanges.Stats;
 using Terraria;
 using Terraria.ID;
 
-namespace CalamityMod.Prefixes.VanillaPrefixChanges
+namespace CalamityMod.Prefixes.VanillaPrefixChanges;
+
+public class BriskPrefixChange : VanillaPrefixChange
 {
-    public class BriskPrefixChange : VanillaPrefixChange
+    public override int TargetPrefix => PrefixID.Brisk;
+    public override string TargetTooltipName => "PrefixAccMoveSpeed";
+
+    public override IEnumerator<IVanillaPrefixStat> PopulateStats()
     {
-        public override int TargetPrefix => PrefixID.Brisk;
-        public override string TargetTooltipName => "PrefixAccMoveSpeed";
+        yield return new PrefixMovementSpeedStat(0.02f);
 
-        public override IEnumerator<IVanillaPrefixStat> PopulateStats()
-        {
-            yield return new PrefixMovementSpeedStat(0.02f);
-
-            if (NPC.downedMoonlord) yield return new PrefixArmorPenStat(3);
-            else if (Main.hardMode) yield return new PrefixArmorPenStat(2);
-            else yield return new PrefixArmorPenStat(1);
-        }
+        if (NPC.downedMoonlord) yield return new PrefixArmorPenStat(3);
+        else if (Main.hardMode) yield return new PrefixArmorPenStat(2);
+        else yield return new PrefixArmorPenStat(1);
     }
+}
 
-    public class FleetingPrefixChange : VanillaPrefixChange
+public class FleetingPrefixChange : VanillaPrefixChange
+{
+    public override int TargetPrefix => PrefixID.Fleeting;
+    public override string TargetTooltipName => "PrefixAccMoveSpeed";
+
+    public override IEnumerator<IVanillaPrefixStat> PopulateStats()
     {
-        public override int TargetPrefix => PrefixID.Fleeting;
-        public override string TargetTooltipName => "PrefixAccMoveSpeed";
-
-        public override IEnumerator<IVanillaPrefixStat> PopulateStats()
-        {
-            yield return new PrefixMovementSpeedStat(0.02f);
-            yield return new PrefixDamageStat(0.02f);
-        }
+        yield return new PrefixMovementSpeedStat(0.02f);
+        yield return new PrefixDamageStat(0.02f);
     }
+}
 
-    public class HastyPrefixChange : VanillaPrefixChange
+public class HastyPrefixChange : VanillaPrefixChange
+{
+    public override int TargetPrefix => PrefixID.Hasty2;
+    public override string TargetTooltipName => "PrefixAccMoveSpeed";
+
+    public override IEnumerator<IVanillaPrefixStat> PopulateStats()
     {
-        public override int TargetPrefix => PrefixID.Hasty2;
-        public override string TargetTooltipName => "PrefixAccMoveSpeed";
-
-        public override IEnumerator<IVanillaPrefixStat> PopulateStats()
-        {
-            yield return new PrefixMovementSpeedStat(0.02f);
-            yield return new PrefixCritChanceStat(2);
-        }
+        yield return new PrefixMovementSpeedStat(0.02f);
+        yield return new PrefixCritChanceStat(2);
     }
+}
 
-    public class QuickPrefixChange : VanillaPrefixChange
+public class QuickPrefixChange : VanillaPrefixChange
+{
+    public override int TargetPrefix => PrefixID.Quick2;
+    public override string TargetTooltipName => "PrefixAccMoveSpeed";
+
+    public override IEnumerator<IVanillaPrefixStat> PopulateStats()
     {
-        public override int TargetPrefix => PrefixID.Quick2;
-        public override string TargetTooltipName => "PrefixAccMoveSpeed";
-
-        public override IEnumerator<IVanillaPrefixStat> PopulateStats()
-        {
-            yield return new PrefixMovementSpeedStat(0.04f);
-        }
+        yield return new PrefixMovementSpeedStat(0.04f);
     }
 }

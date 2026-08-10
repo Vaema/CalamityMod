@@ -7,201 +7,200 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Ranged
+namespace CalamityMod.Projectiles.Ranged;
+
+[PierceResistException]
+public class StarmageddonBinaryStarCenter : ModProjectile, ILocalizedModType
 {
-    [PierceResistException]
-    public class StarmageddonBinaryStarCenter : ModProjectile, ILocalizedModType
+    private const float TimeBeforeHoming = 30f;
+    private const float FlamethrowerSoundFrequency = 30f;
+    public const int StarDistanceFromCenter = 32;
+    public const float SuckedProjectileDistanceFromStars = 600f;
+    public const float SuckedProjectileSpawnRate = 15f;
+    public const float StarRotationRate = 2f;
+    public const float DustCloudSpawnRate = 16f;
+    public const float DustCloudVelocityMax = 8f;
+    public const float DustCloudSpreadMax = 2f;
+    public const int ParticleStreamsPerStar = 2;
+    public const float ParticleSpawnRate = 4f;
+    public const float ParticleSpawnOffset = 19f;
+    public const float ParticleVelocityMax = DustCloudVelocityMax * 4f;
+    public const float ParticleSpreadMax = DustCloudSpreadMax * 4f;
+
+    public new string LocalizationCategory => "Projectiles.Ranged";
+
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetStaticDefaults()
     {
-        private const float TimeBeforeHoming = 30f;
-        private const float FlamethrowerSoundFrequency = 30f;
-        public const int StarDistanceFromCenter = 32;
-        public const float SuckedProjectileDistanceFromStars = 600f;
-        public const float SuckedProjectileSpawnRate = 15f;
-        public const float StarRotationRate = 2f;
-        public const float DustCloudSpawnRate = 16f;
-        public const float DustCloudVelocityMax = 8f;
-        public const float DustCloudSpreadMax = 2f;
-        public const int ParticleStreamsPerStar = 2;
-        public const float ParticleSpawnRate = 4f;
-        public const float ParticleSpawnOffset = 19f;
-        public const float ParticleVelocityMax = DustCloudVelocityMax * 4f;
-        public const float ParticleSpreadMax = DustCloudSpreadMax * 4f;
+        ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
+        ProjectileID.Sets.NeedsUUID[Type] = true;
+    }
 
-        public new string LocalizationCategory => "Projectiles.Ranged";
+    public override void SetDefaults()
+    {
+        Projectile.width = Projectile.height = 38;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.DamageType = DamageClass.Ranged;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 10;
+        Projectile.tileCollide = false;
+        Projectile.alpha = 255;
+        Projectile.timeLeft = 3600;
+        Projectile.penetrate = -1;
+    }
 
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(Projectile.localAI[0]);
+        writer.Write(Projectile.localAI[1]);
+    }
 
-        public override void SetStaticDefaults()
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        Projectile.localAI[0] = reader.ReadSingle();
+        Projectile.localAI[1] = reader.ReadSingle();
+    }
+
+    public override void AI()
+    {
+        Projectile hostProjectile = Main.projectile[(int)Projectile.ai[0]];
+        if (Projectile.type != ModContent.ProjectileType<StarmageddonBinaryStarCenter>() || !hostProjectile.active || hostProjectile.type != ModContent.ProjectileType<StarmageddonHeld>())
         {
-            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
-            ProjectileID.Sets.NeedsUUID[Type] = true;
+            Projectile.Kill();
+            return;
         }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = Projectile.height = 38;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.tileCollide = false;
-            Projectile.alpha = 255;
-            Projectile.timeLeft = 3600;
-            Projectile.penetrate = -1;
-        }
+        Player player = Main.player[Projectile.owner];
 
-        public override void SendExtraAI(BinaryWriter writer)
+        // Spawn the binary star system.
+        if (Projectile.localAI[0] == 0f && Main.myPlayer == Projectile.owner)
         {
-            writer.Write(Projectile.localAI[0]);
-            writer.Write(Projectile.localAI[1]);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.localAI[0] = reader.ReadSingle();
-            Projectile.localAI[1] = reader.ReadSingle();
-        }
-
-        public override void AI()
-        {
-            Projectile hostProjectile = Main.projectile[(int)Projectile.ai[0]];
-            if (Projectile.type != ModContent.ProjectileType<StarmageddonBinaryStarCenter>() || !hostProjectile.active || hostProjectile.type != ModContent.ProjectileType<StarmageddonHeld>())
+            Projectile.localAI[0] = 1f;
+            int starAmount = 2;
+            int starSpread = 360 / starAmount;
+            int starDistance = StarDistanceFromCenter;
+            for (int i = 0; i < starAmount; i++)
             {
-                Projectile.Kill();
-                return;
+                Vector2 starSpawnPosition = new Vector2(Projectile.Center.X + (float)(Math.Sin(i * starSpread) * starDistance), Projectile.Center.Y + (float)(Math.Cos(i * starSpread) * starDistance));
+                int projectileType = i == 0 ? ModContent.ProjectileType<StarmageddonStar>() : ModContent.ProjectileType<StarmageddonStar2>();
+                int star = Projectile.NewProjectile(Projectile.GetSource_FromAI(), starSpawnPosition, Vector2.Zero, projectileType, Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.GetByUUID(Projectile.owner, Projectile.whoAmI));
+                Main.projectile[star].ai[1] = i * starSpread;
             }
+        }
 
-            Player player = Main.player[Projectile.owner];
+        if (Projectile.ai[1] == 1f)
+        {
+            Projectile.localAI[1] += 1f;
+            if (Projectile.localAI[1] % FlamethrowerSoundFrequency == 0f)
+                SoundEngine.PlaySound(SoundID.Item34, Projectile.Center);
 
-            // Spawn the binary star system.
-            if (Projectile.localAI[0] == 0f && Main.myPlayer == Projectile.owner)
+            int npcIndex = (int)Projectile.ai[2];
+            NPC npc = Main.npc[npcIndex];
+            bool findNewTarget = false;
+
+            if (!npcIndex.WithinBounds(Main.maxNPCs))
             {
-                Projectile.localAI[0] = 1f;
-                int starAmount = 2;
-                int starSpread = 360 / starAmount;
-                int starDistance = StarDistanceFromCenter;
-                for (int i = 0; i < starAmount; i++)
-                {
-                    Vector2 starSpawnPosition = new Vector2(Projectile.Center.X + (float)(Math.Sin(i * starSpread) * starDistance), Projectile.Center.Y + (float)(Math.Cos(i * starSpread) * starDistance));
-                    int projectileType = i == 0 ? ModContent.ProjectileType<StarmageddonStar>() : ModContent.ProjectileType<StarmageddonStar2>();
-                    int star = Projectile.NewProjectile(Projectile.GetSource_FromAI(), starSpawnPosition, Vector2.Zero, projectileType, Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.GetByUUID(Projectile.owner, Projectile.whoAmI));
-                    Main.projectile[star].ai[1] = i * starSpread;
-                }
+                findNewTarget = true;
             }
+            else if (npc.active && !npc.dontTakeDamage)
+            {
+                Projectile.Center = npc.Center - Projectile.velocity * 2f;
+                Projectile.gfxOffY = npc.gfxOffY;
+            }
+            else
+                findNewTarget = true;
 
-            if (Projectile.ai[1] == 1f)
+            if (findNewTarget)
+            {
+                Projectile.ai[1] = 0f;
+                Projectile.ai[2] = 0f;
+            }
+        }
+        else
+        {
+            if (Projectile.localAI[1] < TimeBeforeHoming)
             {
                 Projectile.localAI[1] += 1f;
-                if (Projectile.localAI[1] % FlamethrowerSoundFrequency == 0f)
-                    SoundEngine.PlaySound(SoundID.Item34, Projectile.Center);
-
-                int npcIndex = (int)Projectile.ai[2];
-                NPC npc = Main.npc[npcIndex];
-                bool findNewTarget = false;
-
-                if (!npcIndex.WithinBounds(Main.maxNPCs))
-                {
-                    findNewTarget = true;
-                }
-                else if (npc.active && !npc.dontTakeDamage)
-                {
-                    Projectile.Center = npc.Center - Projectile.velocity * 2f;
-                    Projectile.gfxOffY = npc.gfxOffY;
-                }
-                else
-                    findNewTarget = true;
-
-                if (findNewTarget)
-                {
-                    Projectile.ai[1] = 0f;
-                    Projectile.ai[2] = 0f;
-                }
             }
             else
             {
-                if (Projectile.localAI[1] < TimeBeforeHoming)
-                {
-                    Projectile.localAI[1] += 1f;
-                }
-                else
-                {
-                    NPC target = Projectile.FindTargetWithinRange(1600f);
-                    if (target != null)
-                        Projectile.velocity = Projectile.SuperhomeTowardsTarget(target, 24f, 12f);
-                }
+                NPC target = Projectile.FindTargetWithinRange(1600f);
+                if (target != null)
+                    Projectile.velocity = Projectile.SuperhomeTowardsTarget(target, 24f, 12f);
             }
         }
+    }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    {
+        Player player = Main.player[Projectile.owner];
+        Rectangle myRect = Projectile.Hitbox;
+
+        if (Projectile.owner == Main.myPlayer)
         {
-            Player player = Main.player[Projectile.owner];
-            Rectangle myRect = Projectile.Hitbox;
-
-            if (Projectile.owner == Main.myPlayer)
+            for (int npcIndex = 0; npcIndex < Main.maxNPCs; npcIndex++)
             {
-                for (int npcIndex = 0; npcIndex < Main.maxNPCs; npcIndex++)
+                NPC npc = Main.npc[npcIndex];
+                if (npc.active && !npc.dontTakeDamage &&
+                ((Projectile.friendly && (!npc.friendly || (npc.type == NPCID.Guide && Projectile.owner < Main.maxPlayers && player.killGuide) || (npc.type == NPCID.Clothier && Projectile.owner < Main.maxPlayers && player.killClothier))) ||
+                    (Projectile.hostile && npc.friendly && !npc.dontTakeDamageFromHostiles)) && (Projectile.owner < 0 || npc.immune[Projectile.owner] == 0 || Projectile.maxPenetrate == 1))
                 {
-                    NPC npc = Main.npc[npcIndex];
-                    if (npc.active && !npc.dontTakeDamage &&
-                    ((Projectile.friendly && (!npc.friendly || (npc.type == NPCID.Guide && Projectile.owner < Main.maxPlayers && player.killGuide) || (npc.type == NPCID.Clothier && Projectile.owner < Main.maxPlayers && player.killClothier))) ||
-                        (Projectile.hostile && npc.friendly && !npc.dontTakeDamageFromHostiles)) && (Projectile.owner < 0 || npc.immune[Projectile.owner] == 0 || Projectile.maxPenetrate == 1))
+                    if (npc.noTileCollide || !Projectile.ownerHitCheck)
                     {
-                        if (npc.noTileCollide || !Projectile.ownerHitCheck)
+                        bool stickingToNPC;
+                        if (npc.type == NPCID.SolarCrawltipedeTail)
                         {
-                            bool stickingToNPC;
-                            if (npc.type == NPCID.SolarCrawltipedeTail)
+                            Rectangle rect = npc.Hitbox;
+                            int rectSizeChange = 8;
+                            rect.X -= rectSizeChange;
+                            rect.Y -= rectSizeChange;
+                            rect.Width += rectSizeChange * 2;
+                            rect.Height += rectSizeChange * 2;
+                            stickingToNPC = Projectile.Colliding(myRect, rect);
+                        }
+                        else
+                            stickingToNPC = Projectile.Colliding(myRect, npc.Hitbox);
+
+                        if (stickingToNPC)
+                        {
+                            if (npc.reflectsProjectiles && Projectile.CanBeReflected())
                             {
-                                Rectangle rect = npc.Hitbox;
-                                int rectSizeChange = 8;
-                                rect.X -= rectSizeChange;
-                                rect.Y -= rectSizeChange;
-                                rect.Width += rectSizeChange * 2;
-                                rect.Height += rectSizeChange * 2;
-                                stickingToNPC = Projectile.Colliding(myRect, rect);
+                                npc.ReflectProjectile(Projectile);
+                                return;
                             }
-                            else
-                                stickingToNPC = Projectile.Colliding(myRect, npc.Hitbox);
 
-                            if (stickingToNPC)
+                            Projectile.ai[1] = 1f;
+                            Projectile.ai[2] = (float)npcIndex;
+
+                            Projectile.velocity = (npc.Center - Projectile.Center) * 0.75f;
+
+                            Projectile.netUpdate = true;
+
+                            Point[] array2 = new Point[5];
+                            int projCount = 0;
+                            for (int projIndex = 0; projIndex < Main.maxProjectiles; projIndex++)
                             {
-                                if (npc.reflectsProjectiles && Projectile.CanBeReflected())
+                                Projectile proj = Main.projectile[projIndex];
+                                if (projIndex != Projectile.whoAmI && proj.active && proj.owner == Main.myPlayer && proj.type == Projectile.type && proj.ai[0] == 1f && proj.ai[1] == (float)npcIndex)
                                 {
-                                    npc.ReflectProjectile(Projectile);
-                                    return;
+                                    array2[projCount++] = new Point(projIndex, proj.timeLeft);
+                                    if (projCount >= array2.Length)
+                                        break;
                                 }
+                            }
 
-                                Projectile.ai[1] = 1f;
-                                Projectile.ai[2] = (float)npcIndex;
-
-                                Projectile.velocity = (npc.Center - Projectile.Center) * 0.75f;
-
-                                Projectile.netUpdate = true;
-
-                                Point[] array2 = new Point[5];
-                                int projCount = 0;
-                                for (int projIndex = 0; projIndex < Main.maxProjectiles; projIndex++)
+                            if (projCount >= array2.Length)
+                            {
+                                int maxProj = 0;
+                                for (int m = 1; m < array2.Length; m++)
                                 {
-                                    Projectile proj = Main.projectile[projIndex];
-                                    if (projIndex != Projectile.whoAmI && proj.active && proj.owner == Main.myPlayer && proj.type == Projectile.type && proj.ai[0] == 1f && proj.ai[1] == (float)npcIndex)
-                                    {
-                                        array2[projCount++] = new Point(projIndex, proj.timeLeft);
-                                        if (projCount >= array2.Length)
-                                            break;
-                                    }
+                                    if (array2[m].Y < array2[maxProj].Y)
+                                        maxProj = m;
                                 }
-
-                                if (projCount >= array2.Length)
-                                {
-                                    int maxProj = 0;
-                                    for (int m = 1; m < array2.Length; m++)
-                                    {
-                                        if (array2[m].Y < array2[maxProj].Y)
-                                            maxProj = m;
-                                    }
-                                    Main.projectile[array2[maxProj].X].Kill();
-                                }
+                                Main.projectile[array2[maxProj].X].Kill();
                             }
                         }
                     }

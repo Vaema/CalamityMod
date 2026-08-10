@@ -12,242 +12,241 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.DraedonSummoner
+namespace CalamityMod.Tiles.DraedonSummoner;
+
+public class CodebreakerTile : ModTile
 {
-    public class CodebreakerTile : ModTile
+    public const int Width = 5;
+    public const int Height = 8;
+    public const int OriginOffsetX = 2;
+    public const int OriginOffsetY = 7;
+    public const int SheetSquare = 18;
+    public static Texture2D TileTexture;
+    public static Texture2D ComputerTexture;
+    public static Texture2D SensorTexture;
+    public static Texture2D DisplayTexture;
+    public static Texture2D VoltageRegulatorTexture;
+    public static Texture2D VoltageRegulatorTexture2;
+    public static Texture2D CoolingCellTexture;
+
+    public static Texture2D HighlightT1;
+    public static Texture2D HighlightT2;
+    public static Texture2D HighlightT3;
+    public static Texture2D HighlightT4;
+
+
+    public override void SetStaticDefaults()
     {
-        public const int Width = 5;
-        public const int Height = 8;
-        public const int OriginOffsetX = 2;
-        public const int OriginOffsetY = 7;
-        public const int SheetSquare = 18;
-        public static Texture2D TileTexture;
-        public static Texture2D ComputerTexture;
-        public static Texture2D SensorTexture;
-        public static Texture2D DisplayTexture;
-        public static Texture2D VoltageRegulatorTexture;
-        public static Texture2D VoltageRegulatorTexture2;
-        public static Texture2D CoolingCellTexture;
-
-        public static Texture2D HighlightT1;
-        public static Texture2D HighlightT2;
-        public static Texture2D HighlightT3;
-        public static Texture2D HighlightT4;
-
-
-        public override void SetStaticDefaults()
+        if (!Main.dedServ)
         {
-            if (!Main.dedServ)
-            {
-                TileTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerTile", AssetRequestMode.ImmediateLoad).Value;
-                ComputerTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerDecryptionComputer", AssetRequestMode.ImmediateLoad).Value;
-                SensorTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerLongRangedSensorArray", AssetRequestMode.ImmediateLoad).Value;
-                DisplayTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerAdvancedDisplay", AssetRequestMode.ImmediateLoad).Value;
-                VoltageRegulatorTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerVoltageRegulationSystem", AssetRequestMode.ImmediateLoad).Value;
-                VoltageRegulatorTexture2 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerVoltageRegulationSystem2", AssetRequestMode.ImmediateLoad).Value;
-                CoolingCellTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerAuricQuantumCoolingCell", AssetRequestMode.ImmediateLoad).Value;
+            TileTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerTile", AssetRequestMode.ImmediateLoad).Value;
+            ComputerTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerDecryptionComputer", AssetRequestMode.ImmediateLoad).Value;
+            SensorTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerLongRangedSensorArray", AssetRequestMode.ImmediateLoad).Value;
+            DisplayTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerAdvancedDisplay", AssetRequestMode.ImmediateLoad).Value;
+            VoltageRegulatorTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerVoltageRegulationSystem", AssetRequestMode.ImmediateLoad).Value;
+            VoltageRegulatorTexture2 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerVoltageRegulationSystem2", AssetRequestMode.ImmediateLoad).Value;
+            CoolingCellTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerAuricQuantumCoolingCell", AssetRequestMode.ImmediateLoad).Value;
 
-                HighlightT1 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT1Highlight", AssetRequestMode.ImmediateLoad).Value;
-                HighlightT2 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT2Highlight", AssetRequestMode.ImmediateLoad).Value;
-                HighlightT3 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT3Highlight", AssetRequestMode.ImmediateLoad).Value;
-                HighlightT4 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT4Highlight", AssetRequestMode.ImmediateLoad).Value;
-            }
-
-            Main.tileLighted[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            Main.tileNoAttach[Type] = true;
-            Main.tileLavaDeath[Type] = false;
-            Main.tileWaterDeath[Type] = false;
-
-            // Various data sets to protect this tile from unintentional death
-            TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
-            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
-            TileID.Sets.PreventsSandfall[Type] = true;
-
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
-            TileObjectData.newTile.Width = Width;
-            TileObjectData.newTile.Height = Height;
-            TileObjectData.newTile.Origin = new Point16(OriginOffsetX, OriginOffsetY);
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.CoordinateHeights = new int[Height];
-
-            // Initialize the coordinate heights of each frame based on the sheet area. The padding is shaved off.
-            for (int i = 0; i < Height; i++)
-                TileObjectData.newTile.CoordinateHeights[i] = SheetSquare - 2;
-
-            TileObjectData.newTile.LavaDeath = false;
-
-            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TECodebreaker>().Hook_AfterPlacement, -1, 0, true);
-
-            TileObjectData.addTile(Type);
-            AddMapEntry(new Color(92, 107, 112), CreateMapEntryName());
-            AnimationFrameHeight = 144;
+            HighlightT1 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT1Highlight", AssetRequestMode.ImmediateLoad).Value;
+            HighlightT2 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT2Highlight", AssetRequestMode.ImmediateLoad).Value;
+            HighlightT3 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT3Highlight", AssetRequestMode.ImmediateLoad).Value;
+            HighlightT4 = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonSummoner/CodebreakerT4Highlight", AssetRequestMode.ImmediateLoad).Value;
         }
 
-        public override bool CanExplode(int i, int j) => false;
+        Main.tileLighted[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        Main.tileNoAttach[Type] = true;
+        Main.tileLavaDeath[Type] = false;
+        Main.tileWaterDeath[Type] = false;
 
-        public override bool CanPlace(int i, int j)
+        // Various data sets to protect this tile from unintentional death
+        TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+        TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
+        TileID.Sets.PreventsSandfall[Type] = true;
+
+        TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+        TileObjectData.newTile.Width = Width;
+        TileObjectData.newTile.Height = Height;
+        TileObjectData.newTile.Origin = new Point16(OriginOffsetX, OriginOffsetY);
+        TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+        TileObjectData.newTile.CoordinateHeights = new int[Height];
+
+        // Initialize the coordinate heights of each frame based on the sheet area. The padding is shaved off.
+        for (int i = 0; i < Height; i++)
+            TileObjectData.newTile.CoordinateHeights[i] = SheetSquare - 2;
+
+        TileObjectData.newTile.LavaDeath = false;
+
+        TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<TECodebreaker>().Hook_AfterPlacement, -1, 0, true);
+
+        TileObjectData.addTile(Type);
+        AddMapEntry(new Color(92, 107, 112), CreateMapEntryName());
+        AnimationFrameHeight = 144;
+    }
+
+    public override bool CanExplode(int i, int j) => false;
+
+    public override bool CanPlace(int i, int j)
+    {
+        // Cannot be placed on Teleporters in order to prevent a critical bug.
+        int startOfTileCoordinateCheckX = i - 2;
+        for (int k = startOfTileCoordinateCheckX; k < startOfTileCoordinateCheckX + Width; k++)
         {
-            // Cannot be placed on Teleporters in order to prevent a critical bug.
-            int startOfTileCoordinateCheckX = i - 2;
-            for (int k = startOfTileCoordinateCheckX; k < startOfTileCoordinateCheckX + Width; k++)
-            {
-                if (Main.tile[k, j + 1].TileType == TileID.Teleporter)
-                    return false;
-            }
-
-            return true;
-        }
-
-        // Prevent the tile from being destroyed while it's busy decrypting.
-        // If it's destroyed the tile entity would be too and the resources used on decryption would be lost for nothing.
-        public override bool CanKillTile(int i, int j, ref bool blockDamaged)
-        {
-            TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
-            if (codebreakerTileEntity is null)
-                return true;
-            if (codebreakerTileEntity.DecryptionCountdown > 0)
+            if (Main.tile[k, j + 1].TileType == TileID.Teleporter)
                 return false;
+        }
+
+        return true;
+    }
+
+    // Prevent the tile from being destroyed while it's busy decrypting.
+    // If it's destroyed the tile entity would be too and the resources used on decryption would be lost for nothing.
+    public override bool CanKillTile(int i, int j, ref bool blockDamaged)
+    {
+        TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
+        if (codebreakerTileEntity is null)
             return true;
-        }
-
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 0.18f;
-            g = 0.8f;
-            b = 0.9f;
-        }
-
-        public override bool CreateDust(int i, int j, ref int type)
-        {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TheDestroyer);
+        if (codebreakerTileEntity.DecryptionCountdown > 0)
             return false;
+        return true;
+    }
+
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+    {
+        r = 0.18f;
+        g = 0.8f;
+        b = 0.9f;
+    }
+
+    public override bool CreateDust(int i, int j, ref int type)
+    {
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TheDestroyer);
+        return false;
+    }
+
+    public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
+
+    public override void KillMultiTile(int i, int j, int frameX, int frameY)
+    {
+        Tile t = Main.tile[i, j];
+        int left = i - t.TileFrameX % (Width * SheetSquare) / SheetSquare;
+        int top = j - t.TileFrameY % (Height * SheetSquare) / SheetSquare;
+
+        TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
+
+        // Drop any any attached components.
+        codebreakerTileEntity?.DropConstituents(i, j);
+
+        // And destroy the tile entity, if it exists.
+        codebreakerTileEntity?.Kill(left, top);
+    }
+
+    public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+
+    public override bool RightClick(int i, int j)
+    {
+        TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
+        Player player = Main.LocalPlayer;
+        player.CancelSignsAndChests();
+
+        // If this is the tile the player is currently looking at, the associated tile entity doesn't really exist, or it's simply not upgraded enough, close the GUI.
+        if (codebreakerTileEntity is null || codebreakerTileEntity.ID == CodebreakerUI.ViewedTileEntityID || !codebreakerTileEntity.ContainsDecryptionComputer)
+        {
+            // Create a warning if someone attempts to click on a codebreaker without a computer with which to open the UI.
+            if (!codebreakerTileEntity.ContainsDecryptionComputer)
+                CombatText.NewText(player.Hitbox, Color.Cyan, CalamityUtils.GetTextValue("Misc.NoComputer"));
+
+            CodebreakerUI.ViewedTileEntityID = -1;
+            SoundEngine.PlaySound(SoundID.MenuClose);
         }
 
-        public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
+        // Otherwise, open the decryption interface when it exists. This can be either opening the GUI from nothing, or just opening a separate codebreaker.
+        else if (codebreakerTileEntity != null)
         {
-            Tile t = Main.tile[i, j];
-            int left = i - t.TileFrameX % (Width * SheetSquare) / SheetSquare;
-            int top = j - t.TileFrameY % (Height * SheetSquare) / SheetSquare;
-
-            TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
-
-            // Drop any any attached components.
-            codebreakerTileEntity?.DropConstituents(i, j);
-
-            // And destroy the tile entity, if it exists.
-            codebreakerTileEntity?.Kill(left, top);
+            // Play a sound depending on whether the player had another codebreaker open previously.
+            SoundEngine.PlaySound(CodebreakerUI.ViewedTileEntityID == -1 ? SoundID.MenuOpen : SoundID.MenuTick);
+            CodebreakerUI.ViewedTileEntityID = codebreakerTileEntity.ID;
+            Main.playerInventory = true;
+            Main.recBigList = false;
         }
 
-        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+        Recipe.FindRecipes();
+        return true;
+    }
 
-        public override bool RightClick(int i, int j)
+    // All tile drawcode is done manually because the tile's animation is controlled by a tile entity.
+    public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+    {
+        // These offsets start as the tile offsets, i.e. which sub-tile of the FrameImportant structure this specific location is.
+        Tile t = Main.tile[i, j];
+        if (t.IsTileActuallyInvisible())
+            return false;
+        int left = i - t.TileFrameX % (Width * SheetSquare) / SheetSquare;
+        int frameXPos = t.TileFrameX;
+        int frameYPos = t.TileFrameY + Height * SheetSquare * (int)((Main.GlobalTimeWrappedHourly * 12f + left) % 8);
+
+        // Grab the tile entity because it stores the information regarding what is actually attached.
+        TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
+
+        Vector2 offset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+        if (t.IsHalfBlock)
+            offset.Y += 8f;
+
+        Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + offset;
+        Color drawColor = Lighting.GetColor(i, j);
+        Rectangle frame = new Rectangle(frameXPos, frameYPos, 16, 16);
+        
+        Texture2D HighlightToUse = HighlightT1;
+
+        if ((!t.IsHalfBlock && t.Slope == 0) || t.IsHalfBlock)
         {
-            TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
-            Player player = Main.LocalPlayer;
-            player.CancelSignsAndChests();
+            spriteBatch.Draw(TileTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-            // If this is the tile the player is currently looking at, the associated tile entity doesn't really exist, or it's simply not upgraded enough, close the GUI.
-            if (codebreakerTileEntity is null || codebreakerTileEntity.ID == CodebreakerUI.ViewedTileEntityID || !codebreakerTileEntity.ContainsDecryptionComputer)
+            // Place secondary parts.
+            if (codebreakerTileEntity != null)
             {
-                // Create a warning if someone attempts to click on a codebreaker without a computer with which to open the UI.
-                if (!codebreakerTileEntity.ContainsDecryptionComputer)
-                    CombatText.NewText(player.Hitbox, Color.Cyan, CalamityUtils.GetTextValue("Misc.NoComputer"));
+                if (codebreakerTileEntity.ContainsDecryptionComputer)
+                {   
+                    spriteBatch.Draw(ComputerTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                }                    
+                if (codebreakerTileEntity.ContainsVoltageRegulationSystem)
+                    spriteBatch.Draw(VoltageRegulatorTexture2, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                if (codebreakerTileEntity.ContainsSensorArray)
+                    spriteBatch.Draw(SensorTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                if (codebreakerTileEntity.ContainsCoolingCell)
+                    spriteBatch.Draw(CoolingCellTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                if (codebreakerTileEntity.ContainsVoltageRegulationSystem)
+                    spriteBatch.Draw(VoltageRegulatorTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                if (codebreakerTileEntity.ContainsAdvancedDisplay)
+                    spriteBatch.Draw(DisplayTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-                CodebreakerUI.ViewedTileEntityID = -1;
-                SoundEngine.PlaySound(SoundID.MenuClose);
-            }
+                // Handles which Smart Cursor highlight to draw
+                if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && !codebreakerTileEntity.ContainsAdvancedDisplay && !codebreakerTileEntity.ContainsVoltageRegulationSystem)
+                    HighlightToUse = HighlightT2;
+                if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && codebreakerTileEntity.ContainsAdvancedDisplay && !codebreakerTileEntity.ContainsVoltageRegulationSystem)
+                    HighlightToUse = HighlightT3;
+                if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && codebreakerTileEntity.ContainsAdvancedDisplay && codebreakerTileEntity.ContainsVoltageRegulationSystem)
+                    HighlightToUse = HighlightT4;
 
-            // Otherwise, open the decryption interface when it exists. This can be either opening the GUI from nothing, or just opening a separate codebreaker.
-            else if (codebreakerTileEntity != null)
-            {
-                // Play a sound depending on whether the player had another codebreaker open previously.
-                SoundEngine.PlaySound(CodebreakerUI.ViewedTileEntityID == -1 ? SoundID.MenuOpen : SoundID.MenuTick);
-                CodebreakerUI.ViewedTileEntityID = codebreakerTileEntity.ID;
-                Main.playerInventory = true;
-                Main.recBigList = false;
-            }
+                // Prevents Smart Cursor highlights from appearing if the Codebreaker upgrades are mismatched
+                if (codebreakerTileEntity.ContainsDecryptionComputer && !codebreakerTileEntity.ContainsSensorArray && (codebreakerTileEntity.ContainsAdvancedDisplay || codebreakerTileEntity.ContainsVoltageRegulationSystem))
+                    return false;
+                if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && !codebreakerTileEntity.ContainsAdvancedDisplay && codebreakerTileEntity.ContainsVoltageRegulationSystem)
+                    return false;
 
-            Recipe.FindRecipes();
-            return true;
-        }
-
-        // All tile drawcode is done manually because the tile's animation is controlled by a tile entity.
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            // These offsets start as the tile offsets, i.e. which sub-tile of the FrameImportant structure this specific location is.
-            Tile t = Main.tile[i, j];
-            if (t.IsTileActuallyInvisible())
-                return false;
-            int left = i - t.TileFrameX % (Width * SheetSquare) / SheetSquare;
-            int frameXPos = t.TileFrameX;
-            int frameYPos = t.TileFrameY + Height * SheetSquare * (int)((Main.GlobalTimeWrappedHourly * 12f + left) % 8);
-
-            // Grab the tile entity because it stores the information regarding what is actually attached.
-            TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(i, j, Width, Height, SheetSquare);
-
-            Vector2 offset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            if (t.IsHalfBlock)
-                offset.Y += 8f;
-
-            Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + offset;
-            Color drawColor = Lighting.GetColor(i, j);
-            Rectangle frame = new Rectangle(frameXPos, frameYPos, 16, 16);
-            
-            Texture2D HighlightToUse = HighlightT1;
-
-            if ((!t.IsHalfBlock && t.Slope == 0) || t.IsHalfBlock)
-            {
-                spriteBatch.Draw(TileTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-
-                // Place secondary parts.
-                if (codebreakerTileEntity != null)
+                // Draws the appropriate Smart Cursor highlight sprite selected from above.
+                Color highlightColor;
+                if (Main.InSmartCursorHighlightArea(i, j, out var actuallySelected) && codebreakerTileEntity.ContainsDecryptionComputer)
                 {
-                    if (codebreakerTileEntity.ContainsDecryptionComputer)
-                    {   
-                        spriteBatch.Draw(ComputerTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    }                    
-                    if (codebreakerTileEntity.ContainsVoltageRegulationSystem)
-                        spriteBatch.Draw(VoltageRegulatorTexture2, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    if (codebreakerTileEntity.ContainsSensorArray)
-                        spriteBatch.Draw(SensorTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    if (codebreakerTileEntity.ContainsCoolingCell)
-                        spriteBatch.Draw(CoolingCellTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    if (codebreakerTileEntity.ContainsVoltageRegulationSystem)
-                        spriteBatch.Draw(VoltageRegulatorTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    if (codebreakerTileEntity.ContainsAdvancedDisplay)
-                        spriteBatch.Draw(DisplayTexture, drawPosition, frame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-
-                    // Handles which Smart Cursor highlight to draw
-                    if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && !codebreakerTileEntity.ContainsAdvancedDisplay && !codebreakerTileEntity.ContainsVoltageRegulationSystem)
-                        HighlightToUse = HighlightT2;
-                    if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && codebreakerTileEntity.ContainsAdvancedDisplay && !codebreakerTileEntity.ContainsVoltageRegulationSystem)
-                        HighlightToUse = HighlightT3;
-                    if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && codebreakerTileEntity.ContainsAdvancedDisplay && codebreakerTileEntity.ContainsVoltageRegulationSystem)
-                        HighlightToUse = HighlightT4;
-
-                    // Prevents Smart Cursor highlights from appearing if the Codebreaker upgrades are mismatched
-                    if (codebreakerTileEntity.ContainsDecryptionComputer && !codebreakerTileEntity.ContainsSensorArray && (codebreakerTileEntity.ContainsAdvancedDisplay || codebreakerTileEntity.ContainsVoltageRegulationSystem))
-                        return false;
-                    if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && !codebreakerTileEntity.ContainsAdvancedDisplay && codebreakerTileEntity.ContainsVoltageRegulationSystem)
-                        return false;
-
-                    // Draws the appropriate Smart Cursor highlight sprite selected from above.
-                    Color highlightColor;
-                    if (Main.InSmartCursorHighlightArea(i, j, out var actuallySelected) && codebreakerTileEntity.ContainsDecryptionComputer)
+                    int avgBrightness = (drawColor.R + drawColor.G + drawColor.B) / 3;
+                    if (avgBrightness > 10)
                     {
-                        int avgBrightness = (drawColor.R + drawColor.G + drawColor.B) / 3;
-                        if (avgBrightness > 10)
-                        {
-                            highlightColor = Colors.GetSelectionGlowColor(actuallySelected, avgBrightness);
-                            spriteBatch.Draw(HighlightToUse, drawPosition, frame, highlightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                        }
+                        highlightColor = Colors.GetSelectionGlowColor(actuallySelected, avgBrightness);
+                        spriteBatch.Draw(HighlightToUse, drawPosition, frame, highlightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
                 }
             }
-            return false;
         }
+        return false;
     }
 }

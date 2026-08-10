@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.SunkenSea;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class ScarletSeaGrassTileMerge : TileBlendTexture
 {
-    public sealed class ScarletSeaGrassTileMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<ScarletSeaGrassTile>();
-    }
+    public override int TileType => ModContent.TileType<ScarletSeaGrassTile>();
 }

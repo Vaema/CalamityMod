@@ -1,30 +1,29 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ModLoader;
-namespace CalamityMod.Buffs.Summon
+namespace CalamityMod.Buffs.Summon;
+
+public class HotE : ModBuff
 {
-    public class HotE : ModBuff
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
+        Main.buffNoTimeDisplay[Type] = true;
+        Main.buffNoSave[Type] = true;
+        //Main.persistentBuff[Type] = true;
+    }
+
+    public override void Update(Player player, ref int buffIndex)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+
+        if (!modPlayer.allElementals.HasValue)
         {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-            //Main.persistentBuff[Type] = true;
+            player.DelBuff(buffIndex);
+            buffIndex--;
         }
-
-        public override void Update(Player player, ref int buffIndex)
+        else
         {
-            CalamityPlayer modPlayer = player.Calamity();
-
-            if (!modPlayer.allElementals.HasValue)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
+            player.buffTime[buffIndex] = 18000;
         }
     }
 }

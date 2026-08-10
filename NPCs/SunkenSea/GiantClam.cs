@@ -23,549 +23,548 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 
-namespace CalamityMod.NPCs.SunkenSea
+namespace CalamityMod.NPCs.SunkenSea;
+
+[AutoloadBossHead]
+public class GiantClam : ModNPC
 {
-    [AutoloadBossHead]
-    public class GiantClam : ModNPC
+    public static readonly SoundStyle SlamSound = new("CalamityMod/Sounds/Item/ClamImpact");
+
+    private int hitAmount = 0;
+    private int attack = -1; //-1 doing nothing, 0 = shell hiding, 1 = telestomp, 2 = pearl burst, 3 = pearl rain
+    private bool attackAnim = false;
+    private bool hasBeenHit = false;
+    private bool hide = false;
+
+    public static Asset<Texture2D> GlowTexture;
+
+    public override void SetStaticDefaults()
     {
-        public static readonly SoundStyle SlamSound = new("CalamityMod/Sounds/Item/ClamImpact");
-
-        private int hitAmount = 0;
-        private int attack = -1; //-1 doing nothing, 0 = shell hiding, 1 = telestomp, 2 = pearl burst, 3 = pearl rain
-        private bool attackAnim = false;
-        private bool hasBeenHit = false;
-        private bool hide = false;
-
-        public static Asset<Texture2D> GlowTexture;
-
-        public override void SetStaticDefaults()
+        Main.npcFrameCount[Type] = 12;
+        NPCID.Sets.BossBestiaryPriority.Add(Type);
+        NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
         {
-            Main.npcFrameCount[Type] = 12;
-            NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
-                Scale = 0.4f,
-            };
-            value.Position.Y += 40f;
-            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            Scale = 0.4f,
+        };
+        value.Position.Y += 40f;
+        NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+        if (!Main.dedServ)
+        {
+            GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+        }
+    }
+
+    public override void SetDefaults()
+    {
+        NPC.Calamity().canBreakPlayerDefense = true;
+        NPC.lavaImmune = true;
+        NPC.npcSlots = 5f;
+        NPC.damage = Main.hardMode ? 100 : 50;
+        NPC.defense = Main.hardMode ? 35 : 10;
+        NPC.width = 160;
+        NPC.height = 120;
+        NPC.defense = 9999;
+        NPC.lifeMax = Main.hardMode ? 7500 : 1250;
+        NPC.aiStyle = -1;
+        AIType = -1;
+        NPC.value = Main.hardMode ? Item.buyPrice(gold: 5) : Item.buyPrice(gold: 1);
+        NPC.HitSound = SoundID.NPCHit4;
+        NPC.knockBackResist = 0f;
+        NPC.rarity = 2;
+        NPC.Calamity().VulnerableToHeat = false;
+        NPC.Calamity().VulnerableToSickness = true;
+        NPC.Calamity().VulnerableToElectricity = true;
+        NPC.Calamity().VulnerableToWater = false;
+        SpawnModBiomes = new int[1] { ModContent.GetInstance<ClamDenBiome>().Type };
+    }
+
+    public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+    {
+        bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+        {
+            new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GiantClam")
+        });
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(hitAmount);
+        writer.Write(attack);
+        writer.Write(attackAnim);
+        writer.Write(NPC.dontTakeDamage);
+        writer.Write(NPC.chaseable);
+        writer.Write(hasBeenHit);
+        writer.Write(hide);
+        for (int i = 0; i < 2; i++)
+            writer.Write(NPC.Calamity().newAI[i]);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        hitAmount = reader.ReadInt32();
+        attack = reader.ReadInt32();
+        attackAnim = reader.ReadBoolean();
+        NPC.dontTakeDamage = reader.ReadBoolean();
+        NPC.chaseable = reader.ReadBoolean();
+        hasBeenHit = reader.ReadBoolean();
+        hide = reader.ReadBoolean();
+        for (int i = 0; i < 2; i++)
+            NPC.Calamity().newAI[i] = reader.ReadSingle();
+    }
+
+    public override void AI()
+    {
+        NPC.TargetClosest(true);
+
+        Player player = Main.player[NPC.target];
+        CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
+
+        if (NPC.justHit && hitAmount < 5)
+        {
+            ++hitAmount;
+            hasBeenHit = true;
+        }
+
+        if (!hasBeenHit)
+        {
+            // No contact damage while chillaxing
+            NPC.damage = 0;
+        }
+
+        NPC.chaseable = hasBeenHit;
+
+        if (hitAmount == 5)
+        {
             if (!Main.dedServ)
             {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-            }
-        }
-
-        public override void SetDefaults()
-        {
-            NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.lavaImmune = true;
-            NPC.npcSlots = 5f;
-            NPC.damage = Main.hardMode ? 100 : 50;
-            NPC.defense = Main.hardMode ? 35 : 10;
-            NPC.width = 160;
-            NPC.height = 120;
-            NPC.defense = 9999;
-            NPC.lifeMax = Main.hardMode ? 7500 : 1250;
-            NPC.aiStyle = -1;
-            AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(gold: 5) : Item.buyPrice(gold: 1);
-            NPC.HitSound = SoundID.NPCHit4;
-            NPC.knockBackResist = 0f;
-            NPC.rarity = 2;
-            NPC.Calamity().VulnerableToHeat = false;
-            NPC.Calamity().VulnerableToSickness = true;
-            NPC.Calamity().VulnerableToElectricity = true;
-            NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<ClamDenBiome>().Type };
-        }
-
-        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
-        {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
-            {
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GiantClam")
-            });
-        }
-
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(hitAmount);
-            writer.Write(attack);
-            writer.Write(attackAnim);
-            writer.Write(NPC.dontTakeDamage);
-            writer.Write(NPC.chaseable);
-            writer.Write(hasBeenHit);
-            writer.Write(hide);
-            for (int i = 0; i < 2; i++)
-                writer.Write(NPC.Calamity().newAI[i]);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            hitAmount = reader.ReadInt32();
-            attack = reader.ReadInt32();
-            attackAnim = reader.ReadBoolean();
-            NPC.dontTakeDamage = reader.ReadBoolean();
-            NPC.chaseable = reader.ReadBoolean();
-            hasBeenHit = reader.ReadBoolean();
-            hide = reader.ReadBoolean();
-            for (int i = 0; i < 2; i++)
-                NPC.Calamity().newAI[i] = reader.ReadSingle();
-        }
-
-        public override void AI()
-        {
-            NPC.TargetClosest(true);
-
-            Player player = Main.player[NPC.target];
-            CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
-
-            if (NPC.justHit && hitAmount < 5)
-            {
-                ++hitAmount;
-                hasBeenHit = true;
+                if (!Main.player[NPC.target].dead && Main.player[NPC.target].active)
+                    player.AddBuff(ModContent.BuffType<Clamity>(), 2); //CLAM INVASION
             }
 
-            if (!hasBeenHit)
+            if (!hide)
+                Lighting.AddLight(NPC.Center, 0f, (255 - NPC.alpha) * 2.5f / 255f, (255 - NPC.alpha) * 2.5f / 255f);
+
+            if (NPC.ai[0] < 240f)
             {
-                // No contact damage while chillaxing
+                // Avoid cheap bullshit
                 NPC.damage = 0;
+
+                NPC.defense = Main.hardMode ? 35 : 10;
+
+                NPC.ai[0] += 1f;
+                hide = false;
             }
-
-            NPC.chaseable = hasBeenHit;
-
-            if (hitAmount == 5)
+            else
             {
-                if (!Main.dedServ)
-                {
-                    if (!Main.player[NPC.target].dead && Main.player[NPC.target].active)
-                        player.AddBuff(ModContent.BuffType<Clamity>(), 2); //CLAM INVASION
-                }
-
-                if (!hide)
-                    Lighting.AddLight(NPC.Center, 0f, (255 - NPC.alpha) * 2.5f / 255f, (255 - NPC.alpha) * 2.5f / 255f);
-
-                if (NPC.ai[0] < 240f)
+                if (attack == -1)
                 {
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    NPC.defense = Main.hardMode ? 35 : 10;
-
-                    NPC.ai[0] += 1f;
-                    hide = false;
+                    attack = Main.rand.Next(2);
+                    if (attack == 0)
+                        attack = Main.rand.Next(2); //rarer chance of doing the hiding clam
                 }
-                else
+                else if (attack == 0)
                 {
-                    if (attack == -1)
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
+                    hide = true;
+                    NPC.defense = 9999;
+                    NPC.ai[1] += 1f;
+                    if (NPC.ai[1] >= 90f)
+                    {
+                        NPC.ai[0] = 0f;
+                        NPC.ai[1] = 0f;
+                        hide = false;
+                        attack = -1;
+                        NPC.defense = Main.hardMode ? 35 : 10;
+                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X + 5), (int)NPC.Center.Y, ModContent.NPCType<Clam>(), 0, 0f, 0f, 0f, 0f, 255);
+                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<Clam>(), 0, 0f, 0f, 0f, 0f, 255);
+                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X - 5), (int)NPC.Center.Y, ModContent.NPCType<Clam>(), 0, 0f, 0f, 0f, 0f, 255);
+                    }
+                }
+                else if (attack == 1)
+                {
+                    if (NPC.ai[2] == 0f)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            NPC.TargetClosest(true);
+                            NPC.ai[2] = 1f;
+                            NPC.netUpdate = true;
+                        }
+                    }
+                    else if (NPC.ai[2] == 1f)
                     {
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        attack = Main.rand.Next(2);
-                        if (attack == 0)
-                            attack = Main.rand.Next(2); //rarer chance of doing the hiding clam
-                    }
-                    else if (attack == 0)
-                    {
-                        // Avoid cheap bullshit
-                        NPC.damage = 0;
+                        NPC.chaseable = false;
+                        NPC.dontTakeDamage = true;
+                        NPC.noGravity = true;
+                        NPC.noTileCollide = true;
 
-                        hide = true;
-                        NPC.defense = 9999;
-                        NPC.ai[1] += 1f;
-                        if (NPC.ai[1] >= 90f)
+                        NPC.alpha += Main.hardMode ? 8 : 5;
+                        if (NPC.alpha >= 255)
                         {
-                            NPC.ai[0] = 0f;
-                            NPC.ai[1] = 0f;
-                            hide = false;
-                            attack = -1;
-                            NPC.defense = Main.hardMode ? 35 : 10;
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X + 5), (int)NPC.Center.Y, ModContent.NPCType<Clam>(), 0, 0f, 0f, 0f, 0f, 255);
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<Clam>(), 0, 0f, 0f, 0f, 0f, 255);
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X - 5), (int)NPC.Center.Y, ModContent.NPCType<Clam>(), 0, 0f, 0f, 0f, 0f, 255);
+                            NPC.alpha = 255;
+                            NPC.position.X = player.Center.X - (float)(NPC.width / 2);
+                            NPC.position.Y = player.Center.Y - (float)(NPC.height / 2) + player.gfxOffY - 200f;
+                            NPC.position.X = NPC.position.X - 15f;
+                            NPC.position.Y = NPC.position.Y - 100f;
+                            NPC.ai[2] = 2f;
+                            NPC.netUpdate = true;
                         }
                     }
-                    else if (attack == 1)
+                    else if (NPC.ai[2] == 2f)
                     {
-                        if (NPC.ai[2] == 0f)
+                        if (Main.rand.NextBool())
                         {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                NPC.TargetClosest(true);
-                                NPC.ai[2] = 1f;
-                                NPC.netUpdate = true;
-                            }
+                            int attackDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Electric, 0f, 0f, 200, default, 1.5f);
+                            Main.dust[attackDust].noGravity = true;
+                            Main.dust[attackDust].velocity *= 0.75f;
+                            Main.dust[attackDust].fadeIn = 1.3f;
+                            Vector2 vector = new Vector2((float)Main.rand.Next(-200, 201), (float)Main.rand.Next(-200, 201));
+                            vector.Normalize();
+                            vector *= (float)Main.rand.Next(100, 200) * 0.04f;
+                            Main.dust[attackDust].velocity = vector;
+                            vector.Normalize();
+                            vector *= 34f;
+                            Main.dust[attackDust].position = NPC.Center - vector;
                         }
-                        else if (NPC.ai[2] == 1f)
-                        {
-                            // Avoid cheap bullshit
-                            NPC.damage = 0;
 
-                            NPC.chaseable = false;
-                            NPC.dontTakeDamage = true;
-                            NPC.noGravity = true;
-                            NPC.noTileCollide = true;
-
-                            NPC.alpha += Main.hardMode ? 8 : 5;
-                            if (NPC.alpha >= 255)
-                            {
-                                NPC.alpha = 255;
-                                NPC.position.X = player.Center.X - (float)(NPC.width / 2);
-                                NPC.position.Y = player.Center.Y - (float)(NPC.height / 2) + player.gfxOffY - 200f;
-                                NPC.position.X = NPC.position.X - 15f;
-                                NPC.position.Y = NPC.position.Y - 100f;
-                                NPC.ai[2] = 2f;
-                                NPC.netUpdate = true;
-                            }
-                        }
-                        else if (NPC.ai[2] == 2f)
-                        {
-                            if (Main.rand.NextBool())
-                            {
-                                int attackDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Electric, 0f, 0f, 200, default, 1.5f);
-                                Main.dust[attackDust].noGravity = true;
-                                Main.dust[attackDust].velocity *= 0.75f;
-                                Main.dust[attackDust].fadeIn = 1.3f;
-                                Vector2 vector = new Vector2((float)Main.rand.Next(-200, 201), (float)Main.rand.Next(-200, 201));
-                                vector.Normalize();
-                                vector *= (float)Main.rand.Next(100, 200) * 0.04f;
-                                Main.dust[attackDust].velocity = vector;
-                                vector.Normalize();
-                                vector *= 34f;
-                                Main.dust[attackDust].position = NPC.Center - vector;
-                            }
-
-                            NPC.alpha -= Main.hardMode ? 7 : 4;
-                            if (NPC.alpha <= 0)
-                            {
-                                // Set damage
-                                NPC.damage = NPC.defDamage;
-
-                                NPC.chaseable = true;
-                                NPC.dontTakeDamage = false;
-                                NPC.alpha = 0;
-                                NPC.ai[2] = 3f;
-                                NPC.netUpdate = true;
-                            }
-                        }
-                        else if (NPC.ai[2] == 3f)
+                        NPC.alpha -= Main.hardMode ? 7 : 4;
+                        if (NPC.alpha <= 0)
                         {
                             // Set damage
                             NPC.damage = NPC.defDamage;
 
-                            NPC.velocity.Y += 0.8f;
-                            attackAnim = true;
-                            if (NPC.Center.Y > (player.Center.Y - (float)(NPC.height / 2) + player.gfxOffY - 15f))
-                            {
-                                NPC.noTileCollide = false;
-                                NPC.ai[2] = 4f;
-                                NPC.netUpdate = true;
-                            }
+                            NPC.chaseable = true;
+                            NPC.dontTakeDamage = false;
+                            NPC.alpha = 0;
+                            NPC.ai[2] = 3f;
+                            NPC.netUpdate = true;
                         }
-                        else if (NPC.ai[2] == 4f)
-                        {
-                            if (NPC.velocity.Y == 0f)
-                            {
-                                // Avoid cheap bullshit
-                                NPC.damage = 0;
+                    }
+                    else if (NPC.ai[2] == 3f)
+                    {
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
 
-                                NPC.ai[2] = 0f;
-                                NPC.ai[0] = 0f;
-                                NPC.netUpdate = true;
-                                NPC.noGravity = false;
-                                attack = -1;
-                                SoundEngine.PlaySound(SlamSound, NPC.Center);
-                                if (!Main.dedServ)
+                        NPC.velocity.Y += 0.8f;
+                        attackAnim = true;
+                        if (NPC.Center.Y > (player.Center.Y - (float)(NPC.height / 2) + player.gfxOffY - 15f))
+                        {
+                            NPC.noTileCollide = false;
+                            NPC.ai[2] = 4f;
+                            NPC.netUpdate = true;
+                        }
+                    }
+                    else if (NPC.ai[2] == 4f)
+                    {
+                        if (NPC.velocity.Y == 0f)
+                        {
+                            // Avoid cheap bullshit
+                            NPC.damage = 0;
+
+                            NPC.ai[2] = 0f;
+                            NPC.ai[0] = 0f;
+                            NPC.netUpdate = true;
+                            NPC.noGravity = false;
+                            attack = -1;
+                            SoundEngine.PlaySound(SlamSound, NPC.Center);
+                            if (!Main.dedServ)
+                            {
+                                for (int stompDustArea = (int)NPC.position.X - 30; stompDustArea < (int)NPC.position.X + NPC.width + 60; stompDustArea += 30)
                                 {
-                                    for (int stompDustArea = (int)NPC.position.X - 30; stompDustArea < (int)NPC.position.X + NPC.width + 60; stompDustArea += 30)
+                                    for (int stompDustAmount = 0; stompDustAmount < 5; stompDustAmount++)
                                     {
-                                        for (int stompDustAmount = 0; stompDustAmount < 5; stompDustAmount++)
-                                        {
-                                            int stompDust = Dust.NewDust(new Vector2(NPC.position.X - 30f, NPC.position.Y + (float)NPC.height), NPC.width + 30, 4, DustID.Water, 0f, 0f, 100, default, 1.5f);
-                                            Main.dust[stompDust].velocity *= 0.2f;
-                                        }
-                                        int stompGore = Gore.NewGore(NPC.GetSource_FromAI(), new Vector2((float)(stompDustArea - 30), NPC.position.Y + (float)NPC.height - 12f), default, Main.rand.Next(61, 64), 1f);
-                                        Main.gore[stompGore].velocity *= 0.4f;
+                                        int stompDust = Dust.NewDust(new Vector2(NPC.position.X - 30f, NPC.position.Y + (float)NPC.height), NPC.width + 30, 4, DustID.Water, 0f, 0f, 100, default, 1.5f);
+                                        Main.dust[stompDust].velocity *= 0.2f;
                                     }
+                                    int stompGore = Gore.NewGore(NPC.GetSource_FromAI(), new Vector2((float)(stompDustArea - 30), NPC.position.Y + (float)NPC.height - 12f), default, Main.rand.Next(61, 64), 1f);
+                                    Main.gore[stompGore].velocity *= 0.4f;
                                 }
                             }
+                        }
 
-                            NPC.velocity.Y += 0.8f;
+                        NPC.velocity.Y += 0.8f;
+                    }
+                }
+            }
+
+            // Gains Calamitas' bullet hells in the zenith seed
+            if (Main.zenithWorld)
+            {
+                calamityGlobalNPC.newAI[0] += 1f;
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    calamityGlobalNPC.newAI[0]++;
+                    if (Main.hardMode)
+                    {
+                        int type = ModContent.ProjectileType<PearlBurst>();
+                        int damage = Main.expertMode ? 28 : 35;
+                        float speedPearlFrequency = 180;
+                        float projSpeed = 3f;
+                        if (calamityGlobalNPC.newAI[0] <= 300f)
+                        {
+                            if (calamityGlobalNPC.newAI[0] % speedPearlFrequency == 0f) // Pearls from top
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 1f);
+                        }
+                        else if (calamityGlobalNPC.newAI[0] <= 600f && calamityGlobalNPC.newAI[0] > 300f)
+                        {
+                            if (calamityGlobalNPC.newAI[0] % speedPearlFrequency == 0f) // Pearls from right
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -projSpeed, 0f, type, damage, 0f, Main.myPlayer, 1f);
+                        }
+                        else if (calamityGlobalNPC.newAI[0] > 600f)
+                        {
+                            if (calamityGlobalNPC.newAI[0] % speedPearlFrequency == 0f) // Pearls from top
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 1f);
+                        }
+                    }
+
+                    calamityGlobalNPC.newAI[1] += 1f;
+                    float pearlGateValue = 60;
+                    if (calamityGlobalNPC.newAI[1] >= pearlGateValue)
+                    {
+                        calamityGlobalNPC.newAI[1] = 0f;
+                        int type = ModContent.ProjectileType<PearlRain>();
+                        int damage = Main.expertMode ? 28 : 35;
+                        float projSpeed = 4f;
+                        if (calamityGlobalNPC.newAI[0] % (pearlGateValue * 6f) == 0f)
+                        {
+                            float distance = Main.rand.NextBool() ? -1000f : 1000f;
+                            float velocity = distance == -1000f ? projSpeed : -projSpeed;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, type, damage, 0f, Main.myPlayer, 1f);
+                        }
+                        if (calamityGlobalNPC.newAI[0] < 300f) // Pearls from above
+                        {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 1f);
+                        }
+                        else if (calamityGlobalNPC.newAI[0] < 600f) // Pearls from left and right
+                        {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 0.5f), 0f, type, damage, 0f, Main.myPlayer, 1f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 0.5f, 0f, type, damage, 0f, Main.myPlayer, 1f);
+                        }
+                        else // Pearls from above, left, and right
+                        {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed - 1f, type, damage, 0f, Main.myPlayer, 1f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 1f), 0f, type, damage, 0f, Main.myPlayer, 1f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 1f, 0f, type, damage, 0f, Main.myPlayer, 1f);
                         }
                     }
                 }
+            }
 
-                // Gains Calamitas' bullet hells in the zenith seed
-                if (Main.zenithWorld)
+            if (NPC.ai[3] < 180f && Main.hardMode)
+            {
+                NPC.ai[3] += 1f;
+            }
+            else if (Main.hardMode)
+            {
+                if (attack == -1)
                 {
-                    calamityGlobalNPC.newAI[0] += 1f;
-
+                    attack = Main.rand.Next(2, 4);
+                }
+                else if (attack == 2)
+                {
+                    SoundEngine.PlaySound(SoundID.Item67, NPC.Center);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        calamityGlobalNPC.newAI[0]++;
-                        if (Main.hardMode)
+                        int projectileShot = ModContent.ProjectileType<PearlBurst>();
+                        int damage = Main.masterMode ? 23 : Main.expertMode ? 28 : 35;
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.SafeDirectionTo(Main.player[NPC.target].Center) * 5f, projectileShot, damage, 0f, Main.myPlayer);
+                        for (int i = 0; i < 8; i++)
                         {
-                            int type = ModContent.ProjectileType<PearlBurst>();
-                            int damage = Main.expertMode ? 28 : 35;
-                            float speedPearlFrequency = 180;
-                            float projSpeed = 3f;
-                            if (calamityGlobalNPC.newAI[0] <= 300f)
-                            {
-                                if (calamityGlobalNPC.newAI[0] % speedPearlFrequency == 0f) // Pearls from top
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 1f);
-                            }
-                            else if (calamityGlobalNPC.newAI[0] <= 600f && calamityGlobalNPC.newAI[0] > 300f)
-                            {
-                                if (calamityGlobalNPC.newAI[0] % speedPearlFrequency == 0f) // Pearls from right
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -projSpeed, 0f, type, damage, 0f, Main.myPlayer, 1f);
-                            }
-                            else if (calamityGlobalNPC.newAI[0] > 600f)
-                            {
-                                if (calamityGlobalNPC.newAI[0] % speedPearlFrequency == 0f) // Pearls from top
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 1f);
-                            }
-                        }
-
-                        calamityGlobalNPC.newAI[1] += 1f;
-                        float pearlGateValue = 60;
-                        if (calamityGlobalNPC.newAI[1] >= pearlGateValue)
-                        {
-                            calamityGlobalNPC.newAI[1] = 0f;
-                            int type = ModContent.ProjectileType<PearlRain>();
-                            int damage = Main.expertMode ? 28 : 35;
-                            float projSpeed = 4f;
-                            if (calamityGlobalNPC.newAI[0] % (pearlGateValue * 6f) == 0f)
-                            {
-                                float distance = Main.rand.NextBool() ? -1000f : 1000f;
-                                float velocity = distance == -1000f ? projSpeed : -projSpeed;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, type, damage, 0f, Main.myPlayer, 1f);
-                            }
-                            if (calamityGlobalNPC.newAI[0] < 300f) // Pearls from above
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 1f);
-                            }
-                            else if (calamityGlobalNPC.newAI[0] < 600f) // Pearls from left and right
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 0.5f), 0f, type, damage, 0f, Main.myPlayer, 1f);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 0.5f, 0f, type, damage, 0f, Main.myPlayer, 1f);
-                            }
-                            else // Pearls from above, left, and right
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed - 1f, type, damage, 0f, Main.myPlayer, 1f);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 1f), 0f, type, damage, 0f, Main.myPlayer, 1f);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 1f, 0f, type, damage, 0f, Main.myPlayer, 1f);
-                            }
+                            Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.Pi / 8f)).ToRotationVector2() * 3f;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, projectileShot, damage, 0f, Main.myPlayer);
                         }
                     }
+                    attack = -1;
+                    NPC.ai[3] = 0f;
                 }
-
-                if (NPC.ai[3] < 180f && Main.hardMode)
+                else if (attack == 3)
                 {
-                    NPC.ai[3] += 1f;
-                }
-                else if (Main.hardMode)
-                {
-                    if (attack == -1)
+                    SoundEngine.PlaySound(SoundID.Item68, NPC.Center);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        attack = Main.rand.Next(2, 4);
-                    }
-                    else if (attack == 2)
-                    {
-                        SoundEngine.PlaySound(SoundID.Item67, NPC.Center);
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        int damage = Main.masterMode ? 23 : Main.expertMode ? 28 : 35;
+                        float shotSpacing = 750f;
+                        for (int i = 0; i < 11; i++)
                         {
-                            int projectileShot = ModContent.ProjectileType<PearlBurst>();
-                            int damage = Main.masterMode ? 23 : Main.expertMode ? 28 : 35;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.SafeDirectionTo(Main.player[NPC.target].Center) * 5f, projectileShot, damage, 0f, Main.myPlayer);
-                            for (int i = 0; i < 8; i++)
-                            {
-                                Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.Pi / 8f)).ToRotationVector2() * 3f;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, projectileShot, damage, 0f, Main.myPlayer);
-                            }
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + shotSpacing, player.Center.Y - 750f, 0f, 8f, ModContent.ProjectileType<PearlRain>(), damage, 0f, Main.myPlayer, 0f, 0f);
+                            shotSpacing -= 150f;
                         }
-                        attack = -1;
-                        NPC.ai[3] = 0f;
                     }
-                    else if (attack == 3)
-                    {
-                        SoundEngine.PlaySound(SoundID.Item68, NPC.Center);
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            int damage = Main.masterMode ? 23 : Main.expertMode ? 28 : 35;
-                            float shotSpacing = 750f;
-                            for (int i = 0; i < 11; i++)
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + shotSpacing, player.Center.Y - 750f, 0f, 8f, ModContent.ProjectileType<PearlRain>(), damage, 0f, Main.myPlayer, 0f, 0f);
-                                shotSpacing -= 150f;
-                            }
-                        }
-                        attack = -1;
-                        NPC.ai[3] = 0f;
-                    }
+                    attack = -1;
+                    NPC.ai[3] = 0f;
                 }
             }
         }
+    }
 
-        public override bool CheckActive()
+    public override bool CheckActive()
+    {
+        return Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f;
+    }
+
+    public override bool? CanBeHitByProjectile(Projectile projectile)
+    {
+        if (projectile.minion && !projectile.Calamity().overridesMinionDamagePrevention)
         {
-            return Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f;
+            return hasBeenHit;
         }
+        return null;
+    }
 
-        public override bool? CanBeHitByProjectile(Projectile projectile)
+    public override void FindFrame(int frameHeight)
+    {
+        NPC.frameCounter += 1.0;
+        if (NPC.frameCounter > (attackAnim ? 2.0 : 5.0))
         {
-            if (projectile.minion && !projectile.Calamity().overridesMinionDamagePrevention)
-            {
-                return hasBeenHit;
-            }
-            return null;
+            NPC.frameCounter = 0.0;
+            NPC.frame.Y = NPC.frame.Y + frameHeight;
         }
-
-        public override void FindFrame(int frameHeight)
+        if ((hitAmount < 5 || hide) && !NPC.IsABestiaryIconDummy)
         {
-            NPC.frameCounter += 1.0;
-            if (NPC.frameCounter > (attackAnim ? 2.0 : 5.0))
+            NPC.frame.Y = frameHeight * 11;
+        }
+        else if (attackAnim)
+        {
+            if (NPC.frame.Y < frameHeight * 3)
             {
-                NPC.frameCounter = 0.0;
-                NPC.frame.Y = NPC.frame.Y + frameHeight;
+                NPC.frame.Y = frameHeight * 3;
             }
-            if ((hitAmount < 5 || hide) && !NPC.IsABestiaryIconDummy)
+            if (NPC.frame.Y > frameHeight * 10)
             {
-                NPC.frame.Y = frameHeight * 11;
+                hide = true;
+                attackAnim = false;
             }
-            else if (attackAnim)
+        }
+        else
+        {
+            if (NPC.frame.Y > frameHeight * 3)
             {
-                if (NPC.frame.Y < frameHeight * 3)
-                {
-                    NPC.frame.Y = frameHeight * 3;
-                }
-                if (NPC.frame.Y > frameHeight * 10)
-                {
-                    hide = true;
-                    attackAnim = false;
-                }
+                NPC.frame.Y = 0;
+            }
+        }
+    }
+
+    public override float SpawnChance(NPCSpawnInfo spawnInfo)
+    {
+        if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && DownedBossSystem.downedDesertScourge && !NPC.AnyNPCs(ModContent.NPCType<GiantClam>()))
+            return SpawnCondition.CaveJellyfish.Chance * 0.24f;
+
+        return 0f;
+    }
+
+    public override void ModifyTypeName(ref string typeName)
+    {
+        if (Main.zenithWorld)
+        {
+            if (Main.hardMode)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.SupremeClamitas");
             }
             else
             {
-                if (NPC.frame.Y > frameHeight * 3)
-                {
-                    NPC.frame.Y = 0;
-                }
+                typeName = CalamityUtils.GetTextValue("NPCs.Clamitas");
             }
         }
+    }
 
-        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+    public override void HitEffect(NPC.HitInfo hit)
+    {
+        for (int k = 0; k < 5; k++)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && DownedBossSystem.downedDesertScourge && !NPC.AnyNPCs(ModContent.NPCType<GiantClam>()))
-                return SpawnCondition.CaveJellyfish.Chance * 0.24f;
-
-            return 0f;
+            Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
         }
-
-        public override void ModifyTypeName(ref string typeName)
+        if (NPC.life <= 0)
         {
-            if (Main.zenithWorld)
-            {
-                if (Main.hardMode)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.SupremeClamitas");
-                }
-                else
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.Clamitas");
-                }
-            }
-        }
-
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 50; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0)
+            if (!Main.dedServ)
             {
-                for (int k = 0; k < 50; k++)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
-                }
-                if (!Main.dedServ)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam1").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam3").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam4").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam5").Type, 1f);
-                }
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam1").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam2").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam3").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam4").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GiantClam5").Type, 1f);
             }
         }
+    }
 
-        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        Texture2D texture = TextureAssets.Npc[Type].Value;
+        Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0);
+        return false;
+    }
+
+    public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        Texture2D texture = TextureAssets.Npc[Type].Value;
+        Texture2D glowmask = GlowTexture.Value;
+        SpriteEffects spriteEffects = SpriteEffects.None;
+        Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
+        Vector2 halfSizeTexture = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
+        Vector2 vector = center - screenPos;
+        vector -= new Vector2((float)glowmask.Width, (float)(glowmask.Height / Main.npcFrameCount[Type])) * 1f / 2f;
+        vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
+        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightBlue);
+        Main.EntitySpriteDraw(glowmask, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0);
+    }
+
+    public override void OnKill()
+    {
+        // Spawn Amidias if he isn't in the world
+        // This doesn't check for Desert Scourge because Giant Clam only spawns post-Desert Scourge
+        int amidiasNPC = NPC.FindFirstNPC(ModContent.NPCType<SeaKing>());
+        if (amidiasNPC == -1 && Main.netMode != NetmodeID.MultiplayerClient)
+            NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SeaKing>(), 0, 0f, 0f, 0f, 0f, 255);
+
+        // Mark Giant Clam as dead
+        DownedBossSystem.downedCLAM = true;
+        DownedBossSystem.downedCLAMHardMode = Main.hardMode || DownedBossSystem.downedCLAMHardMode;
+        CalamityNetcode.SyncWorld();
+    }
+
+    public override void ModifyNPCLoot(NPCLoot npcLoot)
+    {
+        var hardmode = npcLoot.DefineConditionalDropSet(DropHelper.Hardmode());
+
+        // Materials
+        npcLoot.Add(ModContent.ItemType<Navystone>(), 1, 30, 40);
+        hardmode.Add(ModContent.ItemType<MolluskHusk>(), 1, 25, 30);
+
+        // Weapons
+        int[] weapons = new int[]
         {
-            Texture2D texture = TextureAssets.Npc[Type].Value;
-            Main.EntitySpriteDraw(texture, NPC.Center - screenPos, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, 0, 0);
-            return false;
-        }
+            ModContent.ItemType<ClamCrusher>(),
+            ModContent.ItemType<ClamorRifle>(),
+            ModContent.ItemType<Poseidon>(),
+            ModContent.ItemType<ShellfishStaff>(),
+        };
+        hardmode.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
-        {
-            Texture2D texture = TextureAssets.Npc[Type].Value;
-            Texture2D glowmask = GlowTexture.Value;
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
-            Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)glowmask.Width, (float)(glowmask.Height / Main.npcFrameCount[Type])) * 1f / 2f;
-            vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
-            Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightBlue);
-            Main.EntitySpriteDraw(glowmask, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0);
-        }
+        // Pearls
+        npcLoot.Add(ItemID.WhitePearl, 2);
+        npcLoot.Add(ItemID.BlackPearl, 4);
+        npcLoot.Add(ItemID.PinkPearl, 10);
 
-        public override void OnKill()
-        {
-            // Spawn Amidias if he isn't in the world
-            // This doesn't check for Desert Scourge because Giant Clam only spawns post-Desert Scourge
-            int amidiasNPC = NPC.FindFirstNPC(ModContent.NPCType<SeaKing>());
-            if (amidiasNPC == -1 && Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SeaKing>(), 0, 0f, 0f, 0f, 0f, 255);
+        // Equipment
+        npcLoot.Add(ModContent.ItemType<GiantPearl>(), 3);
+        npcLoot.Add(ModContent.ItemType<AmidiasPendant>(), 3);
 
-            // Mark Giant Clam as dead
-            DownedBossSystem.downedCLAM = true;
-            DownedBossSystem.downedCLAMHardMode = Main.hardMode || DownedBossSystem.downedCLAMHardMode;
-            CalamityNetcode.SyncWorld();
-        }
+        // Trophy
+        npcLoot.Add(ModContent.ItemType<GiantClamTrophy>(), 10);
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
-            var hardmode = npcLoot.DefineConditionalDropSet(DropHelper.Hardmode());
-
-            // Materials
-            npcLoot.Add(ModContent.ItemType<Navystone>(), 1, 30, 40);
-            hardmode.Add(ModContent.ItemType<MolluskHusk>(), 1, 25, 30);
-
-            // Weapons
-            int[] weapons = new int[]
-            {
-                ModContent.ItemType<ClamCrusher>(),
-                ModContent.ItemType<ClamorRifle>(),
-                ModContent.ItemType<Poseidon>(),
-                ModContent.ItemType<ShellfishStaff>(),
-            };
-            hardmode.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-
-            // Pearls
-            npcLoot.Add(ItemID.WhitePearl, 2);
-            npcLoot.Add(ItemID.BlackPearl, 4);
-            npcLoot.Add(ItemID.PinkPearl, 10);
-
-            // Equipment
-            npcLoot.Add(ModContent.ItemType<GiantPearl>(), 3);
-            npcLoot.Add(ModContent.ItemType<AmidiasPendant>(), 3);
-
-            // Trophy
-            npcLoot.Add(ModContent.ItemType<GiantClamTrophy>(), 10);
-
-            // Relic
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<GiantClamRelic>());
-        }
+        // Relic
+        npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<GiantClamRelic>());
     }
 }

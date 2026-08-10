@@ -1,10 +1,9 @@
 ﻿using Terraria;
 using Terraria.Graphics;
 
-namespace CalamityMod.Systems.Graphic.LiquidSystem
+namespace CalamityMod.Systems.Graphic.LiquidSystem;
+
+public interface IWaterfallStyleModifyColor
 {
-    public interface IWaterfallStyleModifyColor
-    {
-        void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor);
-    }
+    void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor);
 }

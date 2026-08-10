@@ -4,58 +4,57 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Ores
+namespace CalamityMod.Tiles.Ores;
+
+[LegacyName("CharredOre")]
+public class InfernalSuevite : ModTile
 {
-    [LegacyName("CharredOre")]
-    public class InfernalSuevite : ModTile
+    private int sheetWidth = 234;
+    private int sheetHeight = 90;
+
+    public override void SetStaticDefaults()
     {
-        private int sheetWidth = 234;
-        private int sheetHeight = 90;
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
+        Main.tileLighted[Type] = true;
+        Main.tileOreFinderPriority[Type] = 675;
 
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
-            Main.tileLighted[Type] = true;
-            Main.tileOreFinderPriority[Type] = 675;
+        CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.MergeWithHell(Type);
 
-            CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeWithHell(Type);
+        TileID.Sets.Ore[Type] = true;
 
-            TileID.Sets.Ore[Type] = true;
+        AddMapEntry(new Color(17, 16, 26), CreateMapEntryName());
+        MineResist = 2f;
+        MinPick = 150;
+        HitSound = SoundID.Tink;
+        DustType = DustID.LifeDrain;
+        Main.tileSpelunker[Type] = true;
 
-            AddMapEntry(new Color(17, 16, 26), CreateMapEntryName());
-            MineResist = 2f;
-            MinPick = 150;
-            HitSound = SoundID.Tink;
-            DustType = DustID.LifeDrain;
-            Main.tileSpelunker[Type] = true;
+        this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+        this.RegisterBlendMergeWith(TileID.Ash);
+    }
 
-            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
-            this.RegisterBlendMergeWith(TileID.Ash);
-        }
+    public override bool CanExplode(int i, int j)
+    {
+        return false;
+    }
 
-        public override bool CanExplode(int i, int j)
-        {
-            return false;
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
+    }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+    public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
+    {
+        frameXOffset = i % 2 * sheetWidth;
+        frameYOffset = j % 2 * sheetHeight;
+    }
 
-        public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
-        {
-            frameXOffset = i % 2 * sheetWidth;
-            frameYOffset = j % 2 * sheetHeight;
-        }
-
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 0.5f;
-            g = 0f;
-            b = 0f;
-        }
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+    {
+        r = 0.5f;
+        g = 0f;
+        b = 0f;
     }
 }

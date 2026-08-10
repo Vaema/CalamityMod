@@ -5,78 +5,77 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Melee;
+
+public class IllustriousKnife : ModProjectile, ILocalizedModType
 {
-    public class IllustriousKnife : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Melee";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        ProjectileID.Sets.TrailCacheLength[Type] = 4;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 14;
+        Projectile.height = 14;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.MeleeNoSpeed;
+        Projectile.penetrate = 1;
+        Projectile.timeLeft = 300;
+        Projectile.extraUpdates = 1;
+    }
+
+    public override void AI()
+    {
+        Projectile.ai[0] += 1f;
+        if (Projectile.ai[0] >= 240f)
         {
-            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Type] = 4;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.alpha += 4;
+            Projectile.damage = (int)(Projectile.damage * 0.95);
+            Projectile.knockBack = (int)(Projectile.knockBack * 0.95);
         }
-
-        public override void SetDefaults()
+        if (Projectile.ai[0] < 240f)
+            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
+        else
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.MeleeNoSpeed;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
-            Projectile.extraUpdates = 1;
+            Projectile.rotation += 0.5f;
         }
+        CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 300f, 12f, 20f);
+        if (Main.rand.NextBool(6))
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PurificationPowder, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+    }
 
-        public override void AI()
+    //Give it a custom hitbox shape so it may remain rectangular and elongated
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+    {
+        float collisionPoint = 0f;
+        float bladeHalfLength = 25f * Projectile.scale / 2f;
+        float bladeWidth = 14f * Projectile.scale;
+
+        Vector2 direction = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
+
+        return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - direction * bladeHalfLength, Projectile.Center + direction * bladeHalfLength, bladeWidth, ref collisionPoint);
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        for (int i = 0; i < 3; i++)
         {
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= 240f)
-            {
-                Projectile.alpha += 4;
-                Projectile.damage = (int)(Projectile.damage * 0.95);
-                Projectile.knockBack = (int)(Projectile.knockBack * 0.95);
-            }
-            if (Projectile.ai[0] < 240f)
-                Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
-            else
-            {
-                Projectile.rotation += 0.5f;
-            }
-            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 300f, 12f, 20f);
-            if (Main.rand.NextBool(6))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PurificationPowder, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+            int illustrious = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 0.8f);
+            Main.dust[illustrious].noGravity = true;
+            Main.dust[illustrious].velocity *= 1.2f;
+            Main.dust[illustrious].velocity -= Projectile.oldVelocity * 0.3f;
         }
+    }
 
-        //Give it a custom hitbox shape so it may remain rectangular and elongated
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            float collisionPoint = 0f;
-            float bladeHalfLength = 25f * Projectile.scale / 2f;
-            float bladeWidth = 14f * Projectile.scale;
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<RoyalHeal>(), (int)Math.Round(hit.Damage * 0.015), 0.4f);
 
-            Vector2 direction = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
-
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - direction * bladeHalfLength, Projectile.Center + direction * bladeHalfLength, bladeWidth, ref collisionPoint);
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                int illustrious = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100, default, 0.8f);
-                Main.dust[illustrious].noGravity = true;
-                Main.dust[illustrious].velocity *= 1.2f;
-                Main.dust[illustrious].velocity -= Projectile.oldVelocity * 0.3f;
-            }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<RoyalHeal>(), (int)Math.Round(hit.Damage * 0.015), 0.4f);
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

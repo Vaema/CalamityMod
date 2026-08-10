@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.SunkenSea;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class EutrophicSandMerge : TileBlendTexture
 {
-    public sealed class EutrophicSandMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<EutrophicSand>();
-    }
+    public override int TileType => ModContent.TileType<EutrophicSand>();
 }

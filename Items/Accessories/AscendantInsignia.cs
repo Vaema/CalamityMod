@@ -7,52 +7,51 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[LegacyName("YharimsInsignia")]
+public class AscendantInsignia : ModItem, ILocalizedModType
 {
-    [LegacyName("YharimsInsignia")]
-    public class AscendantInsignia : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+
+    // These values override Soaring Insignia's
+    public static int FlightTimeBoostFlat = CalamityUtils.SecondsToFrames(4);
+    public static float MoveSpeedBoost = 0.15f;
+    public static float JumpSpeedBoost = 1f;
+    public static float AccelerationBoost = 0.5f;
+    public static int AbilityDuration = CalamityUtils.SecondsToFrames(4);
+    public static int AbilityCooldown = CalamityUtils.SecondsToFrames(40);
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoostFlat.FramesToSeconds(), MoveSpeedBoost.ToPercent(), JumpSpeedBoost.ToJumpSpeedPercent(), (1f + AccelerationBoost).Round(), AbilityDuration.FramesToSeconds(), AbilityCooldown.FramesToSeconds());
+
+    public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
+        Item.width = 46;
+        Item.height = 36;
+        Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+        Item.accessory = true;
+        Item.rare = ModContent.RarityType<PureGreen>();
+        Item.expert = true;
+    }
 
-        // These values override Soaring Insignia's
-        public static int FlightTimeBoostFlat = CalamityUtils.SecondsToFrames(4);
-        public static float MoveSpeedBoost = 0.15f;
-        public static float JumpSpeedBoost = 1f;
-        public static float AccelerationBoost = 0.5f;
-        public static int AbilityDuration = CalamityUtils.SecondsToFrames(4);
-        public static int AbilityCooldown = CalamityUtils.SecondsToFrames(40);
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoostFlat.FramesToSeconds(), MoveSpeedBoost.ToPercent(), JumpSpeedBoost.ToJumpSpeedPercent(), (1f + AccelerationBoost).Round(), AbilityDuration.FramesToSeconds(), AbilityCooldown.FramesToSeconds());
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.ascendantInsignia = true;
+        player.empressBrooch = true;
+        player.moveSpeed += MoveSpeedBoost;
+        player.jumpSpeedBoost += JumpSpeedBoost - 0.5f;
+        player.wingTimeMax += FlightTimeBoostFlat;
+    }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateDynamicHotkey(Item);
-        public override void SetDefaults()
-        {
-            Item.width = 46;
-            Item.height = 36;
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.accessory = true;
-            Item.rare = ModContent.RarityType<PureGreen>();
-            Item.expert = true;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.ascendantInsignia = true;
-            player.empressBrooch = true;
-            player.moveSpeed += MoveSpeedBoost;
-            player.jumpSpeedBoost += JumpSpeedBoost - 0.5f;
-            player.wingTimeMax += FlightTimeBoostFlat;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.EmpressFlightBooster).
-                AddIngredient<EffulgentFeather>(5).
-                AddIngredient<DivineGeode>(5).
-                AddIngredient(ItemID.SoulofFlight, 10).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.EmpressFlightBooster).
+            AddIngredient<EffulgentFeather>(5).
+            AddIngredient<DivineGeode>(5).
+            AddIngredient(ItemID.SoulofFlight, 10).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

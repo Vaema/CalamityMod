@@ -3,58 +3,57 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Pets
+namespace CalamityMod.Projectiles.Pets;
+
+public class PlaguebringerBab : ModProjectile, ILocalizedModType
 {
-    public class PlaguebringerBab : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Pets";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Pets";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 6;
-            Main.projPet[Type] = true;
+        Main.projFrames[Type] = 6;
+        Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, 4, 6)
-            .WithOffset(-25f, -20f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+        ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, 4, 6)
+        .WithOffset(-25f, -20f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.netImportant = true;
+        Projectile.width = 30;
+        Projectile.height = 30;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft *= 5;
+    }
+
+    public override void AI()
+    {
+        Player player = Main.player[Projectile.owner];
+        CalamityPlayer modPlayer = player.Calamity();
+        if (!player.active)
+        {
+            Projectile.active = false;
+            return;
         }
-
-        public override void SetDefaults()
+        if (player.dead)
         {
-            Projectile.netImportant = true;
-            Projectile.width = 30;
-            Projectile.height = 30;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft *= 5;
+            modPlayer.plaguebringerBab = false;
         }
-
-        public override void AI()
+        if (modPlayer.plaguebringerBab)
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (!player.active)
-            {
-                Projectile.active = false;
-                return;
-            }
-            if (player.dead)
-            {
-                modPlayer.plaguebringerBab = false;
-            }
-            if (modPlayer.plaguebringerBab)
-            {
-                Projectile.timeLeft = 2;
-            }
-            Projectile.FloatingPetAI(false, 0.05f);
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= 4)
-            {
-                Projectile.frame = 0;
-            }
+            Projectile.timeLeft = 2;
+        }
+        Projectile.FloatingPetAI(false, 0.05f);
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 6)
+        {
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
+        }
+        if (Projectile.frame >= 4)
+        {
+            Projectile.frame = 0;
         }
     }
 }

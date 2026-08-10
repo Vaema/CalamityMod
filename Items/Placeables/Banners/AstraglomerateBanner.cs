@@ -1,10 +1,9 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Banners
+namespace CalamityMod.Items.Placeables.Banners;
+
+[LegacyName("HiveBanner")]
+public class AstraglomerateBanner : BaseBanner
 {
-    [LegacyName("HiveBanner")]
-    public class AstraglomerateBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 40;
-    }
+    public override int BannerTileStyle => 40;
 }

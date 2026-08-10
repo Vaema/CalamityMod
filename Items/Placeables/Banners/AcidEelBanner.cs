@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class AcidEelBanner : BaseBanner
 {
-    public class AcidEelBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 115;
-    }
+    public override int BannerTileStyle => 115;
 }

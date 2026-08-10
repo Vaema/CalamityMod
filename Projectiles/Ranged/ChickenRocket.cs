@@ -5,90 +5,89 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Ranged
+namespace CalamityMod.Projectiles.Ranged;
+
+public class ChickenRocket : ModProjectile, ILocalizedModType
 {
-    public class ChickenRocket : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Ranged";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
-        public override void SetDefaults()
-        {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 1;
-            Projectile.MaxUpdates = 2;
-            Projectile.timeLeft = 300;
-            Projectile.DamageType = DamageClass.Ranged;
-        }
+        Projectile.width = 10;
+        Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = 1;
+        Projectile.MaxUpdates = 2;
+        Projectile.timeLeft = 300;
+        Projectile.DamageType = DamageClass.Ranged;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        float speed = Projectile.velocity.Length();
+        if (speed >= 12f)
         {
-            float speed = Projectile.velocity.Length();
-            if (speed >= 12f)
+            // If the rocket is going fast enough, emit some dust.
+            for (int i = 0; i < 2; i++)
             {
-                // If the rocket is going fast enough, emit some dust.
-                for (int i = 0; i < 2; i++)
-                {
-                    float dx = i == 1 ? Projectile.velocity.X * 0.5f : 0f;
-                    float dy = i == 1 ? Projectile.velocity.Y * 0.5f : 0f;
-                    int d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Torch, 0f, 0f, 100, default, 1f);
-                    Main.dust[d].scale *= 2f + Main.rand.NextFloat();
-                    Main.dust[d].velocity *= 0.2f;
-                    Main.dust[d].noGravity = true;
-                    d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.CopperCoin, 0f, 0f, 100, default, 0.5f);
-                    Main.dust[d].fadeIn = 1f + Main.rand.NextFloat(0.5f);
-                    Main.dust[d].velocity *= 0.05f;
-                }
-
-                // Exponentially accelerate if not going fast enough yet.
-                if (speed < 18f)
-                    Projectile.velocity *= 1.006f;
-
-                // When going at very high speed, emit even more dust.
-                else if (Main.rand.NextBool())
-                {
-                    int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
-                    Main.dust[d].scale = 0.1f + Main.rand.NextFloat(0.5f);
-                    Main.dust[d].fadeIn = 1.5f + Main.rand.NextFloat(0.5f);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2)).RotatedBy(Projectile.rotation) * 1.1f;
-                    Main.rand.Next(2);
-                    d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
-                    Main.dust[d].scale = 1f + Main.rand.NextFloat(0.5f);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy(Projectile.rotation) * 1.1f;
-                }
+                float dx = i == 1 ? Projectile.velocity.X * 0.5f : 0f;
+                float dy = i == 1 ? Projectile.velocity.Y * 0.5f : 0f;
+                int d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Torch, 0f, 0f, 100, default, 1f);
+                Main.dust[d].scale *= 2f + Main.rand.NextFloat();
+                Main.dust[d].velocity *= 0.2f;
+                Main.dust[d].noGravity = true;
+                d = Dust.NewDust(new Vector2(Projectile.position.X + 3f + dx, Projectile.position.Y + 3f + dy) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.CopperCoin, 0f, 0f, 100, default, 0.5f);
+                Main.dust[d].fadeIn = 1f + Main.rand.NextFloat(0.5f);
+                Main.dust[d].velocity *= 0.05f;
             }
 
-            Projectile.ai[0] += 1f;
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
+            // Exponentially accelerate if not going fast enough yet.
+            if (speed < 18f)
+                Projectile.velocity *= 1.006f;
 
-            // Slight gravity, equivalent to Plasma Grenade.
-            Projectile.velocity.Y += 0.075f;
+            // When going at very high speed, emit even more dust.
+            else if (Main.rand.NextBool())
+            {
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
+                Main.dust[d].scale = 0.1f + Main.rand.NextFloat(0.5f);
+                Main.dust[d].fadeIn = 1.5f + Main.rand.NextFloat(0.5f);
+                Main.dust[d].noGravity = true;
+                Main.dust[d].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2)).RotatedBy(Projectile.rotation) * 1.1f;
+                Main.rand.Next(2);
+                d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
+                Main.dust[d].scale = 1f + Main.rand.NextFloat(0.5f);
+                Main.dust[d].noGravity = true;
+                Main.dust[d].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy(Projectile.rotation) * 1.1f;
+            }
         }
 
-        // Instead of dying instantly on collision, fly straight up for a moment.
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.velocity.X = 0f;
-            Projectile.velocity.Y = -15f;
+        Projectile.ai[0] += 1f;
+        Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
-            // If there isn't much time left anyway, just explode immediately on collision.
-            if (Projectile.timeLeft > 20)
-                Projectile.timeLeft = 20;
-            else
-                return true;
+        // Slight gravity, equivalent to Plasma Grenade.
+        Projectile.velocity.Y += 0.075f;
+    }
 
-            return false;
-        }
+    // Instead of dying instantly on collision, fly straight up for a moment.
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Projectile.velocity.X = 0f;
+        Projectile.velocity.Y = -15f;
 
-        public override void OnKill(int timeLeft)
-        {
-            if (Projectile.owner == Main.myPlayer)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ChickenExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+        // If there isn't much time left anyway, just explode immediately on collision.
+        if (Projectile.timeLeft > 20)
+            Projectile.timeLeft = 20;
+        else
+            return true;
 
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-        }
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        if (Projectile.owner == Main.myPlayer)
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ChickenExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+
+        SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
     }
 }

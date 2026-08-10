@@ -1,10 +1,9 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Furniture.BossTrophies
+namespace CalamityMod.Tiles.Furniture.BossTrophies;
+
+[LegacyName("CalamitasTrophyTile")]
+public class CalamitasCloneTrophyTile : ModTile
 {
-    [LegacyName("CalamitasTrophyTile")]
-    public class CalamitasCloneTrophyTile : ModTile
-    {
-        public override void SetStaticDefaults() => this.SetUpTrophy();
-    }
+    public override void SetStaticDefaults() => this.SetUpTrophy();
 }

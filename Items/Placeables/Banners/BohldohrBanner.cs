@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class BohldohrBanner : BaseBanner
 {
-    public class BohldohrBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 87;
-    }
+    public override int BannerTileStyle => 87;
 }

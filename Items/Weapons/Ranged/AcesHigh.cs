@@ -9,71 +9,70 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+public class AcesHigh : ModItem, ILocalizedModType
 {
-    public class AcesHigh : ModItem, ILocalizedModType
+    public int shots = 0;
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+    public override void SetDefaults()
     {
-        public int shots = 0;
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
+        Item.width = 48;
+        Item.height = 30;
+        Item.damage = 325;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useTime = 3;
+        Item.useAnimation = 12;
+        Item.reuseDelay = 8;
+        Item.useLimitPerAnimation = 4;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 6f;
 
-        public override void SetDefaults()
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+        Item.rare = ModContent.RarityType<BurnishedAuric>();
+        Item.Calamity().donorItem = true;
+
+        Item.UseSound = SoundID.Item36;
+        Item.autoReuse = true;
+        Item.shootSpeed = 24f;
+        Item.shoot = ModContent.ProjectileType<CardHeart>();
+        Item.useAmmo = AmmoID.Bullet;
+        Item.consumeAmmoOnLastShotOnly = true;
+    }
+
+    public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.Revolver).
+            AddIngredient<ClaretCannon>().
+            AddIngredient<FantasyTalisman>().
+            AddIngredient<AuricBar>(5).
+            AddTile<CosmicAnvil>().
+            Register();
+    }
+
+    public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+    {
+        shots++;
+        switch (shots)
         {
-            Item.width = 48;
-            Item.height = 30;
-            Item.damage = 325;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 3;
-            Item.useAnimation = 12;
-            Item.reuseDelay = 8;
-            Item.useLimitPerAnimation = 4;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 6f;
-
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
-            Item.Calamity().donorItem = true;
-
-            Item.UseSound = SoundID.Item36;
-            Item.autoReuse = true;
-            Item.shootSpeed = 24f;
-            Item.shoot = ModContent.ProjectileType<CardHeart>();
-            Item.useAmmo = AmmoID.Bullet;
-            Item.consumeAmmoOnLastShotOnly = true;
-        }
-
-        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.Revolver).
-                AddIngredient<ClaretCannon>().
-                AddIngredient<FantasyTalisman>().
-                AddIngredient<AuricBar>(5).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
-
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
-            shots++;
-            switch (shots)
-            {
-                case 4:
-                    type = ModContent.ProjectileType<CardSpade>();
-                    shots = 0;
-                    break;
-                case 3:
-                    type = ModContent.ProjectileType<CardDiamond>();
-                    break;
-                case 2:
-                    type = ModContent.ProjectileType<CardClub>();
-                    break;
-                default:
-                    type = ModContent.ProjectileType<CardHeart>();
-                    break;
-            }
+            case 4:
+                type = ModContent.ProjectileType<CardSpade>();
+                shots = 0;
+                break;
+            case 3:
+                type = ModContent.ProjectileType<CardDiamond>();
+                break;
+            case 2:
+                type = ModContent.ProjectileType<CardClub>();
+                break;
+            default:
+                type = ModContent.ProjectileType<CardHeart>();
+                break;
         }
     }
 }

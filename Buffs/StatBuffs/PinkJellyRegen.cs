@@ -3,22 +3,21 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.StatBuffs
+namespace CalamityMod.Buffs.StatBuffs;
+
+public class PinkJellyRegen : ModBuff
 {
-    public class PinkJellyRegen : ModBuff
+    public override LocalizedText Description => base.Description.WithFormatArgs(LifeJelly.AuraRegenBoost.ToRegenPerSecond());
+
+    public override void SetStaticDefaults()
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(LifeJelly.AuraRegenBoost.ToRegenPerSecond());
+        Main.debuff[Type] = false;
+        Main.pvpBuff[Type] = true;
+        Main.buffNoSave[Type] = true;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            Main.debuff[Type] = false;
-            Main.pvpBuff[Type] = true;
-            Main.buffNoSave[Type] = true;
-        }
-
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.Calamity().PinkJellyRegen = true;
-        }
+    public override void Update(Player player, ref int buffIndex)
+    {
+        player.Calamity().PinkJellyRegen = true;
     }
 }

@@ -4,27 +4,26 @@ using CalamityMod.Tiles.Astral;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Placeables.Furniture
+namespace CalamityMod.Items.Placeables.Furniture;
+
+public class AstralBeaconItem : ModItem, ILocalizedModType
 {
-    public class AstralBeaconItem : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
+        Item.DefaultToPlaceableTile(ModContent.TileType<AstralBeacon>());
+        Item.value = Item.sellPrice(gold: 2);
+        Item.rare = ItemRarityID.Cyan;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<AstralBeacon>());
-            Item.value = Item.sellPrice(gold: 2);
-            Item.rare = ItemRarityID.Cyan;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<Items.Placeables.Astral.AstralStone>(30).
-                AddIngredient<AureusCell>(5).
-                AddIngredient<StarblightSoot>(20).
-                AddTile(TileID.HeavyWorkBench).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<Items.Placeables.Astral.AstralStone>(30).
+            AddIngredient<AureusCell>(5).
+            AddIngredient<StarblightSoot>(20).
+            AddTile(TileID.HeavyWorkBench).
+            Register();
     }
 }

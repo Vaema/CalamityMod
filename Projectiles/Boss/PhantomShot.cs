@@ -6,65 +6,64 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Boss
+namespace CalamityMod.Projectiles.Boss;
+
+public class PhantomShot : ModProjectile, ILocalizedModType
 {
-    public class PhantomShot : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Boss";
+    public override string Texture => "CalamityMod/Projectiles/Boss/PhantomHookShot";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Boss";
-        public override string Texture => "CalamityMod/Projectiles/Boss/PhantomHookShot";
+        Projectile.width = 14;
+        Projectile.height = 14;
+        Projectile.hostile = true;
+        Projectile.ignoreWater = true;
+        Projectile.alpha = 255;
+        Projectile.penetrate = -1;
+        CooldownSlot = ImmunityCooldownID.Bosses;
+    }
 
-        public override void SetDefaults()
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(Projectile.localAI[0]);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        Projectile.localAI[0] = reader.ReadSingle();
+    }
+
+    public override void AI()
+    {
+        if (Projectile.ai[1] == 0f)
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.hostile = true;
-            Projectile.ignoreWater = true;
-            Projectile.alpha = 255;
-            Projectile.penetrate = -1;
-            CooldownSlot = ImmunityCooldownID.Bosses;
+            Projectile.ai[1] = 1f;
+            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
         }
-
-        public override void SendExtraAI(BinaryWriter writer)
+        Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
+        Projectile.localAI[0] += 1f;
+        if (Projectile.localAI[0] > 9f)
         {
-            writer.Write(Projectile.localAI[0]);
+            Projectile.alpha -= 5;
+            if (Projectile.alpha < 30)
+                Projectile.alpha = 30;
         }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
+        if (Projectile.localAI[0] > 180f && Projectile.localAI[0] < 240f && Main.expertMode)
         {
-            Projectile.localAI[0] = reader.ReadSingle();
-        }
+            if (Projectile.ai[0] == 0f)
+                Projectile.ai[0] = Projectile.velocity.Length() * 3f;
 
-        public override void AI()
-        {
-            if (Projectile.ai[1] == 0f)
-            {
-                Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            }
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 9f)
-            {
-                Projectile.alpha -= 5;
-                if (Projectile.alpha < 30)
-                    Projectile.alpha = 30;
-            }
-            if (Projectile.localAI[0] > 180f && Projectile.localAI[0] < 240f && Main.expertMode)
-            {
-                if (Projectile.ai[0] == 0f)
-                    Projectile.ai[0] = Projectile.velocity.Length() * 3f;
-
-                int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
-                Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
-                playerDirection.Normalize();
-                playerDirection *= Projectile.ai[0];
-                Projectile.velocity = (Projectile.velocity * 79 + playerDirection) / 80;
-            }
+            int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
+            Vector2 playerDirection = Main.player[playerTracker].Center - Projectile.Center;
+            playerDirection.Normalize();
+            playerDirection *= Projectile.ai[0];
+            Projectile.velocity = (Projectile.velocity * 79 + playerDirection) / 80;
         }
+    }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(100, 250, 250, Projectile.alpha);
-        }
+    public override Color? GetAlpha(Color lightColor)
+    {
+        return new Color(100, 250, 250, Projectile.alpha);
     }
 }

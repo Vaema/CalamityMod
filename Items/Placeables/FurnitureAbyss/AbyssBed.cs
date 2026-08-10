@@ -2,24 +2,23 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Placeables.FurnitureAbyss
-{
-    public class AbyssBed : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureAbyss.AbyssBed>());
-            Item.value = Item.sellPrice(silver: 4);
-        }
+namespace CalamityMod.Items.Placeables.FurnitureAbyss;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<SmoothAbyssGravel>(15).
-                AddIngredient(ItemID.Silk, 5).
-                AddTile<VoidCondenser>().
-                Register();
-        }
+public class AbyssBed : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureAbyss.AbyssBed>());
+        Item.value = Item.sellPrice(silver: 4);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<SmoothAbyssGravel>(15).
+            AddIngredient(ItemID.Silk, 5).
+            AddTile<VoidCondenser>().
+            Register();
     }
 }

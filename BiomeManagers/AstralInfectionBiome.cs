@@ -6,108 +6,107 @@ using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.BiomeManagers
+namespace CalamityMod.BiomeManagers;
+
+public class AstralInfectionBiome : ModBiome
 {
-    public class AstralInfectionBiome : ModBiome
+    public override ModWaterStyle WaterStyle => AstralWater.Instance;
+
+    public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle
     {
-        public override ModWaterStyle WaterStyle => AstralWater.Instance;
-
-        public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle
+        get
         {
-            get
+            if (Main.LocalPlayer.ZoneSnow) //Snow
             {
-                if (Main.LocalPlayer.ZoneSnow) //Snow
-                {
-                    return ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralSnowSurfaceBGStyle");
-                }
-                else if (Main.LocalPlayer.ZoneDesert && !Main.LocalPlayer.ZoneSnow) //Desert
-                {
-                    return ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralDesertSurfaceBGStyle");
-                }
-                else //surface
-                {
-                    return ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralSurfaceBGStyle");
-                }
+                return ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralSnowSurfaceBGStyle");
+            }
+            else if (Main.LocalPlayer.ZoneDesert && !Main.LocalPlayer.ZoneSnow) //Desert
+            {
+                return ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralDesertSurfaceBGStyle");
+            }
+            else //surface
+            {
+                return ModContent.Find<ModSurfaceBackgroundStyle>("CalamityMod/AstralSurfaceBGStyle");
             }
         }
+    }
 
-        public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle
+    public override ModUndergroundBackgroundStyle UndergroundBackgroundStyle
+    {
+        get
         {
-            get
+            if (Main.LocalPlayer.ZoneSnow)
             {
-                if (Main.LocalPlayer.ZoneSnow)
-                {
-                    return ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/AstralUndergroundBGStyle"); // Could use its own unique background
-                }
-                return ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/AstralUndergroundBGStyle");
+                return ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/AstralUndergroundBGStyle"); // Could use its own unique background
+            }
+            return ModContent.Find<ModUndergroundBackgroundStyle>("CalamityMod/AstralUndergroundBGStyle");
+        }
+    }
+
+    public override int BiomeTorchItemType => ModContent.ItemType<AstralTorch>();
+
+    public override SceneEffectPriority Priority
+    {
+        get
+        {
+            if (Main.LocalPlayer.ZoneDesert && Sandstorm.Happening && !(Main.LocalPlayer.ZoneSnow || Main.slimeRain || Main.eclipse))
+            {
+                return SceneEffectPriority.Environment;
+            }
+            else
+            {
+                return SceneEffectPriority.BiomeHigh;
             }
         }
+    }
 
-        public override int BiomeTorchItemType => ModContent.ItemType<AstralTorch>();
+    public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbovegroundAstralBiomeIcon";
 
-        public override SceneEffectPriority Priority
+    public override string BackgroundPath 
+    { 
+        get
         {
-            get
+            if (Main.LocalPlayer.ZoneDesert && !Main.LocalPlayer.ZoneSnow)
             {
-                if (Main.LocalPlayer.ZoneDesert && Sandstorm.Happening && !(Main.LocalPlayer.ZoneSnow || Main.slimeRain || Main.eclipse))
-                {
-                    return SceneEffectPriority.Environment;
-                }
-                else
-                {
-                    return SceneEffectPriority.BiomeHigh;
-                }
+                //desert
+                return "CalamityMod/Backgrounds/MapBackgrounds/AstralBG"; // Could use its own unique background
             }
-        }
-
-        public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbovegroundAstralBiomeIcon";
-
-        public override string BackgroundPath 
-        { 
-            get
+            else if (Main.LocalPlayer.ZoneDirtLayerHeight || Main.LocalPlayer.ZoneRockLayerHeight || Main.LocalPlayer.ZoneUnderworldHeight)
             {
-                if (Main.LocalPlayer.ZoneDesert && !Main.LocalPlayer.ZoneSnow)
-                {
-                    //desert
-                    return "CalamityMod/Backgrounds/MapBackgrounds/AstralBG"; // Could use its own unique background
-                }
-                else if (Main.LocalPlayer.ZoneDirtLayerHeight || Main.LocalPlayer.ZoneRockLayerHeight || Main.LocalPlayer.ZoneUnderworldHeight)
-                {
-                    //underground
-                    return "CalamityMod/Backgrounds/MapBackgrounds/AstralBG"; // Could use its own unique background
-                }
-                else
-                {
-                    return "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
-                }
-            } 
-        }
-        public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
-
-        public override int Music
-        {
-            get
-            {
-                if (Main.LocalPlayer.ZoneDirtLayerHeight || Main.LocalPlayer.ZoneRockLayerHeight || Main.LocalPlayer.ZoneUnderworldHeight)
-                {
-                    return CalamityMod.Instance.GetMusicFromMusicMod("AstralInfectionUnderground") ?? MusicID.Space;
-                }
-                return CalamityMod.Instance.GetMusicFromMusicMod("AstralInfection") ?? MusicID.Space;
+                //underground
+                return "CalamityMod/Backgrounds/MapBackgrounds/AstralBG"; // Could use its own unique background
             }
-        }
+            else
+            {
+                return "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
+            }
+        } 
+    }
+    public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
 
-        public override bool IsBiomeActive(Player player)
+    public override int Music
+    {
+        get
         {
-            return !player.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950;
-        }
-
-        public override void SpecialVisuals(Player player, bool isActive)
-        {
-            player.ManageSpecialBiomeVisuals("CalamityMod:Astral", isActive);
             if (Main.LocalPlayer.ZoneDirtLayerHeight || Main.LocalPlayer.ZoneRockLayerHeight || Main.LocalPlayer.ZoneUnderworldHeight)
             {
-                player.ManageSpecialBiomeVisuals("CalamityMod:Astral", isActive); //underground
+                return CalamityMod.Instance.GetMusicFromMusicMod("AstralInfectionUnderground") ?? MusicID.Space;
             }
+            return CalamityMod.Instance.GetMusicFromMusicMod("AstralInfection") ?? MusicID.Space;
+        }
+    }
+
+    public override bool IsBiomeActive(Player player)
+    {
+        return !player.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950;
+    }
+
+    public override void SpecialVisuals(Player player, bool isActive)
+    {
+        player.ManageSpecialBiomeVisuals("CalamityMod:Astral", isActive);
+        if (Main.LocalPlayer.ZoneDirtLayerHeight || Main.LocalPlayer.ZoneRockLayerHeight || Main.LocalPlayer.ZoneUnderworldHeight)
+        {
+            player.ManageSpecialBiomeVisuals("CalamityMod:Astral", isActive); //underground
         }
     }
 }

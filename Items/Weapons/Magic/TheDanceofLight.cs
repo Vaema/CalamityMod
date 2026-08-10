@@ -9,87 +9,86 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+[LegacyName("Judgement", "Judgment")]
+public class TheDanceofLight : ModItem, ILocalizedModType
 {
-    [LegacyName("Judgement", "Judgment")]
-    public class TheDanceofLight : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+    public const int HitsPerFlash = 300;
+    public const int FlashBaseDamage = 16000;
+
+    private const float SpawnAngleSpread = 0.4f * MathHelper.Pi;
+    private const float SpeedRandomness = 0.08f;
+    private const float Inaccuracy = 0.04f;
+    private const float MinSpawnDist = 40;
+    private const float MaxSpawnDist = 140;
+
+    public static Color GetLightColor(float deviation) => new Color(1f, 0.5f + 0.35f * MathHelper.Clamp(deviation, 0f, 1f), 1f);
+    public static Color GetSyncedLightColor() => GetLightColor(Main.DiscoG / 255f);
+    public static Color GetRandomLightColor() => GetLightColor(Main.rand.NextFloat());
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
-        public const int HitsPerFlash = 300;
-        public const int FlashBaseDamage = 16000;
+        Item.width = 40;
+        Item.height = 42;
+        Item.damage = 515;
+        Item.DamageType = DamageClass.Magic;
+        Item.crit = 20;
+        Item.mana = 26;
+        Item.knockBack = 4f;
 
-        private const float SpawnAngleSpread = 0.4f * MathHelper.Pi;
-        private const float SpeedRandomness = 0.08f;
-        private const float Inaccuracy = 0.04f;
-        private const float MinSpawnDist = 40;
-        private const float MaxSpawnDist = 140;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.useTime = 2;
+        Item.useAnimation = 8;
+        Item.reuseDelay = 5;
+        Item.useLimitPerAnimation = 4;
+        Item.UseSound = SoundID.Item105;
+        Item.autoReuse = true;
+        Item.noMelee = true;
 
-        public static Color GetLightColor(float deviation) => new Color(1f, 0.5f + 0.35f * MathHelper.Clamp(deviation, 0f, 1f), 1f);
-        public static Color GetSyncedLightColor() => GetLightColor(Main.DiscoG / 255f);
-        public static Color GetRandomLightColor() => GetLightColor(Main.rand.NextFloat());
+        Item.shoot = ModContent.ProjectileType<LightBlade>();
+        Item.shootSpeed = 14f;
 
-        public override void SetDefaults()
+        Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+        Item.rare = ModContent.RarityType<HotPink>();
+        Item.Calamity().devItem = true;
+    }
+
+    public override Vector2? HoldoutOffset() => Vector2.Zero;
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Projectile[] pair = new Projectile[2];
+        for (int i = 0; i < 2; ++i)
         {
-            Item.width = 40;
-            Item.height = 42;
-            Item.damage = 515;
-            Item.DamageType = DamageClass.Magic;
-            Item.crit = 20;
-            Item.mana = 26;
-            Item.knockBack = 4f;
+            // Pick a random direction somewhere behind the player
+            float shootAngle = (float)Math.Atan2(velocity.Y, velocity.X);
+            Vector2 offset = Main.rand.NextVector2Unit(MathHelper.Pi - SpawnAngleSpread, 2f * SpawnAngleSpread).RotatedBy(shootAngle);
+            // Set how far away this sword is spawning
+            offset *= Main.rand.NextFloat(MinSpawnDist, MaxSpawnDist);
 
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 2;
-            Item.useAnimation = 8;
-            Item.reuseDelay = 5;
-            Item.useLimitPerAnimation = 4;
-            Item.UseSound = SoundID.Item105;
-            Item.autoReuse = true;
-            Item.noMelee = true;
-
-            Item.shoot = ModContent.ProjectileType<LightBlade>();
-            Item.shootSpeed = 14f;
-
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
-            Item.rare = ModContent.RarityType<HotPink>();
-            Item.Calamity().devItem = true;
+            Vector2 spawnPos = position + offset;
+            float randSpeed = Main.rand.NextFloat(1f - SpeedRandomness, 1f + SpeedRandomness);
+            float randAngle = Main.rand.NextFloat(-Inaccuracy, Inaccuracy);
+            Vector2 velocityReal = randSpeed * velocity.RotatedBy(randAngle);
+            Projectile p = Projectile.NewProjectileDirect(source, spawnPos, velocityReal, type, damage, knockback, player.whoAmI);
+            pair[i] = p;
         }
 
-        public override Vector2? HoldoutOffset() => Vector2.Zero;
+        // Pair the swords up so they home in on each other
+        pair[0].ai[1] = pair[1].whoAmI + 1f;
+        pair[1].ai[1] = pair[0].whoAmI + 1f;
+        return false;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile[] pair = new Projectile[2];
-            for (int i = 0; i < 2; ++i)
-            {
-                // Pick a random direction somewhere behind the player
-                float shootAngle = (float)Math.Atan2(velocity.Y, velocity.X);
-                Vector2 offset = Main.rand.NextVector2Unit(MathHelper.Pi - SpawnAngleSpread, 2f * SpawnAngleSpread).RotatedBy(shootAngle);
-                // Set how far away this sword is spawning
-                offset *= Main.rand.NextFloat(MinSpawnDist, MaxSpawnDist);
-
-                Vector2 spawnPos = position + offset;
-                float randSpeed = Main.rand.NextFloat(1f - SpeedRandomness, 1f + SpeedRandomness);
-                float randAngle = Main.rand.NextFloat(-Inaccuracy, Inaccuracy);
-                Vector2 velocityReal = randSpeed * velocity.RotatedBy(randAngle);
-                Projectile p = Projectile.NewProjectileDirect(source, spawnPos, velocityReal, type, damage, knockback, player.whoAmI);
-                pair[i] = p;
-            }
-
-            // Pair the swords up so they home in on each other
-            pair[0].ai[1] = pair[1].whoAmI + 1f;
-            pair[1].ai[1] = pair[0].whoAmI + 1f;
-            return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.SkyFracture).
-                AddIngredient(ItemID.LunarFlareBook).
-                AddIngredient<ShadowspecBar>(5).
-                AddTile<DraedonsForge>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.SkyFracture).
+            AddIngredient(ItemID.LunarFlareBook).
+            AddIngredient<ShadowspecBar>(5).
+            AddTile<DraedonsForge>().
+            Register();
     }
 }

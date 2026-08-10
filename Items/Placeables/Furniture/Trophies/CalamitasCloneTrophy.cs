@@ -3,18 +3,17 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.Furniture.Trophies
+namespace CalamityMod.Items.Placeables.Furniture.Trophies;
+
+[LegacyName("CalamitasTrophy")]
+public class CalamitasCloneTrophy : ModItem, ILocalizedModType
 {
-    [LegacyName("CalamitasTrophy")]
-    public class CalamitasCloneTrophy : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<CalamitasCloneTrophyTile>());
-            Item.width = Item.height = 30;
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Blue;
-        }
+        Item.DefaultToPlaceableTile(ModContent.TileType<CalamitasCloneTrophyTile>());
+        Item.width = Item.height = 30;
+        Item.value = Item.sellPrice(gold: 1);
+        Item.rare = ItemRarityID.Blue;
     }
 }

@@ -5,78 +5,77 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Boss
+namespace CalamityMod.Projectiles.Boss;
+
+public class SirenSong : ModProjectile, ILocalizedModType
 {
-    public class SirenSong : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Boss";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Boss";
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.TrailCacheLength[Type] = 4;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 24;
+        Projectile.height = 58;
+        Projectile.hostile = true;
+        Projectile.tileCollide = false;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 960;
+        Projectile.Opacity = 0f;
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(Projectile.localAI[0]);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        Projectile.localAI[0] = reader.ReadSingle();
+    }
+
+    public override void AI()
+    {
+        Projectile.velocity *= 0.985f;
+
+        if (Projectile.timeLeft < 30)
+            Projectile.Opacity = MathHelper.Clamp(Projectile.timeLeft / 30f, 0f, 1f);
+        else
+            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - 930) / 30f), 0f, 1f);
+
+        if (Projectile.localAI[0] == 0f)
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 4;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.scale += 0.01f;
+            if (Projectile.scale >= 1.1f)
+                Projectile.localAI[0] = 1f;
+        }
+        else if (Projectile.localAI[0] == 1f)
+        {
+            Projectile.scale -= 0.01f;
+            if (Projectile.scale <= 0.9f)
+                Projectile.localAI[0] = 0f;
         }
 
-        public override void SetDefaults()
+        Lighting.AddLight(Projectile.Center, 0.7f * Projectile.Opacity, 0.5f * Projectile.Opacity, 0f);
+
+        if (CalamityGlobalNPC.leviathan != -1)
         {
-            Projectile.width = 24;
-            Projectile.height = 58;
-            Projectile.hostile = true;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 960;
-            Projectile.Opacity = 0f;
+            if (Main.npc[CalamityGlobalNPC.leviathan].active)
+                Projectile.extraUpdates = 1;
         }
+    }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Projectile.localAI[0]);
-        }
+    public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.localAI[0] = reader.ReadSingle();
-        }
-
-        public override void AI()
-        {
-            Projectile.velocity *= 0.985f;
-
-            if (Projectile.timeLeft < 30)
-                Projectile.Opacity = MathHelper.Clamp(Projectile.timeLeft / 30f, 0f, 1f);
-            else
-                Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - 930) / 30f), 0f, 1f);
-
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.scale += 0.01f;
-                if (Projectile.scale >= 1.1f)
-                    Projectile.localAI[0] = 1f;
-            }
-            else if (Projectile.localAI[0] == 1f)
-            {
-                Projectile.scale -= 0.01f;
-                if (Projectile.scale <= 0.9f)
-                    Projectile.localAI[0] = 0f;
-            }
-
-            Lighting.AddLight(Projectile.Center, 0.7f * Projectile.Opacity, 0.5f * Projectile.Opacity, 0f);
-
-            if (CalamityGlobalNPC.leviathan != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.leviathan].active)
-                    Projectile.extraUpdates = 1;
-            }
-        }
-
-        public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            lightColor.R = (byte)(255 * Projectile.Opacity);
-            lightColor.G = (byte)(255 * Projectile.Opacity);
-            lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        lightColor.R = (byte)(255 * Projectile.Opacity);
+        lightColor.G = (byte)(255 * Projectile.Opacity);
+        lightColor.B = (byte)(255 * Projectile.Opacity);
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

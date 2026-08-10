@@ -8,60 +8,59 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 
-namespace CalamityMod.Items.Weapons.Melee
+namespace CalamityMod.Items.Weapons.Melee;
+
+public class Roxcalibur : ModItem, ILocalizedModType
 {
-    public class Roxcalibur : ModItem, ILocalizedModType
+
+    public new string LocalizationCategory => "Items.Weapons.Melee";
+
+    public static int BaseUseTime = 40;
+    public override void SetDefaults()
     {
+        Item.width = 100;
+        Item.height = 100;
+        Item.damage = 180;
+        Item.crit = 8;
+        Item.knockBack = 13f;
+        Item.DamageType = DamageClass.Melee;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.UseSound = SoundID.NPCHit42;
+        Item.useAnimation = Item.useTime = BaseUseTime;
+        Item.reuseDelay = 10;
+        Item.shoot = ModContent.ProjectileType<RoxcaliburProj>();
+        Item.shootSpeed = 4f;
+        Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+        Item.rare = ItemRarityID.LightRed;
+        Item.Calamity().donorItem = true;
 
-        public new string LocalizationCategory => "Items.Weapons.Melee";
+        Item.noUseGraphic = true;
+        Item.noMelee = true;
+        Item.autoReuse = false;
+        Item.channel = true;
+    }
 
-        public static int BaseUseTime = 40;
-        public override void SetDefaults()
-        {
-            Item.width = 100;
-            Item.height = 100;
-            Item.damage = 180;
-            Item.crit = 8;
-            Item.knockBack = 13f;
-            Item.DamageType = DamageClass.Melee;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.NPCHit42;
-            Item.useAnimation = Item.useTime = BaseUseTime;
-            Item.reuseDelay = 10;
-            Item.shoot = ModContent.ProjectileType<RoxcaliburProj>();
-            Item.shootSpeed = 4f;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
-            Item.Calamity().donorItem = true;
+    public override bool CanUseItem(Player player) => Main.hardMode && player.ownedProjectileCounts[Item.shoot] < 1;
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Projectile.NewProjectile(source, position, velocity, type, damage, knockback, ai2: player.itemTimeMax); //needed to set ai2
+        return false;
+    }
+    public override void ModifyTooltips(List<TooltipLine> list)
+    {
+        list.FindAndReplace("[WOF]", Main.hardMode ? string.Empty : this.GetLocalizedValue("LockedInfo") + "\n");
+    }
 
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
-            Item.autoReuse = false;
-            Item.channel = true;
-        }
-
-        public override bool CanUseItem(Player player) => Main.hardMode && player.ownedProjectileCounts[Item.shoot] < 1;
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, ai2: player.itemTimeMax); //needed to set ai2
-            return false;
-        }
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            list.FindAndReplace("[WOF]", Main.hardMode ? string.Empty : this.GetLocalizedValue("LockedInfo") + "\n");
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe()
-                .AddIngredient(ItemID.HellstoneBar, 25)
-                .AddIngredient(ItemID.SoulofNight, 10)
-                .AddIngredient<EssenceofHavoc>(5)
-                .AddIngredient(ItemID.Obsidian, 10)
-                .AddRecipeGroup("AnyStoneBlock", 100)
-                .AddIngredient(ItemID.Amethyst, 2)
-                .AddTile(TileID.Anvils)
-                .Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe()
+            .AddIngredient(ItemID.HellstoneBar, 25)
+            .AddIngredient(ItemID.SoulofNight, 10)
+            .AddIngredient<EssenceofHavoc>(5)
+            .AddIngredient(ItemID.Obsidian, 10)
+            .AddRecipeGroup("AnyStoneBlock", 100)
+            .AddIngredient(ItemID.Amethyst, 2)
+            .AddTile(TileID.Anvils)
+            .Register();
     }
 }

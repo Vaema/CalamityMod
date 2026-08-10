@@ -1,22 +1,21 @@
 ﻿using Terraria.ID;
 
-namespace CalamityMod.Items.VanillaArmorChanges
+namespace CalamityMod.Items.VanillaArmorChanges;
+
+public class NebulaArmorSetChange : VanillaArmorChange
 {
-    public class NebulaArmorSetChange : VanillaArmorChange
+    public override int? HeadPieceID => ItemID.NebulaHelmet;
+
+    public override int? BodyPieceID => ItemID.NebulaBreastplate;
+
+    public override int? LegPieceID => ItemID.NebulaLeggings;
+
+    public override string ArmorSetName => "Nebula";
+
+    // The only thing this class does is change the set bonus text.
+    // Buff booster nerfs are handled separately as IL edits.
+    public override void UpdateSetBonusText(ref string setBonusText)
     {
-        public override int? HeadPieceID => ItemID.NebulaHelmet;
-
-        public override int? BodyPieceID => ItemID.NebulaBreastplate;
-
-        public override int? LegPieceID => ItemID.NebulaLeggings;
-
-        public override string ArmorSetName => "Nebula";
-
-        // The only thing this class does is change the set bonus text.
-        // Buff booster nerfs are handled separately as IL edits.
-        public override void UpdateSetBonusText(ref string setBonusText)
-        {
-            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
-        }
+        setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
     }
 }

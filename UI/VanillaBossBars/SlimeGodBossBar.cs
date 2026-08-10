@@ -10,47 +10,46 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace CalamityMod.UI.VanillaBossBars
+namespace CalamityMod.UI.VanillaBossBars;
+
+public class SlimeGodBossBar : ModBossBar
 {
-    public class SlimeGodBossBar : ModBossBar
+    // Used to determine the max health of a multi-segmented boss
+    public NPC FalseNPCSegment;
+    public List<int> SlimeGodSlimes = new List<int>
     {
-        // Used to determine the max health of a multi-segmented boss
-        public NPC FalseNPCSegment;
-        public List<int> SlimeGodSlimes = new List<int>
+        NPCType<CrimulanPaladin>(),
+        NPCType<EbonianPaladin>(),
+        NPCType<SplitCrimulanPaladin>(),
+        NPCType<SplitEbonianPaladin>()
+    };
+
+    public override Asset<Texture2D> GetIconTexture(ref Rectangle? iconFrame) => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[NPCType<SlimeGodCore>()]];
+
+    public override bool? ModifyInfo(ref BigProgressBarInfo info, ref float life, ref float lifeMax, ref float shield, ref float shieldMax)
+    {
+        NPC target = Main.npc[info.npcIndexToAimAt];
+        if (!target.active)
+            return false;
+
+        life = 0f;
+        lifeMax = 0f;
+
+        // Add max health by feeding the data of false NPCs
+        FalseNPCSegment = new NPC();
+        FalseNPCSegment.SetDefaults(NPCType<CrimulanPaladin>(), target.GetMatchingSpawnParams());
+        lifeMax += FalseNPCSegment.lifeMax;
+        FalseNPCSegment.SetDefaults(NPCType<EbonianPaladin>(), target.GetMatchingSpawnParams());
+        lifeMax += FalseNPCSegment.lifeMax;
+
+        // Determine the current health of each slime
+        foreach (NPC part in Main.ActiveNPCs)
         {
-            NPCType<CrimulanPaladin>(),
-            NPCType<EbonianPaladin>(),
-            NPCType<SplitCrimulanPaladin>(),
-            NPCType<SplitEbonianPaladin>()
-        };
-
-        public override Asset<Texture2D> GetIconTexture(ref Rectangle? iconFrame) => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[NPCType<SlimeGodCore>()]];
-
-        public override bool? ModifyInfo(ref BigProgressBarInfo info, ref float life, ref float lifeMax, ref float shield, ref float shieldMax)
-        {
-            NPC target = Main.npc[info.npcIndexToAimAt];
-            if (!target.active)
-                return false;
-
-            life = 0f;
-            lifeMax = 0f;
-
-            // Add max health by feeding the data of false NPCs
-            FalseNPCSegment = new NPC();
-            FalseNPCSegment.SetDefaults(NPCType<CrimulanPaladin>(), target.GetMatchingSpawnParams());
-            lifeMax += FalseNPCSegment.lifeMax;
-            FalseNPCSegment.SetDefaults(NPCType<EbonianPaladin>(), target.GetMatchingSpawnParams());
-            lifeMax += FalseNPCSegment.lifeMax;
-
-            // Determine the current health of each slime
-            foreach (NPC part in Main.ActiveNPCs)
+            if (SlimeGodSlimes.Contains(part.type))
             {
-                if (SlimeGodSlimes.Contains(part.type))
-                {
-                    life += part.life;
-                }
+                life += part.life;
             }
-            return true;
         }
+        return true;
     }
 }

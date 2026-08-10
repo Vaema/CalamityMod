@@ -1,10 +1,9 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum RicoshotTargetType : byte
 {
-    public enum RicoshotTargetType : byte
-    {
-        None = 0,
-        Coin = 1,
-        Bullseye = 2,
-        NPC = 3
-    }
+    None = 0,
+    Coin = 1,
+    Bullseye = 2,
+    NPC = 3
 }

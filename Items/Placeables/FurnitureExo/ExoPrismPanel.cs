@@ -6,39 +6,38 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Placeables.FurnitureExo
+namespace CalamityMod.Items.Placeables.FurnitureExo;
+
+public class ExoPrismPanel : ModItem, ILocalizedModType
 {
-    public class ExoPrismPanel : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 100;
-        }
+        Item.ResearchUnlockCount = 100;
+    }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<ExoPrismPanelTile>());
+    public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<ExoPrismPanelTile>());
 
-        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
-        {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Placeables/FurnitureExo/ExoPrismPanel_Glow").Value);
-        }
+    public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+    {
+        Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Placeables/FurnitureExo/ExoPrismPanel_Glow").Value);
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(400).
-                AddIngredient(ItemID.Glass, 400).
-                AddIngredient<ExoPrism>().
-                AddTile<DraedonsForge>().
-                Register();
-            CreateRecipe().
-                AddIngredient<ExoPrismPlatform>(2).
-                DisableDecraft().
-                Register();
-            CreateRecipe().
-                AddIngredient<ExoPrismPanelWallItem>(4).
-                AddTile(TileID.WorkBenches).
-                DisableDecraft().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(400).
+            AddIngredient(ItemID.Glass, 400).
+            AddIngredient<ExoPrism>().
+            AddTile<DraedonsForge>().
+            Register();
+        CreateRecipe().
+            AddIngredient<ExoPrismPlatform>(2).
+            DisableDecraft().
+            Register();
+        CreateRecipe().
+            AddIngredient<ExoPrismPanelWallItem>(4).
+            AddTile(TileID.WorkBenches).
+            DisableDecraft().
+            Register();
     }
 }

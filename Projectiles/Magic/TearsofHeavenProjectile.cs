@@ -3,66 +3,65 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class TearsofHeavenProjectile : ModProjectile, ILocalizedModType
 {
-    public class TearsofHeavenProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        ProjectileID.Sets.TrailCacheLength[Type] = 6;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 24;
+        Projectile.height = 24;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.penetrate = 2;
+        Projectile.alpha = 255;
+        Projectile.timeLeft = 240;
+        Projectile.light = 0.5f;
+        Projectile.tileCollide = false;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 20;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.alpha > 0)
         {
-            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.alpha -= 25;
+            if (Projectile.alpha < 0)
+                Projectile.alpha = 0;
         }
 
-        public override void SetDefaults()
+        Projectile.localAI[0] += 1f;
+        if (Projectile.localAI[0] > 4f)
         {
-            Projectile.width = 24;
-            Projectile.height = 24;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 2;
-            Projectile.alpha = 255;
-            Projectile.timeLeft = 240;
-            Projectile.light = 0.5f;
-            Projectile.tileCollide = false;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            int Smalldust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.ProfanedFire, 0f, 0f, 100, default, 1f);
+            Main.dust[Smalldust].noGravity = true;
+            int Bigdust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.ProfanedFire, 0f, 0f, 100, default, 2f);
+            Main.dust[Bigdust].noGravity = true;
         }
 
-        public override void AI()
-        {
-            if (Projectile.alpha > 0)
-            {
-                Projectile.alpha -= 25;
-                if (Projectile.alpha < 0)
-                    Projectile.alpha = 0;
-            }
+        CalamityUtils.HomeInOnNPC(Projectile, true, 250f, 8f, 20f);
 
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 4f)
-            {
-                int Smalldust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.ProfanedFire, 0f, 0f, 100, default, 1f);
-                Main.dust[Smalldust].noGravity = true;
-                int Bigdust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.ProfanedFire, 0f, 0f, 100, default, 2f);
-                Main.dust[Bigdust].noGravity = true;
-            }
+        Projectile.rotation += 0.3f * (float)Projectile.direction;
+    }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 250f, 8f, 20f);
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
+    }
 
-            Projectile.rotation += 0.3f * (float)Projectile.direction;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.OnFire3, 180);
-            target.AddBuff(BuffID.Frostburn2, 180);
-        }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.OnFire3, 180);
+        target.AddBuff(BuffID.Frostburn2, 180);
     }
 }

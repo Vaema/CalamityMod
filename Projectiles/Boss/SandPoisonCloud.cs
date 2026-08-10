@@ -4,86 +4,85 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Boss
+namespace CalamityMod.Projectiles.Boss;
+
+public class SandPoisonCloud : ModProjectile, ILocalizedModType
 {
-    public class SandPoisonCloud : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Boss";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Boss";
-        public override void SetStaticDefaults()
+        Main.projFrames[Type] = 10;
+        ProjectileID.Sets.TrailCacheLength[Type] = 2;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.Calamity().DealsDefenseDamage = true;
+        Projectile.width = 45;
+        Projectile.height = 45;
+        Projectile.hostile = true;
+        Projectile.penetrate = -1;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 1800;
+        Projectile.alpha = 125;
+    }
+
+    public override void AI()
+    {
+        Lighting.AddLight(Projectile.Center, 0.5f * Projectile.Opacity, 0.3f * Projectile.Opacity, 0f);
+
+        Projectile.ai[0] += 1f;
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 6)
         {
-            Main.projFrames[Type] = 10;
-            ProjectileID.Sets.TrailCacheLength[Type] = 2;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
         }
-
-        public override void SetDefaults()
+        if (Projectile.ai[0] < 1620f)
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
-            Projectile.width = 45;
-            Projectile.height = 45;
-            Projectile.hostile = true;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 1800;
-            Projectile.alpha = 125;
-        }
-
-        public override void AI()
-        {
-            Lighting.AddLight(Projectile.Center, 0.5f * Projectile.Opacity, 0.3f * Projectile.Opacity, 0f);
-
-            Projectile.ai[0] += 1f;
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
+            if (Projectile.frame >= 4)
             {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.ai[0] < 1620f)
-            {
-                if (Projectile.frame >= 4)
-                {
-                    Projectile.frame = 0;
-                }
-            }
-            if (Projectile.ai[0] > 1620f)
-            {
-                Projectile.damage = 0;
-            }
-            else if (Projectile.frame >= Main.projFrames[Type])
-            {
-                Projectile.Kill();
-            }
-
-            Projectile.velocity *= 0.995f;
-
-            if (Math.Abs(Projectile.velocity.X) > 0f)
-            {
-                Projectile.spriteDirection = -Projectile.direction;
+                Projectile.frame = 0;
             }
         }
-
-        public override bool PreDraw(ref Color lightColor)
+        if (Projectile.ai[0] > 1620f)
         {
-            lightColor.R = (byte)(255 * Projectile.Opacity);
-            lightColor.G = (byte)(255 * Projectile.Opacity);
-            lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(255, 102, 56), lightColor, 3.75f);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
+            Projectile.damage = 0;
+        }
+        else if (Projectile.frame >= Main.projFrames[Type])
+        {
+            Projectile.Kill();
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 20f, targetHitbox);
+        Projectile.velocity *= 0.995f;
 
-        public override bool CanHitPlayer(Player target) => Projectile.ai[0] < 1620f;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        if (Math.Abs(Projectile.velocity.X) > 0f)
         {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.Venom, 180);
+            Projectile.spriteDirection = -Projectile.direction;
         }
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        lightColor.R = (byte)(255 * Projectile.Opacity);
+        lightColor.G = (byte)(255 * Projectile.Opacity);
+        lightColor.B = (byte)(255 * Projectile.Opacity);
+        CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(255, 102, 56), lightColor, 3.75f);
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
+    }
+
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 20f, targetHitbox);
+
+    public override bool CanHitPlayer(Player target) => Projectile.ai[0] < 1620f;
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        if (info.Damage <= 0)
+            return;
+
+        target.AddBuff(BuffID.Venom, 180);
     }
 }

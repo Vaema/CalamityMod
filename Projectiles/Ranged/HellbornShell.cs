@@ -3,65 +3,64 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Ranged
+namespace CalamityMod.Projectiles.Ranged;
+
+public class HellbornShell : ModProjectile, ILocalizedModType
 {
-    public class HellbornShell : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Ranged";
+    public override string Texture => "CalamityMod/Projectiles/Ranged/HellbornShell";
+    public int Time = 0;
+    public bool TouchedGrass = false;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/HellbornShell";
-        public int Time = 0;
-        public bool TouchedGrass = false;
-
-        public override void SetDefaults()
+        Projectile.width = 12;
+        Projectile.height = 26;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = false;
+        Projectile.DamageType = DamageClass.Ranged;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 300;
+        Projectile.tileCollide = false;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+    }
+    public override void AI()
+    {
+        Projectile.scale = 0.8f;
+        Projectile.extraUpdates = 1;
+        Time++;
+        Player Owner = Main.player[Projectile.owner];
+        if (!TouchedGrass)
         {
-            Projectile.width = 12;
-            Projectile.height = 26;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = false;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 300;
-            Projectile.tileCollide = false;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-        }
-        public override void AI()
-        {
-            Projectile.scale = 0.8f;
-            Projectile.extraUpdates = 1;
-            Time++;
-            Player Owner = Main.player[Projectile.owner];
-            if (!TouchedGrass)
-            {
-                if (Projectile.timeLeft <= 240)
-                    Projectile.rotation += 0.04f * Projectile.direction;
-                else
-                    Projectile.rotation = (new Vector2(0, -5 * Projectile.direction) + Projectile.velocity * -1.2f).ToRotation();
-
-                Projectile.velocity.Y += 0.087f;
-                Projectile.velocity.X *= 0.99f;
-
-                if (Main.rand.NextBool(4))
-                {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, DustID.SteampunkSteam, -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.2f, 1f), 180, default, Main.rand.NextFloat(0.4f, 1.3f));
-                    dust.noGravity = false;
-                    dust.color = Color.White;
-                }
-            }
+            if (Projectile.timeLeft <= 240)
+                Projectile.rotation += 0.04f * Projectile.direction;
             else
+                Projectile.rotation = (new Vector2(0, -5 * Projectile.direction) + Projectile.velocity * -1.2f).ToRotation();
+
+            Projectile.velocity.Y += 0.087f;
+            Projectile.velocity.X *= 0.99f;
+
+            if (Main.rand.NextBool(4))
             {
-                Projectile.velocity = Vector2.Zero;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, DustID.SteampunkSteam, -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.2f, 1f), 180, default, Main.rand.NextFloat(0.4f, 1.3f));
+                dust.noGravity = false;
+                dust.color = Color.White;
             }
-            Projectile.alpha = (int)(255 * Utils.GetLerpValue(60, 0, Projectile.timeLeft, true));
-            if (Collision.SolidCollision(Projectile.Center - Projectile.velocity * 1.5f, 2, 2))
-                    Projectile.tileCollide = true;
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        else
         {
-            Projectile.damage = 0;
-            TouchedGrass = true;
             Projectile.velocity = Vector2.Zero;
-            return false;
         }
+        Projectile.alpha = (int)(255 * Utils.GetLerpValue(60, 0, Projectile.timeLeft, true));
+        if (Collision.SolidCollision(Projectile.Center - Projectile.velocity * 1.5f, 2, 2))
+                Projectile.tileCollide = true;
+    }
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        Projectile.damage = 0;
+        TouchedGrass = true;
+        Projectile.velocity = Vector2.Zero;
+        return false;
     }
 }

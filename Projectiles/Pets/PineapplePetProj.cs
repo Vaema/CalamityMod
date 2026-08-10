@@ -4,122 +4,121 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Pets
+namespace CalamityMod.Projectiles.Pets;
+
+public class PineapplePetProj : ModProjectile, ILocalizedModType
 {
-    public class PineapplePetProj : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Pets";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Pets";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 5;
-            Main.projPet[Type] = true;
+        Main.projFrames[Type] = 5;
+        Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
-            .WithOffset(-2f, -20f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+        ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
+        .WithOffset(-2f, -20f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.netImportant = true;
+        Projectile.width = 30;
+        Projectile.height = 30;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft *= 5;
+    }
+
+    public override void AI()
+    {
+        Player player = Main.player[Projectile.owner];
+        CalamityPlayer modPlayer = player.Calamity();
+        if (!player.active)
+        {
+            Projectile.active = false;
+            return;
+        }
+        if (player.dead)
+        {
+            modPlayer.pineapplePet = false;
+        }
+        if (modPlayer.pineapplePet)
+        {
+            Projectile.timeLeft = 2;
         }
 
-        public override void SetDefaults()
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 6)
         {
-            Projectile.netImportant = true;
-            Projectile.width = 30;
-            Projectile.height = 30;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft *= 5;
+            Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
+            Projectile.frameCounter = 0;
         }
 
-        public override void AI()
+        float passiveMvtFloat = 0.1f;
+        Projectile.tileCollide = false;
+        float range = 200f;
+        float xDist = player.Center.X - Projectile.Center.X - 2f;
+        float yDist = player.Center.Y - Projectile.Center.Y - 60f;
+        Vector2 playerVector = new Vector2(xDist, yDist);
+        float playerDist = playerVector.Length();
+        float returnSpeed = 7f;
+        if (playerDist < range && player.velocity.Y == 0f && (Projectile.position.Y + Projectile.height <= player.position.Y + player.height && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height)))
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (!player.active)
-            {
-                Projectile.active = false;
-                return;
-            }
-            if (player.dead)
-            {
-                modPlayer.pineapplePet = false;
-            }
-            if (modPlayer.pineapplePet)
-            {
-                Projectile.timeLeft = 2;
-            }
+            Projectile.ai[0] = 0f;
+            if (Projectile.velocity.Y < -6f)
+                Projectile.velocity.Y = -6f;
+        }
 
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
-            {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
-                Projectile.frameCounter = 0;
-            }
+        //Teleport to player if too far
+        if (playerDist > 2000f)
+        {
+            Projectile.position.X = player.Center.X - Projectile.width / 2;
+            Projectile.position.Y = player.Center.Y - Projectile.height / 2;
+            Projectile.netUpdate = true;
+        }
 
-            float passiveMvtFloat = 0.1f;
-            Projectile.tileCollide = false;
-            float range = 200f;
-            float xDist = player.Center.X - Projectile.Center.X - 2f;
-            float yDist = player.Center.Y - Projectile.Center.Y - 60f;
-            Vector2 playerVector = new Vector2(xDist, yDist);
-            float playerDist = playerVector.Length();
-            float returnSpeed = 7f;
-            if (playerDist < range && player.velocity.Y == 0f && (Projectile.position.Y + Projectile.height <= player.position.Y + player.height && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height)))
+        if (playerDist < 4f)
+        {
+            Projectile.velocity.X = xDist;
+            Projectile.velocity.Y = yDist;
+            passiveMvtFloat = 0f;
+        }
+        else
+        {
+            if (playerDist > 350f)
             {
-                Projectile.ai[0] = 0f;
-                if (Projectile.velocity.Y < -6f)
-                    Projectile.velocity.Y = -6f;
+                passiveMvtFloat = 0.2f;
+                returnSpeed = 12f;
             }
-
-            //Teleport to player if too far
-            if (playerDist > 2000f)
-            {
-                Projectile.position.X = player.Center.X - Projectile.width / 2;
-                Projectile.position.Y = player.Center.Y - Projectile.height / 2;
-                Projectile.netUpdate = true;
-            }
-
-            if (playerDist < 4f)
-            {
-                Projectile.velocity.X = xDist;
-                Projectile.velocity.Y = yDist;
-                passiveMvtFloat = 0f;
-            }
-            else
-            {
-                if (playerDist > 350f)
-                {
-                    passiveMvtFloat = 0.2f;
-                    returnSpeed = 12f;
-                }
-                float speedMult = returnSpeed / playerDist;
-                xDist *= speedMult;
-                yDist *= speedMult;
-            }
-            if (Projectile.velocity.X < xDist)
-            {
+            float speedMult = returnSpeed / playerDist;
+            xDist *= speedMult;
+            yDist *= speedMult;
+        }
+        if (Projectile.velocity.X < xDist)
+        {
+            Projectile.velocity.X += passiveMvtFloat;
+            if (Projectile.velocity.X < 0f)
                 Projectile.velocity.X += passiveMvtFloat;
-                if (Projectile.velocity.X < 0f)
-                    Projectile.velocity.X += passiveMvtFloat;
-            }
-            if (Projectile.velocity.X > xDist)
-            {
-                Projectile.velocity.X -= passiveMvtFloat;
-                if (Projectile.velocity.X > 0f)
-                    Projectile.velocity.X -= passiveMvtFloat;
-            }
-            if (Projectile.velocity.Y < yDist)
-            {
-                Projectile.velocity.Y += passiveMvtFloat;
-                if (Projectile.velocity.Y < 0f)
-                    Projectile.velocity.Y += passiveMvtFloat;
-            }
-            if (Projectile.velocity.Y > yDist)
-            {
-                Projectile.velocity.Y -= passiveMvtFloat;
-                if (Projectile.velocity.Y > 0f)
-                    Projectile.velocity.Y -= passiveMvtFloat;
-            }
-            Projectile.direction = -player.direction;
-            Projectile.spriteDirection = 1;
-            Projectile.rotation = Projectile.velocity.Y * 0.05f * -Projectile.direction;
         }
+        if (Projectile.velocity.X > xDist)
+        {
+            Projectile.velocity.X -= passiveMvtFloat;
+            if (Projectile.velocity.X > 0f)
+                Projectile.velocity.X -= passiveMvtFloat;
+        }
+        if (Projectile.velocity.Y < yDist)
+        {
+            Projectile.velocity.Y += passiveMvtFloat;
+            if (Projectile.velocity.Y < 0f)
+                Projectile.velocity.Y += passiveMvtFloat;
+        }
+        if (Projectile.velocity.Y > yDist)
+        {
+            Projectile.velocity.Y -= passiveMvtFloat;
+            if (Projectile.velocity.Y > 0f)
+                Projectile.velocity.Y -= passiveMvtFloat;
+        }
+        Projectile.direction = -player.direction;
+        Projectile.spriteDirection = 1;
+        Projectile.rotation = Projectile.velocity.Y * 0.05f * -Projectile.direction;
     }
 }

@@ -1,10 +1,9 @@
-﻿namespace CalamityMod
+﻿namespace CalamityMod;
+
+public enum AndromedaPlayerState
 {
-    public enum AndromedaPlayerState
-    {
-        Inactive,
-        SmallRobot,
-        LargeRobot,
-        SpecialAttack
-    }
+    Inactive,
+    SmallRobot,
+    LargeRobot,
+    SpecialAttack
 }

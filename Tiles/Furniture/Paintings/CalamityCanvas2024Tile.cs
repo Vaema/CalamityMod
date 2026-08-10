@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Tiles.Furniture.Paintings
+﻿namespace CalamityMod.Tiles.Furniture.Paintings;
+
+public class CalamityCanvas2024Tile : BaseCanvasPainting
 {
-    public class CalamityCanvas2024Tile : BaseCanvasPainting
-    {
-        public override float Scale => 0.8f;
-    }
+    public override float Scale => 0.8f;
 }

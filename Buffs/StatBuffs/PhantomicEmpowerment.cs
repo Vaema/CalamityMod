@@ -3,23 +3,22 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.StatBuffs
+namespace CalamityMod.Buffs.StatBuffs;
+
+public class PhantomicEmpowerment : ModBuff
 {
-    public class PhantomicEmpowerment : ModBuff
+    public override LocalizedText Description => base.Description.WithFormatArgs(PhantomicArtifact.SummonDamageBoost.ToPercent());
+
+    public override void SetStaticDefaults()
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(PhantomicArtifact.SummonDamageBoost.ToPercent());
+        Main.debuff[Type] = false;
+        Main.pvpBuff[Type] = true;
+        Main.buffNoSave[Type] = true;
+        Main.buffNoTimeDisplay[Type] = true;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            Main.debuff[Type] = false;
-            Main.pvpBuff[Type] = true;
-            Main.buffNoSave[Type] = true;
-            Main.buffNoTimeDisplay[Type] = true;
-        }
-
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.GetDamage<SummonDamageClass>() += PhantomicArtifact.SummonDamageBoost;
-        }
+    public override void Update(Player player, ref int buffIndex)
+    {
+        player.GetDamage<SummonDamageClass>() += PhantomicArtifact.SummonDamageBoost;
     }
 }

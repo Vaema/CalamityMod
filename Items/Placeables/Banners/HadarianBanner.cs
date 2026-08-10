@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class HadarianBanner : BaseBanner
 {
-    public class HadarianBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 43;
-    }
+    public override int BannerTileStyle => 43;
 }

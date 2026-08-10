@@ -2,28 +2,27 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Armor.Vanity
+namespace CalamityMod.Items.Armor.Vanity;
+
+[AutoloadEquip(EquipType.Head)]
+[LegacyName("CalamityHood")]
+public class HoodOfCalamity : ModItem, ILocalizedModType
 {
-    [AutoloadEquip(EquipType.Head)]
-    [LegacyName("CalamityHood")]
-    public class HoodOfCalamity : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Armor.Vanity";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Armor.Vanity";
-        public override void SetStaticDefaults()
-        {
 
-            if (!Main.dedServ)
-                ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
-        }
+        if (!Main.dedServ)
+            ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 26;
-            Item.height = 24;
-            Item.rare = ItemRarityID.Lime;
-            Item.vanity = true;
-            Item.Calamity().donorItem = true;
-            Item.value = Item.sellPrice(gold: 2);
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 26;
+        Item.height = 24;
+        Item.rare = ItemRarityID.Lime;
+        Item.vanity = true;
+        Item.Calamity().donorItem = true;
+        Item.value = Item.sellPrice(gold: 2);
     }
 }

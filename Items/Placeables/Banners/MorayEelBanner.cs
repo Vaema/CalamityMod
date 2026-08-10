@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class MorayEelBanner : BaseBanner
 {
-    public class MorayEelBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 14;
-    }
+    public override int BannerTileStyle => 14;
 }

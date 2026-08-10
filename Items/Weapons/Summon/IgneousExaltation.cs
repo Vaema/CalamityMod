@@ -11,136 +11,135 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Summon
+namespace CalamityMod.Items.Weapons.Summon;
+
+public class IgneousExaltation : ModItem, ILocalizedModType
 {
-    public class IgneousExaltation : ModItem, ILocalizedModType
+    public static int ChargeDuration => 25;
+    public static int ChargeCooldown => 120;
+    public new string LocalizationCategory => "Items.Weapons.Summon";
+    private static Texture2D BladeOutline = null;
+    public static Texture2D GetBladeOutlineTex()
     {
-        public static int ChargeDuration => 25;
-        public static int ChargeCooldown => 120;
-        public new string LocalizationCategory => "Items.Weapons.Summon";
-        private static Texture2D BladeOutline = null;
-        public static Texture2D GetBladeOutlineTex()
+        if (BladeOutline == null)
         {
-            if (BladeOutline == null)
-            {
-                var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/IgneousBlade").Value;
-                BladeOutline = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
+            var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/IgneousBlade").Value;
+            BladeOutline = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
 
-                var BaseArray = new Color[BladeOutline.Width * BladeOutline.Height];
-                var ColorArray = new Color[BladeOutline.Width * BladeOutline.Height];
-                texture.GetData(BaseArray);
-                for (var i = 0; i < BaseArray.Length; i++)
-                {
-                    ColorArray[i] = new Color(255, 255, 255) * (((float)BaseArray[i].A) / 255f);
-                }
-                BladeOutline.SetData(ColorArray);
+            var BaseArray = new Color[BladeOutline.Width * BladeOutline.Height];
+            var ColorArray = new Color[BladeOutline.Width * BladeOutline.Height];
+            texture.GetData(BaseArray);
+            for (var i = 0; i < BaseArray.Length; i++)
+            {
+                ColorArray[i] = new Color(255, 255, 255) * (((float)BaseArray[i].A) / 255f);
             }
-            return BladeOutline;
+            BladeOutline.SetData(ColorArray);
         }
-        public override void SetStaticDefaults()
-        {
-            Item.staff[Type] = true;
-        }
+        return BladeOutline;
+    }
+    public override void SetStaticDefaults()
+    {
+        Item.staff[Type] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 52;
-            Item.height = 50;
-            Item.damage = 30;
-            Item.mana = 10;
-            Item.useAnimation = Item.useTime = 36;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
-            Item.UseSound = SoundID.Item71;
-            Item.autoReuse = true;
-            Item.buffType = ModContent.BuffType<IgneousExaltationBuff>();
-            Item.shoot = ModContent.ProjectileType<IgneousBlade>();
-            Item.shootSpeed = 10f;
-            Item.DamageType = DamageClass.Summon;
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 52;
+        Item.height = 50;
+        Item.damage = 30;
+        Item.mana = 10;
+        Item.useAnimation = Item.useTime = 36;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 4.5f;
+        Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+        Item.rare = ItemRarityID.Pink;
+        Item.UseSound = SoundID.Item71;
+        Item.autoReuse = true;
+        Item.buffType = ModContent.BuffType<IgneousExaltationBuff>();
+        Item.shoot = ModContent.ProjectileType<IgneousBlade>();
+        Item.shootSpeed = 10f;
+        Item.DamageType = DamageClass.Summon;
+    }
 
-        public override void HoldItem(Player player)
+    public override void HoldItem(Player player)
+    {
+        if (Main.myPlayer == player.whoAmI && Item.JustPressedKeybind())
         {
-            if (Main.myPlayer == player.whoAmI && Item.JustPressedKeybind())
+            Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
+        }
+    }
+    public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateDynamicHotkey(Item);
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        float totalSlots = 0f;
+        foreach (Projectile p in Main.ActiveProjectiles)
+        {
+            if (p.minion && p.owner == player.whoAmI)
             {
-                Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
-                if (Main.netMode != NetmodeID.SinglePlayer)
-                    ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
+                totalSlots += p.minionSlots;
             }
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateDynamicHotkey(Item);
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        if (totalSlots >= player.maxMinions)
         {
-            float totalSlots = 0f;
-            foreach (Projectile p in Main.ActiveProjectiles)
+            foreach (Projectile pro in Main.ActiveProjectiles)
             {
-                if (p.minion && p.owner == player.whoAmI)
+                if (pro.type == type && pro.owner == player.whoAmI && pro.ai[1] >= 0 && pro.ai[0] == 0)
                 {
-                    totalSlots += p.minionSlots;
-                }
-            }
-            if (totalSlots >= player.maxMinions)
-            {
-                foreach (Projectile pro in Main.ActiveProjectiles)
-                {
-                    if (pro.type == type && pro.owner == player.whoAmI && pro.ai[1] >= 0 && pro.ai[0] == 0)
-                    {
-                        pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.TransitionToLaunch;
-                        pro.netUpdate = true;
-                    }
+                    pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.TransitionToLaunch;
+                    pro.netUpdate = true;
                 }
             }
-            else
-            {
-                player.AddBuff(Item.buffType, 2);
-                var minion = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                minion.originalDamage = Item.damage;
+        }
+        else
+        {
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
+            minion.originalDamage = Item.damage;
 
-                int bladeIndex = 0;
-                foreach (Projectile pro in Main.ActiveProjectiles)
+            int bladeIndex = 0;
+            foreach (Projectile pro in Main.ActiveProjectiles)
+            {
+                if (pro.type == type && pro.owner == player.whoAmI)
                 {
-                    if (pro.type == type && pro.owner == player.whoAmI)
-                    {
-                        pro.ModProjectile<IgneousBlade>().BladeIndex = bladeIndex++;
-                        pro.ModProjectile<IgneousBlade>().AITimer = -ChargeCooldown;
-                        pro.ModProjectile<IgneousBlade>().DistanceTimer = -IgneousExaltation.ChargeCooldown;
-                        pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.CircleOwner;
-                        pro.netUpdate = true;
-                    }
+                    pro.ModProjectile<IgneousBlade>().BladeIndex = bladeIndex++;
+                    pro.ModProjectile<IgneousBlade>().AITimer = -ChargeCooldown;
+                    pro.ModProjectile<IgneousBlade>().DistanceTimer = -IgneousExaltation.ChargeCooldown;
+                    pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.CircleOwner;
+                    pro.netUpdate = true;
                 }
             }
-            return false;
         }
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            var tex = TextureAssets.Item[Type].Value;
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                tex,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 0.75f,
-                spriteEffects: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
-                rotation: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? MathHelper.PiOver2 : 0
-            );
-            return false;
-        }
+        return false;
+    }
+    public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        var tex = TextureAssets.Item[Type].Value;
+        CalamityUtils.DrawInventoryCustomScale(
+            spriteBatch,
+            tex,
+            position,
+            frame,
+            drawColor,
+            itemColor,
+            origin,
+            scale,
+            wantedScale: 0.75f,
+            spriteEffects: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+            rotation: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? MathHelper.PiOver2 : 0
+        );
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<UnholyCore>(8).
-                AddIngredient<EssenceofHavoc>(8).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<UnholyCore>(8).
+            AddIngredient<EssenceofHavoc>(8).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

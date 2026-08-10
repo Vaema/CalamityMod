@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class DevilFishBanner : BaseBanner
 {
-    public class DevilFishBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 15;
-    }
+    public override int BannerTileStyle => 15;
 }

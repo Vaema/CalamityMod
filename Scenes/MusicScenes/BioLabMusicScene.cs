@@ -8,78 +8,77 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Scenes.MusicScenes
+namespace CalamityMod.Scenes.MusicScenes;
+
+public class BioLabMusicScene : ModSceneEffect
 {
-    public class BioLabMusicScene : ModSceneEffect
+    public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("BioLab") ?? -1;
+    public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
+    // This weight is here to ensure this theme plays over most other songs that use the Environment priority, as it's a smaller area and should take higher precedent
+    public override float GetWeight(Player player) => 0.6f;
+
+    public override bool IsSceneEffectActive(Player player)
     {
-        public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("BioLab") ?? -1;
-        public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
-        // This weight is here to ensure this theme plays over most other songs that use the Environment priority, as it's a smaller area and should take higher precedent
-        public override float GetWeight(Player player) => 0.6f;
+        Tile backWall = Framing.GetTileSafely((int)(player.Center.X / 16), (int)(player.Center.Y / 16));
+        Vector2 playerPosition = player.Center;
 
-        public override bool IsSceneEffectActive(Player player)
-        {
-            Tile backWall = Framing.GetTileSafely((int)(player.Center.X / 16), (int)(player.Center.Y / 16));
-            Vector2 playerPosition = player.Center;
+        float sunkenSeaLabDistance = Vector2.DistanceSquared(CalamityWorld.SunkenSeaLabCenter, playerPosition);
+        float planetoidLabDistance = Vector2.DistanceSquared(CalamityWorld.PlanetoidLabCenter, playerPosition);
+        float jungleLabDistance = Vector2.DistanceSquared(CalamityWorld.JungleLabCenter, playerPosition);
+        float hellLabDistance = Vector2.DistanceSquared(CalamityWorld.HellLabCenter, playerPosition);
+        float iceLabDistance = Vector2.DistanceSquared(CalamityWorld.IceLabCenter, playerPosition);
+        float cavernLabDistance = Vector2.DistanceSquared(CalamityWorld.CavernLabCenter, playerPosition);
 
-            float sunkenSeaLabDistance = Vector2.DistanceSquared(CalamityWorld.SunkenSeaLabCenter, playerPosition);
-            float planetoidLabDistance = Vector2.DistanceSquared(CalamityWorld.PlanetoidLabCenter, playerPosition);
-            float jungleLabDistance = Vector2.DistanceSquared(CalamityWorld.JungleLabCenter, playerPosition);
-            float hellLabDistance = Vector2.DistanceSquared(CalamityWorld.HellLabCenter, playerPosition);
-            float iceLabDistance = Vector2.DistanceSquared(CalamityWorld.IceLabCenter, playerPosition);
-            float cavernLabDistance = Vector2.DistanceSquared(CalamityWorld.CavernLabCenter, playerPosition);
+        // (Tile range * Pixels per tile)^2
+        double labRadius = Math.Pow(80f * 16f, 2);
+        
+        // Checks if the player is behind any wall that naturally generates in Bio Labs
+        bool behindLabWall =
+            backWall.WallType == WallID.AmberGemspark ||
+            backWall.WallType == WallID.AncientSilverBrickWall ||
+            backWall.WallType == WallID.CopperPlating ||
+            backWall.WallType == WallID.EmeraldGemspark ||
+            backWall.WallType == WallID.Granite ||
+            backWall.WallType == WallID.GrayBrick ||
+            backWall.WallType == WallID.IridescentBrick ||
+            backWall.WallType == WallID.IronBrick ||
+            backWall.WallType == WallID.Lavafall ||
+            backWall.WallType == WallID.LavaMossBlockWall ||
+            backWall.WallType == WallID.LeadBrick ||
+            backWall.WallType == WallID.ObsidianBrick ||
+            backWall.WallType == WallID.RubyGemspark ||
+            backWall.WallType == WallID.SapphireGemspark ||
+            backWall.WallType == WallID.SilverBrick ||
+            backWall.WallType == WallID.StoneSlab ||
+            backWall.WallType == WallID.TinPlating ||
+            backWall.WallType == WallID.TopazGemspark ||
+            backWall.WallType == WallID.Waterfall ||
+            backWall.WallType == ModContent.WallType<CinderplateWall>() ||
+            backWall.WallType == ModContent.WallType<ElumplateWall>() ||
+            backWall.WallType == ModContent.WallType<EutrophicGlassWall>() ||
+            backWall.WallType == ModContent.WallType<HavocplateWall>() ||
+            backWall.WallType == ModContent.WallType<HazardChevronWall>() ||
+            backWall.WallType == ModContent.WallType<LaboratoryPanelWall>() ||
+            backWall.WallType == ModContent.WallType<LaboratoryPlateBeam>() ||
+            backWall.WallType == ModContent.WallType<LaboratoryPlatePillar>() ||
+            backWall.WallType == ModContent.WallType<LaboratoryPlatingWall>() ||
+            backWall.WallType == ModContent.WallType<NavyplateWall>() ||
+            backWall.WallType == ModContent.WallType<OnyxplateWall>() ||
+            backWall.WallType == ModContent.WallType<PlagueContainmentCellsWall>() ||
+            backWall.WallType == ModContent.WallType<PlaguedPlateWall>() ||
+            backWall.WallType == ModContent.WallType<RustedPlatePillar>() ||
+            backWall.WallType == ModContent.WallType<RustedPlatingWall>() ||
+            backWall.WallType == ModContent.WallType<ShellstoneSlabWall>();
 
-            // (Tile range * Pixels per tile)^2
-            double labRadius = Math.Pow(80f * 16f, 2);
-            
-            // Checks if the player is behind any wall that naturally generates in Bio Labs
-            bool behindLabWall =
-                backWall.WallType == WallID.AmberGemspark ||
-                backWall.WallType == WallID.AncientSilverBrickWall ||
-                backWall.WallType == WallID.CopperPlating ||
-                backWall.WallType == WallID.EmeraldGemspark ||
-                backWall.WallType == WallID.Granite ||
-                backWall.WallType == WallID.GrayBrick ||
-                backWall.WallType == WallID.IridescentBrick ||
-                backWall.WallType == WallID.IronBrick ||
-                backWall.WallType == WallID.Lavafall ||
-                backWall.WallType == WallID.LavaMossBlockWall ||
-                backWall.WallType == WallID.LeadBrick ||
-                backWall.WallType == WallID.ObsidianBrick ||
-                backWall.WallType == WallID.RubyGemspark ||
-                backWall.WallType == WallID.SapphireGemspark ||
-                backWall.WallType == WallID.SilverBrick ||
-                backWall.WallType == WallID.StoneSlab ||
-                backWall.WallType == WallID.TinPlating ||
-                backWall.WallType == WallID.TopazGemspark ||
-                backWall.WallType == WallID.Waterfall ||
-                backWall.WallType == ModContent.WallType<CinderplateWall>() ||
-                backWall.WallType == ModContent.WallType<ElumplateWall>() ||
-                backWall.WallType == ModContent.WallType<EutrophicGlassWall>() ||
-                backWall.WallType == ModContent.WallType<HavocplateWall>() ||
-                backWall.WallType == ModContent.WallType<HazardChevronWall>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPanelWall>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPlateBeam>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPlatePillar>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPlatingWall>() ||
-                backWall.WallType == ModContent.WallType<NavyplateWall>() ||
-                backWall.WallType == ModContent.WallType<OnyxplateWall>() ||
-                backWall.WallType == ModContent.WallType<PlagueContainmentCellsWall>() ||
-                backWall.WallType == ModContent.WallType<PlaguedPlateWall>() ||
-                backWall.WallType == ModContent.WallType<RustedPlatePillar>() ||
-                backWall.WallType == ModContent.WallType<RustedPlatingWall>() ||
-                backWall.WallType == ModContent.WallType<ShellstoneSlabWall>();
+        // Checks if the player is within a specified range from the center point of any Bio Lab
+        bool nearBioLabPoint =
+            sunkenSeaLabDistance <= labRadius ||
+            planetoidLabDistance <= labRadius ||
+            jungleLabDistance <= labRadius ||
+            hellLabDistance <= labRadius ||
+            iceLabDistance <= labRadius ||
+            cavernLabDistance <= labRadius;
 
-            // Checks if the player is within a specified range from the center point of any Bio Lab
-            bool nearBioLabPoint =
-                sunkenSeaLabDistance <= labRadius ||
-                planetoidLabDistance <= labRadius ||
-                jungleLabDistance <= labRadius ||
-                hellLabDistance <= labRadius ||
-                iceLabDistance <= labRadius ||
-                cavernLabDistance <= labRadius;
-
-            return BiomeTileCounterSystem.ArsenalLabTiles > 150 && behindLabWall && nearBioLabPoint;
-        }
+        return BiomeTileCounterSystem.ArsenalLabTiles > 150 && behindLabWall && nearBioLabPoint;
     }
 }

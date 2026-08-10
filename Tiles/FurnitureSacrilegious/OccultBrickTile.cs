@@ -3,23 +3,22 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.FurnitureSacrilegious
-{
-    public class OccultBrickTile : ModTile
-    {
-        public override void SetStaticDefaults()
-        {
-            Main.tileLighted[Type] = true;
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
-            DustType = DustID.Iron;
-            AddMapEntry(new Color(63, 69, 71));
-            HitSound = SoundID.Tink;
-        }
+namespace CalamityMod.Tiles.FurnitureSacrilegious;
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+public class OccultBrickTile : ModTile
+{
+    public override void SetStaticDefaults()
+    {
+        Main.tileLighted[Type] = true;
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
+        DustType = DustID.Iron;
+        AddMapEntry(new Color(63, 69, 71));
+        HitSound = SoundID.Tink;
+    }
+
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
     }
 }

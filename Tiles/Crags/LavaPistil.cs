@@ -5,46 +5,46 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Crags
+namespace CalamityMod.Tiles.Crags;
+
+public class LavaPistil : ModTile
 {
-    public class LavaPistil : ModTile
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileCut[Type] = true;
-            Main.tileSolid[Type] = false;
-            Main.tileNoAttach[Type] = true;
-            Main.tileNoFail[Type] = true;
-            Main.tileLavaDeath[Type] = true;
-            Main.tileWaterDeath[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            Main.tileLighted[Type] = true;
-            TileID.Sets.ReplaceTileBreakUp[Type] = true;
-            TileID.Sets.SwaysInWindBasic[Type] = false;
-            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+        Main.tileCut[Type] = true;
+        Main.tileSolid[Type] = false;
+        Main.tileNoAttach[Type] = true;
+        Main.tileNoFail[Type] = true;
+        Main.tileLavaDeath[Type] = true;
+        Main.tileWaterDeath[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        Main.tileLighted[Type] = true;
+        TileID.Sets.ReplaceTileBreakUp[Type] = true;
+        TileID.Sets.SwaysInWindBasic[Type] = false;
+        TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
-            TileObjectData.addTile(Type);
+        TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
+        TileObjectData.addTile(Type);
 
-            HitSound = SoundID.Grass;
+        HitSound = SoundID.Grass;
 
-            AddMapEntry(new Color(170, 50, 180));
+        AddMapEntry(new Color(170, 50, 180));
 
-            base.SetStaticDefaults();
-        }
+        base.SetStaticDefaults();
+    }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+    public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
 		{
 			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
 			int type = -1;
 
 			if (tileBelow.HasTile)
-            {
+        {
 				type = tileBelow.TileType;
 			}
 
 			if (type == ModContent.TileType<ScorchedRemainsGrass>())
-            {
+        {
 				return true;
 			}
 
@@ -53,16 +53,15 @@ namespace CalamityMod.Tiles.Crags
 			return true;
 		}
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
-        {
-            offsetY = -128;
-            height = 144;
-        }
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 255f / 255f;
-            g = 206f / 255f;
-            b = 126f / 255f;
-        }
+    public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
+    {
+        offsetY = -128;
+        height = 144;
+    }
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+    {
+        r = 255f / 255f;
+        g = 206f / 255f;
+        b = 126f / 255f;
     }
 }

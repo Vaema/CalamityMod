@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class HeatSpiritBanner : BaseBanner
 {
-    public class HeatSpiritBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 44;
-    }
+    public override int BannerTileStyle => 44;
 }

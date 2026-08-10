@@ -7,52 +7,51 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+public class EventHorizon : ModItem, ILocalizedModType
 {
-    public class EventHorizon : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetDefaults()
+        Item.width = 40;
+        Item.height = 46;
+        Item.damage = 138;
+        Item.knockBack = 3.5f;
+        Item.noMelee = true;
+        Item.DamageType = DamageClass.Magic;
+        Item.mana = 45;
+
+        Item.useAnimation = Item.useTime = 45;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.autoReuse = true;
+
+        Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+        Item.rare = ModContent.RarityType<Turquoise>();
+
+        Item.UseSound = SoundID.Item84;
+        Item.shoot = ModContent.ProjectileType<EventHorizonStar>();
+        Item.shootSpeed = 25f;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        for (float i = 0; i < 8; i++)
         {
-            Item.width = 40;
-            Item.height = 46;
-            Item.damage = 138;
-            Item.knockBack = 3.5f;
-            Item.noMelee = true;
-            Item.DamageType = DamageClass.Magic;
-            Item.mana = 45;
-
-            Item.useAnimation = Item.useTime = 45;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.autoReuse = true;
-
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
-
-            Item.UseSound = SoundID.Item84;
-            Item.shoot = ModContent.ProjectileType<EventHorizonStar>();
-            Item.shootSpeed = 25f;
+            float angle = MathHelper.TwoPi / 8f * i;
+            Projectile.NewProjectile(source, player.Center, angle.ToRotationVector2() * 8f, type, damage, knockback, player.whoAmI, angle, 0f);
         }
+        return false;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            for (float i = 0; i < 8; i++)
-            {
-                float angle = MathHelper.TwoPi / 8f * i;
-                Projectile.NewProjectile(source, player.Center, angle.ToRotationVector2() * 8f, type, damage, knockback, player.whoAmI, angle, 0f);
-            }
-            return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<StarShower>().
-                AddIngredient<NuclearFury>().
-                AddIngredient<RelicofRuin>().
-                AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.Bookcases).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<StarShower>().
+            AddIngredient<NuclearFury>().
+            AddIngredient<RelicofRuin>().
+            AddIngredient<DarkPlasma>(3).
+            AddTile(TileID.Bookcases).
+            Register();
     }
 }

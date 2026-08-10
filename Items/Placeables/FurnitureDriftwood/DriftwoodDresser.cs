@@ -2,23 +2,22 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.FurnitureDriftwood
-{
-    public class DriftwoodDresser : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureDriftwood.DriftwoodDresser>());
-            Item.value = Item.sellPrice(silver: 1);
-        }
+namespace CalamityMod.Items.Placeables.FurnitureDriftwood;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<Driftwood>(16).
-                AddTile(TileID.Sawmill).
-                Register();
-        }
+public class DriftwoodDresser : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureDriftwood.DriftwoodDresser>());
+        Item.value = Item.sellPrice(silver: 1);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<Driftwood>(16).
+            AddTile(TileID.Sawmill).
+            Register();
     }
 }

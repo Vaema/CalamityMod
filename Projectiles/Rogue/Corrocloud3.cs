@@ -3,56 +3,55 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class Corrocloud3 : ModProjectile, ILocalizedModType
 {
-    public class Corrocloud3 : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 8;
-        }
+        Main.projFrames[Type] = 8;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 32;
-            Projectile.height = 32;
-            Projectile.friendly = true;
-            Projectile.penetrate = 4;
-            Projectile.timeLeft = 600;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 16;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = 32;
+        Projectile.height = 32;
+        Projectile.friendly = true;
+        Projectile.penetrate = 4;
+        Projectile.timeLeft = 600;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 16;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        Projectile.velocity *= 0.99f;
+        Projectile.ai[0] += 1f;
+        if (Projectile.ai[0] % 7f == 6f)
         {
-            Projectile.velocity *= 0.99f;
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] % 7f == 6f)
-            {
-                Projectile.frame++;
-            }
-            if (Projectile.frame >= 8)
-                Projectile.Kill();
+            Projectile.frame++;
         }
+        if (Projectile.frame >= 8)
+            Projectile.Kill();
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.Poisoned, 120);
-        }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.Poisoned, 120);
+    }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(BuffID.Poisoned, 120);
-        }
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        target.AddBuff(BuffID.Poisoned, 120);
+    }
 
-        public override void OnKill(int timeLeft)
+    public override void OnKill(int timeLeft)
+    {
+        for (int i = 0; i < 8; i++)
         {
-            for (int i = 0; i < 8; i++)
-            {
-                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid);
-            }
+            Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid);
         }
     }
 }

@@ -11,83 +11,82 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.DraedonsArsenal
+namespace CalamityMod.Items.Weapons.DraedonsArsenal;
+
+public class PoleWarper : ModItem, ILocalizedModType
 {
-    public class PoleWarper : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        public override void SetDefaults()
+        CalamityGlobalItem modItem = Item.Calamity();
+
+        Item.width = 38;
+        Item.height = 24;
+        Item.shootSpeed = 10f;
+        Item.damage = 207;
+        Item.mana = 12;
+        Item.useAnimation = Item.useTime = 24;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.noMelee = true;
+        Item.knockBack = 8f;
+
+        Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+        Item.rare = ModContent.RarityType<CosmicPurple>();
+
+        Item.UseSound = SoundID.Item15;
+        Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<PoleWarperSummon>();
+        Item.shootSpeed = 10f;
+        Item.DamageType = DamageClass.Summon;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
+    {
+        Vector2 mouse = player.ClampedMouseWorld();
+        Projectile north = Projectile.NewProjectileDirect(source, mouse + Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
+        Projectile south = Projectile.NewProjectileDirect(source, mouse - Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
+        north.originalDamage = Item.damage;
+        south.originalDamage = Item.damage;
+        north.ai[1] = 1f;
+        south.ai[1] = 0f;
+
+        float magnetCount = 0f;
+
+        foreach (Projectile p in Main.ActiveProjectiles)
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
-            Item.width = 38;
-            Item.height = 24;
-            Item.shootSpeed = 10f;
-            Item.damage = 207;
-            Item.mana = 12;
-            Item.useAnimation = Item.useTime = 24;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.noMelee = true;
-            Item.knockBack = 8f;
-
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-
-            Item.UseSound = SoundID.Item15;
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<PoleWarperSummon>();
-            Item.shootSpeed = 10f;
-            Item.DamageType = DamageClass.Summon;
-        }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
-        {
-            Vector2 mouse = player.ClampedMouseWorld();
-            Projectile north = Projectile.NewProjectileDirect(source, mouse + Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
-            Projectile south = Projectile.NewProjectileDirect(source, mouse - Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
-            north.originalDamage = Item.damage;
-            south.originalDamage = Item.damage;
-            north.ai[1] = 1f;
-            south.ai[1] = 0f;
-
-            float magnetCount = 0f;
-
-            foreach (Projectile p in Main.ActiveProjectiles)
+            if (p.type == type && p.owner == player.whoAmI)
             {
-                if (p.type == type && p.owner == player.whoAmI)
-                {
-                    magnetCount++;
-                }
+                magnetCount++;
             }
-
-            // Adjust the offset of all existing magnets such that they form a psuedo-circle.
-            // This offset is used when determining where a magnet should move to relative to its true destination (such as the player or an enemy).
-            int magnetIndex = 0;
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.type == type && p.owner == player.whoAmI)
-                {
-                    ((PoleWarperSummon)p.ModProjectile).Time = 0f;
-                    ((PoleWarperSummon)p.ModProjectile).AngularOffset = MathHelper.TwoPi * magnetIndex / magnetCount;
-                    magnetIndex++;
-                }
-            }
-
-            return false;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5);
-
-        public override void AddRecipes()
+        // Adjust the offset of all existing magnets such that they form a psuedo-circle.
+        // This offset is used when determining where a magnet should move to relative to its true destination (such as the player or an enemy).
+        int magnetIndex = 0;
+        foreach (Projectile p in Main.ActiveProjectiles)
         {
-            CreateRecipe().
-                AddIngredient<MysteriousCircuitry>(25).
-                AddIngredient<DubiousPlating>(15).
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<AscendantSpiritEssence>(2).
-                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
-                AddTile<CosmicAnvil>().
-                Register();
+            if (p.type == type && p.owner == player.whoAmI)
+            {
+                ((PoleWarperSummon)p.ModProjectile).Time = 0f;
+                ((PoleWarperSummon)p.ModProjectile).AngularOffset = MathHelper.TwoPi * magnetIndex / magnetCount;
+                magnetIndex++;
+            }
         }
+
+        return false;
+    }
+
+    public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5);
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<MysteriousCircuitry>(25).
+            AddIngredient<DubiousPlating>(15).
+            AddIngredient<CosmiliteBar>(8).
+            AddIngredient<AscendantSpiritEssence>(2).
+            AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

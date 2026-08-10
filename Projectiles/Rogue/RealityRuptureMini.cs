@@ -5,92 +5,91 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class RealityRuptureMini : ModProjectile, ILocalizedModType
 {
-    public class RealityRuptureMini : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Projectiles/Rogue/RealityRuptureMini";
+    public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2") { PitchVariance = 0.3f, Volume = 0.5f };
+
+    public int framesInAir = 0;
+    public int SparkChance = 1;
+
+    public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Rogue/RealityRuptureMini";
-        public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2") { PitchVariance = 0.3f, Volume = 0.5f };
+        Projectile.width = 34;
+        Projectile.height = 34;
+        Projectile.friendly = true;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 800;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.extraUpdates = 3;
+    }
 
-        public int framesInAir = 0;
-        public int SparkChance = 1;
-
-        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-        public override void SetDefaults()
+    public override void AI()
+    {
+        framesInAir++;
+        if (framesInAir < 120)
         {
-            Projectile.width = 34;
-            Projectile.height = 34;
-            Projectile.friendly = true;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 800;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.extraUpdates = 3;
+            Lighting.AddLight(Projectile.Center + Projectile.velocity * 0.6f, 0.6f, 0.2f, 0.5f);
         }
 
-        public override void AI()
+        if (Projectile.timeLeft % 2 == 0 && Main.rand.NextBool(SparkChance) && Projectile.numHits == 0)
         {
-            framesInAir++;
-            if (framesInAir < 120)
+            SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 1.3f, Color.Plum * 0.5f);
+            GeneralParticleHandler.SpawnParticle(spark);
+        }
+
+        Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
+
+        Vector2 center = Projectile.Center;
+        float maxDistance = 350f;
+        bool homeIn = false;
+
+        foreach (NPC n in Main.ActiveNPCs)
+        {
+            if (n.CanBeChasedBy(Projectile, false))
             {
-                Lighting.AddLight(Projectile.Center + Projectile.velocity * 0.6f, 0.6f, 0.2f, 0.5f);
-            }
+                float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
+                bool canHit = Projectile.Calamity().stealthStrike || Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1);
 
-            if (Projectile.timeLeft % 2 == 0 && Main.rand.NextBool(SparkChance) && Projectile.numHits == 0)
-            {
-                SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 1.3f, Color.Plum * 0.5f);
-                GeneralParticleHandler.SpawnParticle(spark);
-            }
-
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
-
-            Vector2 center = Projectile.Center;
-            float maxDistance = 350f;
-            bool homeIn = false;
-
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (n.CanBeChasedBy(Projectile, false))
+                if (Vector2.Distance(n.Center, Projectile.Center) < (maxDistance + extraDistance) && canHit)
                 {
-                    float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
-                    bool canHit = Projectile.Calamity().stealthStrike || Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1);
-
-                    if (Vector2.Distance(n.Center, Projectile.Center) < (maxDistance + extraDistance) && canHit)
-                    {
-                        center = n.Center;
-                        homeIn = true;
-                        break;
-                    }
+                    center = n.Center;
+                    homeIn = true;
+                    break;
                 }
             }
-
-            if (homeIn)
-            {
-                SparkChance = 2;
-                Projectile.extraUpdates = 4;
-                Vector2 moveDirection = Projectile.SafeDirectionTo(center, Vector2.UnitY);
-                Projectile.velocity = (Projectile.velocity * 20f + moveDirection * 12f) / (21f);
-            }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        if (homeIn)
         {
-            for (int i = 0; i <= 2; i++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.WitherLightning, Projectile.oldVelocity.X * Main.rand.NextFloat(1.1f, 1.3f), Projectile.oldVelocity.Y * Main.rand.NextFloat(1.1f, 1.3f));
-            }
+            SparkChance = 2;
+            Projectile.extraUpdates = 4;
+            Vector2 moveDirection = Projectile.SafeDirectionTo(center, Vector2.UnitY);
+            Projectile.velocity = (Projectile.velocity * 20f + moveDirection * 12f) / (21f);
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        for (int i = 0; i <= 2; i++)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.8f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.WitherLightning, Projectile.oldVelocity.X * Main.rand.NextFloat(1.1f, 1.3f), Projectile.oldVelocity.Y * Main.rand.NextFloat(1.1f, 1.3f));
         }
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(Hitsound, Projectile.position);
-        }
+    }
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    {
+        if (Projectile.numHits > 0)
+            Projectile.damage = (int)(Projectile.damage * 0.8f);
+        if (Projectile.damage < 1)
+            Projectile.damage = 1;
+    }
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(Hitsound, Projectile.position);
     }
 }

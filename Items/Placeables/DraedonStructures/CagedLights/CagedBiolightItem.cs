@@ -5,27 +5,26 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights
+namespace CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+
+public class CagedBiolightItem : ModItem, ILocalizedModType
 {
-    public class CagedBiolightItem : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AgedBiolightItem>();
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AgedBiolightItem>();
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<CagedBiolight>());
-            Item.value = Item.sellPrice(silver: 1);
-        }
+        Item.DefaultToPlaceableTile(ModContent.TileType<CagedBiolight>());
+        Item.value = Item.sellPrice(silver: 1);
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(10).
-                AddIngredient<DubiousPlating>(2).
-                AddIngredient<MysteriousCircuitry>().
-                AddIngredient<Plagueplate>().
-                AddTile(TileID.Anvils).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(10).
+            AddIngredient<DubiousPlating>(2).
+            AddIngredient<MysteriousCircuitry>().
+            AddIngredient<Plagueplate>().
+            AddTile(TileID.Anvils).
+            Register();
     }
 }

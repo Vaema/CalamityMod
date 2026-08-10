@@ -2,10 +2,9 @@
 using CalamityMod.Tiles.Abyss;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Merges
+namespace CalamityMod.Tiles.Merges;
+
+public sealed class PyreMantleMerge : TileBlendTexture
 {
-    public sealed class PyreMantleMerge : TileBlendTexture
-    {
-        public override int TileType => ModContent.TileType<PyreMantle>();
-    }
+    public override int TileType => ModContent.TileType<PyreMantle>();
 }

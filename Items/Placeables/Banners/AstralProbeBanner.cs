@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class AstralProbeBanner : BaseBanner
 {
-    public class AstralProbeBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 31;
-    }
+    public override int BannerTileStyle => 31;
 }

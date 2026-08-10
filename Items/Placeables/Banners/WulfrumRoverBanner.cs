@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class WulfrumRoverBanner : BaseBanner
 {
-    public class WulfrumRoverBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 125;
-    }
+    public override int BannerTileStyle => 125;
 }

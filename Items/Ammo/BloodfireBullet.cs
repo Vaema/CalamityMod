@@ -5,39 +5,38 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Ammo
+namespace CalamityMod.Items.Ammo;
+
+public class BloodfireBullet : ModItem, ILocalizedModType
 {
-    public class BloodfireBullet : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Ammo";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Ammo";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
+        Item.ResearchUnlockCount = 99;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 14;
-            Item.height = 30;
-            Item.damage = 17;
-            Item.DamageType = DamageClass.Ranged;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.knockBack = 4.5f;
-            Item.value = Item.sellPrice(copper: 24);
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.shoot = ModContent.ProjectileType<BloodfireBulletProj>();
-            Item.shootSpeed = 0.1f;
-            Item.ammo = ItemID.MusketBall;
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 14;
+        Item.height = 30;
+        Item.damage = 17;
+        Item.DamageType = DamageClass.Ranged;
+        Item.maxStack = Item.CommonMaxStack;
+        Item.consumable = true;
+        Item.knockBack = 4.5f;
+        Item.value = Item.sellPrice(copper: 24);
+        Item.rare = ModContent.RarityType<Turquoise>();
+        Item.shoot = ModContent.ProjectileType<BloodfireBulletProj>();
+        Item.shootSpeed = 0.1f;
+        Item.ammo = ItemID.MusketBall;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(333).
-                AddIngredient<Bloodstone>().
-                AddIngredient<BloodOrb>().
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(333).
+            AddIngredient<Bloodstone>().
+            AddIngredient<BloodOrb>().
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

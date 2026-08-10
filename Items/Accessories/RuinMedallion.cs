@@ -4,36 +4,35 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+public class RuinMedallion : ModItem, ILocalizedModType
 {
-    public class RuinMedallion : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public override void SetDefaults()
-        {
-            Item.width = 20;
-            Item.height = 28;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
-            Item.accessory = true;
-        }
+        Item.width = 20;
+        Item.height = 28;
+        Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+        Item.rare = ItemRarityID.Pink;
+        Item.accessory = true;
+    }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.stealthStrike75Cost = true;
-            player.GetCritChance<ThrowingDamageClass>() += 6;
-            player.GetDamage<ThrowingDamageClass>() += 0.06f;
-        }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.stealthStrike75Cost = true;
+        player.GetCritChance<ThrowingDamageClass>() += 6;
+        player.GetDamage<ThrowingDamageClass>() += 0.06f;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<CoinofDeceit>().
-                AddIngredient<UnholyCore>(4).
-                AddIngredient<EssenceofHavoc>(2).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<CoinofDeceit>().
+            AddIngredient<UnholyCore>(4).
+            AddIngredient<EssenceofHavoc>(2).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

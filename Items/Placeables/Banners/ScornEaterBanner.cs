@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class ScornEaterBanner : BaseBanner
 {
-    public class ScornEaterBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 49;
-    }
+    public override int BannerTileStyle => 49;
 }

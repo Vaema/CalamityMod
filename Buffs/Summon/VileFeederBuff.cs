@@ -1,12 +1,11 @@
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Summon
-{
-    public class VileFeederBuff : BaseSummonBuff
-    {
-        protected override int MinionProjectileType => ModContent.ProjectileType<VileFeederSummon>();
+namespace CalamityMod.Buffs.Summon;
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.vileFeeder;
-    }
+public class VileFeederBuff : BaseSummonBuff
+{
+    protected override int MinionProjectileType => ModContent.ProjectileType<VileFeederSummon>();
+
+    protected override ref bool MinionBool => ref BuffModdedOwner.vileFeeder;
 }

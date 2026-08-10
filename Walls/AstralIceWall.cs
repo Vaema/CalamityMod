@@ -2,21 +2,20 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls;
+
+[LegacyName("AstralIceWallSafe")]
+public class AstralIceWall : ModWall
 {
-    [LegacyName("AstralIceWallSafe")]
-    public class AstralIceWall : ModWall
+
+    public override void SetStaticDefaults()
     {
-
-        public override void SetStaticDefaults()
-        {
-            // TODO -- Change this dust to be one more befitting Astral Ice.
-            Main.wallHouse[Type] = true;
-            DustType = DustID.Shadowflame;
-            WallID.Sets.Conversion.Ice[Type] = true;
-            AddMapEntry(new Color(83, 76, 92));
-        }
-
-        public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
+        // TODO -- Change this dust to be one more befitting Astral Ice.
+        Main.wallHouse[Type] = true;
+        DustType = DustID.Shadowflame;
+        WallID.Sets.Conversion.Ice[Type] = true;
+        AddMapEntry(new Color(83, 76, 92));
     }
+
+    public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 }

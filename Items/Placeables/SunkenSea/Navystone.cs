@@ -2,31 +2,30 @@
 using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Placeables.SunkenSea
+namespace CalamityMod.Items.Placeables.SunkenSea;
+
+public class Navystone : ModItem, ILocalizedModType
 {
-    public class Navystone : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Runestone>();
-        }
+        Item.ResearchUnlockCount = 100;
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Runestone>();
+    }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Navystone>());
+    public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Navystone>());
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<NavystoneWall>(4).
-                AddTile(TileID.WorkBenches).
-                DisableDecraft().
-                Register();
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<NavystoneWall>(4).
+            AddTile(TileID.WorkBenches).
+            DisableDecraft().
+            Register();
 
-            CreateRecipe().
-                AddIngredient<NavystonePlatform>(2).
-                DisableDecraft().
-                Register();
-        }
+        CreateRecipe().
+            AddIngredient<NavystonePlatform>(2).
+            DisableDecraft().
+            Register();
     }
 }

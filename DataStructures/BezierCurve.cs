@@ -1,43 +1,42 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace CalamityMod.DataStructures
+namespace CalamityMod.DataStructures;
+
+public class BezierCurve
 {
-    public class BezierCurve
+    public Vector2[] ControlPoints;
+
+    public BezierCurve(params Vector2[] controls) => ControlPoints = controls;
+
+    public Vector2 Evaluate(float interpolant) => PrivateEvaluate(ControlPoints, MathHelper.Clamp(interpolant, 0f, 1f));
+
+    public List<Vector2> GetPoints(int totalPoints)
     {
-        public Vector2[] ControlPoints;
+        float perStep = 1f / totalPoints;
 
-        public BezierCurve(params Vector2[] controls) => ControlPoints = controls;
+        List<Vector2> points = new List<Vector2>();
 
-        public Vector2 Evaluate(float interpolant) => PrivateEvaluate(ControlPoints, MathHelper.Clamp(interpolant, 0f, 1f));
+        for (float step = 0f; step <= 1f; step += perStep)
+            points.Add(Evaluate(step));
 
-        public List<Vector2> GetPoints(int totalPoints)
+        return points;
+    }
+
+    private Vector2 PrivateEvaluate(Vector2[] points, float T)
+    {
+        while (points.Length > 2)
         {
-            float perStep = 1f / totalPoints;
+            Vector2[] nextPoints = new Vector2[points.Length - 1];
+            for (int k = 0; k < points.Length - 1; k++)
+                nextPoints[k] = Vector2.Lerp(points[k], points[k + 1], T);
 
-            List<Vector2> points = new List<Vector2>();
-
-            for (float step = 0f; step <= 1f; step += perStep)
-                points.Add(Evaluate(step));
-
-            return points;
+            points = nextPoints;
         }
 
-        private Vector2 PrivateEvaluate(Vector2[] points, float T)
-        {
-            while (points.Length > 2)
-            {
-                Vector2[] nextPoints = new Vector2[points.Length - 1];
-                for (int k = 0; k < points.Length - 1; k++)
-                    nextPoints[k] = Vector2.Lerp(points[k], points[k + 1], T);
+        if (points.Length <= 1)
+            return Vector2.Zero;
 
-                points = nextPoints;
-            }
-
-            if (points.Length <= 1)
-                return Vector2.Zero;
-
-            return Vector2.Lerp(points[0], points[1], T);
-        }
+        return Vector2.Lerp(points[0], points[1], T);
     }
 }

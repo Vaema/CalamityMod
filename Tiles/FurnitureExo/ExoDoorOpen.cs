@@ -9,59 +9,58 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.FurnitureExo
+namespace CalamityMod.Tiles.FurnitureExo;
+
+public class ExoDoorOpen : ModTile
 {
-    public class ExoDoorOpen : ModTile
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileFrameImportant[Type] = true;
-            Main.tileBlockLight[Type] = true;
-            Main.tileSolid[Type] = false;
-            Main.tileNoAttach[Type] = true;
-            Main.tileLavaDeath[Type] = false;
-            Main.tileWaterDeath[Type] = false;
-            TileID.Sets.NotReallySolid[Type] = true;
-            TileID.Sets.DrawsWalls[Type] = true;
-            TileID.Sets.HasOutlines[Type] = true;
-            TileObjectData.newTile.Width = 1;
-            TileObjectData.newTile.Height = 4;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16 };
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.Origin = new Point16(0, 3);
-            TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.SolidTile, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.LavaDeath = false;
-            TileObjectData.addTile(Type);
-            AddToArray(ref TileID.Sets.RoomNeeds.CountsAsDoor);
+        Main.tileFrameImportant[Type] = true;
+        Main.tileBlockLight[Type] = true;
+        Main.tileSolid[Type] = false;
+        Main.tileNoAttach[Type] = true;
+        Main.tileLavaDeath[Type] = false;
+        Main.tileWaterDeath[Type] = false;
+        TileID.Sets.NotReallySolid[Type] = true;
+        TileID.Sets.DrawsWalls[Type] = true;
+        TileID.Sets.HasOutlines[Type] = true;
+        TileObjectData.newTile.Width = 1;
+        TileObjectData.newTile.Height = 4;
+        TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16 };
+        TileObjectData.newTile.CoordinateWidth = 16;
+        TileObjectData.newTile.CoordinatePadding = 2;
+        TileObjectData.newTile.Origin = new Point16(0, 3);
+        TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.SolidTile, TileObjectData.newTile.Width, 0);
+        TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile, TileObjectData.newTile.Width, 0);
+        TileObjectData.newTile.UsesCustomCanPlace = true;
+        TileObjectData.newTile.LavaDeath = false;
+        TileObjectData.addTile(Type);
+        AddToArray(ref TileID.Sets.RoomNeeds.CountsAsDoor);
 
-            AddMapEntry(new Color(119, 105, 79), Language.GetText("MapObject.Door"));
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.OpenDoor };
-            DustType = DustID.Iron;
-            RegisterItemDrop(ModContent.ItemType<ExoDoor>());
-            TileID.Sets.CloseDoorID[Type] = ModContent.TileType<ExoDoorClosed>();
-        }
+        AddMapEntry(new Color(119, 105, 79), Language.GetText("MapObject.Door"));
+        TileID.Sets.DisableSmartCursor[Type] = true;
+        AdjTiles = new int[] { TileID.OpenDoor };
+        DustType = DustID.Iron;
+        RegisterItemDrop(ModContent.ItemType<ExoDoor>());
+        TileID.Sets.CloseDoorID[Type] = ModContent.TileType<ExoDoorClosed>();
+    }
 
-        public override bool Slope(int i, int j) => false;
+    public override bool Slope(int i, int j) => false;
 
-        public override bool CanExplode(int i, int j) => false;
+    public override bool CanExplode(int i, int j) => false;
 
-        public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+    public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
+    }
 
-        public override void MouseOver(int i, int j)
-        {
-            Player player = Main.LocalPlayer;
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ModContent.ItemType<ExoDoor>();
-        }
+    public override void MouseOver(int i, int j)
+    {
+        Player player = Main.LocalPlayer;
+        player.noThrow = 2;
+        player.cursorItemIconEnabled = true;
+        player.cursorItemIconID = ModContent.ItemType<ExoDoor>();
     }
 }

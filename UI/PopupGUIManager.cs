@@ -5,60 +5,59 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.UI
+namespace CalamityMod.UI;
+
+[Autoload(Side = ModSide.Client)]
+public sealed class PopupGUIManager : ModSystem
 {
-    [Autoload(Side = ModSide.Client)]
-    public sealed class PopupGUIManager : ModSystem
+    internal static readonly List<PopupGUI> gUIs = [];
+    public static bool GUIActive(PopupGUI gui) => gui.Active || gui.FadeTime > 0;
+    public static bool AnyGUIsActive => gUIs.Any(GUIActive);
+    public static PopupGUI GetActiveGUI => gUIs.FirstOrDefault(GUIActive);
+    public static void SuspendAll()
     {
-        internal static readonly List<PopupGUI> gUIs = [];
-        public static bool GUIActive(PopupGUI gui) => gui.Active || gui.FadeTime > 0;
-        public static bool AnyGUIsActive => gUIs.Any(GUIActive);
-        public static PopupGUI GetActiveGUI => gUIs.FirstOrDefault(GUIActive);
-        public static void SuspendAll()
+        for (int i = 0; i < gUIs.Count; i++)
         {
-            for (int i = 0; i < gUIs.Count; i++)
-            {
-                gUIs[i].Active = false;
-                gUIs[i].FadeTime = 0;
-            }
+            gUIs[i].Active = false;
+            gUIs[i].FadeTime = 0;
         }
-        public static void UpdateAndDraw(SpriteBatch spriteBatch)
+    }
+    public static void UpdateAndDraw(SpriteBatch spriteBatch)
+    {
+        if (Main.ingameOptionsWindow || Main.inFancyUI || Main.InGameUI.IsVisible)
         {
-            if (Main.ingameOptionsWindow || Main.inFancyUI || Main.InGameUI.IsVisible)
+            SuspendAll();
+            return;
+        }
+        if (AnyGUIsActive)
+        {
+            Main.playerInventory = false;
+            if (Main.LocalPlayer.sign > 0 || Main.LocalPlayer.talkNPC > 0)
+                Main.CloseNPCChatOrSign();
+            GetActiveGUI.Update();
+            if (GetActiveGUI == null)
+                return;
+            if (GetActiveGUI.FadeTime == 1 && !GetActiveGUI.Active)
             {
-                SuspendAll();
+                spriteBatch.End();
+                spriteBatch.Begin();
                 return;
             }
-            if (AnyGUIsActive)
-            {
-                Main.playerInventory = false;
-                if (Main.LocalPlayer.sign > 0 || Main.LocalPlayer.talkNPC > 0)
-                    Main.CloseNPCChatOrSign();
-                GetActiveGUI.Update();
-                if (GetActiveGUI == null)
-                    return;
-                if (GetActiveGUI.FadeTime == 1 && !GetActiveGUI.Active)
-                {
-                    spriteBatch.End();
-                    spriteBatch.Begin();
-                    return;
-                }
-                GetActiveGUI.Draw(spriteBatch);
-            }
+            GetActiveGUI.Draw(spriteBatch);
         }
+    }
 
-        // Pretty self-explanatory. Made so that you don't have to play around with LINQ and Reflection manually.
-        public static void FlipActivityOfGUIWithType(Type type)
-        {
-            // End early if the designated type does not exist in the list.
-            if (!gUIs.Any(gui => gui.GetType() == type))
-                return;
-            gUIs.First(gui => gui.GetType() == type).Active = !gUIs.First(gui => gui.GetType() == type).Active;
-        }
+    // Pretty self-explanatory. Made so that you don't have to play around with LINQ and Reflection manually.
+    public static void FlipActivityOfGUIWithType(Type type)
+    {
+        // End early if the designated type does not exist in the list.
+        if (!gUIs.Any(gui => gui.GetType() == type))
+            return;
+        gUIs.First(gui => gui.GetType() == type).Active = !gUIs.First(gui => gui.GetType() == type).Active;
+    }
 
-        public override void Unload()
-        {
-            gUIs?.Clear();
-        }
+    public override void Unload()
+    {
+        gUIs?.Clear();
     }
 }

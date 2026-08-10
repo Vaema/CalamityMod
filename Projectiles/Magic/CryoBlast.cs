@@ -6,140 +6,139 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class CryoBlast : ModProjectile, ILocalizedModType
 {
-    public class CryoBlast : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    private const float Spread = 0.15f;
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        private const float Spread = 0.15f;
+        Main.projFrames[Type] = 4;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 40;
+        Projectile.height = 62;
+        Projectile.friendly = true;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.penetrate = 3;
+        Projectile.timeLeft = 90;
+        Projectile.coldDamage = true;
+        Projectile.ignoreWater = true;
+        Projectile.alpha = 255;
+        Projectile.usesIDStaticNPCImmunity = true;
+        Projectile.idStaticNPCHitCooldown = 10;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.scale <= 2.5f)
         {
-            Main.projFrames[Type] = 4;
+            Projectile.scale *= 1.02f;
+            Projectile.ExpandHitboxBy((int)(35f * Projectile.scale));
         }
-
-        public override void SetDefaults()
+        else if (Projectile.ai[0] < 2f)
         {
-            Projectile.width = 40;
-            Projectile.height = 62;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 3;
-            Projectile.timeLeft = 90;
-            Projectile.coldDamage = true;
-            Projectile.ignoreWater = true;
-            Projectile.alpha = 255;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
-        }
+            Projectile.ai[0] += 1f;
 
-        public override void AI()
-        {
-            if (Projectile.scale <= 2.5f)
-            {
-                Projectile.scale *= 1.02f;
-                Projectile.ExpandHitboxBy((int)(35f * Projectile.scale));
-            }
-            else if (Projectile.ai[0] < 2f)
-            {
-                Projectile.ai[0] += 1f;
-
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    // Fire extra waves to the left and right
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(-Spread * (i + 1)), Projectile.type, Projectile.damage / 2, Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(+Spread * (i + 1)), Projectile.type, Projectile.damage / 2, Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
-                    }
-                }
-
-                Projectile.Kill();
-            }
-
-            Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
-
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= Main.projFrames[Type])
-                Projectile.frame = 0;
-
-            Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0.5f);
-
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 4f || Projectile.ai[0] > 0f)
-            {
-                int ice = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, default, Projectile.scale * 0.5f);
-                Main.dust[ice].noGravity = true;
-                Main.dust[ice].velocity *= 0f;
-                int snow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FrostHydra, 0f, 0f, 100, default, Projectile.scale * 0.5f);
-                Main.dust[snow].noGravity = true;
-                Main.dust[snow].velocity *= 0f;
-            }
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if ((Projectile.timeLeft > 596 && Projectile.ai[0] == 0f) || (Projectile.timeLeft > 599 && Projectile.ai[0] > 0f))
-                return false;
-
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            int height = texture.Height / Main.projFrames[Type];
-            int frameHeight = height * Projectile.frame;
-            Rectangle rectangle = new Rectangle(0, frameHeight, texture.Width, height);
-            Vector2 origin = new Vector2(texture.Width / 2f, height / 2f);
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (Projectile.spriteDirection == -1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Main.EntitySpriteDraw(texture, drawPos, new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
-            return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
-            for (int index1 = 0; index1 < 15; ++index1)
-            {
-                int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemSapphire, 0f, 0f, 0, new Color(), 0.9f);
-                Main.dust[index2].noGravity = true;
-                Main.dust[index2].velocity *= 1.5f;
-            }
             if (Projectile.owner == Main.myPlayer)
             {
-                Vector2 shardPos = Projectile.oldPosition + 0.5f * Projectile.Size;
-                for (int i = 0; i < 3; i++)
+                // Fire extra waves to the left and right
+                for (int i = 0; i < 2; i++)
                 {
-                    Vector2 shardVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
-                    while (shardVel.X == 0f && shardVel.Y == 0f)
-                    {
-                        shardVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
-                    }
-                    shardVel.Normalize();
-                    shardVel *= Main.rand.Next(70, 101) * 0.1f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), shardPos, shardVel, ProjectileID.Blizzard, Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(-Spread * (i + 1)), Projectile.type, Projectile.damage / 2, Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedBy(+Spread * (i + 1)), Projectile.type, Projectile.damage / 2, Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
                 }
             }
+
+            Projectile.Kill();
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
+        Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+        Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 4)
         {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
-            target.AddBuff(BuffID.Frozen, 30);
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
         }
+        if (Projectile.frame >= Main.projFrames[Type])
+            Projectile.frame = 0;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0.5f);
+
+        Projectile.localAI[0] += 1f;
+        if (Projectile.localAI[0] > 4f || Projectile.ai[0] > 0f)
         {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
-            target.AddBuff(BuffID.Frozen, 30);
+            int ice = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, default, Projectile.scale * 0.5f);
+            Main.dust[ice].noGravity = true;
+            Main.dust[ice].velocity *= 0f;
+            int snow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FrostHydra, 0f, 0f, 100, default, Projectile.scale * 0.5f);
+            Main.dust[snow].noGravity = true;
+            Main.dust[snow].velocity *= 0f;
         }
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        if ((Projectile.timeLeft > 596 && Projectile.ai[0] == 0f) || (Projectile.timeLeft > 599 && Projectile.ai[0] > 0f))
+            return false;
+
+        Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+        int height = texture.Height / Main.projFrames[Type];
+        int frameHeight = height * Projectile.frame;
+        Rectangle rectangle = new Rectangle(0, frameHeight, texture.Width, height);
+        Vector2 origin = new Vector2(texture.Width / 2f, height / 2f);
+        SpriteEffects spriteEffects = SpriteEffects.None;
+        if (Projectile.spriteDirection == -1)
+            spriteEffects = SpriteEffects.FlipHorizontally;
+
+        Main.EntitySpriteDraw(texture, drawPos, new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+        return false;
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
+        for (int index1 = 0; index1 < 15; ++index1)
+        {
+            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemSapphire, 0f, 0f, 0, new Color(), 0.9f);
+            Main.dust[index2].noGravity = true;
+            Main.dust[index2].velocity *= 1.5f;
+        }
+        if (Projectile.owner == Main.myPlayer)
+        {
+            Vector2 shardPos = Projectile.oldPosition + 0.5f * Projectile.Size;
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 shardVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                while (shardVel.X == 0f && shardVel.Y == 0f)
+                {
+                    shardVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                }
+                shardVel.Normalize();
+                shardVel *= Main.rand.Next(70, 101) * 0.1f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), shardPos, shardVel, ProjectileID.Blizzard, Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
+            }
+        }
+    }
+
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+        target.AddBuff(BuffID.Frozen, 30);
+    }
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+        target.AddBuff(BuffID.Frozen, 30);
     }
 }

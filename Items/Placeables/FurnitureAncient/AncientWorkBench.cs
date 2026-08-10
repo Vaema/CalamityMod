@@ -3,24 +3,23 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.FurnitureAncient
-{
-    [LegacyName("AncientWorkbench")]
-    public class AncientWorkBench : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Placeables";
-        public override void SetDefaults()
-        {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureAncient.AncientWorkBench>());
-            Item.value = Item.sellPrice(copper: 30);
-        }
+namespace CalamityMod.Items.Placeables.FurnitureAncient;
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<BrimstoneSlag>(10).
-                AddTile<AshenAltar>().
-                Register();
-        }
+[LegacyName("AncientWorkbench")]
+public class AncientWorkBench : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Placeables";
+    public override void SetDefaults()
+    {
+        Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureAncient.AncientWorkBench>());
+        Item.value = Item.sellPrice(copper: 30);
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<BrimstoneSlag>(10).
+            AddTile<AshenAltar>().
+            Register();
     }
 }

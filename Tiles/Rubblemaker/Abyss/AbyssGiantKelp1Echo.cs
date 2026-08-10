@@ -10,94 +10,93 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Rubblemaker.Abyss
+namespace CalamityMod.Tiles.Rubblemaker.Abyss;
+
+public class AbyssGiantKelp1Echo : ModTile
 {
-    public class AbyssGiantKelp1Echo : ModTile
+    public Asset<Texture2D> GlowTexture;
+    public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp1";
+    public override void SetStaticDefaults()
     {
-        public Asset<Texture2D> GlowTexture;
-        public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp1";
-        public override void SetStaticDefaults()
+        Main.tileLighted[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        TileObjectData.newTile.Width = 2;
+        TileObjectData.newTile.Height = 5;
+        TileObjectData.newTile.Origin = new Point16(1, 4);
+        TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.Table | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+        TileObjectData.newTile.UsesCustomCanPlace = true;
+        TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16, 16 };
+        TileObjectData.newTile.CoordinateWidth = 16;
+        TileObjectData.newTile.CoordinatePadding = 2;
+        TileObjectData.newTile.WaterDeath = false;
+        TileObjectData.newTile.LavaDeath = true;
+        TileObjectData.newTile.DrawYOffset = 2;
+        TileObjectData.addTile(Type);
+        AddMapEntry(new Color(92, 93, 42));
+        DustType = DustID.Grass;
+        HitSound = SoundID.Grass;
+
+        RegisterItemDrop(ModContent.ItemType<PlantyMush>());
+        FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<PlantyMush>(), Type, 0);
+
+        base.SetStaticDefaults();
+    }
+    public override void NearbyEffects(int i, int j, bool closer)
+    {
+        if (closer && Main.rand.NextBool(100) && j > Main.worldSurface)
         {
-            Main.tileLighted[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            TileObjectData.newTile.Width = 2;
-            TileObjectData.newTile.Height = 5;
-            TileObjectData.newTile.Origin = new Point16(1, 4);
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.Table | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16, 16 };
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.WaterDeath = false;
-            TileObjectData.newTile.LavaDeath = true;
-            TileObjectData.newTile.DrawYOffset = 2;
-            TileObjectData.addTile(Type);
-            AddMapEntry(new Color(92, 93, 42));
-            DustType = DustID.Grass;
-            HitSound = SoundID.Grass;
-
-            RegisterItemDrop(ModContent.ItemType<PlantyMush>());
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<PlantyMush>(), Type, 0);
-
-            base.SetStaticDefaults();
-        }
-        public override void NearbyEffects(int i, int j, bool closer)
-        {
-            if (closer && Main.rand.NextBool(100) && j > Main.worldSurface)
-            {
-                Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 280, 280, DustID.Firefly, 0.2f, 0f, 0, new Color(157, 175, 15), Main.rand.NextFloat(1f, 2f))];
-                dust.noGravity = true;
-                dust.noLight = true;
-                dust.fadeIn = 2.5f;
-            }
-        }
-
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.TileFrameY <= 36)
-            {
-                r = 184f / 255f;
-                g = 90f / 255f;
-                b = 20f / 255f;
-            }
-        }
-
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 2;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.IsTileActuallyInvisible())
-                return;
-
-            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp1Glow");
-            Texture2D tex = GlowTexture.Value;
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
+            Dust dust;
+            dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 280, 280, DustID.Firefly, 0.2f, 0f, 0, new Color(157, 175, 15), Main.rand.NextFloat(1f, 2f))];
+            dust.noGravity = true;
+            dust.noLight = true;
+            dust.fadeIn = 2.5f;
         }
     }
 
-    //just clone the first one its literally the same size
-    public class AbyssGiantKelp2Echo : AbyssGiantKelp1Echo
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
     {
-        public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp2";
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        Tile tile = Framing.GetTileSafely(i, j);
+        if (tile.TileFrameY <= 36)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.IsTileActuallyInvisible())
-                return;
-
-            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp2Glow");
-            Texture2D tex = GlowTexture.Value;
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
+            r = 184f / 255f;
+            g = 90f / 255f;
+            b = 20f / 255f;
         }
+    }
+
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 2;
+    }
+
+    public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+    {
+        Tile tile = Framing.GetTileSafely(i, j);
+        if (tile.IsTileActuallyInvisible())
+            return;
+
+        GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp1Glow");
+        Texture2D tex = GlowTexture.Value;
+        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+
+        spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
+    }
+}
+
+//just clone the first one its literally the same size
+public class AbyssGiantKelp2Echo : AbyssGiantKelp1Echo
+{
+    public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp2";
+    public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+    {
+        Tile tile = Framing.GetTileSafely(i, j);
+        if (tile.IsTileActuallyInvisible())
+            return;
+
+        GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp2Glow");
+        Texture2D tex = GlowTexture.Value;
+        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+
+        spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class BabyGhostBellBanner : BaseBanner
 {
-    public class BabyGhostBellBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 102;
-    }
+    public override int BannerTileStyle => 102;
 }

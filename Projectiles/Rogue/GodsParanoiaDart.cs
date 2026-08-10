@@ -3,70 +3,69 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class GodsParanoiaDart : ModProjectile, ILocalizedModType
 {
-    public class GodsParanoiaDart : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetStaticDefaults()
+        ProjectileID.Sets.TrailCacheLength[Type] = 6;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 10;
+        Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 180;
+        Projectile.aiStyle = ProjAIStyleID.Beam;
+    }
+
+    public override void AI()
+    {
+        Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+        Projectile.rotation = Projectile.velocity.ToRotation() + (MathHelper.Pi / 2);
+
+        if (Main.rand.NextBool(3))
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Dust flame = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, 0f, 0f, 0, default, 1f);
+            flame.velocity *= 0.1f;
+            flame.scale = 1.3f;
+            flame.noGravity = true;
         }
+    }
 
-        public override void SetDefaults()
+    public override void OnKill(int timeLeft)
+    {
+        for (int i = 0; i < 2; i++)
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 180;
-            Projectile.aiStyle = ProjAIStyleID.Beam;
-        }
+            Dust flame = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, 0f, 0f, 100, default, 2f);
+            flame.velocity *= 3f;
+            if (Main.rand.NextBool())
+                flame.scale = 0.5f;
 
-        public override void AI()
-        {
-            Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = Projectile.velocity.ToRotation() + (MathHelper.Pi / 2);
-
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool())
             {
-                Dust flame = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, 0f, 0f, 0, default, 1f);
-                flame.velocity *= 0.1f;
-                flame.scale = 1.3f;
-                flame.noGravity = true;
+                flame.scale *= 0.5f;
+                flame.fadeIn = Main.rand.NextFloat(1f, 2f);
             }
         }
+    }
 
-        public override void OnKill(int timeLeft)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                Dust flame = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, 0f, 0f, 100, default, 2f);
-                flame.velocity *= 3f;
-                if (Main.rand.NextBool())
-                    flame.scale = 0.5f;
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
+    public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
 
-                if (Main.rand.NextBool())
-                {
-                    flame.scale *= 0.5f;
-                    flame.fadeIn = Main.rand.NextFloat(1f, 2f);
-                }
-            }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Projectile.timeLeft > 595)
-                return false;
-
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+    public override bool PreDraw(ref Color lightColor)
+    {
+        if (Projectile.timeLeft > 595)
             return false;
-        }
+
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

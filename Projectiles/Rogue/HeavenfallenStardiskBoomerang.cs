@@ -7,167 +7,166 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class HeavenfallenStardiskBoomerang : ModProjectile, ILocalizedModType
 {
-    public class HeavenfallenStardiskBoomerang : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/HeavenfallenStardisk";
+    public Player Owner => Main.player[Projectile.owner];
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/HeavenfallenStardisk";
-        public Player Owner => Main.player[Projectile.owner];
+        ProjectileID.Sets.TrailCacheLength[Type] = 8;
+        ProjectileID.Sets.TrailingMode[Type] = 1;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Projectile.width = 34;
+        Projectile.height = 34;
+        Projectile.alpha = 255;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.netImportant = true;
+        Projectile.penetrate = 1;
+        Projectile.timeLeft = 150;
+        Projectile.DamageType = RogueDamageClass.Instance;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.Calamity().stealthStrike && Projectile.timeLeft % 20f == 4f)
+            CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
+
+        if (Projectile.alpha > 0)
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 8;
-            ProjectileID.Sets.TrailingMode[Type] = 1;
+            Projectile.alpha -= 20;
+        }
+        if (Projectile.alpha < 0)
+        {
+            Projectile.alpha = 0;
         }
 
-        public override void SetDefaults()
+        for (int i = 0; i < 2; i++)
         {
-            Projectile.width = 34;
-            Projectile.height = 34;
-            Projectile.alpha = 255;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.netImportant = true;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 150;
-            Projectile.DamageType = RogueDamageClass.Instance;
+            int blueDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1f);
+            Main.dust[blueDust].noGravity = true;
+            Main.dust[blueDust].velocity *= 0f;
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            int orangeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+            Main.dust[orangeDust].noGravity = true;
+            Main.dust[orangeDust].velocity *= 0f;
         }
 
-        public override void AI()
+        Projectile.rotation += 0.5f;
+
+        Projectile.ai[0]++;
+
+        if (Main.myPlayer == Projectile.owner && Projectile.ai[0] == 20f)
         {
-            if (Projectile.Calamity().stealthStrike && Projectile.timeLeft % 20f == 4f)
-                CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
-
-            if (Projectile.alpha > 0)
+            if (Owner.channel)
             {
-                Projectile.alpha -= 20;
-            }
-            if (Projectile.alpha < 0)
-            {
-                Projectile.alpha = 0;
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                int blueDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1f);
-                Main.dust[blueDust].noGravity = true;
-                Main.dust[blueDust].velocity *= 0f;
-            }
-            for (int i = 0; i < 2; i++)
-            {
-                int orangeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
-                Main.dust[orangeDust].noGravity = true;
-                Main.dust[orangeDust].velocity *= 0f;
-            }
-
-            Projectile.rotation += 0.5f;
-
-            Projectile.ai[0]++;
-
-            if (Main.myPlayer == Projectile.owner && Projectile.ai[0] == 20f)
-            {
-                if (Owner.channel)
+                float constant = 20f;
+                float xfactor = (float)Main.mouseX + Main.screenPosition.X - Projectile.Center.X;
+                float yfactor = (float)Main.mouseY + Main.screenPosition.Y - Projectile.Center.Y;
+                if (Owner.gravDir == -1f)
                 {
-                    float constant = 20f;
-                    float xfactor = (float)Main.mouseX + Main.screenPosition.X - Projectile.Center.X;
-                    float yfactor = (float)Main.mouseY + Main.screenPosition.Y - Projectile.Center.Y;
-                    if (Owner.gravDir == -1f)
-                    {
-                        yfactor = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - Projectile.Center.Y;
-                    }
-                    float factorAdjust = (float)Math.Sqrt((double)(xfactor * xfactor + yfactor * yfactor));
-                    if (factorAdjust > constant)
-                    {
-                        factorAdjust = constant / factorAdjust;
-                        xfactor *= factorAdjust;
-                        yfactor *= factorAdjust;
-                        int scaledX = (int)(xfactor * 1000f);
-                        int scaledXVel = (int)(Projectile.velocity.X * 1000f);
-                        int scaledY = (int)(yfactor * 1000f);
-                        int scaledYVel = (int)(Projectile.velocity.Y * 1000f);
-                        if (scaledX != scaledXVel || scaledY != scaledYVel)
-                        {
-                            Projectile.netUpdate = true;
-                        }
-                        Projectile.velocity.X = xfactor;
-                        Projectile.velocity.Y = yfactor;
-                    }
-                    else
-                    {
-                        int scaledX2 = (int)(xfactor * 1000f);
-                        int scaledXVel2 = (int)(Projectile.velocity.X * 1000f);
-                        int scaledY2 = (int)(yfactor * 1000f);
-                        int scaledYVel2 = (int)(Projectile.velocity.Y * 1000f);
-                        if (scaledX2 != scaledXVel2 || scaledY2 != scaledYVel2)
-                        {
-                            Projectile.netUpdate = true;
-                        }
-                        Projectile.velocity.X = xfactor;
-                        Projectile.velocity.Y = yfactor;
-                    }
+                    yfactor = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - Projectile.Center.Y;
                 }
-                else if (Projectile.ai[0] == 20f)
+                float factorAdjust = (float)Math.Sqrt((double)(xfactor * xfactor + yfactor * yfactor));
+                if (factorAdjust > constant)
                 {
-                    Projectile.netUpdate = true;
-                    float sameConstant = 20f;
-                    Vector2 centerPoint = Projectile.Center;
-                    float xfactor2 = (float)Main.mouseX + Main.screenPosition.X - centerPoint.X;
-                    float yfactor2 = (float)Main.mouseY + Main.screenPosition.Y - centerPoint.Y;
-                    if (Owner.gravDir == -1f)
+                    factorAdjust = constant / factorAdjust;
+                    xfactor *= factorAdjust;
+                    yfactor *= factorAdjust;
+                    int scaledX = (int)(xfactor * 1000f);
+                    int scaledXVel = (int)(Projectile.velocity.X * 1000f);
+                    int scaledY = (int)(yfactor * 1000f);
+                    int scaledYVel = (int)(Projectile.velocity.Y * 1000f);
+                    if (scaledX != scaledXVel || scaledY != scaledYVel)
                     {
-                        yfactor2 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - centerPoint.Y;
+                        Projectile.netUpdate = true;
                     }
-                    float factorAdjust2 = (float)Math.Sqrt((double)(xfactor2 * xfactor2 + yfactor2 * yfactor2));
-                    if (factorAdjust2 == 0f || Projectile.ai[0] < 0f)
+                    Projectile.velocity.X = xfactor;
+                    Projectile.velocity.Y = yfactor;
+                }
+                else
+                {
+                    int scaledX2 = (int)(xfactor * 1000f);
+                    int scaledXVel2 = (int)(Projectile.velocity.X * 1000f);
+                    int scaledY2 = (int)(yfactor * 1000f);
+                    int scaledYVel2 = (int)(Projectile.velocity.Y * 1000f);
+                    if (scaledX2 != scaledXVel2 || scaledY2 != scaledYVel2)
                     {
-                        centerPoint = Owner.Center;
-                        xfactor2 = Projectile.Center.X - centerPoint.X;
-                        yfactor2 = Projectile.Center.Y - centerPoint.Y;
-                        factorAdjust2 = (float)Math.Sqrt((double)(xfactor2 * xfactor2 + yfactor2 * yfactor2));
+                        Projectile.netUpdate = true;
                     }
-                    factorAdjust2 = sameConstant / factorAdjust2;
-                    xfactor2 *= factorAdjust2;
-                    yfactor2 *= factorAdjust2;
-                    Projectile.velocity.X = xfactor2;
-                    Projectile.velocity.Y = yfactor2;
+                    Projectile.velocity.X = xfactor;
+                    Projectile.velocity.Y = yfactor;
                 }
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
-            for (int i = 0; i < 10; i++)
+            else if (Projectile.ai[0] == 20f)
             {
-                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
-                Main.dust[dusty].noGravity = true;
-                Main.dust[dusty].velocity *= 0f;
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
-                Main.dust[dusty].noGravity = true;
-                Main.dust[dusty].velocity *= 0f;
-            }
-
-            if (Projectile.owner == Main.myPlayer)
-            {
-                for (int i = 0; i < 5; i++)
+                Projectile.netUpdate = true;
+                float sameConstant = 20f;
+                Vector2 centerPoint = Projectile.Center;
+                float xfactor2 = (float)Main.mouseX + Main.screenPosition.X - centerPoint.X;
+                float yfactor2 = (float)Main.mouseY + Main.screenPosition.Y - centerPoint.Y;
+                if (Owner.gravDir == -1f)
                 {
-                    Vector2 velocity = ((MathHelper.TwoPi * i / 5f) - MathHelper.PiOver2).ToRotationVector2() * 4f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 4, Projectile.knockBack * 0.5f, Projectile.owner, 0f, 1f);
+                    yfactor2 = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - centerPoint.Y;
                 }
+                float factorAdjust2 = (float)Math.Sqrt((double)(xfactor2 * xfactor2 + yfactor2 * yfactor2));
+                if (factorAdjust2 == 0f || Projectile.ai[0] < 0f)
+                {
+                    centerPoint = Owner.Center;
+                    xfactor2 = Projectile.Center.X - centerPoint.X;
+                    yfactor2 = Projectile.Center.Y - centerPoint.Y;
+                    factorAdjust2 = (float)Math.Sqrt((double)(xfactor2 * xfactor2 + yfactor2 * yfactor2));
+                }
+                factorAdjust2 = sameConstant / factorAdjust2;
+                xfactor2 *= factorAdjust2;
+                yfactor2 *= factorAdjust2;
+                Projectile.velocity.X = xfactor2;
+                Projectile.velocity.Y = yfactor2;
             }
         }
+    }
 
-        public override bool PreDraw(ref Color lightColor)
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
+    public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+        for (int i = 0; i < 10; i++)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
-            return false;
+            int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
+            Main.dust[dusty].noGravity = true;
+            Main.dust[dusty].velocity *= 0f;
         }
+        for (int i = 0; i < 10; i++)
+        {
+            int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
+            Main.dust[dusty].noGravity = true;
+            Main.dust[dusty].velocity *= 0f;
+        }
+
+        if (Projectile.owner == Main.myPlayer)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 velocity = ((MathHelper.TwoPi * i / 5f) - MathHelper.PiOver2).ToRotationVector2() * 4f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 4, Projectile.knockBack * 0.5f, Projectile.owner, 0f, 1f);
+            }
+        }
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
+        return false;
     }
 }

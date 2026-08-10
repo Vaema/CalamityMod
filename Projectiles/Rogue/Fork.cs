@@ -3,48 +3,47 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class Fork : ModProjectile, ILocalizedModType
 {
-    public class Fork : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
+        ProjectileID.Sets.TrailCacheLength[Type] = 6;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 1;
-            Projectile.aiStyle = ProjAIStyleID.StickProjectile;
-            Projectile.timeLeft = 600;
-            AIType = ProjectileID.BoneJavelin;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.extraUpdates = 1;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = 14;
+        Projectile.height = 14;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = 1;
+        Projectile.aiStyle = ProjAIStyleID.StickProjectile;
+        Projectile.timeLeft = 600;
+        AIType = ProjectileID.BoneJavelin;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.extraUpdates = 1;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        if (Main.rand.NextBool(5))
         {
-            if (Main.rand.NextBool(5))
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
-            }
-            Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+        Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
+        Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
+    }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+    public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

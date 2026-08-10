@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class SunskaterBanner : BaseBanner
 {
-    public class SunskaterBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 56;
-    }
+    public override int BannerTileStyle => 56;
 }

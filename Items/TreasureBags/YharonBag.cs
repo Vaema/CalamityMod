@@ -18,76 +18,75 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.TreasureBags
+namespace CalamityMod.Items.TreasureBags;
+
+public class YharonBag : ModItem, ILocalizedModType
 {
-    public class YharonBag : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.TreasureBags";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.TreasureBags";
-        public override void SetStaticDefaults()
+        Item.ResearchUnlockCount = 3;
+        ItemID.Sets.BossBag[Type] = true;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.width = 24;
+        Item.height = 24;
+        Item.maxStack = Item.CommonMaxStack;
+        Item.consumable = true;
+        Item.rare = ItemRarityID.Cyan;
+        Item.expert = true;
+    }
+
+    public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+    {
+        itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+    }
+
+    public override bool CanRightClick() => true;
+
+    public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+
+    public override void PostUpdate() => Item.TreasureBagLightAndDust();
+
+    public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+    {
+        return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
+    }
+
+    public override void ModifyItemLoot(ItemLoot itemLoot)
+    {
+        // Money
+        itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Yharon>()));
+
+        // Materials
+        itemLoot.Add(ModContent.ItemType<YharonSoulFragment>(), 1, 40, 50);
+
+        // Weapons
+        itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
         {
-            Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Type] = true;
-        }
+            ModContent.ItemType<DragonRage>(),
+            ModContent.ItemType<TheBurningSky>(),
+            ModContent.ItemType<ChickenCannon>(),
+            ModContent.ItemType<DragonsBreath>(),
+            ModContent.ItemType<PhoenixFlameBarrage>(),
+            ModContent.ItemType<YharonsKindleStaff>(),
+            ModContent.ItemType<TheFinalDawn>(),
+            ModContent.ItemType<Wrathwing>(),
+        }));
+        itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);
 
-        public override void SetDefaults()
-        {
-            Item.width = 24;
-            Item.height = 24;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.rare = ItemRarityID.Cyan;
-            Item.expert = true;
-        }
+        // Equipment
+        itemLoot.Add(ModContent.ItemType<WingsofRebirth>());
+        itemLoot.Add(ModContent.ItemType<YharimsGift>());
+        itemLoot.AddRevBagAccessories();
 
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-        }
-
-        public override bool CanRightClick() => true;
-
-        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
-
-        public override void PostUpdate() => Item.TreasureBagLightAndDust();
-
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
-        {
-            return CalamityUtils.DrawTreasureBagInWorld(Item, spriteBatch, ref rotation, ref scale, whoAmI);
-        }
-
-        public override void ModifyItemLoot(ItemLoot itemLoot)
-        {
-            // Money
-            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Yharon>()));
-
-            // Materials
-            itemLoot.Add(ModContent.ItemType<YharonSoulFragment>(), 1, 40, 50);
-
-            // Weapons
-            itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
-            {
-                ModContent.ItemType<DragonRage>(),
-                ModContent.ItemType<TheBurningSky>(),
-                ModContent.ItemType<ChickenCannon>(),
-                ModContent.ItemType<DragonsBreath>(),
-                ModContent.ItemType<PhoenixFlameBarrage>(),
-                ModContent.ItemType<YharonsKindleStaff>(),
-                ModContent.ItemType<TheFinalDawn>(),
-                ModContent.ItemType<Wrathwing>(),
-            }));
-            itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);
-
-            // Equipment
-            itemLoot.Add(ModContent.ItemType<WingsofRebirth>());
-            itemLoot.Add(ModContent.ItemType<YharimsGift>());
-            itemLoot.AddRevBagAccessories();
-
-            // Vanity
-            itemLoot.Add(ModContent.ItemType<YharonMask>(), 7);
-            itemLoot.Add(ModContent.ItemType<ForgottenDragonEgg>(), 10);
-            itemLoot.Add(ModContent.ItemType<McNuggets>(), 10);
-            itemLoot.AddIf(() => CalamityWorld.revenge, ModContent.ItemType<FoxDrive>());
-            itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-        }
+        // Vanity
+        itemLoot.Add(ModContent.ItemType<YharonMask>(), 7);
+        itemLoot.Add(ModContent.ItemType<ForgottenDragonEgg>(), 10);
+        itemLoot.Add(ModContent.ItemType<McNuggets>(), 10);
+        itemLoot.AddIf(() => CalamityWorld.revenge, ModContent.ItemType<FoxDrive>());
+        itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
     }
 }

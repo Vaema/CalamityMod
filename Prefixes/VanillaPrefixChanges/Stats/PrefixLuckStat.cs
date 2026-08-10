@@ -1,20 +1,19 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Prefixes.VanillaPrefixChanges.Stats
+namespace CalamityMod.Prefixes.VanillaPrefixChanges.Stats;
+
+public struct PrefixLuckStat(float luckBonus) : IVanillaPrefixStat
 {
-    public struct PrefixLuckStat(float luckBonus) : IVanillaPrefixStat
+    public float LuckBonus = luckBonus;
+
+    public readonly void ApplyEffects(Player player)
     {
-        public float LuckBonus = luckBonus;
+        player.Calamity().calamityBonusLuck += LuckBonus;
+    }
 
-        public readonly void ApplyEffects(Player player)
-        {
-            player.Calamity().calamityBonusLuck += LuckBonus;
-        }
-
-        public readonly void ModifyTooltip(TooltipLine line)
-        {
-            line.Text += "\n" + VanillaPrefixChange.GetLuckString(LuckBonus);
-        }
+    public readonly void ModifyTooltip(TooltipLine line)
+    {
+        line.Text += "\n" + VanillaPrefixChange.GetLuckString(LuckBonus);
     }
 }

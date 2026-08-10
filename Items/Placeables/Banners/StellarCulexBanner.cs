@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class StellarCulexBanner : BaseBanner
 {
-    public class StellarCulexBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 41;
-    }
+    public override int BannerTileStyle => 41;
 }

@@ -1,11 +1,10 @@
-﻿namespace CalamityMod.Graphics.Renderers
+﻿namespace CalamityMod.Graphics.Renderers;
+
+public enum DrawLayer
 {
-    public enum DrawLayer
-    {
-        AfterEverything,
-        BeforeTiles,
-        NPC,
-        Player,
-        Projectile
-    }
+    AfterEverything,
+    BeforeTiles,
+    NPC,
+    Player,
+    Projectile
 }

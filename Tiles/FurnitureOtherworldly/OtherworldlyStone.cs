@@ -8,220 +8,219 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.FurnitureOtherworldly
+namespace CalamityMod.Tiles.FurnitureOtherworldly;
+
+[LegacyName("OccultStone")]
+public class OtherworldlyStone : ModTile
 {
-    [LegacyName("OccultStone")]
-    public class OtherworldlyStone : ModTile
+    public Asset<Texture2D> ClothTexture;
+
+    private int extraFrameHeight = 36;
+    private int extraFrameWidth = 90;
+
+    public override void SetStaticDefaults()
     {
-        public Asset<Texture2D> ClothTexture;
+        ClothTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureOtherworldly/OtherworldlyStone_Cloth");
 
-        private int extraFrameHeight = 36;
-        private int extraFrameWidth = 90;
+        Main.tileSolid[Type] = true;
+        Main.tileMergeDirt[Type] = false;
+        Main.tileBlockLight[Type] = true;
 
-        public override void SetStaticDefaults()
-        {
-            ClothTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureOtherworldly/OtherworldlyStone_Cloth");
+        CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.MergeDecorativeTiles(Type);
+        CalamityUtils.MergeSmoothTiles(Type);
 
-            Main.tileSolid[Type] = true;
-            Main.tileMergeDirt[Type] = false;
-            Main.tileBlockLight[Type] = true;
-
-            CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeDecorativeTiles(Type);
-            CalamityUtils.MergeSmoothTiles(Type);
-
-            HitSound = SoundID.Tink;
-            MineResist = 3f;
-            AddMapEntry(new Color(60, 42, 61));
-        }
-
-        public override bool CreateDust(int i, int j, ref int type)
-        {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(125, 94, 128), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<OtherworldlyTileCloth>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            return false;
-        }
-
-        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
-        {
-            if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
-                Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
-            {
-                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = true;
-            }
-            else
-            {
-                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = false;
-            }
-
-        }
-
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
-        {
-            if (Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint)
-            {
-                Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
-            }
-        }
-
-        public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            if (Main.tile[i, j].IsTileActuallyInvisible())
-                return;
-
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j), false);
-            Texture2D cloth = ClothTexture.Value;
-
-            DrawExtraTop(i, j, cloth, drawOffset, drawColour);
-            DrawExtraWallEnds(i, j, cloth, drawOffset, drawColour);
-            DrawExtraDrapes(i, j, cloth, drawOffset, drawColour);
-        }
-
-        #region 'Extra Drapes' Drawing
-        private void DrawExtraTop(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
-        {
-            // If the tile directly above this tile is not otherworldly stone, or if it is, there is air to both sides of that tile, draw the Extra surface
-            if (
-                CheckTile(Type, false, 0, 1, i, j) ||
-                (CheckTile(Type, true, 0, 1, i, j) && CheckTile(Type, false, 1, 1, i, j) && CheckTile(Type, false, -1, 1, i, j) && CheckTile(Type, true, 1, 0, i, j) && CheckTile(Type, true, -1, 0, i, j))
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-
-                DrawExtraOverhang(i, j, extras, drawOffset, drawColour);
-            }
-        }
-
-        private void DrawExtraWallEnds(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
-        {
-            // Ending the Extra when a wall is reached
-
-            //Left
-            if (
-                CheckTile(Type, true, 1, 0, i, j) && CheckTile(Type, false, 1, 1, i, j) && CheckTile(Type, true, 0, 1, i, j) &&
-                (CheckTile(Type, true, -1, 1, i, j) || CheckTile(Type, false, -1, 0, i, j))
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            //Right
-            if (
-                CheckTile(Type, true, -1, 0, i, j) && CheckTile(Type, false, -1, 1, i, j) && CheckTile(Type, true, 0, 1, i, j) &&
-                (CheckTile(Type, true, 1, 1, i, j) || CheckTile(Type, false, 1, 0, i, j))
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-        }
-
-        private void DrawExtraOverhang(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
-        {
-            // Called from DrawExtraTop(). Ending the Extra when the edge of the tile is reached
-
-            //Left
-            if (
-                CheckTile(Type, false, -1, 0, i, j)
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 0f), new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i, j), GetExtraPattern(i - 1), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 16f), new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i, j), GetExtraPattern(i - 1) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            //Right
-            if (
-                CheckTile(Type, false, 1, 0, i, j)
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 0f), new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i, j), GetExtraPattern(i + 1), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 16f), new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i, j), GetExtraPattern(i + 1) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-        }
-
-        private void DrawExtraDrapes(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
-        {
-            // Hanging 'drapes' of the extra element
-
-            //Base
-            if (
-                (CheckTile(Type, true, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j)) ||
-                (CheckTile(Type, true, 0, 2, i, j) && CheckTile(Type, false, 1, 2, i, j) && CheckTile(Type, false, -1, 2, i, j) && CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, true, -1, 1, i, j))
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            //Left Wall
-            if (
-                CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, false, 1, 2, i, j) && CheckTile(Type, true, 0, 2, i, j) &&
-                (CheckTile(Type, true, -1, 2, i, j) || CheckTile(Type, false, -1, 1, i, j))
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            //Right Wall
-            if (
-                CheckTile(Type, true, -1, 1, i, j) && CheckTile(Type, false, -1, 2, i, j) && CheckTile(Type, true, 0, 2, i, j) &&
-                (CheckTile(Type, true, 1, 2, i, j) || CheckTile(Type, false, 1, 1, i, j))
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            //Left Overhang
-            if (
-                CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, false, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j) && CheckTile(Type, false, 1, 2, i, j)
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i + 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-            //Right Overhang
-            if (
-                CheckTile(Type, true, -1, 1, i, j) && CheckTile(Type, false, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j) && CheckTile(Type, false, -1, 2, i, j)
-                )
-            {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i - 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            }
-        }
-        #endregion
-
-        #region Tile Data
-        private bool CheckTile(int type, bool equal, int x, int y, int i, int j)
-        {
-            //Subtract y so that y is vertical for ease of readability
-            return Main.tile[i + x, j - y].TileType == type == equal;
-        }
-
-        private int GetExtraState(string type)
-        {
-            switch (type)
-            {
-                case "middle":
-                    return 36;
-                case "overhangLeft":
-                    return 18;
-                case "overhangRight":
-                    return 54;
-                case "wallEndLeft":
-                    return 0;
-                case "wallEndRight":
-                    return 72;
-                default:
-                    Main.NewText(type.ToString() + " is not a valid Extra sheet state");
-                    return 0;
-            }
-        }
-
-        private int GetExtraPattern(int i)
-        {
-            return i % 3 * extraFrameHeight;
-        }
-
-        private int GetExtraVariant(int i, int j)
-        {
-            return Main.tile[i, j].TileFrameNumber * extraFrameWidth;
-        }
-        #endregion
+        HitSound = SoundID.Tink;
+        MineResist = 3f;
+        AddMapEntry(new Color(60, 42, 61));
     }
+
+    public override bool CreateDust(int i, int j, ref int type)
+    {
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(125, 94, 128), 1f);
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<OtherworldlyTileCloth>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
+        return false;
+    }
+
+    public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
+    {
+        if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
+            Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
+        {
+            Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = true;
+        }
+        else
+        {
+            Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = false;
+        }
+
+    }
+
+    public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+    {
+        if (Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint)
+        {
+            Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
+        }
+    }
+
+    public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
+    {
+        if (Main.tile[i, j].IsTileActuallyInvisible())
+            return;
+
+        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+        Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
+        Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j), false);
+        Texture2D cloth = ClothTexture.Value;
+
+        DrawExtraTop(i, j, cloth, drawOffset, drawColour);
+        DrawExtraWallEnds(i, j, cloth, drawOffset, drawColour);
+        DrawExtraDrapes(i, j, cloth, drawOffset, drawColour);
+    }
+
+    #region 'Extra Drapes' Drawing
+    private void DrawExtraTop(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
+    {
+        // If the tile directly above this tile is not otherworldly stone, or if it is, there is air to both sides of that tile, draw the Extra surface
+        if (
+            CheckTile(Type, false, 0, 1, i, j) ||
+            (CheckTile(Type, true, 0, 1, i, j) && CheckTile(Type, false, 1, 1, i, j) && CheckTile(Type, false, -1, 1, i, j) && CheckTile(Type, true, 1, 0, i, j) && CheckTile(Type, true, -1, 0, i, j))
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+
+            DrawExtraOverhang(i, j, extras, drawOffset, drawColour);
+        }
+    }
+
+    private void DrawExtraWallEnds(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
+    {
+        // Ending the Extra when a wall is reached
+
+        //Left
+        if (
+            CheckTile(Type, true, 1, 0, i, j) && CheckTile(Type, false, 1, 1, i, j) && CheckTile(Type, true, 0, 1, i, j) &&
+            (CheckTile(Type, true, -1, 1, i, j) || CheckTile(Type, false, -1, 0, i, j))
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+        //Right
+        if (
+            CheckTile(Type, true, -1, 0, i, j) && CheckTile(Type, false, -1, 1, i, j) && CheckTile(Type, true, 0, 1, i, j) &&
+            (CheckTile(Type, true, 1, 1, i, j) || CheckTile(Type, false, 1, 0, i, j))
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+    }
+
+    private void DrawExtraOverhang(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
+    {
+        // Called from DrawExtraTop(). Ending the Extra when the edge of the tile is reached
+
+        //Left
+        if (
+            CheckTile(Type, false, -1, 0, i, j)
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 0f), new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i, j), GetExtraPattern(i - 1), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 16f), new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i, j), GetExtraPattern(i - 1) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+        //Right
+        if (
+            CheckTile(Type, false, 1, 0, i, j)
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 0f), new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i, j), GetExtraPattern(i + 1), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 16f), new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i, j), GetExtraPattern(i + 1) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+    }
+
+    private void DrawExtraDrapes(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
+    {
+        // Hanging 'drapes' of the extra element
+
+        //Base
+        if (
+            (CheckTile(Type, true, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j)) ||
+            (CheckTile(Type, true, 0, 2, i, j) && CheckTile(Type, false, 1, 2, i, j) && CheckTile(Type, false, -1, 2, i, j) && CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, true, -1, 1, i, j))
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+        //Left Wall
+        if (
+            CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, false, 1, 2, i, j) && CheckTile(Type, true, 0, 2, i, j) &&
+            (CheckTile(Type, true, -1, 2, i, j) || CheckTile(Type, false, -1, 1, i, j))
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+        //Right Wall
+        if (
+            CheckTile(Type, true, -1, 1, i, j) && CheckTile(Type, false, -1, 2, i, j) && CheckTile(Type, true, 0, 2, i, j) &&
+            (CheckTile(Type, true, 1, 2, i, j) || CheckTile(Type, false, 1, 1, i, j))
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+        //Left Overhang
+        if (
+            CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, false, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j) && CheckTile(Type, false, 1, 2, i, j)
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i + 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+        //Right Overhang
+        if (
+            CheckTile(Type, true, -1, 1, i, j) && CheckTile(Type, false, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j) && CheckTile(Type, false, -1, 2, i, j)
+            )
+        {
+            Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i - 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+        }
+    }
+    #endregion
+
+    #region Tile Data
+    private bool CheckTile(int type, bool equal, int x, int y, int i, int j)
+    {
+        //Subtract y so that y is vertical for ease of readability
+        return Main.tile[i + x, j - y].TileType == type == equal;
+    }
+
+    private int GetExtraState(string type)
+    {
+        switch (type)
+        {
+            case "middle":
+                return 36;
+            case "overhangLeft":
+                return 18;
+            case "overhangRight":
+                return 54;
+            case "wallEndLeft":
+                return 0;
+            case "wallEndRight":
+                return 72;
+            default:
+                Main.NewText(type.ToString() + " is not a valid Extra sheet state");
+                return 0;
+        }
+    }
+
+    private int GetExtraPattern(int i)
+    {
+        return i % 3 * extraFrameHeight;
+    }
+
+    private int GetExtraVariant(int i, int j)
+    {
+        return Main.tile[i, j].TileFrameNumber * extraFrameWidth;
+    }
+    #endregion
 }

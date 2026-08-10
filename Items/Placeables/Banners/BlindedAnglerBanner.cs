@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class BlindedAnglerBanner : BaseBanner
 {
-    public class BlindedAnglerBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 104;
-    }
+    public override int BannerTileStyle => 104;
 }

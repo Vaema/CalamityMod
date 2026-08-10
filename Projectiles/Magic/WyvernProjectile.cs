@@ -6,70 +6,69 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class WyvernProjectile : ModProjectile, ILocalizedModType
 {
-    public class WyvernProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        public override void SetDefaults()
-        {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.penetrate = 1;
-            Projectile.alpha = 255;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.aiStyle = ProjAIStyleID.Nail;
-        }
+        Projectile.width = 10;
+        Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.penetrate = 1;
+        Projectile.alpha = 255;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.aiStyle = ProjAIStyleID.Nail;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        if (Main.rand.NextBool(5))
         {
-            if (Main.rand.NextBool(5))
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Cloud, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
-            }
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Cloud, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
+    }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        if (Projectile.owner == Main.myPlayer)
         {
-            if (Projectile.owner == Main.myPlayer)
-            {
-                Projectile.timeLeft = 0;
-            }
-            return false;
+            Projectile.timeLeft = 0;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
-        }
+        return false;
+    }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+    }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+    }
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.NPCHit7, Projectile.Center);
+        for (int i = 0; i <= 10; i++)
         {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Cloud, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
         }
-        public override void OnKill(int timeLeft)
+        if (!Main.dedServ)
         {
-            SoundEngine.PlaySound(SoundID.NPCHit7, Projectile.Center);
-            for (int i = 0; i <= 10; i++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Cloud, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-            }
-            if (!Main.dedServ)
-            {
-                int head = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.8f, Mod.Find<ModGore>("WyvernHead").Type);
-                Main.gore[head].timeLeft /= 10;
-                int body = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.8f, Mod.Find<ModGore>("WyvernBody").Type);
-                Main.gore[body].timeLeft /= 10;
-                int tail = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.8f, Mod.Find<ModGore>("WyvernTail").Type);
-                Main.gore[tail].timeLeft /= 10;
-            }
+            int head = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.8f, Mod.Find<ModGore>("WyvernHead").Type);
+            Main.gore[head].timeLeft /= 10;
+            int body = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.8f, Mod.Find<ModGore>("WyvernBody").Type);
+            Main.gore[body].timeLeft /= 10;
+            int tail = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.8f, Mod.Find<ModGore>("WyvernTail").Type);
+            Main.gore[tail].timeLeft /= 10;
         }
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+        return false;
     }
 }

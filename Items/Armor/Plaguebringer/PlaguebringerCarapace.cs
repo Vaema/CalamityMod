@@ -6,55 +6,54 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Armor.Plaguebringer
+namespace CalamityMod.Items.Armor.Plaguebringer;
+
+[AutoloadEquip(EquipType.Body)]
+public class PlaguebringerCarapace : ModItem, ILocalizedModType
 {
-    [AutoloadEquip(EquipType.Body)]
-    public class PlaguebringerCarapace : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+    public static int MinionSlotBoost = 1;
+    public static float SummonDamageBoost = 0.20f;
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Armor.Hardmode";
+        if (Main.dedServ)
+            return;
 
-        public static int MinionSlotBoost = 1;
-        public static float SummonDamageBoost = 0.20f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+        int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
 
-        public override void SetStaticDefaults()
-        {
-            if (Main.dedServ)
-                return;
+        ArmorIDs.Body.Sets.HidesTopSkin[equipSlot] = true;
+        ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
+    }
 
-            int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
+    public override void SetDefaults()
+    {
+        Item.width = 18;
+        Item.height = 18;
+        Item.defense = 13;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.Calamity().donorItem = true;
+    }
 
-            ArmorIDs.Body.Sets.HidesTopSkin[equipSlot] = true;
-            ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
-        }
+    public override void UpdateEquip(Player player)
+    {
+        player.Calamity().plaguebringerCarapace = true;
+        player.maxMinions += MinionSlotBoost;
+        player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
+        player.buffImmune[ModContent.BuffType<Plague>()] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 18;
-            Item.height = 18;
-            Item.defense = 13;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.Calamity().donorItem = true;
-        }
-
-        public override void UpdateEquip(Player player)
-        {
-            player.Calamity().plaguebringerCarapace = true;
-            player.maxMinions += MinionSlotBoost;
-            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
-            player.buffImmune[ModContent.BuffType<Plague>()] = true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.BeeBreastplate).
-                AddIngredient<AlchemicalDecanter>(2).
-                AddIngredient<InfectedArmorPlating>(7).
-                AddIngredient<PlagueCellCanister>(7).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.BeeBreastplate).
+            AddIngredient<AlchemicalDecanter>(2).
+            AddIngredient<InfectedArmorPlating>(7).
+            AddIngredient<PlagueCellCanister>(7).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

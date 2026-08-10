@@ -10,101 +10,100 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+public class HowlsHeart : ModItem, ILocalizedModType
 {
-    public class HowlsHeart : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public const int HowlDamage = 45;
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public const int HowlDamage = 45;
+        Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 4));
+        ItemID.Sets.AnimatesAsSoul[Type] = true;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Item.width = 20;
+        Item.height = 26;
+        Item.accessory = true;
+
+        Item.value = Item.buyPrice(gold: 20); // Sold by Wizard
+        Item.rare = ItemRarityID.LightRed;
+        Item.Calamity().donorItem = true;
+    }
+
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.howlsHeart = true;
+        if (player.whoAmI == Main.myPlayer)
         {
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 4));
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
-        }
-
-        public override void SetDefaults()
-        {
-            Item.width = 20;
-            Item.height = 26;
-            Item.accessory = true;
-
-            Item.value = Item.buyPrice(gold: 20); // Sold by Wizard
-            Item.rare = ItemRarityID.LightRed;
-            Item.Calamity().donorItem = true;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.howlsHeart = true;
-            if (player.whoAmI == Main.myPlayer)
+            var source = player.GetSource_Accessory(Item);
+            if (player.FindBuffIndex(BuffType<HowlTrio>()) == -1)
             {
-                var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(BuffType<HowlTrio>()) == -1)
-                {
-                    player.AddBuff(BuffType<HowlTrio>(), 3600, true);
-                }
-                if (player.ownedProjectileCounts[ProjectileType<HowlsHeartHowl>()] < 1)
-                {
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(HowlDamage);
+                player.AddBuff(BuffType<HowlTrio>(), 3600, true);
+            }
+            if (player.ownedProjectileCounts[ProjectileType<HowlsHeartHowl>()] < 1)
+            {
+                int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(HowlDamage);
 
-                    Projectile howl = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartHowl>(), damage, 1f, player.whoAmI, 0f, 1f);
-                    howl.originalDamage = HowlDamage;
-                }
-                if (player.ownedProjectileCounts[ProjectileType<HowlsHeartCalcifer>()] < 1)
-                {
-                    Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartCalcifer>(), 0, 0f, player.whoAmI, 0f, 0f);
-                }
-                if (player.ownedProjectileCounts[ProjectileType<HowlsHeartTurnipHead>()] < 1)
-                {
-                    Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartTurnipHead>(), 0, 0f, player.whoAmI, 0f, 0f);
-                }
+                Projectile howl = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartHowl>(), damage, 1f, player.whoAmI, 0f, 1f);
+                howl.originalDamage = HowlDamage;
+            }
+            if (player.ownedProjectileCounts[ProjectileType<HowlsHeartCalcifer>()] < 1)
+            {
+                Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartCalcifer>(), 0, 0f, player.whoAmI, 0f, 0f);
+            }
+            if (player.ownedProjectileCounts[ProjectileType<HowlsHeartTurnipHead>()] < 1)
+            {
+                Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartTurnipHead>(), 0, 0f, player.whoAmI, 0f, 0f);
             }
         }
+    }
 
-        public override void UpdateVanity(Player player)
+    public override void UpdateVanity(Player player)
+    {
+        player.Calamity().howlsHeartVanity = true;
+        if (player.whoAmI == Main.myPlayer)
         {
-            player.Calamity().howlsHeartVanity = true;
-            if (player.whoAmI == Main.myPlayer)
+            var source = player.GetSource_Accessory(Item);
+            if (player.FindBuffIndex(BuffType<HowlTrio>()) == -1)
+                player.AddBuff(BuffType<HowlTrio>(), 3600, true);
+
+            if (player.ownedProjectileCounts[ProjectileType<HowlsHeartHowl>()] < 1)
             {
-                var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(BuffType<HowlTrio>()) == -1)
-                    player.AddBuff(BuffType<HowlTrio>(), 3600, true);
+                // 08DEC2023: Ozzatron: Howls spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
+                int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(HowlDamage);
 
-                if (player.ownedProjectileCounts[ProjectileType<HowlsHeartHowl>()] < 1)
-                {
-                    // 08DEC2023: Ozzatron: Howls spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(HowlDamage);
-
-                    int p = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartHowl>(), damage, 1f, player.whoAmI, 0f, 1f);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = HowlDamage;
-                }
-
-                if (player.ownedProjectileCounts[ProjectileType<HowlsHeartCalcifer>()] < 1)
-                    Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartCalcifer>(), 0, 0f, player.whoAmI, 0f, 0f);
-
-                if (player.ownedProjectileCounts[ProjectileType<HowlsHeartTurnipHead>()] < 1)
-                    Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartTurnipHead>(), 0, 0f, player.whoAmI, 0f, 0f);
+                int p = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartHowl>(), damage, 1f, player.whoAmI, 0f, 1f);
+                if (Main.projectile.IndexInRange(p))
+                    Main.projectile[p].originalDamage = HowlDamage;
             }
-        }
 
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 1f,
-                drawOffset: new(0f, 0f)
-            );
-            return false;
+            if (player.ownedProjectileCounts[ProjectileType<HowlsHeartCalcifer>()] < 1)
+                Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartCalcifer>(), 0, 0f, player.whoAmI, 0f, 0f);
+
+            if (player.ownedProjectileCounts[ProjectileType<HowlsHeartTurnipHead>()] < 1)
+                Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartTurnipHead>(), 0, 0f, player.whoAmI, 0f, 0f);
         }
+    }
+
+    public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+    {
+        CalamityUtils.DrawInventoryCustomScale(
+            spriteBatch,
+            texture: TextureAssets.Item[Type].Value,
+            position,
+            frame,
+            drawColor,
+            itemColor,
+            origin,
+            scale,
+            wantedScale: 1f,
+            drawOffset: new(0f, 0f)
+        );
+        return false;
     }
 }

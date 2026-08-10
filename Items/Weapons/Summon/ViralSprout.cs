@@ -7,55 +7,54 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Summon
+namespace CalamityMod.Items.Weapons.Summon;
+
+public class ViralSprout : ModItem, ILocalizedModType
 {
-    public class ViralSprout : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Summon";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetDefaults()
+        Item.width = 48;
+        Item.height = 56;
+        Item.damage = 24;
+        Item.mana = 10;
+        Item.useAnimation = Item.useTime = 36;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.noMelee = true;
+        Item.knockBack = 2f;
+        Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+        Item.rare = ItemRarityID.Lime;
+        Item.UseSound = SoundID.Item44;
+        Item.autoReuse = true;
+        Item.buffType = ModContent.BuffType<SageSpiritBuff>();
+        Item.shoot = ModContent.ProjectileType<SageSpirit>();
+        Item.DamageType = DamageClass.Summon;
+    }
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        player.AddBuff(Item.buffType, 2);
+        var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+        minion.originalDamage = Item.damage;
+
+        int minionCount = 0;
+        foreach (Projectile pro in Main.ActiveProjectiles)
         {
-            Item.width = 48;
-            Item.height = 56;
-            Item.damage = 24;
-            Item.mana = 10;
-            Item.useAnimation = Item.useTime = 36;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.noMelee = true;
-            Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-            Item.rare = ItemRarityID.Lime;
-            Item.UseSound = SoundID.Item44;
-            Item.autoReuse = true;
-            Item.buffType = ModContent.BuffType<SageSpiritBuff>();
-            Item.shoot = ModContent.ProjectileType<SageSpirit>();
-            Item.DamageType = DamageClass.Summon;
+            if (pro.type != type || pro.owner != player.whoAmI)
+                continue;
+
+            pro.localAI[0] = minionCount;
+            pro.netUpdate = true;
+            minionCount++;
         }
+        return false;
+    }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            player.AddBuff(Item.buffType, 2);
-            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-            minion.originalDamage = Item.damage;
-
-            int minionCount = 0;
-            foreach (Projectile pro in Main.ActiveProjectiles)
-            {
-                if (pro.type != type || pro.owner != player.whoAmI)
-                    continue;
-
-                pro.localAI[0] = minionCount;
-                pro.netUpdate = true;
-                minionCount++;
-            }
-            return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<PerennialBar>(10).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<PerennialBar>(10).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

@@ -6,40 +6,39 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Summon
+namespace CalamityMod.Items.Weapons.Summon;
+
+[LegacyName("LanternoftheSoul")]
+public class GuidelightofOblivion : ModItem, ILocalizedModType
 {
-    [LegacyName("LanternoftheSoul")]
-    public class GuidelightofOblivion : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Summon";
+    public const int ActiveFlameLimit = 15;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Summon";
-        public const int ActiveFlameLimit = 15;
+        Item.width = 42;
+        Item.height = 60;
+        Item.damage = 75;
+        Item.DamageType = DamageClass.Summon;
+        Item.sentry = true;
+        Item.mana = 10;
+        Item.useAnimation = Item.useTime = 30;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.noMelee = true;
+        Item.knockBack = 5f;
+        Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+        Item.rare = ModContent.RarityType<Turquoise>();
+        Item.autoReuse = true;
+        Item.shoot = ModContent.ProjectileType<LanternSoul>();
+        Item.UseSound = SoundID.Item44;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 42;
-            Item.height = 60;
-            Item.damage = 75;
-            Item.DamageType = DamageClass.Summon;
-            Item.sentry = true;
-            Item.mana = 10;
-            Item.useAnimation = Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
-            Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<LanternSoul>();
-            Item.UseSound = SoundID.Item44;
-        }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
-            player.UpdateMaxTurrets();
-            return false;
-        }
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+        if (Main.projectile.IndexInRange(p))
+            Main.projectile[p].originalDamage = Item.damage;
+        player.UpdateMaxTurrets();
+        return false;
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class EutrophicRayBanner : BaseBanner
 {
-    public class EutrophicRayBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 100;
-    }
+    public override int BannerTileStyle => 100;
 }

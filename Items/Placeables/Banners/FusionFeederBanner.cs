@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class FusionFeederBanner : BaseBanner
 {
-    public class FusionFeederBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 42;
-    }
+    public override int BannerTileStyle => 42;
 }

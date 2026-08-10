@@ -1,9 +1,8 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Furniture.BossTrophies
+namespace CalamityMod.Tiles.Furniture.BossTrophies;
+
+public class NuclearTerrorTrophyTile : ModTile
 {
-    public class NuclearTerrorTrophyTile : ModTile
-    {
-        public override void SetStaticDefaults() => this.SetUpTrophy();
-    }
+    public override void SetStaticDefaults() => this.SetUpTrophy();
 }

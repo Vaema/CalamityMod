@@ -5,89 +5,88 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class EpidemicShredderProjectile : ModProjectile, ILocalizedModType
 {
-    public class EpidemicShredderProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/EpidemicShredder";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/EpidemicShredder";
+        Projectile.width = 34;
+        Projectile.height = 34;
+        Projectile.friendly = true;
+        Projectile.penetrate = 6;
+        Projectile.timeLeft = 180;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 40;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.ignoreWater = true;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Projectile.rotation += Math.Sign(Projectile.velocity.X) * MathHelper.ToRadians(10f);
+        if (Projectile.ai[0] > 0f)
         {
-            Projectile.width = 34;
-            Projectile.height = 34;
-            Projectile.friendly = true;
-            Projectile.penetrate = 6;
-            Projectile.timeLeft = 180;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 40;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.ignoreWater = true;
+            Projectile.ai[0] -= 1f;
         }
-
-        public override void AI()
+        if (Projectile.timeLeft < 160f)
         {
-            Projectile.rotation += Math.Sign(Projectile.velocity.X) * MathHelper.ToRadians(10f);
-            if (Projectile.ai[0] > 0f)
-            {
-                Projectile.ai[0] -= 1f;
-            }
-            if (Projectile.timeLeft < 160f)
-            {
-                Projectile.velocity = (Projectile.velocity * 18f + Projectile.SafeDirectionTo(Main.player[Projectile.owner].Center) * 18f) / 19f;
-                if (Main.player[Projectile.owner].Hitbox.Intersects(Projectile.Hitbox))
-                    Projectile.Kill();
-            }
-            if (Projectile.timeLeft % 4 == 0 && Projectile.Calamity().stealthStrike)
-            {
-                int projIndex2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * -1f).RotatedByRandom(MathHelper.ToRadians(15f)), ModContent.ProjectileType<PlagueSeeker>(), (int)(Projectile.damage * 0.6), Projectile.knockBack * 0.6f, Projectile.owner);
-                if (projIndex2.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[projIndex2].DamageType = RogueDamageClass.Instance;
-            }
+            Projectile.velocity = (Projectile.velocity * 18f + Projectile.SafeDirectionTo(Main.player[Projectile.owner].Center) * 18f) / 19f;
+            if (Main.player[Projectile.owner].Hitbox.Intersects(Projectile.Hitbox))
+                Projectile.Kill();
         }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        if (Projectile.timeLeft % 4 == 0 && Projectile.Calamity().stealthStrike)
         {
-            if (Projectile.penetrate > 1)
-            {
-                if (Projectile.velocity.X != oldVelocity.X)
-                {
-                    Projectile.velocity.X = -oldVelocity.X;
-                }
-                if (Projectile.velocity.Y != oldVelocity.Y)
-                {
-                    Projectile.velocity.Y = -oldVelocity.Y;
-                }
-                SpawnSeeker();
-                Projectile.penetrate--;
-            }
-            else
-                Projectile.tileCollide = false;
-
-            return false;
+            int projIndex2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * -1f).RotatedByRandom(MathHelper.ToRadians(15f)), ModContent.ProjectileType<PlagueSeeker>(), (int)(Projectile.damage * 0.6), Projectile.knockBack * 0.6f, Projectile.owner);
+            if (projIndex2.WithinBounds(Main.maxProjectiles))
+                Main.projectile[projIndex2].DamageType = RogueDamageClass.Instance;
         }
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    public override bool OnTileCollide(Vector2 oldVelocity)
+    {
+        if (Projectile.penetrate > 1)
         {
+            if (Projectile.velocity.X != oldVelocity.X)
+            {
+                Projectile.velocity.X = -oldVelocity.X;
+            }
+            if (Projectile.velocity.Y != oldVelocity.Y)
+            {
+                Projectile.velocity.Y = -oldVelocity.Y;
+            }
             SpawnSeeker();
-            target.AddBuff(ModContent.BuffType<Plague>(), 240);
+            Projectile.penetrate--;
         }
+        else
+            Projectile.tileCollide = false;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            SpawnSeeker();
-            target.AddBuff(ModContent.BuffType<Plague>(), 240);
-        }
+        return false;
+    }
 
-        public void SpawnSeeker()
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        SpawnSeeker();
+        target.AddBuff(ModContent.BuffType<Plague>(), 240);
+    }
+
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        SpawnSeeker();
+        target.AddBuff(ModContent.BuffType<Plague>(), 240);
+    }
+
+    public void SpawnSeeker()
+    {
+        if (Projectile.ai[0] == 0f)
         {
-            if (Projectile.ai[0] == 0f)
-            {
-                int projectileIndex = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<PlagueSeeker>(), (int)(Projectile.damage * 0.6), Projectile.knockBack * 0.6f, Projectile.owner);
-                if (projectileIndex.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[projectileIndex].DamageType = RogueDamageClass.Instance;
-                Projectile.ai[0] = 12f; //0.2th of a second cooldown
-            }
+            int projectileIndex = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<PlagueSeeker>(), (int)(Projectile.damage * 0.6), Projectile.knockBack * 0.6f, Projectile.owner);
+            if (projectileIndex.WithinBounds(Main.maxProjectiles))
+                Main.projectile[projectileIndex].DamageType = RogueDamageClass.Instance;
+            Projectile.ai[0] = 12f; //0.2th of a second cooldown
         }
     }
 }

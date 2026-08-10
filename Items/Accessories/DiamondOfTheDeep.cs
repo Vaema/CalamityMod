@@ -5,42 +5,41 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+[LegacyName("LumenousAmulet")]
+[AutoloadEquip(EquipType.Neck)]
+public class DiamondOfTheDeep : ModItem, ILocalizedModType
 {
-    [LegacyName("LumenousAmulet")]
-    [AutoloadEquip(EquipType.Neck)]
-    public class DiamondOfTheDeep : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public override void SetDefaults()
-        {
-            Item.width = 26;
-            Item.height = 26;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.accessory = true;
-        }
+        Item.width = 26;
+        Item.height = 26;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.accessory = true;
+    }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.dOfTheDeep = true;
-            modPlayer.dOfTheDeepVisual = !hideVisual;
-            modPlayer.WaterDebuffMultiplier += 0.6f;
-        }
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.dOfTheDeep = true;
+        modPlayer.dOfTheDeepVisual = !hideVisual;
+        modPlayer.WaterDebuffMultiplier += 0.6f;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<SeaSpiritAmulet>().
-                AddIngredient<ScoriaBar>(5).
-                AddIngredient<AbyssGravel>(20).
-                AddIngredient<PyreMantle>(20).
-                AddIngredient<Voidstone>(20).
-                AddIngredient<DepthCells>(20).
-                AddIngredient<Lumenyl>(15).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<SeaSpiritAmulet>().
+            AddIngredient<ScoriaBar>(5).
+            AddIngredient<AbyssGravel>(20).
+            AddIngredient<PyreMantle>(20).
+            AddIngredient<Voidstone>(20).
+            AddIngredient<DepthCells>(20).
+            AddIngredient<Lumenyl>(15).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }

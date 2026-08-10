@@ -2,55 +2,54 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Summon
+namespace CalamityMod.Buffs.Summon;
+
+/// <summary>
+/// An abstract class that gives the baseline code needed to make a buff dedicated to a minion.
+/// </summary>
+public abstract class BaseSummonBuff : ModBuff
 {
     /// <summary>
-    /// An abstract class that gives the baseline code needed to make a buff dedicated to a minion.
+    /// The correspondent minion's ID of this buff.
     /// </summary>
-    public abstract class BaseSummonBuff : ModBuff
+    protected abstract int MinionProjectileType { get; }
+
+    /// <summary>
+    /// The correspondent <see cref="CalamityPlayer"/> boolean field of this minion.
+    /// </summary>
+    protected abstract ref bool MinionBool { get; }
+
+    /// <summary>
+    /// The <see cref="Player"/> that possesses this buff (Read-only).
+    /// </summary>
+    protected Player BuffOwner { get; private set; }
+
+    /// <summary>
+    /// The <see cref="CalamityPlayer"/> that possesses this buff (Read-only).
+    /// </summary>
+    protected CalamityPlayer BuffModdedOwner { get; private set; }
+
+    public override void SetStaticDefaults()
     {
-        /// <summary>
-        /// The correspondent minion's ID of this buff.
-        /// </summary>
-        protected abstract int MinionProjectileType { get; }
+        Main.buffNoTimeDisplay[Type] = true;
+        Main.buffNoSave[Type] = true;
+    }
 
-        /// <summary>
-        /// The correspondent <see cref="CalamityPlayer"/> boolean field of this minion.
-        /// </summary>
-        protected abstract ref bool MinionBool { get; }
+    public override void Update(Player player, ref int buffIndex)
+    {
+        BuffOwner = player;
+        BuffModdedOwner = player.Calamity();
 
-        /// <summary>
-        /// The <see cref="Player"/> that possesses this buff (Read-only).
-        /// </summary>
-        protected Player BuffOwner { get; private set; }
+        if (player.ownedProjectileCounts[MinionProjectileType] > 0)
+            MinionBool = true;
 
-        /// <summary>
-        /// The <see cref="CalamityPlayer"/> that possesses this buff (Read-only).
-        /// </summary>
-        protected CalamityPlayer BuffModdedOwner { get; private set; }
-
-        public override void SetStaticDefaults()
+        if (!MinionBool)
         {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
+            player.DelBuff(buffIndex);
+            buffIndex--;
         }
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            BuffOwner = player;
-            BuffModdedOwner = player.Calamity();
-
-            if (player.ownedProjectileCounts[MinionProjectileType] > 0)
-                MinionBool = true;
-
-            if (!MinionBool)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-
-            else
-                player.buffTime[buffIndex] = 18000;
-        }
+        else
+            player.buffTime[buffIndex] = 18000;
     }
 }

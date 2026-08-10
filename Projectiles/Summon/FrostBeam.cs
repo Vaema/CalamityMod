@@ -3,76 +3,75 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Summon
+namespace CalamityMod.Projectiles.Summon;
+
+public class FrostBeam : ModProjectile, ILocalizedModType
 {
-    public class FrostBeam : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Summon";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        ProjectileID.Sets.MinionShot[Type] = true;
+        ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.MinionShot[Type] = true;
-            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = Projectile.height = 4;
+        Projectile.friendly = true;
+        Projectile.extraUpdates = 220;
+        Projectile.timeLeft = 200;
+        Projectile.coldDamage = true;
+        Projectile.DamageType = DamageClass.Summon;
+        Projectile.penetrate = -1;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Projectile.localAI[0]++;
+        if (Projectile.localAI[0] > 2f && Projectile.ai[0] == 0f)
         {
-            Projectile.width = Projectile.height = 4;
-            Projectile.friendly = true;
-            Projectile.extraUpdates = 220;
-            Projectile.timeLeft = 200;
-            Projectile.coldDamage = true;
-            Projectile.DamageType = DamageClass.Summon;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-        }
-
-        public override void AI()
-        {
-            Projectile.localAI[0]++;
-            if (Projectile.localAI[0] > 2f && Projectile.ai[0] == 0f)
+            for (int i = 0; i < 6; i++)
             {
-                for (int i = 0; i < 6; i++)
-                {
-                    Vector2 spawnPosition = Projectile.position;
-                    spawnPosition -= Projectile.velocity * i * 0.25f;
-                    int idx = Dust.NewDust(spawnPosition, 1, 1, DustID.Clentaminator_Blue, 0f, 0f, 0, default, 1.25f);
-                    Main.dust[idx].position = spawnPosition;
-                    Main.dust[idx].scale = Main.rand.NextFloat(0.75f, 0.85f);
-                    Main.dust[idx].velocity *= 0.1f;
-                    Main.dust[idx].noGravity = true;
-                }
+                Vector2 spawnPosition = Projectile.position;
+                spawnPosition -= Projectile.velocity * i * 0.25f;
+                int idx = Dust.NewDust(spawnPosition, 1, 1, DustID.Clentaminator_Blue, 0f, 0f, 0, default, 1.25f);
+                Main.dust[idx].position = spawnPosition;
+                Main.dust[idx].scale = Main.rand.NextFloat(0.75f, 0.85f);
+                Main.dust[idx].velocity *= 0.1f;
+                Main.dust[idx].noGravity = true;
             }
         }
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        if (Projectile.ai[0] == 0f)
         {
-            if (Projectile.ai[0] == 0f)
+            Projectile.ai[0]++;
+            Projectile.ExpandHitboxBy(128);
+            Projectile.Damage();
+            int flowerPetalCount = Main.rand.Next(3, 5 + 1);
+            float thetaDelta = Projectile.velocity.ToRotation();
+            float weaveDistanceMin = 2f;
+            float weaveDistanceOutwardMax = 3f;
+            float weaveDistanceInner = 0.5f;
+            for (float theta = 0f; theta < MathHelper.TwoPi; theta += 0.05f)
             {
-                Projectile.ai[0]++;
-                Projectile.ExpandHitboxBy(128);
-                Projectile.Damage();
-                int flowerPetalCount = Main.rand.Next(3, 5 + 1);
-                float thetaDelta = Projectile.velocity.ToRotation();
-                float weaveDistanceMin = 2f;
-                float weaveDistanceOutwardMax = 3f;
-                float weaveDistanceInner = 0.5f;
-                for (float theta = 0f; theta < MathHelper.TwoPi; theta += 0.05f)
-                {
-                    Vector2 velocity = theta.ToRotationVector2() *
-                    (weaveDistanceMin +
-                    // The 0.5 in here is to prevent the petal from looping back into itself. With a 0.5 addition, it is perfect, coming back to (0,0)
-                    // instead of weaving backwards.
-                    (float)(Math.Sin(thetaDelta + theta * flowerPetalCount) + 0.5f + weaveDistanceInner) *
-                    weaveDistanceOutwardMax);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray, velocity);
-                    dust.noGravity = true;
-                    dust.scale = 1.35f;
-                }
-                Projectile.Kill();
+                Vector2 velocity = theta.ToRotationVector2() *
+                (weaveDistanceMin +
+                // The 0.5 in here is to prevent the petal from looping back into itself. With a 0.5 addition, it is perfect, coming back to (0,0)
+                // instead of weaving backwards.
+                (float)(Math.Sin(thetaDelta + theta * flowerPetalCount) + 0.5f + weaveDistanceInner) *
+                weaveDistanceOutwardMax);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray, velocity);
+                dust.noGravity = true;
+                dust.scale = 1.35f;
             }
+            Projectile.Kill();
         }
     }
 }

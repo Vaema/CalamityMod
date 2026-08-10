@@ -8,150 +8,149 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.NPCs
+namespace CalamityMod.NPCs;
+
+public sealed class CalamityNaturalSpawnBossNPC : GlobalNPC
 {
-    public sealed class CalamityNaturalSpawnBossNPC : GlobalNPC
+    public override bool InstancePerEntity => false;
+
+    public static int ghostKillCount = 0;
+    public static int sharkKillCount = 0;
+
+    private static int[] _PolterghastTriggerNPCS;
+    private static int[] _GreatSharkTriggerNPCS;
+
+    public override void SetStaticDefaults()
     {
-        public override bool InstancePerEntity => false;
+        ghostKillCount = 0;
+        sharkKillCount = 0;
 
-        public static int ghostKillCount = 0;
-        public static int sharkKillCount = 0;
+        _PolterghastTriggerNPCS = [
+            ModContent.NPCType<PhantomSpirit>(),
+            ModContent.NPCType<PhantomSpiritS>(),
+            ModContent.NPCType<PhantomSpiritM>(),
+            ModContent.NPCType<PhantomSpiritL>()
+        ];
 
-        private static int[] _PolterghastTriggerNPCS;
-        private static int[] _GreatSharkTriggerNPCS;
+        _GreatSharkTriggerNPCS = [
+            NPCID.SandShark,
+            NPCID.SandsharkHallow,
+            NPCID.SandsharkCorrupt,
+            NPCID.SandsharkCrimson
+        ];
+    }
 
-        public override void SetStaticDefaults()
+    public override void Unload()
+    {
+        _PolterghastTriggerNPCS = null;
+        _GreatSharkTriggerNPCS = null;
+    }
+
+    private sealed class ClearWorldHook : ModSystem
+    {
+        public override void ClearWorld()
         {
             ghostKillCount = 0;
             sharkKillCount = 0;
+        }
+    }
 
-            _PolterghastTriggerNPCS = [
-                ModContent.NPCType<PhantomSpirit>(),
-                ModContent.NPCType<PhantomSpiritS>(),
-                ModContent.NPCType<PhantomSpiritM>(),
-                ModContent.NPCType<PhantomSpiritL>()
-            ];
+    public override void OnKill(NPC npc)
+    {
+        CheckPolterghastCondition(npc);
+        CheckGreatSandSharkCondition(npc);
+    }
 
-            _GreatSharkTriggerNPCS = [
-                NPCID.SandShark,
-                NPCID.SandsharkHallow,
-                NPCID.SandsharkCorrupt,
-                NPCID.SandsharkCrimson
-            ];
+    private static void CheckPolterghastCondition(NPC slainedNPC)
+    {
+        if (DownedBossSystem.downedPolterghast)
+            return;
+
+        if (NPC.AnyNPCs(ModContent.NPCType<Polterghast.Polterghast>()))
+            return;
+
+        if (!_PolterghastTriggerNPCS.Contains(slainedNPC.type))
+            return;
+
+        ghostKillCount++;
+        if (ghostKillCount == 10)
+        {
+            string key = "Mods.CalamityMod.Status.Boss.GhostBossText2";
+            Color messageColor = Color.Cyan;
+
+            CalamityUtils.BroadcastLocalizedText(key, messageColor);
+        }
+        else if (ghostKillCount == 20)
+        {
+            string key = "Mods.CalamityMod.Status.Boss.GhostBossText3";
+            Color messageColor = Color.Cyan;
+
+            CalamityUtils.BroadcastLocalizedText(key, messageColor);
         }
 
-        public override void Unload()
+        if (ghostKillCount >= 30 && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            _PolterghastTriggerNPCS = null;
-            _GreatSharkTriggerNPCS = null;
-        }
+            int lastPlayer = slainedNPC.lastInteraction;
 
-        private sealed class ClearWorldHook : ModSystem
-        {
-            public override void ClearWorld()
+            if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
             {
+                lastPlayer = slainedNPC.FindClosestPlayer();
+            }
+
+            if (lastPlayer >= 0)
+            {
+                SoundEngine.PlaySound(Polterghast.Polterghast.SpawnSound, Main.player[lastPlayer].Center);
+                NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<Polterghast.Polterghast>());
                 ghostKillCount = 0;
-                sharkKillCount = 0;
             }
         }
+    }
 
-        public override void OnKill(NPC npc)
+    private static void CheckGreatSandSharkCondition(NPC slainedNPC)
+    {
+        if (!NPC.downedPlantBoss)
+            return;
+
+        if (NPC.AnyNPCs(ModContent.NPCType<GreatSandShark.GreatSandShark>()))
+            return;
+
+        var fusionFeeder = slainedNPC.type == ModContent.NPCType<FusionFeeder>() && Main.zenithWorld;
+        if (!_GreatSharkTriggerNPCS.Contains(slainedNPC.type) && !fusionFeeder)
+            return;
+
+        sharkKillCount++;
+        if (sharkKillCount == 4)
         {
-            CheckPolterghastCondition(npc);
-            CheckGreatSandSharkCondition(npc);
+            string key = "Mods.CalamityMod.Status.Boss.SandSharkText";
+            Color messageColor = Color.Goldenrod;
+
+            CalamityUtils.BroadcastLocalizedText(key, messageColor);
         }
-
-        private static void CheckPolterghastCondition(NPC slainedNPC)
+        else if (sharkKillCount == 8)
         {
-            if (DownedBossSystem.downedPolterghast)
-                return;
+            string key = "Mods.CalamityMod.Status.Boss.SandSharkText2";
+            Color messageColor = Color.Goldenrod;
 
-            if (NPC.AnyNPCs(ModContent.NPCType<Polterghast.Polterghast>()))
-                return;
-
-            if (!_PolterghastTriggerNPCS.Contains(slainedNPC.type))
-                return;
-
-            ghostKillCount++;
-            if (ghostKillCount == 10)
-            {
-                string key = "Mods.CalamityMod.Status.Boss.GhostBossText2";
-                Color messageColor = Color.Cyan;
-
-                CalamityUtils.BroadcastLocalizedText(key, messageColor);
-            }
-            else if (ghostKillCount == 20)
-            {
-                string key = "Mods.CalamityMod.Status.Boss.GhostBossText3";
-                Color messageColor = Color.Cyan;
-
-                CalamityUtils.BroadcastLocalizedText(key, messageColor);
-            }
-
-            if (ghostKillCount >= 30 && Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                int lastPlayer = slainedNPC.lastInteraction;
-
-                if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
-                {
-                    lastPlayer = slainedNPC.FindClosestPlayer();
-                }
-
-                if (lastPlayer >= 0)
-                {
-                    SoundEngine.PlaySound(Polterghast.Polterghast.SpawnSound, Main.player[lastPlayer].Center);
-                    NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<Polterghast.Polterghast>());
-                    ghostKillCount = 0;
-                }
-            }
+            CalamityUtils.BroadcastLocalizedText(key, messageColor);
         }
-
-        private static void CheckGreatSandSharkCondition(NPC slainedNPC)
+        if (sharkKillCount >= 10 && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            if (!NPC.downedPlantBoss)
-                return;
-
-            if (NPC.AnyNPCs(ModContent.NPCType<GreatSandShark.GreatSandShark>()))
-                return;
-
-            var fusionFeeder = slainedNPC.type == ModContent.NPCType<FusionFeeder>() && Main.zenithWorld;
-            if (!_GreatSharkTriggerNPCS.Contains(slainedNPC.type) && !fusionFeeder)
-                return;
-
-            sharkKillCount++;
-            if (sharkKillCount == 4)
+            if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
             {
-                string key = "Mods.CalamityMod.Status.Boss.SandSharkText";
-                Color messageColor = Color.Goldenrod;
-
-                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                SoundEngine.PlaySound(Mauler.RoarSound, Main.LocalPlayer.Center);
             }
-            else if (sharkKillCount == 8)
-            {
-                string key = "Mods.CalamityMod.Status.Boss.SandSharkText2";
-                Color messageColor = Color.Goldenrod;
 
-                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+            int lastPlayer = slainedNPC.lastInteraction;
+
+            if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
+            {
+                lastPlayer = slainedNPC.FindClosestPlayer();
             }
-            if (sharkKillCount >= 10 && Main.netMode != NetmodeID.MultiplayerClient)
+
+            if (lastPlayer >= 0)
             {
-                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
-                {
-                    SoundEngine.PlaySound(Mauler.RoarSound, Main.LocalPlayer.Center);
-                }
-
-                int lastPlayer = slainedNPC.lastInteraction;
-
-                if (!Main.player[lastPlayer].active || Main.player[lastPlayer].dead)
-                {
-                    lastPlayer = slainedNPC.FindClosestPlayer();
-                }
-
-                if (lastPlayer >= 0)
-                {
-                    NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<GreatSandShark.GreatSandShark>());
-                    sharkKillCount = -5;
-                }
+                NPC.SpawnOnPlayer(lastPlayer, ModContent.NPCType<GreatSandShark.GreatSandShark>());
+                sharkKillCount = -5;
             }
         }
     }

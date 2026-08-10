@@ -4,41 +4,40 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.Astral
+namespace CalamityMod.Tiles.Astral;
+
+public class AstralClay : ModTile
 {
-    public class AstralClay : ModTile
+
+    public override void SetStaticDefaults()
     {
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
 
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
+        CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.MergeAstralTiles(Type);
+        CalamityUtils.MergeWithOres(Type);
 
-            CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeAstralTiles(Type);
-            CalamityUtils.MergeWithOres(Type);
+        DustType = ModContent.DustType<AstralBasic>();
 
-            DustType = ModContent.DustType<AstralBasic>();
+        AddMapEntry(new Color(133, 69, 115));
 
-            AddMapEntry(new Color(133, 69, 115));
-
-            TileID.Sets.ChecksForMerge[Type] = true;
-            TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
-            TileID.Sets.CanBeDugByShovel[Type] = true;
+        TileID.Sets.ChecksForMerge[Type] = true;
+        TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
+        TileID.Sets.CanBeDugByShovel[Type] = true;
 
 
-            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
-        }
+        this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
+    }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+    public override void NumDust(int i, int j, bool fail, ref int num)
+    {
+        num = fail ? 1 : 3;
+    }
 
-        public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
-        {
-            sightColor = Color.Cyan;
-            return true;
-        }
+    public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
+    {
+        sightColor = Color.Cyan;
+        return true;
     }
 }

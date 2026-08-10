@@ -9,64 +9,63 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Rogue
+namespace CalamityMod.Items.Weapons.Rogue;
+
+public class DynamicPursuer : RogueWeapon
 {
-    public class DynamicPursuer : RogueWeapon
+    public override void SetDefaults()
     {
-        public override void SetDefaults()
-        {
-            Item.width = 30;
-            Item.height = 34;
-            Item.damage = 2000;
-            Item.DamageType = RogueDamageClass.Instance;
-            Item.useTime = 42;
-            Item.useAnimation = 42;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = false;
-            Item.knockBack = 3f;
+        Item.width = 30;
+        Item.height = 34;
+        Item.damage = 2000;
+        Item.DamageType = RogueDamageClass.Instance;
+        Item.useTime = 42;
+        Item.useAnimation = 42;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.useTurn = false;
+        Item.knockBack = 3f;
 
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+        Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+        Item.rare = ModContent.RarityType<BurnishedAuric>();
 
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
+        Item.noMelee = true;
+        Item.noUseGraphic = true;
 
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
+        Item.UseSound = SoundID.Item1;
+        Item.autoReuse = true;
 
-            Item.shoot = ModContent.ProjectileType<DynamicPursuerProjectile>();
-            Item.shootSpeed = 17f;
-        }
-        public static float StealthDmgMult = 0.25f; //So I can edit it directly via DragonLens instead of having to do math with CalTestHelpers
-        public override float StealthDamageMultiplier => StealthDmgMult;
-        public override float StealthVelocityMultiplier => 0.8f;
+        Item.shoot = ModContent.ProjectileType<DynamicPursuerProjectile>();
+        Item.shootSpeed = 17f;
+    }
+    public static float StealthDmgMult = 0.25f; //So I can edit it directly via DragonLens instead of having to do math with CalTestHelpers
+    public override float StealthDamageMultiplier => StealthDmgMult;
+    public override float StealthVelocityMultiplier => 0.8f;
 
-        //Stuff to be used on the projectile, but here for ease of access ingame via DragonLens
-        public static float ReturnAcceleration = 0.75f;
-        public static float ReturnMaxSpeed = 24f;
-        public static float RicochetShootingCooldown = 1000f;
-        public static float RicochetVelocityCap = 28f;
-        public static float ElectricityDmgMult = 0.4f;
-        public static float ElectricityCooldown = 500f;
-        public static float LaserDmgMult = 0.25f;
-        public static float LaserCooldown = 300f;
+    //Stuff to be used on the projectile, but here for ease of access ingame via DragonLens
+    public static float ReturnAcceleration = 0.75f;
+    public static float ReturnMaxSpeed = 24f;
+    public static float RicochetShootingCooldown = 1000f;
+    public static float RicochetVelocityCap = 28f;
+    public static float ElectricityDmgMult = 0.4f;
+    public static float ElectricityCooldown = 500f;
+    public static float LaserDmgMult = 0.25f;
+    public static float LaserCooldown = 300f;
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (proj.WithinBounds(Main.maxProjectiles))
-                Main.projectile[proj].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
-            return false;
-        }
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+        if (proj.WithinBounds(Main.maxProjectiles))
+            Main.projectile[proj].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
+        return false;
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<DimensionTearingDisk>().
-                AddIngredient<AerialTracker>().
-                AddIngredient<AuricBar>(5).
-                AddTile<CosmicAnvil>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<DimensionTearingDisk>().
+            AddIngredient<AerialTracker>().
+            AddIngredient<AuricBar>(5).
+            AddTile<CosmicAnvil>().
+            Register();
     }
 }

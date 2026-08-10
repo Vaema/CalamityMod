@@ -4,49 +4,48 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class FeatherKnifeProjectile : ModProjectile, ILocalizedModType
 {
-    public class FeatherKnifeProjectile : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public override string Texture => "CalamityMod/Items/Weapons/Rogue/FeatherKnife";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/FeatherKnife";
+        Projectile.width = 12;
+        Projectile.height = 12;
+        Projectile.friendly = true;
+        Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
+        Projectile.timeLeft = 600;
+        AIType = ProjectileID.ThrowingKnife;
+        Projectile.DamageType = RogueDamageClass.Instance;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 12;
-            Projectile.height = 12;
-            Projectile.friendly = true;
-            Projectile.aiStyle = ProjAIStyleID.ThrownProjectile;
-            Projectile.timeLeft = 600;
-            AIType = ProjectileID.ThrowingKnife;
-            Projectile.DamageType = RogueDamageClass.Instance;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+        return false;
+    }
 
-        public override bool PreDraw(ref Color lightColor)
+    public override void AI()
+    {
+        if (Projectile.timeLeft % 15 == 0)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            return false;
-        }
-
-        public override void AI()
-        {
-            if (Projectile.timeLeft % 15 == 0)
+            if (Projectile.owner == Main.myPlayer)
             {
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(Projectile.velocity.X / 20, 2), ModContent.ProjectileType<StickyFeatherAero>(), (int)(Projectile.damage * 0.4), Projectile.knockBack, Projectile.owner);
-                    if (proj.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[proj].DamageType = RogueDamageClass.Instance;
-                }
+                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(Projectile.velocity.X / 20, 2), ModContent.ProjectileType<StickyFeatherAero>(), (int)(Projectile.damage * 0.4), Projectile.knockBack, Projectile.owner);
+                if (proj.WithinBounds(Main.maxProjectiles))
+                    Main.projectile[proj].DamageType = RogueDamageClass.Instance;
             }
         }
+    }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(Projectile.velocity.X / 20, 2), ModContent.ProjectileType<StickyFeatherAero>(), (int)(Projectile.damage * 0.69), Projectile.knockBack, Projectile.owner);
-            if (proj.WithinBounds(Main.maxProjectiles))
-                Main.projectile[proj].DamageType = RogueDamageClass.Instance;
-        }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(Projectile.velocity.X / 20, 2), ModContent.ProjectileType<StickyFeatherAero>(), (int)(Projectile.damage * 0.69), Projectile.knockBack, Projectile.owner);
+        if (proj.WithinBounds(Main.maxProjectiles))
+            Main.projectile[proj].DamageType = RogueDamageClass.Instance;
     }
 }

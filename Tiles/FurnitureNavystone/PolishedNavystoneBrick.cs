@@ -4,25 +4,24 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using CalamityMod.Systems;
 
-namespace CalamityMod.Tiles.FurnitureNavystone
+namespace CalamityMod.Tiles.FurnitureNavystone;
+
+public class PolishedNavystoneBrick : ModTile
 {
-    public class PolishedNavystoneBrick : ModTile
+    public override void SetStaticDefaults()
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
-            CalamityUtils.MergeWithGeneral(Type);
-            TileID.Sets.HasSlopeFrames[Type] = true;
+        Main.tileSolid[Type] = true;
+        Main.tileBlockLight[Type] = true;
+        CalamityUtils.MergeWithGeneral(Type);
+        TileID.Sets.HasSlopeFrames[Type] = true;
 
-            HitSound = SoundID.Tink;
-            DustType = DustID.BlueMoss;
-            AddMapEntry(new Color(53, 99, 117));
-        }
+        HitSound = SoundID.Tink;
+        DustType = DustID.BlueMoss;
+        AddMapEntry(new Color(53, 99, 117));
+    }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
-        }
+    public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+    {
+        return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
     }
 }

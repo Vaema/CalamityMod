@@ -2,25 +2,24 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Armor.Vanity
+namespace CalamityMod.Items.Armor.Vanity;
+
+[AutoloadEquip(EquipType.Head)]
+public class AshenHorns : ModItem, ILocalizedModType
 {
-    [AutoloadEquip(EquipType.Head)]
-    public class AshenHorns : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Armor.Vanity";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Armor.Vanity";
-        public override void SetStaticDefaults()
-        {
 
-            if (!Main.dedServ)
-                ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
-        }
+        if (!Main.dedServ)
+            ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 28;
-            Item.height = 20;
-            Item.rare = ItemRarityID.Blue;
-            Item.vanity = true;
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 28;
+        Item.height = 20;
+        Item.rare = ItemRarityID.Blue;
+        Item.vanity = true;
     }
 }

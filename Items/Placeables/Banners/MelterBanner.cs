@@ -1,7 +1,6 @@
-﻿namespace CalamityMod.Items.Placeables.Banners
+﻿namespace CalamityMod.Items.Placeables.Banners;
+
+public class MelterBanner : BaseBanner
 {
-    public class MelterBanner : BaseBanner
-    {
-        public override int BannerTileStyle => 78;
-    }
+    public override int BannerTileStyle => 78;
 }

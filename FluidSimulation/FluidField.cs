@@ -7,324 +7,323 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.FluidSimulation
+namespace CalamityMod.FluidSimulation;
+
+// Details about the math operations are present in the shader files.
+// Please do not change this system too much without contacting me first. -Dominic
+public class FluidField : IDisposable
 {
-    // Details about the math operations are present in the shader files.
-    // Please do not change this system too much without contacting me first. -Dominic
-    public class FluidField : IDisposable
+    internal RenderTargetLease TemporaryAuxilaryTarget;
+
+    internal RenderTargetLease DivergenceField;
+
+    internal RenderTargetLease DivergencePoissonField;
+
+    internal FluidFieldState VelocityField;
+
+    internal FluidFieldState DensityField;
+
+    internal FluidFieldState ColorField;
+
+    internal RenderTargetLease OutputTarget;
+
+    public float Viscosity;
+
+    public float DiffusionFactor;
+
+    public float DissipationFactor;
+
+    public bool ShouldUpdate;
+
+    public bool ShouldSkipDivergenceClearingStep;
+
+    public Action UpdateAction;
+
+    public bool Disposing
     {
-        internal RenderTargetLease TemporaryAuxilaryTarget;
+        get;
+        private set;
+    }
 
-        internal RenderTargetLease DivergenceField;
+    public readonly int Size;
 
-        internal RenderTargetLease DivergencePoissonField;
+    public readonly float Scale;
 
-        internal FluidFieldState VelocityField;
+    public const float DeltaTime = 0.016666f;
 
-        internal FluidFieldState DensityField;
+    public const int GaussSeidelIterations = 2;
 
-        internal FluidFieldState ColorField;
+    internal static BasicEffect basicShader = null;
 
-        internal RenderTargetLease OutputTarget;
-
-        public float Viscosity;
-
-        public float DiffusionFactor;
-
-        public float DissipationFactor;
-
-        public bool ShouldUpdate;
-
-        public bool ShouldSkipDivergenceClearingStep;
-
-        public Action UpdateAction;
-
-        public bool Disposing
+    public static BasicEffect BasicShader
+    {
+        get
         {
-            get;
-            private set;
-        }
-
-        public readonly int Size;
-
-        public readonly float Scale;
-
-        public const float DeltaTime = 0.016666f;
-
-        public const int GaussSeidelIterations = 2;
-
-        internal static BasicEffect basicShader = null;
-
-        public static BasicEffect BasicShader
-        {
-            get
+            if (!Main.dedServ && basicShader is null)
             {
-                if (!Main.dedServ && basicShader is null)
+                basicShader = new BasicEffect(Main.instance.GraphicsDevice)
                 {
-                    basicShader = new BasicEffect(Main.instance.GraphicsDevice)
-                    {
-                        VertexColorEnabled = true,
-                        TextureEnabled = true
-                    };
-                }
-                return basicShader;
+                    VertexColorEnabled = true,
+                    TextureEnabled = true
+                };
             }
+            return basicShader;
+        }
+    }
+
+    // A surface format of Vector4 is used here to allow for both 0-1 ranged colors and other things at the same time.
+    public static RenderTargetDescriptor FluidDescriptor => new RenderTargetDescriptor(SurfaceFormat.Vector4, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents, true);
+
+    internal FluidField(int size, float scale, float viscosity, float diffusionFactor, float dissipationFactor)
+    {
+        Size = size;
+        Scale = scale;
+        Viscosity = viscosity;
+        DiffusionFactor = diffusionFactor;
+        DissipationFactor = dissipationFactor;
+
+        VelocityField = new(size, SurfaceFormat.Vector4);
+        DensityField = new(size);
+        ColorField = new(size);
+
+        TemporaryAuxilaryTarget = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
+
+        DivergenceField = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
+        DivergencePoissonField = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
+
+        OutputTarget = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
+    }
+
+    internal void ApplyThingToTarget(RenderTarget2D currentField, Action shaderPreparationsAction)
+    {
+        using (TemporaryAuxilaryTarget.Scope(clearColor: Color.Transparent))
+        {
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+
+            shaderPreparationsAction();
+            Main.spriteBatch.Draw(currentField, currentField.Bounds, Color.White);
+            Main.spriteBatch.End();
         }
 
-        // A surface format of Vector4 is used here to allow for both 0-1 ranged colors and other things at the same time.
-        public static RenderTargetDescriptor FluidDescriptor => new RenderTargetDescriptor(SurfaceFormat.Vector4, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents, true);
+        currentField.CopyContentsFrom(TemporaryAuxilaryTarget.Target);
+    }
 
-        internal FluidField(int size, float scale, float viscosity, float diffusionFactor, float dissipationFactor)
+    internal void FlushQueueToTarget(FluidFieldState field)
+    {
+        ApplyThingToTarget(field.NextState.Target, () =>
         {
-            Size = size;
-            Scale = scale;
-            Viscosity = viscosity;
-            DiffusionFactor = diffusionFactor;
-            DissipationFactor = dissipationFactor;
+            int batchIndex = 0;
+            int pixelCount = field.PendingChanges.Count;
 
-            VelocityField = new(size, SurfaceFormat.Vector4);
-            DensityField = new(size);
-            ColorField = new(size);
+            // Get the FUCK out of here if the queue is empty. If this check isn't here the primitive drawing method will attempt to access
+            // memory that it shouldn't and the OS will tell the program to go fuck itself, resulting in a crash.
+            if (pixelCount <= 0)
+                return;
 
-            TemporaryAuxilaryTarget = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
+            Texture2D pixel = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Pixel").Value;
+            CalamityUtils.CalculatePerspectiveMatricies(out Matrix viewMatrix, out Matrix projectionMatrix);
+            BasicShader.View = viewMatrix;
+            BasicShader.Projection = projectionMatrix;
 
-            DivergenceField = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
-            DivergencePoissonField = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
+            // Go through all particles and draw them directly with primitives.
+            BasicShader.CurrentTechnique.Passes[0].Apply();
 
-            OutputTarget = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
-        }
+            // Decide the vertices and indices.
+            FieldVertex2D[] vertices = new FieldVertex2D[pixelCount * 4];
+            short[] indices = new short[pixelCount * 6];
 
-        internal void ApplyThingToTarget(RenderTarget2D currentField, Action shaderPreparationsAction)
-        {
-            using (TemporaryAuxilaryTarget.Scope(clearColor: Color.Transparent))
+            // Go through the queue and prepare the vertices/indices.
+            while (field.PendingChanges.TryDequeue(out PixelQueueValue v))
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                Color value = new(v.Value.X, v.Value.Y, v.Value.Z, v.Value.W);
+                Vector2 topLeft = v.Position;
+                Vector2 topRight = topLeft + Vector2.UnitX;
+                Vector2 bottomLeft = topLeft + Vector2.UnitY;
+                Vector2 bottomRight = topLeft + Vector2.One;
 
-                shaderPreparationsAction();
-                Main.spriteBatch.Draw(currentField, currentField.Bounds, Color.White);
-                Main.spriteBatch.End();
+                vertices[batchIndex * 4] = new FieldVertex2D(topLeft, v.Value, new Vector2(0f, 0f));
+                vertices[batchIndex * 4 + 1] = new FieldVertex2D(topRight, v.Value, new Vector2(1f, 0f));
+                vertices[batchIndex * 4 + 2] = new FieldVertex2D(bottomRight, v.Value, new Vector2(1f, 1f));
+                vertices[batchIndex * 4 + 3] = new FieldVertex2D(bottomLeft, v.Value, new Vector2(0f, 1f));
+
+                // Construct independent primitives by creating a square from two triangles defined by the edges of the particle.
+                indices[batchIndex * 6] = (short)(batchIndex * 4);
+                indices[batchIndex * 6 + 1] = (short)(batchIndex * 4 + 1);
+                indices[batchIndex * 6 + 2] = (short)(batchIndex * 4 + 2);
+                indices[batchIndex * 6 + 3] = (short)(batchIndex * 4);
+                indices[batchIndex * 6 + 4] = (short)(batchIndex * 4 + 2);
+                indices[batchIndex * 6 + 5] = (short)(batchIndex * 4 + 3);
+                batchIndex++;
+
+                // I don't know why this is necessary to make the primitives render, but it is.
+                Main.spriteBatch.Draw(pixel, Vector2.Zero, null, Color.Transparent);
             }
 
-            currentField.CopyContentsFrom(TemporaryAuxilaryTarget.Target);
-        }
+            // Flush the vertices and indices and draw them to the render target.
+            Main.instance.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertices, 0, pixelCount * 4, indices, 0, pixelCount * 2);
+        });
+    }
 
-        internal void FlushQueueToTarget(FluidFieldState field)
+    internal void CalculateDiffusion(float diffusionFactor, FluidFieldState field, bool colors = false)
+    {
+        diffusionFactor *= DeltaTime * Size;
+        ApplyThingToTarget(field.NextState.Target, () =>
         {
-            ApplyThingToTarget(field.NextState.Target, () =>
-            {
-                int batchIndex = 0;
-                int pixelCount = field.PendingChanges.Count;
+            Main.instance.GraphicsDevice.Textures[1] = field.PreviousState.Target;
+            CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
+            CalamityShaders.FluidShaders.Value.Parameters["diffusionFactor"].SetValue(diffusionFactor);
+            CalamityShaders.FluidShaders.Value.Parameters["handlingColors"].SetValue(colors);
+            CalamityShaders.FluidShaders.Value.Parameters["dissipationFactor"].SetValue(DissipationFactor);
+            CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["DiffusionPass"].Apply();
+        });
+    }
 
-                // Get the FUCK out of here if the queue is empty. If this check isn't here the primitive drawing method will attempt to access
-                // memory that it shouldn't and the OS will tell the program to go fuck itself, resulting in a crash.
-                if (pixelCount <= 0)
-                    return;
-
-                Texture2D pixel = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Pixel").Value;
-                CalamityUtils.CalculatePerspectiveMatricies(out Matrix viewMatrix, out Matrix projectionMatrix);
-                BasicShader.View = viewMatrix;
-                BasicShader.Projection = projectionMatrix;
-
-                // Go through all particles and draw them directly with primitives.
-                BasicShader.CurrentTechnique.Passes[0].Apply();
-
-                // Decide the vertices and indices.
-                FieldVertex2D[] vertices = new FieldVertex2D[pixelCount * 4];
-                short[] indices = new short[pixelCount * 6];
-
-                // Go through the queue and prepare the vertices/indices.
-                while (field.PendingChanges.TryDequeue(out PixelQueueValue v))
-                {
-                    Color value = new(v.Value.X, v.Value.Y, v.Value.Z, v.Value.W);
-                    Vector2 topLeft = v.Position;
-                    Vector2 topRight = topLeft + Vector2.UnitX;
-                    Vector2 bottomLeft = topLeft + Vector2.UnitY;
-                    Vector2 bottomRight = topLeft + Vector2.One;
-
-                    vertices[batchIndex * 4] = new FieldVertex2D(topLeft, v.Value, new Vector2(0f, 0f));
-                    vertices[batchIndex * 4 + 1] = new FieldVertex2D(topRight, v.Value, new Vector2(1f, 0f));
-                    vertices[batchIndex * 4 + 2] = new FieldVertex2D(bottomRight, v.Value, new Vector2(1f, 1f));
-                    vertices[batchIndex * 4 + 3] = new FieldVertex2D(bottomLeft, v.Value, new Vector2(0f, 1f));
-
-                    // Construct independent primitives by creating a square from two triangles defined by the edges of the particle.
-                    indices[batchIndex * 6] = (short)(batchIndex * 4);
-                    indices[batchIndex * 6 + 1] = (short)(batchIndex * 4 + 1);
-                    indices[batchIndex * 6 + 2] = (short)(batchIndex * 4 + 2);
-                    indices[batchIndex * 6 + 3] = (short)(batchIndex * 4);
-                    indices[batchIndex * 6 + 4] = (short)(batchIndex * 4 + 2);
-                    indices[batchIndex * 6 + 5] = (short)(batchIndex * 4 + 3);
-                    batchIndex++;
-
-                    // I don't know why this is necessary to make the primitives render, but it is.
-                    Main.spriteBatch.Draw(pixel, Vector2.Zero, null, Color.Transparent);
-                }
-
-                // Flush the vertices and indices and draw them to the render target.
-                Main.instance.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertices, 0, pixelCount * 4, indices, 0, pixelCount * 2);
-            });
-        }
-
-        internal void CalculateDiffusion(float diffusionFactor, FluidFieldState field, bool colors = false)
+    internal void CalculateAdvection(RenderTarget2D currentField, RenderTarget2D nextField, RenderTarget2D velocities, bool colors = false)
+    {
+        ApplyThingToTarget(nextField, () =>
         {
-            diffusionFactor *= DeltaTime * Size;
-            ApplyThingToTarget(field.NextState.Target, () =>
-            {
-                Main.instance.GraphicsDevice.Textures[1] = field.PreviousState.Target;
-                CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
-                CalamityShaders.FluidShaders.Value.Parameters["diffusionFactor"].SetValue(diffusionFactor);
-                CalamityShaders.FluidShaders.Value.Parameters["handlingColors"].SetValue(colors);
-                CalamityShaders.FluidShaders.Value.Parameters["dissipationFactor"].SetValue(DissipationFactor);
-                CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["DiffusionPass"].Apply();
-            });
-        }
+            Main.instance.GraphicsDevice.Textures[1] = currentField;
+            Main.instance.GraphicsDevice.Textures[2] = velocities;
+            CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
+            CalamityShaders.FluidShaders.Value.Parameters["deltaTime"].SetValue(DeltaTime);
+            CalamityShaders.FluidShaders.Value.Parameters["handlingColors"].SetValue(colors);
+            CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["AdvectionPass"].Apply();
+        });
+    }
 
-        internal void CalculateAdvection(RenderTarget2D currentField, RenderTarget2D nextField, RenderTarget2D velocities, bool colors = false)
+    internal void ClearDivergence(RenderTarget2D velocities)
+    {
+        // Calculate divergence.
+        ApplyThingToTarget(DivergenceField.Target, () =>
         {
-            ApplyThingToTarget(nextField, () =>
+            Main.instance.GraphicsDevice.Textures[2] = velocities;
+            CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
+            CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["InitializeDivergencePass"].Apply();
+        });
+
+        // Clear the Poisson values and then calculate them, for use in the divergence clearance pass.
+        using (DivergencePoissonField.Scope(clearColor: Color.Transparent)) { }
+
+        for (int i = 0; i < GaussSeidelIterations; i++)
+        {
+            ApplyThingToTarget(DivergencePoissonField.Target, () =>
             {
-                Main.instance.GraphicsDevice.Textures[1] = currentField;
+                Main.instance.GraphicsDevice.Textures[1] = DivergencePoissonField.Target;
                 Main.instance.GraphicsDevice.Textures[2] = velocities;
+                Main.instance.GraphicsDevice.Textures[4] = DivergenceField.Target;
                 CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
-                CalamityShaders.FluidShaders.Value.Parameters["deltaTime"].SetValue(DeltaTime);
-                CalamityShaders.FluidShaders.Value.Parameters["handlingColors"].SetValue(colors);
-                CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["AdvectionPass"].Apply();
+                CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["PerformPoissonIterationPass"].Apply();
             });
         }
 
-        internal void ClearDivergence(RenderTarget2D velocities)
+        ApplyThingToTarget(velocities, () =>
         {
-            // Calculate divergence.
-            ApplyThingToTarget(DivergenceField.Target, () =>
-            {
-                Main.instance.GraphicsDevice.Textures[2] = velocities;
-                CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
-                CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["InitializeDivergencePass"].Apply();
-            });
+            Main.instance.GraphicsDevice.Textures[1] = velocities;
+            Main.instance.GraphicsDevice.Textures[3] = DivergencePoissonField.Target;
+            CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["ClearDivergencePass"].Apply();
+        });
+    }
 
-            // Clear the Poisson values and then calculate them, for use in the divergence clearance pass.
-            using (DivergencePoissonField.Scope(clearColor: Color.Transparent)) { }
+    internal void Update()
+    {
+        // Everything here involves heavy manipulation of render targets to work. Doing any of that on the server
+        // would certainly result in a crash due to a lack of a graphics device.
+        if (Main.dedServ)
+            return;
 
-            for (int i = 0; i < GaussSeidelIterations; i++)
-            {
-                ApplyThingToTarget(DivergencePoissonField.Target, () =>
-                {
-                    Main.instance.GraphicsDevice.Textures[1] = DivergencePoissonField.Target;
-                    Main.instance.GraphicsDevice.Textures[2] = velocities;
-                    Main.instance.GraphicsDevice.Textures[4] = DivergenceField.Target;
-                    CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
-                    CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["PerformPoissonIterationPass"].Apply();
-                });
-            }
+        if (!ShouldUpdate)
+            return;
 
-            ApplyThingToTarget(velocities, () =>
-            {
-                Main.instance.GraphicsDevice.Textures[1] = velocities;
-                Main.instance.GraphicsDevice.Textures[3] = DivergencePoissonField.Target;
-                CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["ClearDivergencePass"].Apply();
-            });
+        ShouldUpdate = false;
+        UpdateAction?.Invoke();
+        UpdateAction = null;
+
+        // Clear queues.
+        FlushQueueToTarget(VelocityField);
+        FlushQueueToTarget(ColorField);
+        FlushQueueToTarget(DensityField);
+
+        UpdateVelocityFields();
+        UpdateDensityFields();
+        UpdateOutputTarget();
+
+        ShouldSkipDivergenceClearingStep = false;
+    }
+
+    internal void UpdateVelocityFields()
+    {
+        CalculateDiffusion(Viscosity, VelocityField);
+        if (!ShouldSkipDivergenceClearingStep)
+            ClearDivergence(VelocityField.NextState.Target);
+
+        CalculateAdvection(VelocityField.NextState.Target, VelocityField.PreviousState.Target, VelocityField.PreviousState.Target);
+        if (!ShouldSkipDivergenceClearingStep)
+            ClearDivergence(VelocityField.NextState.Target);
+    }
+
+    internal void UpdateDensityFields()
+    {
+        CalculateDiffusion(DiffusionFactor, DensityField);
+        DensityField.SwapState();
+        CalculateAdvection(DensityField.PreviousState.Target, DensityField.NextState.Target, VelocityField.NextState.Target);
+
+        CalculateDiffusion(DiffusionFactor, ColorField, true);
+        ColorField.SwapState();
+        CalculateAdvection(ColorField.PreviousState.Target, ColorField.NextState.Target, VelocityField.NextState.Target, true);
+    }
+
+    public void UpdateOutputTarget()
+    {
+        using (OutputTarget.Scope(clearColor: Color.Transparent))
+        {
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+            Main.instance.GraphicsDevice.Textures[5] = ColorField.NextState.Target;
+            CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["DrawFluidPass"].Apply();
+            Main.spriteBatch.Draw(DensityField.NextState.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, 0, 0f);
+            Main.spriteBatch.End();
         }
+    }
 
-        internal void Update()
-        {
-            // Everything here involves heavy manipulation of render targets to work. Doing any of that on the server
-            // would certainly result in a crash due to a lack of a graphics device.
-            if (Main.dedServ)
-                return;
+    public void Dispose()
+    {
+        // Prevent disposing twice.
+        if (Disposing)
+            return;
 
-            if (!ShouldUpdate)
-                return;
+        FluidFieldManager.Fields.Remove(this);
+        Disposing = true;
 
-            ShouldUpdate = false;
-            UpdateAction?.Invoke();
-            UpdateAction = null;
+        GC.SuppressFinalize(this);
+    }
 
-            // Clear queues.
-            FlushQueueToTarget(VelocityField);
-            FlushQueueToTarget(ColorField);
-            FlushQueueToTarget(DensityField);
+    public void CreateSource(int x, int y, float density, Color color, Vector2 velocity)
+    {
+        Vector2 pos = new(x, y);
 
-            UpdateVelocityFields();
-            UpdateDensityFields();
-            UpdateOutputTarget();
+        if (x < 0 || y < 0 || x >= Size || y >= Size)
+            return;
 
-            ShouldSkipDivergenceClearingStep = false;
-        }
+        ColorField.PendingChanges.Enqueue(new PixelQueueValue(pos, color));
 
-        internal void UpdateVelocityFields()
-        {
-            CalculateDiffusion(Viscosity, VelocityField);
-            if (!ShouldSkipDivergenceClearingStep)
-                ClearDivergence(VelocityField.NextState.Target);
+        if (velocity != Vector2.Zero)
+            VelocityField.PendingChanges.Enqueue(new(pos, new Vector4(velocity.X, velocity.Y, 0f, 0f)));
 
-            CalculateAdvection(VelocityField.NextState.Target, VelocityField.PreviousState.Target, VelocityField.PreviousState.Target);
-            if (!ShouldSkipDivergenceClearingStep)
-                ClearDivergence(VelocityField.NextState.Target);
-        }
+        DensityField.PendingChanges.Enqueue(new PixelQueueValue(pos, new Color(density, 0f, 0f)));
+    }
 
-        internal void UpdateDensityFields()
-        {
-            CalculateDiffusion(DiffusionFactor, DensityField);
-            DensityField.SwapState();
-            CalculateAdvection(DensityField.PreviousState.Target, DensityField.NextState.Target, VelocityField.NextState.Target);
-
-            CalculateDiffusion(DiffusionFactor, ColorField, true);
-            ColorField.SwapState();
-            CalculateAdvection(ColorField.PreviousState.Target, ColorField.NextState.Target, VelocityField.NextState.Target, true);
-        }
-
-        public void UpdateOutputTarget()
-        {
-            using (OutputTarget.Scope(clearColor: Color.Transparent))
-            {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-                Main.instance.GraphicsDevice.Textures[5] = ColorField.NextState.Target;
-                CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["DrawFluidPass"].Apply();
-                Main.spriteBatch.Draw(DensityField.NextState.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, 0, 0f);
-                Main.spriteBatch.End();
-            }
-        }
-
-        public void Dispose()
-        {
-            // Prevent disposing twice.
-            if (Disposing)
-                return;
-
-            FluidFieldManager.Fields.Remove(this);
-            Disposing = true;
-
-            GC.SuppressFinalize(this);
-        }
-
-        public void CreateSource(int x, int y, float density, Color color, Vector2 velocity)
-        {
-            Vector2 pos = new(x, y);
-
-            if (x < 0 || y < 0 || x >= Size || y >= Size)
-                return;
-
-            ColorField.PendingChanges.Enqueue(new PixelQueueValue(pos, color));
-
-            if (velocity != Vector2.Zero)
-                VelocityField.PendingChanges.Enqueue(new(pos, new Vector4(velocity.X, velocity.Y, 0f, 0f)));
-
-            DensityField.PendingChanges.Enqueue(new PixelQueueValue(pos, new Color(density, 0f, 0f)));
-        }
-
-        public void Draw(Vector2 drawPosition, bool needsToCallEnd, Matrix drawPerspective, Matrix previousPerspective, Action<RenderTarget2D> shaderPreparations = null)
-        {
-            if (needsToCallEnd)
-                Main.spriteBatch.End();
-
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, drawPerspective);
-
-            shaderPreparations?.Invoke(OutputTarget.Target);
-
-            Main.spriteBatch.Draw(OutputTarget.Target, drawPosition, null, Color.White, 0f, OutputTarget.Target.Size() * 0.5f, Scale, 0, 0f);
+    public void Draw(Vector2 drawPosition, bool needsToCallEnd, Matrix drawPerspective, Matrix previousPerspective, Action<RenderTarget2D> shaderPreparations = null)
+    {
+        if (needsToCallEnd)
             Main.spriteBatch.End();
 
-            if (needsToCallEnd)
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, previousPerspective);
-        }
+        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, drawPerspective);
+
+        shaderPreparations?.Invoke(OutputTarget.Target);
+
+        Main.spriteBatch.Draw(OutputTarget.Target, drawPosition, null, Color.White, 0f, OutputTarget.Target.Size() * 0.5f, Scale, 0, 0f);
+        Main.spriteBatch.End();
+
+        if (needsToCallEnd)
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, previousPerspective);
     }
 }

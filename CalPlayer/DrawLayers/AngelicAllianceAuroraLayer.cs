@@ -5,25 +5,24 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace CalamityMod.CalPlayer.DrawLayers
+namespace CalamityMod.CalPlayer.DrawLayers;
+
+public class AngelicAllianceAuroraLayer : PlayerDrawLayer
 {
-    public class AngelicAllianceAuroraLayer : PlayerDrawLayer
+    public override Position GetDefaultPosition() => new AfterParent(PlayerDrawLayers.BackAcc);
+
+    public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
     {
-        public override Position GetDefaultPosition() => new AfterParent(PlayerDrawLayers.BackAcc);
+        if (drawInfo.shadow != 0f)
+            return false;
 
-        public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
-        {
-            if (drawInfo.shadow != 0f)
-                return false;
+        return drawInfo.drawPlayer.Calamity().divineBless;
+    }
 
-            return drawInfo.drawPlayer.Calamity().divineBless;
-        }
-
-        protected override void Draw(ref PlayerDrawSet drawInfo)
-        {
-            Player drawPlayer = drawInfo.drawPlayer;
-            int totalMoonlightDyes = drawPlayer.dye.Count(dyeItem => dyeItem.type == ModContent.ItemType<ProfanedMoonlightDye>());
-            drawInfo.DrawDataCache.AddRange(CalamityUtils.DrawAuroras(drawPlayer, 7, 0.4f, CalamityUtils.ColorSwap(new Color(255, 163, 56), new Color(242, 48, 187), 3f)));
-        }
+    protected override void Draw(ref PlayerDrawSet drawInfo)
+    {
+        Player drawPlayer = drawInfo.drawPlayer;
+        int totalMoonlightDyes = drawPlayer.dye.Count(dyeItem => dyeItem.type == ModContent.ItemType<ProfanedMoonlightDye>());
+        drawInfo.DrawDataCache.AddRange(CalamityUtils.DrawAuroras(drawPlayer, 7, 0.4f, CalamityUtils.ColorSwap(new Color(255, 163, 56), new Color(242, 48, 187), 3f)));
     }
 }

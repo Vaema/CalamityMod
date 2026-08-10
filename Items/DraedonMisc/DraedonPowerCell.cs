@@ -4,53 +4,52 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.DraedonMisc
+namespace CalamityMod.Items.DraedonMisc;
+
+[LegacyName("PowerCell")]
+public class DraedonPowerCell : ModItem, ILocalizedModType
 {
-    [LegacyName("PowerCell")]
-    public class DraedonPowerCell : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.DraedonItems";
+    // This is how much Charge each Power Cell is worth when charging. Leave this at 1.
+    public const float ChargeValue = 1f;
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.DraedonItems";
-        // This is how much Charge each Power Cell is worth when charging. Leave this at 1.
-        public const float ChargeValue = 1f;
+        Item.ResearchUnlockCount = 100;
+        ItemID.Sets.ExtractinatorMode[Type] = Item.type;
+    }
 
-        public override void SetStaticDefaults()
+    public override void SetDefaults()
+    {
+        Item.width = 26;
+        Item.height = 14;
+        Item.rare = ModContent.RarityType<DarkOrange>();
+        Item.maxStack = Item.CommonMaxStack;
+
+        Item.MakeUsableWithChlorophyteExtractinator();
+        Item.useTime = 2;
+        Item.value = Item.sellPrice(copper: 10);
+    }
+
+    public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
+    {
+        float dropRand = Main.rand.NextFloat();
+        resultStack = 1;
+
+        // 2.5% chance for Mysterious Circuitry
+        // 2.5% chance for Dubious Plating
+        // 90% chance for 25-99 Copper Coins
+        // 5% chance for 1 Silver Coin
+        if (dropRand < 0.025f)
+            resultType = ModContent.ItemType<MysteriousCircuitry>();
+        else if (dropRand < 0.05f)
+            resultType = ModContent.ItemType<DubiousPlating>();
+        else if (dropRand < 0.95f)
         {
-            Item.ResearchUnlockCount = 100;
-            ItemID.Sets.ExtractinatorMode[Type] = Item.type;
+            resultType = ItemID.CopperCoin;
+            resultStack = Main.rand.Next(25, 100);
         }
-
-        public override void SetDefaults()
-        {
-            Item.width = 26;
-            Item.height = 14;
-            Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.maxStack = Item.CommonMaxStack;
-
-            Item.MakeUsableWithChlorophyteExtractinator();
-            Item.useTime = 2;
-            Item.value = Item.sellPrice(copper: 10);
-        }
-
-        public override void ExtractinatorUse(int extractinatorBlockType, ref int resultType, ref int resultStack)
-        {
-            float dropRand = Main.rand.NextFloat();
-            resultStack = 1;
-
-            // 2.5% chance for Mysterious Circuitry
-            // 2.5% chance for Dubious Plating
-            // 90% chance for 25-99 Copper Coins
-            // 5% chance for 1 Silver Coin
-            if (dropRand < 0.025f)
-                resultType = ModContent.ItemType<MysteriousCircuitry>();
-            else if (dropRand < 0.05f)
-                resultType = ModContent.ItemType<DubiousPlating>();
-            else if (dropRand < 0.95f)
-            {
-                resultType = ItemID.CopperCoin;
-                resultStack = Main.rand.Next(25, 100);
-            }
-            else
-                resultType = ItemID.SilverCoin;
-        }
+        else
+            resultType = ItemID.SilverCoin;
     }
 }

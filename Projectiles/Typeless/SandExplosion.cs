@@ -3,36 +3,35 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Typeless
+namespace CalamityMod.Projectiles.Typeless;
+
+public class SandExplosion : ModProjectile, ILocalizedModType
 {
-    public class SandExplosion : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Typeless";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Typeless";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Projectile.width = 64;
+        Projectile.height = 64;
+        Projectile.timeLeft = 1;
+        Projectile.friendly = true;
+        Projectile.tileCollide = false;
+        Projectile.penetrate = -1;
+        Projectile.maxPenetrate = -1;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 10;
+    }
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        for (int i = 0; i <= 360; i += 6)
         {
-            Projectile.width = 64;
-            Projectile.height = 64;
-            Projectile.timeLeft = 1;
-            Projectile.friendly = true;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
-            Projectile.maxPenetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-        }
-
-        public override void AI()
-        {
-            for (int i = 0; i <= 360; i += 6)
-            {
-                Vector2 dustspeed = new Vector2(5f, 5f).RotatedBy(MathHelper.ToRadians(i));
-                float size = Main.rand.NextFloat(1.1f, 1.6f);
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.UnusedBrown, dustspeed.X, dustspeed.Y, 0, default, size);
-                Main.dust[d].noGravity = true;
-                Main.dust[d].position = Projectile.Center;
-            }
+            Vector2 dustspeed = new Vector2(5f, 5f).RotatedBy(MathHelper.ToRadians(i));
+            float size = Main.rand.NextFloat(1.1f, 1.6f);
+            int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.UnusedBrown, dustspeed.X, dustspeed.Y, 0, default, size);
+            Main.dust[d].noGravity = true;
+            Main.dust[d].position = Projectile.Center;
         }
     }
 }

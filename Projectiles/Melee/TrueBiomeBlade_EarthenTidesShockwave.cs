@@ -9,88 +9,87 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Melee;
+
+public class EarthenTidesShockwave : ModProjectile, ILocalizedModType
 {
-    public class EarthenTidesShockwave : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Melee";
+    public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesShockwave";
+    public Player Owner => Main.player[Projectile.owner];
+    public float Timer => (60f - Projectile.timeLeft) / 100f;
+    public ref float Size => ref Projectile.ai[0];
+
+    public Particle BloomRing;
+
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesShockwave";
-        public Player Owner => Main.player[Projectile.owner];
-        public float Timer => (60f - Projectile.timeLeft) / 100f;
-        public ref float Size => ref Projectile.ai[0];
+        Projectile.DamageType = DamageClass.Melee;
+        Projectile.width = Projectile.height = 170;
+        Projectile.tileCollide = false;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 60;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+    }
 
-        public Particle BloomRing;
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Collision.CheckAABBvAABBCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - (projHitbox.Size() * Projectile.scale * 0.5f), projHitbox.Size() * Projectile.scale);
 
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Projectile.velocity = Vector2.Zero;
+        Projectile.scale = (1 + (float)Math.Sin(Projectile.timeLeft / 60f * MathHelper.Pi) * 0.2f) * Size;
+
+        if (Projectile.timeLeft == 60)
         {
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.width = Projectile.height = 170;
-            Projectile.tileCollide = false;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 60;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-        }
+            SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
+            Particle Sparkle = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Main.rand.NextBool() ? Color.Aqua : Color.SpringGreen, Projectile.scale, 20, 0.2f, 2);
+            GeneralParticleHandler.SpawnParticle(Sparkle);
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Collision.CheckAABBvAABBCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - (projHitbox.Size() * Projectile.scale * 0.5f), projHitbox.Size() * Projectile.scale);
+            BloomRing = new BloomRing(Projectile.Center, Vector2.Zero, Color.Aqua, Projectile.scale, 50);
+            GeneralParticleHandler.SpawnParticle(BloomRing);
 
-        public override void AI()
-        {
-            Projectile.velocity = Vector2.Zero;
-            Projectile.scale = (1 + (float)Math.Sin(Projectile.timeLeft / 60f * MathHelper.Pi) * 0.2f) * Size;
-
-            if (Projectile.timeLeft == 60)
+            Particle Bloom = new StrongBloom(Projectile.Center, Vector2.Zero, Main.rand.NextBool() ? Color.Aqua * 0.6f : Color.SpringGreen * 0.6f, Projectile.scale * (1f + Main.rand.NextFloat(0f, 1.5f)), 20);
+            GeneralParticleHandler.SpawnParticle(Bloom);
+            for (int i = 0; i < 10; i++)
             {
-                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
-                Particle Sparkle = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Main.rand.NextBool() ? Color.Aqua : Color.SpringGreen, Projectile.scale, 20, 0.2f, 2);
-                GeneralParticleHandler.SpawnParticle(Sparkle);
-
-                BloomRing = new BloomRing(Projectile.Center, Vector2.Zero, Color.Aqua, Projectile.scale, 50);
-                GeneralParticleHandler.SpawnParticle(BloomRing);
-
-                Particle Bloom = new StrongBloom(Projectile.Center, Vector2.Zero, Main.rand.NextBool() ? Color.Aqua * 0.6f : Color.SpringGreen * 0.6f, Projectile.scale * (1f + Main.rand.NextFloat(0f, 1.5f)), 20);
-                GeneralParticleHandler.SpawnParticle(Bloom);
-                for (int i = 0; i < 10; i++)
-                {
-                    Particle crit = new CritSpark(Projectile.Center, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(17.5f, 25f) * Projectile.scale, Color.White, Main.rand.NextBool() ? Color.DarkSlateBlue : Color.Chocolate, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
-                    GeneralParticleHandler.SpawnParticle(crit);
-                }
-
-                for (float i = 0f; i < 1; i += 0.05f)
-                {
-                    float rotation = i * MathHelper.TwoPi;
-                    Particle crit = new CritSpark(Projectile.Center + rotation.ToRotationVector2() * 65f * Projectile.scale, rotation.ToRotationVector2() * 10f, Color.White, Main.rand.NextBool() ? Color.Aqua : Color.SpringGreen, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
-                    GeneralParticleHandler.SpawnParticle(crit);
-                }
+                Particle crit = new CritSpark(Projectile.Center, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(17.5f, 25f) * Projectile.scale, Color.White, Main.rand.NextBool() ? Color.DarkSlateBlue : Color.Chocolate, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
+                GeneralParticleHandler.SpawnParticle(crit);
             }
 
-            if (BloomRing != null)
+            for (float i = 0f; i < 1; i += 0.05f)
             {
-                BloomRing.Scale = Projectile.scale;
+                float rotation = i * MathHelper.TwoPi;
+                Particle crit = new CritSpark(Projectile.Center + rotation.ToRotationVector2() * 65f * Projectile.scale, rotation.ToRotationVector2() * 10f, Color.White, Main.rand.NextBool() ? Color.Aqua : Color.SpringGreen, 0.1f + Main.rand.NextFloat(0f, 1.5f), 20 + Main.rand.Next(30), 1, 3f);
+                GeneralParticleHandler.SpawnParticle(crit);
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        if (BloomRing != null)
         {
-            if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_ShockwaveProc)
-                sword.OnHitProc = true;
+            BloomRing.Scale = Projectile.scale;
         }
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesShockwave").Value;
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    {
+        if (Owner.HeldItem.ModItem is OmegaBiomeBlade sword && Main.rand.NextFloat() <= OmegaBiomeBlade.ShockwaveAttunement_ShockwaveProc)
+            sword.OnHitProc = true;
+    }
 
-            float drawAngle = Projectile.rotation;
-            int animFrame = 6 - (int)Math.Ceiling(Projectile.timeLeft / 10f);
-            Rectangle frame = new Rectangle(0, 0 + animFrame * 168, 170, 166);
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Request<Texture2D>("CalamityMod/Projectiles/Melee/TrueBiomeBlade_EarthenTidesShockwave").Value;
 
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 drawOrigin = frame.Size() / 2f;
+        float drawAngle = Projectile.rotation;
+        int animFrame = 6 - (int)Math.Ceiling(Projectile.timeLeft / 10f);
+        Rectangle frame = new Rectangle(0, 0 + animFrame * 168, 170, 166);
 
-            Main.EntitySpriteDraw(tex, drawPosition, frame, Color.White, drawAngle, drawOrigin, Projectile.scale, 0f, 0);
+        Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+        Vector2 drawOrigin = frame.Size() / 2f;
 
-            return false;
-        }
+        Main.EntitySpriteDraw(tex, drawPosition, frame, Color.White, drawAngle, drawOrigin, Projectile.scale, 0f, 0);
+
+        return false;
     }
 }

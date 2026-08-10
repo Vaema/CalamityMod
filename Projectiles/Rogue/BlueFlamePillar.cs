@@ -2,56 +2,55 @@
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Rogue;
+
+public class BlueFlamePillar : ModProjectile, ILocalizedModType
 {
-    public class BlueFlamePillar : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Rogue";
+    public int frameX = 0;
+    public int frameY = 0;
+    public int currentFrame => frameY + frameX * 6;
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
-        public int frameX = 0;
-        public int frameY = 0;
-        public int currentFrame => frameY + frameX * 6;
-        public override void SetDefaults()
+        Projectile.width = 80;
+        Projectile.height = 322;
+        Projectile.friendly = true;
+        Projectile.penetrate = -1;
+        Projectile.timeLeft = 180;
+        Projectile.tileCollide = false;
+        Projectile.alpha = 255;
+        Projectile.DamageType = RogueDamageClass.Instance;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 20;
+    }
+    public override void AI()
+    {
+        //2-6
+        Projectile.frameCounter += 1;
+        if (Projectile.frameCounter % 7 == 6)
         {
-            Projectile.width = 80;
-            Projectile.height = 322;
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 180;
-            Projectile.tileCollide = false;
-            Projectile.alpha = 255;
-            Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
-        }
-        public override void AI()
-        {
-            //2-6
-            Projectile.frameCounter += 1;
-            if (Projectile.frameCounter % 7 == 6)
+            frameY += 1;
+            if (frameY >= 6)
             {
-                frameY += 1;
-                if (frameY >= 6)
-                {
-                    frameX += 1;
-                    frameY = 0;
-                }
-                if (frameX >= 3)
-                {
-                    Projectile.Kill();
-                }
+                frameX += 1;
+                frameY = 0;
             }
-            if (Projectile.localAI[0] == 0f)
+            if (frameX >= 3)
             {
-                Projectile.position.Y -= Projectile.height / 2; //position adjustments
-                Projectile.localAI[0] = 1f;
+                Projectile.Kill();
             }
         }
-        public override bool PreDraw(ref Color lightColor)
+        if (Projectile.localAI[0] == 0f)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Rectangle frame = new Rectangle(frameX * 80, frameY * 322, 80, 322);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
-            return false;
+            Projectile.position.Y -= Projectile.height / 2; //position adjustments
+            Projectile.localAI[0] = 1f;
         }
+    }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Rectangle frame = new Rectangle(frameX * 80, frameY * 322, 80, 322);
+        Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
+        return false;
     }
 }

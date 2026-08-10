@@ -1,12 +1,11 @@
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Buffs.Summon
-{
-    public class ShellfishBuff : BaseSummonBuff
-    {
-        protected override int MinionProjectileType => ModContent.ProjectileType<Shellfish>();
+namespace CalamityMod.Buffs.Summon;
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.shellfish;
-    }
+public class ShellfishBuff : BaseSummonBuff
+{
+    protected override int MinionProjectileType => ModContent.ProjectileType<Shellfish>();
+
+    protected override ref bool MinionBool => ref BuffModdedOwner.shellfish;
 }

@@ -10,94 +10,93 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Rubblemaker.Abyss
+namespace CalamityMod.Tiles.Rubblemaker.Abyss;
+
+public class SulphurPireCoral1Echo : ModTile
 {
-    public class SulphurPireCoral1Echo : ModTile
+    public Asset<Texture2D> GlowTexture;
+    public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral1";
+    public override void SetStaticDefaults()
     {
-        public Asset<Texture2D> GlowTexture;
-        public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral1";
-        public override void SetStaticDefaults()
-        {
-            Main.tileLighted[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            TileObjectData.newTile.Width = 3;
-            TileObjectData.newTile.Height = 3;
-            TileObjectData.newTile.Origin = new Point16(1, 2);
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.Table | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.WaterDeath = false;
-            TileObjectData.newTile.LavaDeath = true;
-            TileObjectData.newTile.DrawYOffset = 2;
-            TileObjectData.addTile(Type);
-            AddMapEntry(new Color(91, 128, 13));
-            DustType = DustID.Sand;
+        Main.tileLighted[Type] = true;
+        Main.tileFrameImportant[Type] = true;
+        TileObjectData.newTile.Width = 3;
+        TileObjectData.newTile.Height = 3;
+        TileObjectData.newTile.Origin = new Point16(1, 2);
+        TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.Table | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
+        TileObjectData.newTile.UsesCustomCanPlace = true;
+        TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
+        TileObjectData.newTile.CoordinateWidth = 16;
+        TileObjectData.newTile.CoordinatePadding = 2;
+        TileObjectData.newTile.WaterDeath = false;
+        TileObjectData.newTile.LavaDeath = true;
+        TileObjectData.newTile.DrawYOffset = 2;
+        TileObjectData.addTile(Type);
+        AddMapEntry(new Color(91, 128, 13));
+        DustType = DustID.Sand;
 
-            RegisterItemDrop(ModContent.ItemType<SulphurousSand>());
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<SulphurousSand>(), Type, 0);
+        RegisterItemDrop(ModContent.ItemType<SulphurousSand>());
+        FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<SulphurousSand>(), Type, 0);
 
-            base.SetStaticDefaults();
-        }
-
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 0.46f;
-            g = 0.51f;
-            b = 0f;
-        }
-
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 2;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.IsTileActuallyInvisible())
-                return;
-
-            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral1Glow");
-            Texture2D tex = GlowTexture.Value;
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
-        }
+        base.SetStaticDefaults();
     }
 
-    public class SulphurPireCoral2Echo : SulphurPireCoral1Echo
+    public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
     {
-        public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral2";
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.IsTileActuallyInvisible())
-                return;
-
-            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral2Glow");
-            Texture2D tex = GlowTexture.Value;
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-            spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
-        }
+        r = 0.46f;
+        g = 0.51f;
+        b = 0f;
     }
 
-    public class SulphurPireCoral3Echo : SulphurPireCoral1Echo
+    public override void NumDust(int i, int j, bool fail, ref int num)
     {
-        public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral3";
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-            if (tile.IsTileActuallyInvisible())
-                return;
+        num = fail ? 1 : 2;
+    }
 
-            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral3Glow");
-            Texture2D tex = GlowTexture.Value;
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+    public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+    {
+        Tile tile = Framing.GetTileSafely(i, j);
+        if (tile.IsTileActuallyInvisible())
+            return;
 
-            spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
-        }
+        GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral1Glow");
+        Texture2D tex = GlowTexture.Value;
+        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+
+        spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
+    }
+}
+
+public class SulphurPireCoral2Echo : SulphurPireCoral1Echo
+{
+    public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral2";
+    public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+    {
+        Tile tile = Framing.GetTileSafely(i, j);
+        if (tile.IsTileActuallyInvisible())
+            return;
+
+        GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral2Glow");
+        Texture2D tex = GlowTexture.Value;
+        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+
+        spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
+    }
+}
+
+public class SulphurPireCoral3Echo : SulphurPireCoral1Echo
+{
+    public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral3";
+    public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+    {
+        Tile tile = Framing.GetTileSafely(i, j);
+        if (tile.IsTileActuallyInvisible())
+            return;
+
+        GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral3Glow");
+        Texture2D tex = GlowTexture.Value;
+        Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+
+        spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
     }
 }

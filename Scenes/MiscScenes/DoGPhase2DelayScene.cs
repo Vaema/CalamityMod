@@ -3,19 +3,18 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Systems
+namespace CalamityMod.Systems;
+
+public class DoGPhase2DelayScene : ModSceneEffect
 {
-    public class DoGPhase2DelayScene : ModSceneEffect
+    public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("DevourerofGodsPhase2") ?? MusicID.LunarBoss;
+    public override SceneEffectPriority Priority => SceneEffectPriority.BossMedium;
+
+    public override bool IsSceneEffectActive(Player player)
     {
-        public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("DevourerofGodsPhase2") ?? MusicID.LunarBoss;
-        public override SceneEffectPriority Priority => SceneEffectPriority.BossMedium;
+        if (CalamityGlobalNPC.DoGHead < 0 || !Main.npc[CalamityGlobalNPC.DoGHead].active)
+            return false;
 
-        public override bool IsSceneEffectActive(Player player)
-        {
-            if (CalamityGlobalNPC.DoGHead < 0 || !Main.npc[CalamityGlobalNPC.DoGHead].active)
-                return false;
-
-            return Main.npc[CalamityGlobalNPC.DoGHead].localAI[2] <= 530f && Main.npc[CalamityGlobalNPC.DoGHead].localAI[2] > 50f;
-        }
+        return Main.npc[CalamityGlobalNPC.DoGHead].localAI[2] <= 530f && Main.npc[CalamityGlobalNPC.DoGHead].localAI[2] > 50f;
     }
 }

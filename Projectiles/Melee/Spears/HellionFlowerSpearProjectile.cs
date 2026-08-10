@@ -7,59 +7,58 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Melee.Spears
+namespace CalamityMod.Projectiles.Melee.Spears;
+
+public class HellionFlowerSpearProjectile : BaseSpearProjectile
 {
-    public class HellionFlowerSpearProjectile : BaseSpearProjectile
+    public override LocalizedText DisplayName => CalamityUtils.GetItemName<HellionFlowerSpear>();
+    public override void SetDefaults()
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<HellionFlowerSpear>();
-        public override void SetDefaults()
-        {
-            Projectile.width = Projectile.height = 40;
-            Projectile.DamageType = TrueMeleeDamageClass.Instance;
-            Projectile.timeLeft = 90;
-            Projectile.friendly = true;
-            Projectile.hostile = false;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = -1;
-            Projectile.ownerHitCheck = true;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-        }
+        Projectile.width = Projectile.height = 40;
+        Projectile.DamageType = TrueMeleeDamageClass.Instance;
+        Projectile.timeLeft = 90;
+        Projectile.friendly = true;
+        Projectile.hostile = false;
+        Projectile.tileCollide = false;
+        Projectile.ignoreWater = true;
+        Projectile.penetrate = -1;
+        Projectile.ownerHitCheck = true;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = 10;
+    }
 
-        public override float InitialSpeed => 3f;
-        public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.8f;
-        public override Action<Projectile> EffectBeforeReelback => (proj) =>
-        {
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 2f, ModContent.ProjectileType<HellionSpike>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-        };
+    public override float InitialSpeed => 3f;
+    public override float ReelbackSpeed => 2.4f;
+    public override float ForwardSpeed => 0.8f;
+    public override Action<Projectile> EffectBeforeReelback => (proj) =>
+    {
+        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 2f, ModContent.ProjectileType<HellionSpike>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+    };
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            OnHitEffects(target.Center, hit.Crit);
-            target.AddBuff(BuffID.Venom, 300);
-        }
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        OnHitEffects(target.Center, hit.Crit);
+        target.AddBuff(BuffID.Venom, 300);
+    }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            OnHitEffects(target.Center, true);
-            target.AddBuff(BuffID.Venom, 300);
-        }
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        OnHitEffects(target.Center, true);
+        target.AddBuff(BuffID.Venom, 300);
+    }
 
-        private void OnHitEffects(Vector2 targetPos, bool crit)
+    private void OnHitEffects(Vector2 targetPos, bool crit)
+    {
+        if (crit)
         {
-            if (crit)
+            var source = Projectile.GetSource_FromThis();
+            if (Projectile.owner == Main.myPlayer)
             {
-                var source = Projectile.GetSource_FromThis();
-                if (Projectile.owner == Main.myPlayer)
+                Projectile petal = CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, Main.rand.NextBool(), 800f, 800f, 0f, 800f, 10f, ProjectileID.FlowerPetal, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, true);
+                if (petal.whoAmI.WithinBounds(Main.maxProjectiles))
                 {
-                    Projectile petal = CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, Main.rand.NextBool(), 800f, 800f, 0f, 800f, 10f, ProjectileID.FlowerPetal, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, true);
-                    if (petal.whoAmI.WithinBounds(Main.maxProjectiles))
-                    {
-                        petal.DamageType = DamageClass.Melee;
-                        petal.localNPCHitCooldown = -1;
-                    }
+                    petal.DamageType = DamageClass.Melee;
+                    petal.localNPCHitCooldown = -1;
                 }
             }
         }

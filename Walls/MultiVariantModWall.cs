@@ -1,9 +1,8 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls;
+
+public abstract class MultiVariantModWall : ModWall
 {
-    public abstract class MultiVariantModWall : ModWall
-    {
-        public virtual void PopulateWallVariant(int i, int j, ref int frameXOffset, ref int frameYOffset) { }
-    }
+    public virtual void PopulateWallVariant(int i, int j, ref int frameXOffset, ref int frameYOffset) { }
 }

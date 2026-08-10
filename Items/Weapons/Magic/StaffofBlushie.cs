@@ -6,46 +6,45 @@ using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Magic
+namespace CalamityMod.Items.Weapons.Magic;
+
+[LegacyName("BlushieStaff")]
+public class StaffofBlushie : ModItem, ILocalizedModType
 {
-    [LegacyName("BlushieStaff")]
-    public class StaffofBlushie : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Magic";
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetDefaults()
-        {
-            Item.width = Item.height = 48;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.channel = true;
-            Item.noMelee = true;
-            Item.damage = 1;
-            Item.knockBack = 1f;
-            Item.autoReuse = false;
-            Item.useTurn = false;
-            Item.DamageType = DamageClass.Magic;
+        Item.width = Item.height = 48;
+        Item.useStyle = ItemUseStyleID.HoldUp;
+        Item.useAnimation = 30;
+        Item.useTime = 30;
+        Item.channel = true;
+        Item.noMelee = true;
+        Item.damage = 1;
+        Item.knockBack = 1f;
+        Item.autoReuse = false;
+        Item.useTurn = false;
+        Item.DamageType = DamageClass.Magic;
 
-            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
-            Item.rare = ModContent.RarityType<HotPink>();
-            Item.Calamity().devItem = true;
+        Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
+        Item.rare = ModContent.RarityType<HotPink>();
+        Item.Calamity().devItem = true;
 
-            Item.UseSound = SoundID.Item1;
-            Item.shoot = ModContent.ProjectileType<BlushieStaffProj>();
-            Item.mana = 200;
-            Item.shootSpeed = 0f;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.SapphireStaff).
-                AddIngredient<ShadowspecBar>(5).
-                AddIngredient<Necroplasm>(10).
-                AddTile<DraedonsForge>().
-                Register();
-        }
-
-        public static Color RarityColor() => Color.Blue;
+        Item.UseSound = SoundID.Item1;
+        Item.shoot = ModContent.ProjectileType<BlushieStaffProj>();
+        Item.mana = 200;
+        Item.shootSpeed = 0f;
     }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient(ItemID.SapphireStaff).
+            AddIngredient<ShadowspecBar>(5).
+            AddIngredient<Necroplasm>(10).
+            AddTile<DraedonsForge>().
+            Register();
+    }
+
+    public static Color RarityColor() => Color.Blue;
 }

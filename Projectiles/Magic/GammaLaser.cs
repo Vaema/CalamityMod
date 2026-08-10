@@ -3,43 +3,42 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Magic;
+
+public class GammaLaser : ModProjectile, ILocalizedModType
 {
-    public class GammaLaser : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Magic";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Magic";
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 5;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
+        ProjectileID.Sets.TrailCacheLength[Type] = 5;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.friendly = true;
-            Projectile.penetrate = 2;
-            Projectile.timeLeft = 150;
-            Projectile.DamageType = DamageClass.Magic;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = 14;
+        Projectile.height = 14;
+        Projectile.friendly = true;
+        Projectile.penetrate = 2;
+        Projectile.timeLeft = 150;
+        Projectile.DamageType = DamageClass.Magic;
+        Projectile.usesLocalNPCImmunity = true;
+        Projectile.localNPCHitCooldown = -1;
+    }
 
-        public override void AI()
+    public override void AI()
+    {
+        Lighting.AddLight(Projectile.Center, 0.1f, 0.35f, 0f);
+        Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+        if (Main.rand.NextBool(7))
         {
-            Lighting.AddLight(Projectile.Center, 0.1f, 0.35f, 0f);
-            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-            if (Main.rand.NextBool(7))
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GreenFairy, 0f, 0f);
-            }
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GreenFairy, 0f, 0f);
         }
+    }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

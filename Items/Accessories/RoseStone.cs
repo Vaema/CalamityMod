@@ -7,70 +7,69 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Accessories
+namespace CalamityMod.Items.Accessories;
+
+public class RoseStone : ModItem, ILocalizedModType
 {
-    public class RoseStone : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Accessories";
+    public static int ElementalDamage = 60;
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Accessories";
-        public static int ElementalDamage = 60;
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
-        }
-        public override void SetDefaults()
-        {
-            Item.width = 20;
-            Item.height = 20;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
-            Item.accessory = true;
-        }
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>()];
+    }
+    public override void SetDefaults()
+    {
+        Item.width = 20;
+        Item.height = 20;
+        Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+        Item.rare = ItemRarityID.Pink;
+        Item.accessory = true;
+    }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().allElementals.HasValue;
+    public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().allElementals.HasValue;
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
+    public override void UpdateAccessory(Player player, bool hideVisual)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.brimElemental = !hideVisual;
+        if (player.whoAmI == Main.myPlayer)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.brimElemental = !hideVisual;
-            if (player.whoAmI == Main.myPlayer)
+            var source = player.GetSource_Accessory(Item);
+            if (player.FindBuffIndex(ModContent.BuffType<BrimstoneElemental>()) == -1)
             {
-                var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<BrimstoneElemental>()) == -1)
-                {
-                    player.AddBuff(ModContent.BuffType<BrimstoneElemental>(), 3600, true);
-                }
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
-                {
-                    // 08DEC2023: Ozzatron: Brimstone Elementals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
+                player.AddBuff(ModContent.BuffType<BrimstoneElemental>(), 3600, true);
+            }
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
+            {
+                // 08DEC2023: Ozzatron: Brimstone Elementals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
+                int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
-                    int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<BrimstoneElementalMinion>(), damage, 2f, Main.myPlayer, 0f, 0f);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = ElementalDamage;
-                }
+                int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<BrimstoneElementalMinion>(), damage, 2f, Main.myPlayer, 0f, 0f);
+                if (Main.projectile.IndexInRange(p))
+                    Main.projectile[p].originalDamage = ElementalDamage;
             }
         }
+    }
 
-        public override void UpdateVanity(Player player)
+    public override void UpdateVanity(Player player)
+    {
+        CalamityPlayer modPlayer = player.Calamity();
+        modPlayer.brimElementalVanity = true;
+        if (player.whoAmI == Main.myPlayer)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.brimElementalVanity = true;
-            if (player.whoAmI == Main.myPlayer)
+            var source = player.GetSource_Accessory(Item);
+            if (player.FindBuffIndex(ModContent.BuffType<BrimstoneElemental>()) == -1)
             {
-                var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<BrimstoneElemental>()) == -1)
-                {
-                    player.AddBuff(ModContent.BuffType<BrimstoneElemental>(), 3600, true);
-                }
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
-                {
-                    // 08DEC2023: Ozzatron: Brimstone Elementals spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
+                player.AddBuff(ModContent.BuffType<BrimstoneElemental>(), 3600, true);
+            }
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
+            {
+                // 08DEC2023: Ozzatron: Brimstone Elementals spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
+                int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
-                    int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<BrimstoneElementalMinion>(), damage, 2f, Main.myPlayer, 0f, 0f);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = ElementalDamage;
-                }
+                int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<BrimstoneElementalMinion>(), damage, 2f, Main.myPlayer, 0f, 0f);
+                if (Main.projectile.IndexInRange(p))
+                    Main.projectile[p].originalDamage = ElementalDamage;
             }
         }
     }

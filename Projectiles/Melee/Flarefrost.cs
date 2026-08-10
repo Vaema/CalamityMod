@@ -4,69 +4,68 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Melee
+namespace CalamityMod.Projectiles.Melee;
+
+public class Flarefrost : ModProjectile, ILocalizedModType
 {
-    public class Flarefrost : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Melee";
+    public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+    public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+    public override void SetDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Projectile.width = 10;
+        Projectile.height = 10;
+        Projectile.friendly = true;
+        Projectile.alpha = 255;
+        Projectile.penetrate = 1;
+        Projectile.timeLeft = 180;
+        Projectile.DamageType = DamageClass.Melee;
+    }
 
-        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-        public override void SetDefaults()
+    public override void AI()
+    {
+        Vector2 rotateVector = new Vector2(5f, 10f);
+        Lighting.AddLight(Projectile.Center, 0.25f, 0f, 0.25f);
+        Projectile.localAI[0] += 1f;
+        if (Projectile.localAI[0] == 48f)
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
-            Projectile.friendly = true;
-            Projectile.alpha = 255;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 180;
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.localAI[0] = 0f;
         }
-
-        public override void AI()
+        else
         {
-            Vector2 rotateVector = new Vector2(5f, 10f);
-            Lighting.AddLight(Projectile.Center, 0.25f, 0f, 0.25f);
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] == 48f)
+            for (int i = 0; i < 2; i++)
             {
-                Projectile.localAI[0] = 0f;
-            }
-            else
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    int dustType = i == 0 ? 67 : 174;
-                    Vector2 dustRotate = Vector2.UnitX * -12f;
-                    dustRotate = -Vector2.UnitY.RotatedBy((double)(Projectile.localAI[0] * 0.1308997f + (float)i * 3.14159274f), default) * rotateVector;
-                    int flarefrost = Dust.NewDust(Projectile.Center, 0, 0, dustType, 0f, 0f, 160, default, 1f);
-                    Main.dust[flarefrost].scale = dustType == 67 ? 1.5f : 1f;
-                    Main.dust[flarefrost].noGravity = true;
-                    Main.dust[flarefrost].position = Projectile.Center + dustRotate;
-                    Main.dust[flarefrost].velocity = Projectile.velocity;
-                    int frostflare = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 0.8f);
-                    Main.dust[frostflare].noGravity = true;
-                    Main.dust[frostflare].velocity *= 0f;
-                }
-            }
-
-            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 250f, 12f, 20f);
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
-            for (int k = 0; k < 2; k++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.InfernoFork, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                int dustType = i == 0 ? 67 : 174;
+                Vector2 dustRotate = Vector2.UnitX * -12f;
+                dustRotate = -Vector2.UnitY.RotatedBy((double)(Projectile.localAI[0] * 0.1308997f + (float)i * 3.14159274f), default) * rotateVector;
+                int flarefrost = Dust.NewDust(Projectile.Center, 0, 0, dustType, 0f, 0f, 160, default, 1f);
+                Main.dust[flarefrost].scale = dustType == 67 ? 1.5f : 1f;
+                Main.dust[flarefrost].noGravity = true;
+                Main.dust[flarefrost].position = Projectile.Center + dustRotate;
+                Main.dust[flarefrost].velocity = Projectile.velocity;
+                int frostflare = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 0.8f);
+                Main.dust[frostflare].noGravity = true;
+                Main.dust[frostflare].velocity *= 0f;
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 250f, 12f, 20f);
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
+        for (int k = 0; k < 2; k++)
         {
-            target.AddBuff(BuffID.OnFire3, 120);
-            target.AddBuff(BuffID.Frostburn2, 120);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.InfernoFork, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
         }
+    }
+
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+    {
+        target.AddBuff(BuffID.OnFire3, 120);
+        target.AddBuff(BuffID.Frostburn2, 120);
     }
 }

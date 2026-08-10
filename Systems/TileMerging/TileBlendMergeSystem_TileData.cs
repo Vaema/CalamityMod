@@ -2,46 +2,45 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Systems
+namespace CalamityMod.Systems;
+
+public sealed partial class TileBlendMergeSystem : ModSystem
 {
-    public sealed partial class TileBlendMergeSystem : ModSystem
+    // Blending Refs for every tiles
+    private static readonly ConcurrentDictionary<int, TileBlendingRef[]> _TileBlendingRefs = [];
+
+    public override void ClearWorld()
     {
-        // Blending Refs for every tiles
-        private static readonly ConcurrentDictionary<int, TileBlendingRef[]> _TileBlendingRefs = [];
+        _TileBlendingRefs.Clear();
+    }
 
-        public override void ClearWorld()
+    public static void RemoveBlendingRefData(int tileX, int tileY)
+    {
+        if (!WorldGen.InWorld(tileX, tileY))
+            return;
+
+        var tileIdx = tileX + (Main.tile.Width * tileY);
+        _TileBlendingRefs.TryRemove(tileIdx, out _);
+    }
+
+    public static void SetBlendingRefData(int tileX, int tileY, TileBlendingRef[] blendingRef)
+    {
+        if (!WorldGen.InWorld(tileX, tileY))
+            return;
+
+        var tileIdx = tileX + (Main.tile.Width * tileY);
+        _TileBlendingRefs[tileIdx] = blendingRef;
+    }
+
+    public static bool TryGetBlendingRefData(int tileX, int tileY, out TileBlendingRef[] blendingRefs)
+    {
+        if (!WorldGen.InWorld(tileX, tileY))
         {
-            _TileBlendingRefs.Clear();
+            blendingRefs = null;
+            return false;
         }
 
-        public static void RemoveBlendingRefData(int tileX, int tileY)
-        {
-            if (!WorldGen.InWorld(tileX, tileY))
-                return;
-
-            var tileIdx = tileX + (Main.tile.Width * tileY);
-            _TileBlendingRefs.TryRemove(tileIdx, out _);
-        }
-
-        public static void SetBlendingRefData(int tileX, int tileY, TileBlendingRef[] blendingRef)
-        {
-            if (!WorldGen.InWorld(tileX, tileY))
-                return;
-
-            var tileIdx = tileX + (Main.tile.Width * tileY);
-            _TileBlendingRefs[tileIdx] = blendingRef;
-        }
-
-        public static bool TryGetBlendingRefData(int tileX, int tileY, out TileBlendingRef[] blendingRefs)
-        {
-            if (!WorldGen.InWorld(tileX, tileY))
-            {
-                blendingRefs = null;
-                return false;
-            }
-
-            var tileIdx = tileX + (Main.tile.Width * tileY);
-            return _TileBlendingRefs.TryGetValue(tileIdx, out blendingRefs);
-        }
+        var tileIdx = tileX + (Main.tile.Width * tileY);
+        return _TileBlendingRefs.TryGetValue(tileIdx, out blendingRefs);
     }
 }

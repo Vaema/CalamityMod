@@ -3,48 +3,47 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Summon
+namespace CalamityMod.Projectiles.Summon;
+
+// Purely visual -- spawns when the cannon drops
+public class AtlasMunitionsDropPodUpper : ModProjectile, ILocalizedModType
 {
-    // Purely visual -- spawns when the cannon drops
-    public class AtlasMunitionsDropPodUpper : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Summon";
+    public Player Owner => Main.player[Projectile.owner];
+
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Summon";
-        public Player Owner => Main.player[Projectile.owner];
+        Main.projFrames[Type] = 4;
+    }
 
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Type] = 4;
-        }
+    public override void SetDefaults()
+    {
+        Projectile.width = 82;
+        Projectile.height = 80;
+        Projectile.friendly = true;
+        Projectile.ignoreWater = true;
+        Projectile.timeLeft = 240;
+        Projectile.tileCollide = false;
+        Projectile.DamageType = DamageClass.Summon;
+    }
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 82;
-            Projectile.height = 80;
-            Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.timeLeft = 240;
-            Projectile.tileCollide = false;
-            Projectile.DamageType = DamageClass.Summon;
-        }
+    public override void AI()
+    {
+        // Fly into the sky.
+        Projectile.velocity.Y = MathHelper.Clamp(Projectile.velocity.Y - 0.2f, -29f, 0f);
 
-        public override void AI()
-        {
-            // Fly into the sky.
-            Projectile.velocity.Y = MathHelper.Clamp(Projectile.velocity.Y - 0.2f, -29f, 0f);
+        // Calculate frames.
+        Projectile.frameCounter++;
+        Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
+    }
 
-            // Calculate frames.
-            Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
-        }
+    public override bool? CanDamage() => false;
 
-        public override bool? CanDamage() => false;
-
-        public override void PostDraw(Color lightColor)
-        {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/AtlasMunitionsDropPodUpperGlow").Value;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(Color.White), Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, 0, 0);
-        }
+    public override void PostDraw(Color lightColor)
+    {
+        Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/AtlasMunitionsDropPodUpperGlow").Value;
+        Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+        Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+        Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(Color.White), Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, 0, 0);
     }
 }

@@ -5,44 +5,43 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Typeless
+namespace CalamityMod.Items.Weapons.Typeless;
+
+public class StarStruckWater : ModItem, ILocalizedModType
 {
-    public class StarStruckWater : ModItem, ILocalizedModType
+    public new string LocalizationCategory => "Items.Weapons.Typeless";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Items.Weapons.Typeless";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-            ItemID.Sets.SortingPriorityTerraforming[Type] = 88; // Blood Water
-        }
+        Item.ResearchUnlockCount = 99;
+        ItemID.Sets.SortingPriorityTerraforming[Type] = 88; // Blood Water
+    }
 
-        public override void SetDefaults()
-        {
-            Item.width = 18;
-            Item.height = 20;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.shootSpeed = 14f;
-            Item.rare = ItemRarityID.Orange;
-            Item.damage = 20;
-            Item.shoot = ModContent.ProjectileType<StarStruckWaterBottle>();
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.knockBack = 3f;
-            Item.UseSound = SoundID.Item1;
-            Item.useAnimation = 15;
-            Item.useTime = 15;
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
-            Item.value = Item.sellPrice(copper: 40); // Identical to Holy Water
-        }
+    public override void SetDefaults()
+    {
+        Item.width = 18;
+        Item.height = 20;
+        Item.useStyle = ItemUseStyleID.Swing;
+        Item.shootSpeed = 14f;
+        Item.rare = ItemRarityID.Orange;
+        Item.damage = 20;
+        Item.shoot = ModContent.ProjectileType<StarStruckWaterBottle>();
+        Item.maxStack = Item.CommonMaxStack;
+        Item.consumable = true;
+        Item.knockBack = 3f;
+        Item.UseSound = SoundID.Item1;
+        Item.useAnimation = 15;
+        Item.useTime = 15;
+        Item.noUseGraphic = true;
+        Item.noMelee = true;
+        Item.value = Item.sellPrice(copper: 40); // Identical to Holy Water
+    }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe(10).
-                AddIngredient(ItemID.BottledWater, 10).
-                AddIngredient<StarblightSoot>(2).
-                AddIngredient<AstralGrassSeeds>().
-                Register();
-        }
+    public override void AddRecipes()
+    {
+        CreateRecipe(10).
+            AddIngredient(ItemID.BottledWater, 10).
+            AddIngredient<StarblightSoot>(2).
+            AddIngredient<AstralGrassSeeds>().
+            Register();
     }
 }

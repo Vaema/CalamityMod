@@ -3,21 +3,20 @@ using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Critters
-{
-    public class NanodroidDysfunctionalItem : ModItem, ILocalizedModType
-    {
-        public new string LocalizationCategory => "Items.Misc";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 5;
-        }
+namespace CalamityMod.Items.Critters;
 
-        public override void SetDefaults()
-        {
-            Item.DefaultToCapturedCritter(ModContent.NPCType<NanodroidDysfunctional>());
-            Item.value = Item.sellPrice(silver: 10);
-            Item.rare = ModContent.RarityType<DarkOrange>();
-        }
+public class NanodroidDysfunctionalItem : ModItem, ILocalizedModType
+{
+    public new string LocalizationCategory => "Items.Misc";
+    public override void SetStaticDefaults()
+    {
+        Item.ResearchUnlockCount = 5;
+    }
+
+    public override void SetDefaults()
+    {
+        Item.DefaultToCapturedCritter(ModContent.NPCType<NanodroidDysfunctional>());
+        Item.value = Item.sellPrice(silver: 10);
+        Item.rare = ModContent.RarityType<DarkOrange>();
     }
 }

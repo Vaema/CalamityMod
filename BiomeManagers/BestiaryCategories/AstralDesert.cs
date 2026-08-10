@@ -1,12 +1,11 @@
 ﻿using Terraria.ModLoader;
 
-namespace CalamityMod.BiomeManagers.BestiaryCategories
-{
-    public class AstralDesert : ModBiome
-    {
-        public override string BestiaryIcon => "CalamityMod/BiomeManagers/AstralDesertIcon";
+namespace CalamityMod.BiomeManagers.BestiaryCategories;
 
-        public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
-        public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
-    }
+public class AstralDesert : ModBiome
+{
+    public override string BestiaryIcon => "CalamityMod/BiomeManagers/AstralDesertIcon";
+
+    public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
+    public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
 }

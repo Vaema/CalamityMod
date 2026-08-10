@@ -5,42 +5,41 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.FurnitureProfaned
+namespace CalamityMod.Tiles.FurnitureProfaned;
+
+public class ProfanedCrystal : ModTile
 {
-    public class ProfanedCrystal : ModTile
+    int subsheetWidth = 324;
+    int subsheetHeight = 90;
+    public override void SetStaticDefaults()
     {
-        int subsheetWidth = 324;
-        int subsheetHeight = 90;
-        public override void SetStaticDefaults()
-        {
-            Main.tileSolid[Type] = true;
-            Main.tileNoAttach[Type] = true;
-            Main.tileBlockLight[Type] = true;
+        Main.tileSolid[Type] = true;
+        Main.tileNoAttach[Type] = true;
+        Main.tileBlockLight[Type] = true;
 
-            CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeDecorativeTiles(Type);
-            CalamityUtils.MergeSmoothTiles(Type);
+        CalamityUtils.MergeWithGeneral(Type);
+        CalamityUtils.MergeDecorativeTiles(Type);
+        CalamityUtils.MergeSmoothTiles(Type);
 
-            HitSound = SoundID.Shatter;
-            MineResist = 1f;
-            AddMapEntry(new Color(181, 136, 177));
-        }
+        HitSound = SoundID.Shatter;
+        MineResist = 1f;
+        AddMapEntry(new Color(181, 136, 177));
+    }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
-        }
+    public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+    {
+        return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+    }
 
-        public override bool CreateDust(int i, int j, ref int type)
-        {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.VenomStaff, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            return false;
-        }
+    public override bool CreateDust(int i, int j, ref int type)
+    {
+        Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.VenomStaff, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+        return false;
+    }
 
-        public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
-        {
-            frameXOffset = i % 2 * subsheetWidth;
-            frameYOffset = j % 2 * subsheetHeight;
-        }
+    public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
+    {
+        frameXOffset = i % 2 * subsheetWidth;
+        frameYOffset = j % 2 * subsheetHeight;
     }
 }

@@ -4,69 +4,68 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Boss
+namespace CalamityMod.Projectiles.Boss;
+
+public class IchorShot : ModProjectile, ILocalizedModType
 {
-    public class IchorShot : ModProjectile, ILocalizedModType
+    public new string LocalizationCategory => "Projectiles.Boss";
+    public override void SetStaticDefaults()
     {
-        public new string LocalizationCategory => "Projectiles.Boss";
-        public override void SetStaticDefaults()
+        Main.projFrames[Type] = 6;
+        ProjectileID.Sets.TrailCacheLength[Type] = 2;
+        ProjectileID.Sets.TrailingMode[Type] = 0;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 12;
+        Projectile.height = 12;
+        Projectile.hostile = true;
+        Projectile.tileCollide = false;
+        Projectile.timeLeft = 600;
+        Projectile.penetrate = 1;
+    }
+
+    public override void AI()
+    {
+        if (Projectile.position.Y > Projectile.ai[1])
+            Projectile.tileCollide = true;
+
+        Projectile.frameCounter++;
+        if (Projectile.frameCounter > 4)
         {
-            Main.projFrames[Type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Type] = 2;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Projectile.frame++;
+            Projectile.frameCounter = 0;
         }
+        if (Projectile.frame > 5)
+            Projectile.frame = 0;
 
-        public override void SetDefaults()
-        {
-            Projectile.width = 12;
-            Projectile.height = 12;
-            Projectile.hostile = true;
-            Projectile.tileCollide = false;
-            Projectile.timeLeft = 600;
-            Projectile.penetrate = 1;
-        }
+        Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
-        public override void AI()
-        {
-            if (Projectile.position.Y > Projectile.ai[1])
-                Projectile.tileCollide = true;
+        int ichorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 100, default, 0.5f);
+        Main.dust[ichorDust].noGravity = true;
+        Main.dust[ichorDust].velocity *= 0f;
 
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame > 5)
-                Projectile.frame = 0;
+        if (Projectile.velocity.Y < 12f)
+            Projectile.velocity.Y += 0.06f;
 
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
+        Projectile.velocity.X *= 0.995f;
+    }
 
-            int ichorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 100, default, 0.5f);
-            Main.dust[ichorDust].noGravity = true;
-            Main.dust[ichorDust].velocity *= 0f;
+    public override void OnHitPlayer(Player target, Player.HurtInfo info)
+    {
+        if (info.Damage <= 0)
+            return;
 
-            if (Projectile.velocity.Y < 12f)
-                Projectile.velocity.Y += 0.06f;
+        target.AddBuff(BuffID.Ichor, 240);
+    }
 
-            Projectile.velocity.X *= 0.995f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.Ichor, 240);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            lightColor.R = (byte)(255 * Projectile.Opacity);
-            lightColor.G = (byte)(255 * Projectile.Opacity);
-            lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
+    public override bool PreDraw(ref Color lightColor)
+    {
+        lightColor.R = (byte)(255 * Projectile.Opacity);
+        lightColor.G = (byte)(255 * Projectile.Opacity);
+        lightColor.B = (byte)(255 * Projectile.Opacity);
+        CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+        return false;
     }
 }

@@ -7,84 +7,83 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Weapons.Ranged
+namespace CalamityMod.Items.Weapons.Ranged;
+
+public class PlagueTaintedSMG : ModItem, ILocalizedModType
 {
-    public class PlagueTaintedSMG : ModItem, ILocalizedModType
+    private const float Spread = 0.15f;
+
+    public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+    public override void SetStaticDefaults()
     {
-        private const float Spread = 0.15f;
+        ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+    }
 
-        public new string LocalizationCategory => "Items.Weapons.Ranged";
+    public override void SetDefaults()
+    {
+        Item.width = 98;
+        Item.height = 50;
+        Item.damage = 78;
+        Item.DamageType = DamageClass.Ranged;
+        Item.useAnimation = Item.useTime = 12;
+        Item.useStyle = ItemUseStyleID.Shoot;
+        Item.noMelee = true;
+        Item.knockBack = 2f;
+        Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+        Item.rare = ItemRarityID.Yellow;
+        Item.Calamity().donorItem = true;
+        Item.UseSound = SoundID.Item11;
+        Item.autoReuse = true;
+        Item.shoot = ProjectileID.PurificationPowder;
+        Item.shootSpeed = 12f;
+        Item.useAmmo = AmmoID.Bullet;
+        Item.shoot = ModContent.ProjectileType<PlagueTaintedProjectile>();
+    }
 
-        public override void SetStaticDefaults()
+    public override Vector2? HoldoutOffset() => new Vector2(-20, 5);
+
+    public override bool AltFunctionUse(Player player) => true;
+
+    public override bool CanUseItem(Player player)
+    {
+        Item.UseSound = player.altFunctionUse == 2 ? SoundID.Item61 : SoundID.Item11;
+        return base.CanUseItem(player);
+    }
+
+    public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? (1f / 5f) : 1f;
+
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+    {
+        Vector2 barrelPosition = position + Vector2.Normalize(velocity) * 70f;
+        if (player.altFunctionUse == 2)
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-        }
-
-        public override void SetDefaults()
-        {
-            Item.width = 98;
-            Item.height = 50;
-            Item.damage = 78;
-            Item.DamageType = DamageClass.Ranged;
-            Item.useAnimation = Item.useTime = 12;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.Calamity().donorItem = true;
-            Item.UseSound = SoundID.Item11;
-            Item.autoReuse = true;
-            Item.shoot = ProjectileID.PurificationPowder;
-            Item.shootSpeed = 12f;
-            Item.useAmmo = AmmoID.Bullet;
-            Item.shoot = ModContent.ProjectileType<PlagueTaintedProjectile>();
-        }
-
-        public override Vector2? HoldoutOffset() => new Vector2(-20, 5);
-
-        public override bool AltFunctionUse(Player player) => true;
-
-        public override bool CanUseItem(Player player)
-        {
-            Item.UseSound = player.altFunctionUse == 2 ? SoundID.Item61 : SoundID.Item11;
-            return base.CanUseItem(player);
-        }
-
-        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? (1f / 5f) : 1f;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Vector2 barrelPosition = position + Vector2.Normalize(velocity) * 70f;
-            if (player.altFunctionUse == 2)
+            // Fire drones to the left and right.
+            for (int i = 0; i < 3; i++)
             {
-                // Fire drones to the left and right.
-                for (int i = 0; i < 3; i++)
-                {
-                    Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(-Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask ? 1f : 0f);
-                    Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask ? 1f : 0f);
-                }
+                Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(-Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask ? 1f : 0f);
+                Projectile.NewProjectile(source, barrelPosition, velocity.RotatedBy(Spread * (i + 1)), ModContent.ProjectileType<PlagueTaintedDrone>(), damage, knockback, player.whoAmI, 1f, player.Calamity().alchFlask ? 1f : 0f);
             }
-            else
-            {
-                float SpeedX = velocity.X + Main.rand.Next(-5, 6) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.Next(-5, 6) * 0.05f;
-                Vector2 newVelocity = new Vector2(SpeedX, SpeedY);
-                Projectile.NewProjectile(source, barrelPosition, newVelocity, ModContent.ProjectileType<PlagueTaintedProjectile>(), damage, knockback, player.whoAmI);
-            }
-
-            return false;
         }
-
-        public override void AddRecipes()
+        else
         {
-            CreateRecipe().
-                AddIngredient<BlackHawkRemote>().
-                AddIngredient(ItemID.Uzi).
-                AddIngredient<Helstorm>().
-                AddIngredient<InfectedArmorPlating>(5).
-                AddTile(TileID.MythrilAnvil).
-                Register();
+            float SpeedX = velocity.X + Main.rand.Next(-5, 6) * 0.05f;
+            float SpeedY = velocity.Y + Main.rand.Next(-5, 6) * 0.05f;
+            Vector2 newVelocity = new Vector2(SpeedX, SpeedY);
+            Projectile.NewProjectile(source, barrelPosition, newVelocity, ModContent.ProjectileType<PlagueTaintedProjectile>(), damage, knockback, player.whoAmI);
         }
+
+        return false;
+    }
+
+    public override void AddRecipes()
+    {
+        CreateRecipe().
+            AddIngredient<BlackHawkRemote>().
+            AddIngredient(ItemID.Uzi).
+            AddIngredient<Helstorm>().
+            AddIngredient<InfectedArmorPlating>(5).
+            AddTile(TileID.MythrilAnvil).
+            Register();
     }
 }
