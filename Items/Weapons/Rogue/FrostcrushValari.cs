@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

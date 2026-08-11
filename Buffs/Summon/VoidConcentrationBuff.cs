@@ -1,7 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Projectiles.Summon;
-using Terraria;
+﻿using CalamityMod.Projectiles.Summon;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon;

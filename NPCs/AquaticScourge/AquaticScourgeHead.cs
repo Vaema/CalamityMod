@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;

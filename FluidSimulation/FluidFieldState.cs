@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Graphics;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

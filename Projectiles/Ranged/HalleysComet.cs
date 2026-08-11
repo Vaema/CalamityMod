@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;

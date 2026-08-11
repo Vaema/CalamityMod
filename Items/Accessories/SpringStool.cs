@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;

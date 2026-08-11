@@ -1,12 +1,6 @@
-﻿using System;
-using System.Linq;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.DataStructures;
+﻿using System.Linq;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Mechanic;
-using Microsoft.Build.Evaluation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

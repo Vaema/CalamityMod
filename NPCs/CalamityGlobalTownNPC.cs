@@ -21,21 +21,18 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs;
@@ -538,8 +535,22 @@ public class CalamityGlobalTownNPC : GlobalNPC
 
     #region Town NPC Names
     #region Pets
+    // Throttle ResetTownNPCNameBools to avoid scanning the entire NPC array every frame.
+    // This is safe to delay slightly and reduces per-frame CPU usage.
+    private const int NameBoolResetInterval = 60; // frames
+    private static int _nameBoolResetTimer = 0;
+
     public static void ResetTownNPCNameBools()
     {
+        // Only perform the full scan once per interval.
+        if (_nameBoolResetTimer > 0)
+        {
+            _nameBoolResetTimer--;
+            return;
+        }
+
+        _nameBoolResetTimer = NameBoolResetInterval;
+
         void ResetName(int npcID, ref bool nameBool)
         {
             if (NPC.FindFirstNPC(npcID) == -1)

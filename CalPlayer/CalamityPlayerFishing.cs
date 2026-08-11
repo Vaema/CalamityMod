@@ -21,7 +21,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.NPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.Particles;
 using CalamityMod.World;

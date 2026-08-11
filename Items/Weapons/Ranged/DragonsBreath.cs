@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;

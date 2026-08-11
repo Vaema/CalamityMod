@@ -268,8 +268,12 @@ public class DebuffData
     {
         var cnpc = npc.Calamity();
         int numImpaledSpears = 0;
-        foreach (Projectile k in Main.ActiveProjectiles)
+        Projectile[] _projArr = Main.projectile;
+        for (int _i = 0; _i < Main.maxProjectiles; _i++)
         {
+            Projectile k = _projArr[_i];
+            if (!k.active)
+                continue;
             if (k.type == ProjectileID.Daybreak && k.ai[0] == 1f && k.ai[1] == npc.whoAmI)
                 numImpaledSpears++;
         }

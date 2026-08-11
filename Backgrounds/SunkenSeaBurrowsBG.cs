@@ -1,5 +1,4 @@
-﻿using CalamityMod.Graphics;
-using CalamityMod.Systems.Graphic;
+﻿using CalamityMod.Systems.Graphic;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

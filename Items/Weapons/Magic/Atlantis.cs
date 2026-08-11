@@ -6,7 +6,6 @@ using CalamityMod.Particles;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Summon;
 
 namespace CalamityMod.Items.Weapons.Magic;
 

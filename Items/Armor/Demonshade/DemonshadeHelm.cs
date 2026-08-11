@@ -1,6 +1,4 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.BaseItems;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;

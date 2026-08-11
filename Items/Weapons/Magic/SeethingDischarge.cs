@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.BrimstoneElemental;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Systems.Collections;

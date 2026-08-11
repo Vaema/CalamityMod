@@ -1,12 +1,7 @@
 ﻿using System;
 using CalamityMod.Dusts;
-using CalamityMod.Dusts.WaterSplash;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

@@ -1,9 +1,7 @@
 ﻿using System.Linq;
-using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

@@ -1,9 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

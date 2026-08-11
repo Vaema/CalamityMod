@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.NPCs;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;

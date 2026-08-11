@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using CalamityMod.Items.Tools;
-using MonoMod.Core.Platforms;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Packets;
 

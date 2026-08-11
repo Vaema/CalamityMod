@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Windows.Markup;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.Localization;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns;
 

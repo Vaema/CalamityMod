@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.NPCs.DevourerofGods;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;

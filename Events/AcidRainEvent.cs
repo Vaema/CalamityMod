@@ -66,14 +66,16 @@ public class AcidRainEvent : ModSystem
     {
         get
         {
-            foreach (NPC npc in Main.ActiveNPCs)
+            for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if ((PossibleMinibossesAS.Select(miniboss => miniboss.Key).Contains(npc.type) ||
-                    PossibleMinibossesPolter.Select(miniboss => miniboss.Key).Contains(npc.type)))
-                {
+                NPC npc = Main.npc[i];
+                if (!npc.active)
+                    continue;
+
+                if (PossibleMinibossesAS.ContainsKey(npc.type) || PossibleMinibossesPolter.ContainsKey(npc.type))
                     return true;
-                }
             }
+
             return false;
         }
     }

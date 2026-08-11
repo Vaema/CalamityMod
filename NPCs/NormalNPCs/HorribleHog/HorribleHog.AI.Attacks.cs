@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;

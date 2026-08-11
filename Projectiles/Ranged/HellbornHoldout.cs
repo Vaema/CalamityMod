@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;

@@ -1,7 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

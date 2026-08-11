@@ -1,13 +1,8 @@
-﻿using CalamityMod.Effects;
-using CalamityMod.Utilities.Daybreak;
-using CalamityMod.Utilities.Daybreak.Buffers;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameInput;
 using Terraria.Graphics;
-using Terraria.Graphics.Effects;
 using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;

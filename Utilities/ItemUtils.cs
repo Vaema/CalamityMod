@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -605,7 +604,7 @@ public static partial class CalamityUtils
     #region Rogue Prefixes
     public static int RandomRoguePrefix()
     {
-        Mod mod = ModContent.GetInstance<CalamityMod>();
+        Mod mod = CalamityMod.Instance;
         int roguePrefix = Utils.SelectRandom(Main.rand, new int[]
         {
             mod.Find<ModPrefix>("Radical").Type,
@@ -653,7 +652,7 @@ public static partial class CalamityUtils
 
     public static bool NegativeRoguePrefix(int prefix)
     {
-        Mod mod = ModContent.GetInstance<CalamityMod>();
+        Mod mod = CalamityMod.Instance;
         List<int> badPrefixes = new List<int>()
         {
             mod.Find<ModPrefix>("Blunt").Type,

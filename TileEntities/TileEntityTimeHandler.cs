@@ -7,38 +7,37 @@ namespace CalamityMod.TileEntities;
 
 public static class TileEntityTimeHandler
 {
+    private static int _factoryType = -1;
+    private static int _chargerType = -1;
+    private static int _codebreakerType = -1;
+
     public static void Update()
     {
         MultiplayerClientUpdateVisuals();
     }
+
     private static void MultiplayerClientUpdateVisuals()
     {
         if (Main.netMode != NetmodeID.MultiplayerClient)
             return;
 
-        int factoryType = ModContent.GetInstance<TEPowerCellFactory>().Type;
-        int chargerType = ModContent.GetInstance<TEChargingStation>().Type;
-        int codebreakerType = ModContent.GetInstance<TECodebreaker>().Type;
+        if (_factoryType == -1) _factoryType = ModContent.GetInstance<TEPowerCellFactory>().Type;
+        if (_chargerType == -1) _chargerType = ModContent.GetInstance<TEChargingStation>().Type;
+        if (_codebreakerType == -1) _codebreakerType = ModContent.GetInstance<TECodebreaker>().Type;
 
-        var enumerator = TileEntity.ByID.Values.GetEnumerator();
-        do
+        // Iterate the tile entities collection without creating extra allocations.
+        foreach (TileEntity te in TileEntity.ByID.Values)
         {
-            TileEntity te = enumerator.Current;
             if (te == null)
                 continue;
 
-            if (te.type == factoryType)
+            if (te.type == _factoryType)
             {
-                // Specifically on multiplayer clients, manually update the time variables of Power Cell Factories every frame.
-                // This makes sure they animate. It will NOT produce cells; that code can only run server side.
-                // Time is manually synced from the server every time a cell is created, so even under heavy lag they cannot stay desynced indefinitely.
                 TEPowerCellFactory factory = (TEPowerCellFactory)te;
                 ++factory.Time;
             }
-            else if (te.type == chargerType)
+            else if (te.type == _chargerType)
             {
-                // Specifically on multiplayer clients, produce charging dust when the "should dust" flag is set by the most recent sync packet.
-                // This makes sure they produce charging dust for all clients. It will NOT actually charge items; that code can only run server side.
                 TEChargingStation charger = (TEChargingStation)te;
 
                 if (charger.ClientChargingDust && charger.CanDoWork)
@@ -49,20 +48,14 @@ public static class TileEntityTimeHandler
             }
             else if (te is TEBaseTurret turret)
             {
-                // Perform any client-specific update tasks for this turret.
                 turret.UpdateClient();
-
-                // Specifically on multiplayer clients, manually update the turret's rotation every frame. This is exactly the same code run server side.
-                // This makes sure they visually track targets in multiplayer. It will NOT fire projectiles; that code can only run server side.
                 turret.UpdateAngle();
             }
-            else if (te.type == codebreakerType)
+            else if (te.type == _codebreakerType)
             {
-                // Specifically on multiplayer clients, manually update the time variables of the Codebreaker every frame.
-                // This is done so that clients can accurately gauge how complete decryptions are.
                 TECodebreaker codebreaker = (TECodebreaker)te;
                 codebreaker.UpdateTime();
             }
-        } while (enumerator.MoveNext());
+        }
     }
 }
