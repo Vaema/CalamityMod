@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Fearmonger;

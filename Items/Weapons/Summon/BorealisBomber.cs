@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

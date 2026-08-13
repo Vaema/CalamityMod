@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;

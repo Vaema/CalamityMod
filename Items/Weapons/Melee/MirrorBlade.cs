@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;

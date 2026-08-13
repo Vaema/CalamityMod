@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Particles;

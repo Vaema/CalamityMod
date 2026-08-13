@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;

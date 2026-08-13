@@ -2,6 +2,7 @@
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;

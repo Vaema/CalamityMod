@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Potions.Food;
@@ -14,6 +15,7 @@ using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 using static CalamityMod.Schematics.SchematicManager;
 using static Terraria.ModLoader.ModContent;

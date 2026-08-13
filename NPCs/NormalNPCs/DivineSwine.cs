@@ -1,7 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using CalamityMod.Effects;
 using CalamityMod.Enums;
+using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Critters;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions.Food;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
@@ -20,6 +28,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.NPCs.NormalNPCs;
 

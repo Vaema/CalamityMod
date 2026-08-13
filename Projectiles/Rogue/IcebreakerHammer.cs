@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Graphics;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,7 +10,9 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.Graphics.CameraModifiers;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 

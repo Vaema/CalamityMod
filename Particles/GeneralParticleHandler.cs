@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using CalamityMod.Enums;
 using CalamityMod.Systems.Graphic;
@@ -11,6 +12,31 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Particles;
+
+// Important credits for Spirit and Luminance:
+#region CREDITS
+
+// 06JAN2022: Iban
+// This particle system was inspired by spirit mod's own particle system, with permission granted by Yuyutsu. Love you spirit mod! -Iban
+
+// 05NOV2025: fryzahh
+// Particle drawing implementation was inspired by Luminance's ParticleManager.cs. See licensing information below:
+// https://github.com/LucilleKarma/Luminance/blob/main/LICENSE
+//
+// MIT License
+//
+// Copyright(c) 2024 Dominic
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+#endregion
 
 [Autoload(Side = ModSide.Client)]
 public sealed class GeneralParticleHandler : ModSystem
@@ -31,8 +57,6 @@ public sealed class GeneralParticleHandler : ModSystem
     private static List<Particle> particlesToKill;
     private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame;
     private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame_Pixelated;
-    // Count of particles currently queued to spawn next frame across all draw layers.
-    private static int queuedParticlesCount = 0;
 
     // Collections for correctly organizing active prticles for drawing.
     private static Dictionary<BlendState, List<Particle>> particlesToDraw;
@@ -74,8 +98,6 @@ public sealed class GeneralParticleHandler : ModSystem
         particlesToSpawnNextFrame = [];
         particlesToSpawnNextFrame_Pixelated = [];
 
-        queuedParticlesCount = 0;
-
         particlesToDraw = [];
         particlesToDraw_Pixelated = [];
         particlesToDraw_CustomShader = [];
@@ -104,8 +126,6 @@ public sealed class GeneralParticleHandler : ModSystem
         particlesToKill.Clear();
         particlesToSpawnNextFrame.Clear();
         particlesToSpawnNextFrame_Pixelated.Clear();
-
-        queuedParticlesCount = 0;
 
         particlesToDraw.Clear();
         particlesToDraw_Pixelated.Clear();
@@ -155,25 +175,17 @@ public sealed class GeneralParticleHandler : ModSystem
             return;
 
         GeneralDrawLayer actualDrawLayer = manualDrawLayerOverride ?? particle.DrawLayer;
-
-        // Fast reject if we're already at the particle limit and the particle isn't important.
-        int currentActive = activeParticles.Count;
-        int limit = CalamityClientConfig.Instance.ParticleLimit;
-        if (currentActive + queuedParticlesCount >= limit && !particle.Important)
-            return;
         if (pixelate)
         {
             if (!particlesToSpawnNextFrame_Pixelated.ContainsKey(actualDrawLayer))
                 particlesToSpawnNextFrame_Pixelated[actualDrawLayer] = [];
             particlesToSpawnNextFrame_Pixelated[actualDrawLayer].Enqueue(particle);
-            queuedParticlesCount++;
         }
         else
         {
             if (!particlesToSpawnNextFrame.ContainsKey(actualDrawLayer))
                 particlesToSpawnNextFrame[actualDrawLayer] = [];
             particlesToSpawnNextFrame[actualDrawLayer].Enqueue(particle);
-            queuedParticlesCount++;
         }
     }
 
@@ -223,7 +235,7 @@ public sealed class GeneralParticleHandler : ModSystem
         if (Main.dedServ || activeParticles == null)
             return 0;
 
-        return CalamityClientConfig.Instance.ParticleLimit - activeParticles.Count;
+        return CalamityClientConfig.Instance.ParticleLimit - activeParticles.Count();
     }
 
     /// <summary>
@@ -246,21 +258,13 @@ public sealed class GeneralParticleHandler : ModSystem
         foreach (var collectionsByDrawLayer in particlesToSpawnNextFrame)
         {
             while (collectionsByDrawLayer.Value.Count > 0)
-            {
-                Particle p = collectionsByDrawLayer.Value.Dequeue();
-                queuedParticlesCount = Math.Max(0, queuedParticlesCount - 1);
-                SpawnParticle(p, false, collectionsByDrawLayer.Key);
-            }
+                SpawnParticle(collectionsByDrawLayer.Value.Dequeue(), false, collectionsByDrawLayer.Key);
         }
 
         foreach (var collectionsByDrawLayer in particlesToSpawnNextFrame_Pixelated)
         {
             while (collectionsByDrawLayer.Value.Count > 0)
-            {
-                Particle p = collectionsByDrawLayer.Value.Dequeue();
-                queuedParticlesCount = Math.Max(0, queuedParticlesCount - 1);
-                SpawnParticle(p, true, collectionsByDrawLayer.Key);
-            }
+                SpawnParticle(collectionsByDrawLayer.Value.Dequeue(), true, collectionsByDrawLayer.Key);
         }
 
         // Update all particle instances in the world.
@@ -274,19 +278,16 @@ public sealed class GeneralParticleHandler : ModSystem
             particle.Update();
         }
 
-        // Clear out particles whose time is up (manual reverse iteration to avoid predicate allocations)
-        for (int i = activeParticles.Count - 1; i >= 0; i--)
+        //Clear out particles whose time is up
+        activeParticles.RemoveAll(particle =>
         {
-            var particle = activeParticles[i];
-            if (particle == null)
-                continue;
-
             if ((particle.Time >= particle.Lifetime && particle.SetLifetime) || particlesToKill.Contains(particle))
             {
                 ReturnAssociatedDrawCollection(particle).Remove(particle);
-                activeParticles.RemoveAt(i);
+                return true;
             }
-        }
+            return false;
+        });
 
         particlesToKill.Clear();
     }
@@ -356,18 +357,15 @@ public sealed class GeneralParticleHandler : ModSystem
 
         foreach (var keyValuePair in drawCollection)
         {
-            var list = keyValuePair.Value;
             if (pixelated)
             {
                 PixelationManager.AddPixelatedDrawer((pixelationMatrix) =>
                 {
-                    // Draw directly while filtering by DrawLayer to avoid LINQ allocations
-                    for (int i = 0; i < list.Count; i++)
+                    var particlesAtSpecifiedLayer = keyValuePair.Value.Where(p => p.DrawLayer == drawLayer);
+                    if (particlesAtSpecifiedLayer.Any())
                     {
-                        Particle particle = list[i];
-                        if (particle.DrawLayer != drawLayer)
-                            continue;
-                        DrawParticleInstance(particle);
+                        foreach (Particle particle in particlesAtSpecifiedLayer)
+                            DrawParticleInstance(particle);
                     }
 
                 }, drawLayer, keyValuePair.Key);
@@ -376,12 +374,11 @@ public sealed class GeneralParticleHandler : ModSystem
             {
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, keyValuePair.Key, SamplerState.LinearClamp, DepthStencilState.None, scissorRectRasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-                for (int i = 0; i < list.Count; i++)
+                var particlesAtSpecifiedLayer = keyValuePair.Value.Where(p => p.DrawLayer == drawLayer);
+                if (particlesAtSpecifiedLayer.Any())
                 {
-                    Particle particle = list[i];
-                    if (particle.DrawLayer != drawLayer)
-                        continue;
-                    DrawParticleInstance(particle);
+                    foreach (Particle particle in particlesAtSpecifiedLayer)
+                        DrawParticleInstance(particle);
                 }
 
                 Main.spriteBatch.End();
@@ -400,14 +397,9 @@ public sealed class GeneralParticleHandler : ModSystem
 
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, blendStateParticleListPair.Key, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, shaderDrawCollectionPair.Key, Main.GameViewMatrix.TransformationMatrix);
 
-                // Avoid LINQ allocations by iterating the list directly and filtering inline.
-                var _list = blendStateParticleListPair.Value;
-                for (int _i = 0; _i < _list.Count; _i++)
+                var particlesAtDrawLayer = blendStateParticleListPair.Value.Where(p => p.DrawLayer == drawLayer);
+                foreach (Particle particle in particlesAtDrawLayer)
                 {
-                    Particle particle = _list[_i];
-                    if (particle.DrawLayer != drawLayer)
-                        continue;
-
                     particle.PrepareCustomShader(shaderDrawCollectionPair.Key);
                     DrawParticleInstance(particle);
                 }

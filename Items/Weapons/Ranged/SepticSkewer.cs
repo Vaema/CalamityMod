@@ -7,6 +7,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using System;
 using Terraria.Audio;
+using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Items.Weapons.Ranged;
 

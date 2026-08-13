@@ -1,6 +1,14 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.ILEditing;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee.Yoyos;
+using MonoMod;
+using MonoMod.Cil;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -10,6 +10,7 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;

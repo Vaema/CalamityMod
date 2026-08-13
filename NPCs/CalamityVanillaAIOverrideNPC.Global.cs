@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;

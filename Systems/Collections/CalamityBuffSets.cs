@@ -9,6 +9,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Summon;
+using ReLogic.Reflection;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;

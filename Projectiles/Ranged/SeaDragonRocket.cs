@@ -1,5 +1,10 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -7,6 +12,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static tModPorter.ProgressUpdate;
 namespace CalamityMod.Projectiles.Ranged;
 
 public class SeaDragonRocket : ModProjectile, ILocalizedModType

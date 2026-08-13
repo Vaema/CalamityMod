@@ -1,8 +1,11 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
+using CalamityMod.Rarities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent.UI;
 using Terraria.ID;
 using Terraria.ModLoader;
 

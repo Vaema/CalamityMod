@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Systems.Collections;
 using Terraria.ID;

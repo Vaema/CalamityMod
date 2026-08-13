@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Graphics;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -93,59 +94,41 @@ public class DeathAshParticle
         PendingNPCsToDraw[npc] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
     }
 
-    public static List<KeyValuePair<Vector2, Color>> GetColorCacheFromTexture(Texture2D texture, Rectangle? frame = null, bool pruneForEfficency = false)
+    public static Dictionary<Vector2, Color> GetColorCacheFromTexture(Texture2D texture, Rectangle? frame = null, bool pruneForEfficency = false)
     {
-        var colorList = new List<KeyValuePair<Vector2, Color>>();
+        Dictionary<Vector2, Color> colorCache = new Dictionary<Vector2, Color>();
+        Color[] uncleanedCache = new Color[texture.Width * texture.Height];
+        texture.GetData(uncleanedCache);
+
+        // Initialize the frame to its default of the texture size if nothing else is specified.
         int width = texture.Width;
         int height = texture.Height;
-        int total = width * height;
+        if (frame is null)
+            frame = new Rectangle(0, 0, width, height);
 
-        // Rent a buffer from the shared pool to avoid large allocations.
-        var pool = ArrayPool<Color>.Shared;
-        Color[] uncleanedCache = pool.Rent(total);
-        try
+        int stride = 1;
+        int totalFilledPixels = uncleanedCache.Count(c => c.R != 0 || c.G != 0 || c.B != 0 || c.A != 0);
+        if (pruneForEfficency && totalFilledPixels > 16000)
+            stride = 2;
+        if (pruneForEfficency && totalFilledPixels > 38000)
+            stride = 3;
+
+        // Store all non-empty pixels.
+        for (int i = 0; i < width; i += stride)
         {
-            texture.GetData(uncleanedCache);
-
-            // Initialize the frame to its default of the texture size if nothing else is specified.
-            if (frame is null)
-                frame = new Rectangle(0, 0, width, height);
-
-            int stride = 1;
-            int totalFilledPixels = 0;
-            for (int idx = 0; idx < total; idx++)
+            for (int j = 0; j < height; j += stride)
             {
-                Color _c = uncleanedCache[idx];
-                if (_c.R != 0 || _c.G != 0 || _c.B != 0 || _c.A != 0)
-                    totalFilledPixels++;
+                Color color = uncleanedCache[i + j * width];
+
+                // Ignore textures outside the bounds of the frame.
+                if (i < frame.Value.Left || i >= frame.Value.Right || j < frame.Value.Top || j >= frame.Value.Bottom)
+                    continue;
+
+                if (color.R != 0 || color.G != 0 || color.B != 0 || color.A != 0)
+                    colorCache[new Vector2(i - frame.Value.X, j - frame.Value.Y)] = color;
             }
-            if (pruneForEfficency && totalFilledPixels > 16000)
-                stride = 2;
-            if (pruneForEfficency && totalFilledPixels > 38000)
-                stride = 3;
-
-            Rectangle f = frame.Value;
-            for (int i = 0; i < width; i += stride)
-            {
-                int baseIdx = i;
-                for (int j = 0; j < height; j += stride)
-                {
-                    Color color = uncleanedCache[baseIdx + j * width];
-
-                    if (i < f.Left || i >= f.Right || j < f.Top || j >= f.Bottom)
-                        continue;
-
-                    if (color.R != 0 || color.G != 0 || color.B != 0 || color.A != 0)
-                        colorList.Add(new KeyValuePair<Vector2, Color>(new Vector2(i - f.X, j - f.Y), color));
-                }
-            }
-
-            return colorList;
         }
-        finally
-        {
-            pool.Return(uncleanedCache);
-        }
+        return colorCache;
     }
 
     public static void FlushContentsAndCreateAshes()
@@ -154,28 +137,24 @@ public class DeathAshParticle
         if (PendingNPCsToDraw.Count == 0)
             return;
 
-        foreach (var kvp in PendingNPCsToDraw)
+        foreach (NPC npc in PendingNPCsToDraw.Keys)
         {
-            NPC npc = kvp.Key;
-            RenderTarget2D temporaryTextureDrawTarget = kvp.Value.Target;
+            RenderTarget2D temporaryTextureDrawTarget = PendingNPCsToDraw[npc].Target;
             Rectangle frame = new Rectangle(0, 0, temporaryTextureDrawTarget.Width, temporaryTextureDrawTarget.Height);
-            List<KeyValuePair<Vector2, Color>> colorsOnNPC = GetColorCacheFromTexture(temporaryTextureDrawTarget, frame, true);
+            Dictionary<Vector2, Color> colorsOnNPC = GetColorCacheFromTexture(temporaryTextureDrawTarget, frame, true);
 
             // Enforce a hard limit on the amount of ashes that can exist.
             if (Ashes.Count + colorsOnNPC.Count > AshCountLimit)
                 break;
 
             // Create ashes.
-            for (int _ci = 0; _ci < colorsOnNPC.Count; _ci++)
+            foreach (Vector2 drawOffset in colorsOnNPC.Keys)
             {
-                var pair = colorsOnNPC[_ci];
-                Vector2 drawOffset = pair.Key;
-                Color color = pair.Value;
-
                 int ashLifetime = Main.rand.Next(105, 145);
 
                 // Adjust the offset of the ashes from pixel space by accounting for direction, rotation, and scale.
                 Vector2 ashSpawnPosition = npc.position + drawOffset - new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
+                Color color = colorsOnNPC[drawOffset];
                 float brightness = (color.R + color.G + color.B) / 765f;
                 DeathAshParticle ash = new DeathAshParticle(ashLifetime, brightness, ashSpawnPosition)
                 {
@@ -187,7 +166,7 @@ public class DeathAshParticle
             }
 
             // And release the render target.
-            kvp.Value.Dispose();
+            PendingNPCsToDraw[npc].Dispose();
         }
 
         // Clear the pending NPCs once done.

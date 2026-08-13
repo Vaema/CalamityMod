@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

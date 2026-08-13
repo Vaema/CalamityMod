@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.TownNPCs;

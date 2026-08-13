@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http.Headers;
 using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;

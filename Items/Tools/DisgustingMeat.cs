@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Effects;
 using CalamityMod.Items.PermanentBoosters;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Packets;
 using CalamityMod.Packets.Worlds;
 using CalamityMod.Particles;

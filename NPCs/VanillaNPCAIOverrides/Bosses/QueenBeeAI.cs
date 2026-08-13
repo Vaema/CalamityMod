@@ -1,4 +1,6 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.Projectiles.Boss;

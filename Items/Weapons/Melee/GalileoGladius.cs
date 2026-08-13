@@ -4,6 +4,7 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Rarities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

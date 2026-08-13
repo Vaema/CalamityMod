@@ -101,8 +101,7 @@ public static partial class NPCStats
 
         // Make all Cal NPCs immune to confused unless otherwise specified
         // Extra note: Clams are not in this list as they initially immune to Confused, but are no longer immune once aggro'd. This is set in their AI().
-        // Avoid repeated ModContent.GetInstance calls by using the cached CalamityMod.Instance
-        bool cal = npc.ModNPC != null && npc.ModNPC.Mod.Name.Equals(CalamityMod.Instance.Name);
+        bool cal = npc.ModNPC != null && npc.ModNPC.Mod.Name.Equals(ModContent.GetInstance<CalamityMod>().Name);
         if (!CalamityNPCSets.CalamityNPCNotImmuneToConfused[npc.type] && cal)
             NPCID.Sets.SpecificDebuffImmunity[npc.type][BuffID.Confused] = true;
 

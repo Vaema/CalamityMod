@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using CalamityMod.Dusts;
 using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;

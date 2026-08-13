@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Graphics;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;

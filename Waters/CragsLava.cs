@@ -1,4 +1,5 @@
-﻿using CalamityMod.Systems;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Systems;
 using Terraria;
 using Terraria.ModLoader;
 using CalamityMod.Dusts.WaterSplash;

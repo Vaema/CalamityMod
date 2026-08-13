@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;

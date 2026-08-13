@@ -1,6 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.CalPlayer;
+using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.DataStructures;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

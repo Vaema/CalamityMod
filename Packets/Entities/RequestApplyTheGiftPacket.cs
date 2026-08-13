@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.Items.Tools;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Packets.Entities;

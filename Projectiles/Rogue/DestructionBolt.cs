@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Enums;
+using CalamityMod.Graphics.Renderers;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

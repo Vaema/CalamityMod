@@ -1,4 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs.BrimstoneElemental;
 using CalamityMod.Particles;

@@ -1,4 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.NPCs.DevourerofGods;
+using CalamityMod.Rarities;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using Terraria;

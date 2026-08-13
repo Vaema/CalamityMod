@@ -1,4 +1,5 @@
-﻿using CalamityMod.DataStructures;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

@@ -1,7 +1,9 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;

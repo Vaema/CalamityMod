@@ -2,6 +2,7 @@
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;

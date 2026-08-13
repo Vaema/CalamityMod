@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

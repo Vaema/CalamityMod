@@ -1,4 +1,6 @@
-﻿using Terraria;
+﻿using CalamityMod.NPCs;
+using CalamityMod.Systems.Collections;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

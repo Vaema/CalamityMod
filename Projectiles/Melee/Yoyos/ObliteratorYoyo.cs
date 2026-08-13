@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Summon;

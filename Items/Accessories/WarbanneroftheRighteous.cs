@@ -2,7 +2,10 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.HiveMind;
+using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.Perforator;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;

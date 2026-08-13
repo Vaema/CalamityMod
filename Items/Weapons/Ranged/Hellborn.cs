@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CalamityMod.Cooldowns;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;

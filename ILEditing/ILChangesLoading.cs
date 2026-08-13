@@ -8,6 +8,7 @@ using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
+using Terraria.GameInput;
 using Terraria.Graphics.CameraModifiers;
 using Terraria.Map;
 using Terraria.ModLoader;

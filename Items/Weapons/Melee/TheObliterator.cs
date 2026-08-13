@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;

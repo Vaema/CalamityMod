@@ -1,8 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Composition.Hosting.Core;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged;

@@ -1,4 +1,7 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

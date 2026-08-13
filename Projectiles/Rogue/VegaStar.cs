@@ -1,6 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿
+using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

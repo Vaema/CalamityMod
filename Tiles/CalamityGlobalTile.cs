@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;

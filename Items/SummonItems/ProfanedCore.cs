@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Events;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;

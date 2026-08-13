@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

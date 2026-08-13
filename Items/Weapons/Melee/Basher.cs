@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.FurnitureAcidwood;

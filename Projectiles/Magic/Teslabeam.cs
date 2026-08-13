@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

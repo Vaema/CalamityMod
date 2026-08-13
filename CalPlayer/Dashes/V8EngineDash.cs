@@ -1,11 +1,16 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
+using CalamityMod.Graphics.Renderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Items;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 

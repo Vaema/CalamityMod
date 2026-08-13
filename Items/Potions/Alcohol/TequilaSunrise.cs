@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

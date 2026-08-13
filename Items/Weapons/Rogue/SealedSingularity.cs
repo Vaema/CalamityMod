@@ -1,7 +1,10 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee.Spears;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 

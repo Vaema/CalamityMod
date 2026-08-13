@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Pylons;
+﻿using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Tiles.Pylons;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

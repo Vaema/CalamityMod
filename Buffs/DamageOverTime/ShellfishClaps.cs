@@ -2,21 +2,20 @@
 using CalamityMod.Balancing;
 using CalamityMod.DataStructures;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.Buffs.DamageOverTime;
 
 public class ShellfishClaps : ModBuff
 {
-    public static DebuffData debuffData = new()
+    public static DebuffData debuffData = new DebuffData()
     {
-        EnemyLostRegen = 170,
+        EnemyLostRegen = 170, //Damage per shellfish
         NPCLifeRegenMethod = ShellfishStacking
     };
-
     public static void ShellfishStacking(NPC npc, int buffType, ref int buffIndex, ref int damage)
     {
         if (npc.SuperArmor)
@@ -24,13 +23,8 @@ public class ShellfishClaps : ModBuff
 
         int projectileCount = 0;
         int owner = 255;
-        Projectile[] _projArr = Main.projectile;
-        for (int _i = 0; _i < Main.maxProjectiles; _i++)
+        foreach (Projectile p in Main.ActiveProjectiles)
         {
-            Projectile p = _projArr[_i];
-            if (!p.active)
-                continue;
-
             if (p.type == ModContent.ProjectileType<Shellfish>() &&
                 p.ai[0] == 1f && p.ai[1] == npc.whoAmI)
             {
@@ -48,7 +42,6 @@ public class ShellfishClaps : ModBuff
         int totalDisplayedDamage = (int)Math.Max(totalDamage * debuffData.MultiplierDamageTickSize, debuffData.MinimumDamageTickSize);
         npc.Calamity().ApplyDPSDebuff(projectileCount * totalDamage, projectileCount * totalDisplayedDamage, ref npc.lifeRegen, ref damage);
     }
-
     public override void SetStaticDefaults()
     {
         Main.debuff[Type] = true;

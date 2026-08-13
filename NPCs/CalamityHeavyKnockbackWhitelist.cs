@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CalamityMod.Balancing;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Systems.Collections;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;

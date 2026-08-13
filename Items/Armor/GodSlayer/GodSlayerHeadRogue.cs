@@ -1,5 +1,6 @@
 ﻿using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;

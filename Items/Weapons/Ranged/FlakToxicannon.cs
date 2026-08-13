@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;

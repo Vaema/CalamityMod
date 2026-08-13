@@ -39,6 +39,7 @@ using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.Yharon;
+using ReLogic.Reflection;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

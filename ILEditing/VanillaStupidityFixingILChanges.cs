@@ -6,6 +6,7 @@ using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Walls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -16,6 +17,10 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.GameInput;
+using Terraria.Graphics;
+using Terraria.Graphics.Effects;
+using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;
 

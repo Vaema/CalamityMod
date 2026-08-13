@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureAuric;
+using CalamityMod.Items.Placeables.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

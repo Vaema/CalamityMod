@@ -2,6 +2,7 @@
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.Monoliths;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.Monoliths;
 

@@ -6,6 +6,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Prefixes;
+using CalamityMod.Projectiles.Environment;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

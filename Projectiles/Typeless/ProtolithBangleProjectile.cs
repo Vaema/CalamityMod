@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;

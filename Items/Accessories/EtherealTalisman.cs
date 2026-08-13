@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;

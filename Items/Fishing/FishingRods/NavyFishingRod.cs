@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;

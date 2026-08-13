@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;

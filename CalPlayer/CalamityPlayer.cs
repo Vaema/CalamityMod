@@ -72,6 +72,7 @@ using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Utilities;
 using CalamityMod.Walls.UnsafeWalls;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

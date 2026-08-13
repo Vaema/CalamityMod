@@ -17,12 +17,8 @@ public class SnapClamDebuff : ModBuff
     {
 
         int projectileCount = 0;
-        Projectile[] _projArr = Main.projectile;
-        for (int _i = 0; _i < Main.maxProjectiles; _i++)
+        foreach (Projectile p in Main.ActiveProjectiles)
         {
-            Projectile p = _projArr[_i];
-            if (!p.active)
-                continue;
             if (p.ai[0] == 1f && p.ai[1] == npc.whoAmI)
             {
                 if (p.type == ModContent.ProjectileType<SnapClamProj>())

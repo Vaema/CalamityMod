@@ -4,6 +4,7 @@ using CalamityMod.Graphics.Metaballs;
 using CalamityMod.NPCs.CalClone;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic;

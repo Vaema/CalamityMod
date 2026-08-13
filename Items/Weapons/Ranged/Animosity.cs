@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;

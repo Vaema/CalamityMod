@@ -20,12 +20,8 @@ public class SagePoison : ModBuff
     {
         int viralCount = 0;
         int viridCount = 0;
-        Projectile[] _projArr = Main.projectile;
-        for (int _i = 0; _i < Main.maxProjectiles; _i++)
+        foreach (var item in Main.ActiveProjectiles)
         {
-            Projectile item = _projArr[_i];
-            if (!item.active)
-                continue;
             if (item.type == ModContent.ProjectileType<SageSpirit>())
                 viralCount++;
             if (item.type == ModContent.ProjectileType<ViridVanguardBlade>())

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Tiles.Crags;
 using Terraria;
 using Terraria.ID;

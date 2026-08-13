@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

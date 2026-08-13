@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -24,6 +25,7 @@ using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 
 #region Item
 namespace CalamityMod.Items.Weapons.Rogue

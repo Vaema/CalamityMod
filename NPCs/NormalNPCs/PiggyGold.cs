@@ -1,4 +1,11 @@
-﻿using CalamityMod.Items.Critters;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.Items.Critters;
+using CalamityMod.Items.Placeables.Banners;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;

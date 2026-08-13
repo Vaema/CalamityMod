@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

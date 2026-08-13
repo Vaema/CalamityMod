@@ -10,6 +10,7 @@ using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
+using ReLogic.Reflection;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;

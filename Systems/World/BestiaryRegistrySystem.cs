@@ -1,9 +1,14 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.NPCs.Abyss;
+using CalamityMod.NPCs.Astral;
+using CalamityMod.NPCs.Crags;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Systems;
 

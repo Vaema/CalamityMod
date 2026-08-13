@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;

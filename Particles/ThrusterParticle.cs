@@ -1,7 +1,13 @@
 ﻿using System;
+using CalamityMod.Enums;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using rail;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Particles;
 
