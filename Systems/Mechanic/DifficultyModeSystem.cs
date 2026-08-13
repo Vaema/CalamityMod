@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;

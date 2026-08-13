@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

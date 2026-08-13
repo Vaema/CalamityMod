@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;

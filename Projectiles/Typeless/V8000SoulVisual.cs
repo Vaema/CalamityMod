@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using CalamityMod.Enums;

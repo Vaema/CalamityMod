@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Enums;
+﻿using CalamityMod.Enums;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

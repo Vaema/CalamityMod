@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;

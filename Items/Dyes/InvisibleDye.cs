@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;

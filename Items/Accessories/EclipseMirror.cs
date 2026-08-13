@@ -1,6 +1,4 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.CalPlayer;
-using CalamityMod.Cooldowns;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;

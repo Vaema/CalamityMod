@@ -3,7 +3,6 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Placeables.Furniture.Monoliths;
-using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;

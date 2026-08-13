@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Reflection.Emit;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.RuntimeDetour;
-using MonoMod.RuntimeDetour.HookGen;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Debugging;

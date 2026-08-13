@@ -1,6 +1,4 @@
-﻿using CalamityMod.Events;
-using CalamityMod.Particles;
-using CalamityMod.World;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

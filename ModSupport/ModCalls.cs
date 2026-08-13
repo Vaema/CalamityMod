@@ -7,7 +7,6 @@ using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Systems;
-using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.UI.DraedonSummoning;

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Cooldowns;
+﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using CalamityMod.Utilities;

@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;

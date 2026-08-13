@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Potions;
-using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
-using CalamityMod.Rarities;
-using CalamityMod.Scenes.MusicScenes;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 

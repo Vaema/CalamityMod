@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Balancing;
-using CalamityMod.NPCs;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;

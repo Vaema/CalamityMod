@@ -2,9 +2,7 @@
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;

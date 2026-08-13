@@ -1,6 +1,4 @@
-﻿using CalamityMod.NPCs;
-using CalamityMod.Systems.Collections;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;

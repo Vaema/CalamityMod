@@ -1,12 +1,6 @@
-﻿using System;
-using CalamityMod.Items.Accessories;
-using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Microsoft.Xna.Framework;
 using Terraria.Audio;
-using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Cooldowns;
 

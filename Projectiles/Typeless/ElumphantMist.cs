@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
@@ -10,9 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
-using Terraria.Graphics.Renderers;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless;

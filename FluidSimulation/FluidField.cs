@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Effects;
-using CalamityMod.Graphics;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

@@ -1,14 +1,8 @@
 ﻿using System;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Potions;
-using CalamityMod.Particles;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 

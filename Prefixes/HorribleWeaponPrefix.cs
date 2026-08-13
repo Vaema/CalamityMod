@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Items;
-using Terraria;
-using Terraria.Localization;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes;

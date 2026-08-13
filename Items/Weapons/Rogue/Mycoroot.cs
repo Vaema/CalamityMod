@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;

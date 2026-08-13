@@ -4,7 +4,6 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using System.Linq;
 using System;
-using Microsoft.Xna.Framework;
 using Terraria.Audio;
 
 namespace CalamityMod.Items.BaseItems;

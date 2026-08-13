@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
 using Terraria;

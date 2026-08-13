@@ -2,7 +2,6 @@
 using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories;

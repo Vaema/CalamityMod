@@ -1,10 +1,8 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue;

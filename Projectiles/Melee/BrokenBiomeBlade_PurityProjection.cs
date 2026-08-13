@@ -1,10 +1,8 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
-using static Terraria.ModLoader.ModContent;
 
 
 namespace CalamityMod.Projectiles.Melee;

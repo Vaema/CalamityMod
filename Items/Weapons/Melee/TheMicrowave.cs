@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Projectiles.Melee.Yoyos;
+﻿using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;

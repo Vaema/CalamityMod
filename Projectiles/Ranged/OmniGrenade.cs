@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

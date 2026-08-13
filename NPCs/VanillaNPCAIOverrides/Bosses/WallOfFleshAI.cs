@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Events;
-using CalamityMod.ExtraTextures;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;

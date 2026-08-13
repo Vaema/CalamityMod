@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;

@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;

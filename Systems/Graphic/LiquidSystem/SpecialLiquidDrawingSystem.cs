@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Liquid;

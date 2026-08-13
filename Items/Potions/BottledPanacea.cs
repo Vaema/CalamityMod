@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Cooldowns;
-using CalamityMod.DataStructures;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;

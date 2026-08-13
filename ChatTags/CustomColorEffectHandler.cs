@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Items.Accessories.Wings;
-using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;

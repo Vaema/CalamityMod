@@ -1,5 +1,4 @@
 ﻿using CalamityMod.DataStructures;
-using CalamityMod.Items.Potions.Alcohol;
 using Terraria;
 using Terraria.ModLoader;
 

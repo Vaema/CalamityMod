@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static CalamityMod.Items.Armor.Bloodflare.BloodflareHeadRogue;
 using static CalamityMod.Items.Armor.GodSlayer.GodSlayerHeadRogue;
 using static CalamityMod.Items.Armor.Tarragon.TarragonHeadRogue;
 

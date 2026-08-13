@@ -3,7 +3,6 @@ using System.IO;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Potions.Food;
 using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
