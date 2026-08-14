@@ -132,20 +132,20 @@ public partial class CalamityGlobalNPC : GlobalNPC
     public const float VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5f;
     public const float ResistantToDoTDamageMult = 0.5f;
 
-    public StatModifier TypelessDebuffMultiplier = new StatModifier();
-    public StatModifier HeatDebuffMultiplier = new StatModifier();
-    public StatModifier ColdDebuffMultiplier = new StatModifier();
-    public StatModifier SicknessDebuffMultiplier = new StatModifier();
-    public StatModifier WaterDebuffMultiplier = new StatModifier();
-    public StatModifier ElectricDebuffMultiplier = new StatModifier();
+    public StatModifier TypelessDebuffMultiplier = new();
+    public StatModifier HeatDebuffMultiplier = new();
+    public StatModifier ColdDebuffMultiplier = new();
+    public StatModifier SicknessDebuffMultiplier = new();
+    public StatModifier WaterDebuffMultiplier = new();
+    public StatModifier ElectricDebuffMultiplier = new();
 
     // These are all recalculated constantly, while the regular ones are recalulated only on hit
-    public StatModifier ActiveTypelessDebuffMultiplier = new StatModifier();
-    public StatModifier ActiveHeatDebuffMultiplier = new StatModifier();
-    public StatModifier ActiveColdDebuffMultiplier = new StatModifier();
-    public StatModifier ActiveSicknessDebuffMultiplier = new StatModifier();
-    public StatModifier ActiveWaterDebuffMultiplier = new StatModifier();
-    public StatModifier ActiveElectricDebuffMultiplier = new StatModifier();
+    public StatModifier ActiveTypelessDebuffMultiplier = new();
+    public StatModifier ActiveHeatDebuffMultiplier = new();
+    public StatModifier ActiveColdDebuffMultiplier = new();
+    public StatModifier ActiveSicknessDebuffMultiplier = new();
+    public StatModifier ActiveWaterDebuffMultiplier = new();
+    public StatModifier ActiveElectricDebuffMultiplier = new();
 
     // Cold debuff effects
     public bool IncreasedColdEffects_EskimoSet = false;
@@ -2767,6 +2767,9 @@ public partial class CalamityGlobalNPC : GlobalNPC
     #region Pre AI
     public override bool PreAI(NPC npc)
     {
+        // Disable netOffset effects.
+        npc.netOffset = Vector2.Zero;
+
         // Change Spaz and Ret weaknesses and resistances when phase 2 starts.
         if (npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer)
         {
@@ -3606,7 +3609,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
             // Hitbox criteria were changed to allow long one dimensional projectiles so that Condemnation would work.
             bool acceptableVelocity = projectile.velocity != Vector2.Zero;
             bool acceptableHitbox = (projectile.width <= 36) || (projectile.height <= 36);
-            
+
             if (bullseye != null && acceptableVelocity && acceptableHitbox && !CalamityProjectileSets.DaawnlightBlacklist[projectile.type])
             {
                 // Bullseyes are visually different on bosses and thus have larger hitboxes.
@@ -4786,8 +4789,8 @@ public partial class CalamityGlobalNPC : GlobalNPC
     }
 
     //TODO - Make this a part of DebuffData
-    public static List<(string, Predicate<NPC>)> moddedDebuffTextureList = new List<(string, Predicate<NPC>)>
-    {
+    public static List<(string, Predicate<NPC>)> moddedDebuffTextureList =
+    [
         // All Calamity DoTs in alphabetical order
         ("CalamityMod/Buffs/DamageOverTime/AstralInfectionDebuff", NPC => NPC.Calamity().astralInfection),
         ("CalamityMod/Buffs/DamageOverTime/AuricRebuke", NPC => NPC.Calamity().auricRebuke),
@@ -4839,7 +4842,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
         ("CalamityMod/Buffs/StatDebuffs/TimeDistortion", NPC => NPC.Calamity().timeDistortion),
         ("CalamityMod/Buffs/StatDebuffs/WhisperingDeath", NPC => NPC.Calamity().whisperingDeath),
         ("CalamityMod/Buffs/StatDebuffs/WitherDebuff", NPC => NPC.Calamity().wither),
-    };
+    ];
 
     public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
@@ -4970,7 +4973,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
                 int buffDisplayRowLimit = 5;
                 // The maximum length of a single row in the buff display
                 // Limited to 80 units, because every buff drawn here is half the size of a normal buff, 16 x 16, 16 * 5 = 80 units
-                float drawPosX = totalLength >= 80f ? 40f : (float)(totalLength / 2);
+                float drawPosX = totalLength >= 80f ? 40f : totalLength / 2;
                 // The height of a single frame of the npc
                 float npcHeight = (npc.height * npc.scale) / 2;
                 // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
@@ -5082,10 +5085,10 @@ public partial class CalamityGlobalNPC : GlobalNPC
 
     public static Color buffColor(Color newColor, float R, float G, float B, float A)
     {
-        newColor.R = (byte)((float)newColor.R * R);
-        newColor.G = (byte)((float)newColor.G * G);
-        newColor.B = (byte)((float)newColor.B * B);
-        newColor.A = (byte)((float)newColor.A * A);
+        newColor.R = (byte)(newColor.R * R);
+        newColor.G = (byte)(newColor.G * G);
+        newColor.B = (byte)(newColor.B * B);
+        newColor.A = (byte)(newColor.A * A);
         return newColor;
     }
 
@@ -5963,7 +5966,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
 
         // Insert the debuff info into the NPC's bestiary entry
         bool force = npc.type == ModContent.NPCType<Burrower>(); //Force Burrower to always show the debuff section
-        bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements,force));
+        bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements, force));
 
         // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now
         if (npc.type == NPCID.EnchantedNightcrawler)

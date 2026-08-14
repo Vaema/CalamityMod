@@ -27,7 +27,7 @@ internal abstract class CalamityPacket : ILoadable
             CalamityMod.Log.Error($"Packet instance's 'Instance' property is not asssignable with given type! [Failed On: '{type.FullName}']");
 
         instanceProperty.SetValue(null, this);
-        _Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
+        _Prop_Static_Instance = instanceProperty;
     }
 
     public virtual void Unload()

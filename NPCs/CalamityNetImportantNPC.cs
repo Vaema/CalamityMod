@@ -13,7 +13,7 @@ public sealed class CalamityNetImportantNPC : GlobalNPC
 
     public override void Load()
     {
-        typesToUpdate = new();
+        typesToUpdate = [];
     }
 
     public override void Unload()

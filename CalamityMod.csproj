@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\tModLoader.targets" />
 
@@ -6,12 +6,11 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-
   <ItemGroup>
     <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
-    <!-- Taken from: <https://github.com/krafs/Publicizer/pull/128>.  This is
+    <!-- Taken from: <https://github.com/krafs/Publicizer/pull/128>. This is
          used to fix an annoying warning because the publicizer we're using
          emits a type also included by MonoMod.Utils. -->
   <Target Name="RemoveIgnoresAccessChecksToAttributeCs" AfterTargets="PublicizeAssemblies">

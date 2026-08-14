@@ -34,9 +34,8 @@ public class CalamityPolarityNPC : GlobalNPC
     public override void SetDefaults(NPC npc)
     {
         CurPolarity = 0;
-        pulses = new List<Particle>();
-        pulsesToClear = new List<Particle>();
-
+        pulses = [];
+        pulsesToClear = [];
     }
 
     //Applies a new polarity to the target

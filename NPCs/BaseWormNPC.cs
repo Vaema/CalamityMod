@@ -331,8 +331,7 @@ public abstract class BaseWormNPC : ModNPC
     /// <summary>
     /// Offsets for drawing each segment
     /// </summary>
-    public List<Vector2> SegmentTypeDrawOffsets = new List<Vector2>();
-
+    public List<Vector2> SegmentTypeDrawOffsets = new();
 
     /// <summary>
     /// How far through the current animation this worm is
@@ -374,7 +373,7 @@ public abstract class BaseWormNPC : ModNPC
     /// Internal list that stores the textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalTexAssets = new List<Asset<Texture2D>>();
+    private List<Asset<Texture2D>> internalTexAssets = new();
     /// <summary>
     /// The textures for each glow type of this worm. Works like getting a texture from TextureAssets
     /// </summary>
@@ -397,7 +396,7 @@ public abstract class BaseWormNPC : ModNPC
     /// Internal list that stores the glow textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalGlowAssets = new List<Asset<Texture2D>>();
+    private List<Asset<Texture2D>> internalGlowAssets = new();
 
     public enum SegmentFollowLogic
     {
@@ -424,7 +423,7 @@ public abstract class BaseWormNPC : ModNPC
     /// <summary>
     /// The points used by ExactSegmentLogic to exactly follow the head
     /// </summary>
-    private List<Vector2> segmentPoints = new List<Vector2>();
+    private List<Vector2> segmentPoints = new();
 
     /// <summary>
     /// Updates the positions of the segments based on the value set in SegmentFollowType
@@ -490,9 +489,8 @@ public abstract class BaseWormNPC : ModNPC
             }
             thisSeg.rotation = nexSegDir.ToRotation() + MathHelper.PiOver2;
             float angledif = MathHelper.WrapAngle(thisSeg.rotation - aheadSeg.rotation);
-            thisSeg.rotation = thisSeg.rotation.AngleLerp(aheadSeg.rotation + MathHelper.Clamp(angledif, -SegmentMaxRotation * 0.5f, SegmentMaxRotation * 0.5f),0.25f);
-            thisSeg.Center = aheadSeg.Center - (thisSeg.rotation -MathHelper.PiOver2).ToRotationVector2() * segmentDistance;
-
+            thisSeg.rotation = thisSeg.rotation.AngleLerp(aheadSeg.rotation + MathHelper.Clamp(angledif, -SegmentMaxRotation * 0.5f, SegmentMaxRotation * 0.5f), 0.25f);
+            thisSeg.Center = aheadSeg.Center - (thisSeg.rotation - MathHelper.PiOver2).ToRotationVector2() * segmentDistance;
         }
     }
 
@@ -613,7 +611,7 @@ public abstract class BaseWormNPC : ModNPC
         {
             DrawSegment(spriteBatch, screenPos, drawColor, Segments[i]);
         }
-        spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos, null, drawColor* NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
+        spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos, null, drawColor * NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
         if (GlowTextures.Count > 0 && GlowTextures[0] is not null)
             spriteBatch.Draw(GlowTextureAssets[0].Value, NPC.Center - screenPos, null, Color.White * NPC.Opacity, NPC.rotation, GlowTextureAssets[0].Size() / 2, NPC.scale, SpriteEffects.None, 1);
         return false;
@@ -632,11 +630,11 @@ public abstract class BaseWormNPC : ModNPC
         }
         var tex = SegmentTextureAssets[segment.segmentType].Value;
         spriteBatch.Draw(tex, segment.Center - screenPos, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
-        if (!GlowTextures.IndexInRange(segment.segmentType+1) || GlowTextures[segment.segmentType+1] is null)
+        if (!GlowTextures.IndexInRange(segment.segmentType + 1) || GlowTextures[segment.segmentType + 1] is null)
         {
             return;
         }
-        tex = GlowTextureAssets[segment.segmentType+1].Value;
+        tex = GlowTextureAssets[segment.segmentType + 1].Value;
         spriteBatch.Draw(tex, segment.Center - screenPos, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
     }
     #endregion

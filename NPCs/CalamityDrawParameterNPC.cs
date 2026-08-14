@@ -20,8 +20,8 @@ public sealed class CalamityDrawParameterNPC : GlobalNPC
     #endregion
 
     #region Filtering Fields
-    public static List<int> MiracleBlightExcludedNPCs => new()
-    {
+    public static List<int> MiracleBlightExcludedNPCs =>
+    [
         // List the reason why the NPC(s) are excluded :)
 
         // The particle sets break with the visuals and this is the easiest way to fix this that isn't stupidly complex.
@@ -35,7 +35,7 @@ public sealed class CalamityDrawParameterNPC : GlobalNPC
         NPCID.MoonLordCore,
         NPCID.MoonLordHand,
         NPCID.MoonLordHead
-    };
+    ];
     #endregion
 
     #region Load / Unload

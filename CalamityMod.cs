@@ -67,7 +67,6 @@ public class CalamityMod : Mod
     #endregion
 
     #region Render Target Management
-
     public static void PrepareRenderTargets(GameTime gameTime)
     {
         DeathAshParticle.PrepareRenderTargets();

@@ -966,14 +966,14 @@ public partial class CalamityGlobalNPC : GlobalNPC
                         return false;
                     });
 
-                    int[] saucerItems = new int[]
-                    {
+                    int[] saucerItems =
+                    [
                         ItemID.Xenopopper,
                         ItemID.XenoStaff,
                         ItemID.LaserMachinegun,
                         ItemID.ElectrosphereLauncher,
                         ItemID.InfluxWaver,
-                    };
+                    ];
 
                     npcLoot.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, saucerItems));
 
@@ -1910,7 +1910,7 @@ DukeEditFailed:
         // On-kill NON-LOOT behavior for Eater of Worlds
         if ((npc.boss && (npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsTail)) || npc.type == NPCID.BrainofCthulhu)
         {
-            SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad }, NPC.downedBoss2);
+            SetNewShopVariable([NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad], NPC.downedBoss2);
             SetNewBossJustDowned(npc);
         }
 
@@ -1918,12 +1918,12 @@ DukeEditFailed:
         switch (npc.type)
         {
             case NPCID.KingSlime:
-                SetNewShopVariable(new int[] { NPCID.Dryad }, NPC.downedSlimeKing);
+                SetNewShopVariable([NPCID.Dryad], NPC.downedSlimeKing);
                 SetNewBossJustDowned(npc);
                 break;
 
             case NPCID.EyeofCthulhu:
-                SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.Dryad }, NPC.downedBoss1);
+                SetNewShopVariable([NPCID.Merchant, NPCID.Dryad], NPC.downedBoss1);
                 SetNewBossJustDowned(npc);
                 break;
 
@@ -1932,12 +1932,12 @@ DukeEditFailed:
                 break;
 
             case NPCID.QueenBee:
-                SetNewShopVariable(new int[] { NPCID.ArmsDealer, NPCID.Dryad }, NPC.downedQueenBee);
+                SetNewShopVariable([NPCID.ArmsDealer, NPCID.Dryad], NPC.downedQueenBee);
                 SetNewBossJustDowned(npc);
                 break;
 
             case NPCID.SkeletronHead:
-                SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.Dryad }, NPC.downedBoss3);
+                SetNewShopVariable([NPCID.Merchant, NPCID.Dryad], NPC.downedBoss3);
                 SetNewBossJustDowned(npc);
 
                 // First kill: Notify of Abyss chests being unlocked.
@@ -1953,7 +1953,7 @@ DukeEditFailed:
                 break;
 
             case NPCID.WallofFlesh:
-                SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Painter, NPCID.WitchDoctor, NPCID.Stylist, NPCID.DyeTrader, NPCID.Demolitionist, NPCID.PartyGirl, NPCID.Clothier, NPCID.SkeletonMerchant }, Main.hardMode);
+                SetNewShopVariable([NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Painter, NPCID.WitchDoctor, NPCID.Stylist, NPCID.DyeTrader, NPCID.Demolitionist, NPCID.PartyGirl, NPCID.Clothier, NPCID.SkeletonMerchant], Main.hardMode);
                 SetNewBossJustDowned(npc);
 
                 if (!Main.hardMode && !BossRushEvent.BossRushActive)
@@ -1979,8 +1979,8 @@ DukeEditFailed:
                 break;
 
             case NPCID.TheDestroyer:
-                SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
-                SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>() }, NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
+                SetNewShopVariable([NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle], NPC.downedMechBossAny);
+                SetNewShopVariable([NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>()], NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                 SetNewBossJustDowned(npc);
 
                 if (!NPC.downedMechBoss1 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -1991,8 +1991,8 @@ DukeEditFailed:
             case NPCID.Retinazer:
                 if (lastTwinStanding)
                 {
-                    SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
-                    SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>() }, !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
+                    SetNewShopVariable([NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle], NPC.downedMechBossAny);
+                    SetNewShopVariable([NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>()], !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
                     if (!NPC.downedMechBoss2 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -2001,8 +2001,8 @@ DukeEditFailed:
                 break;
 
             case NPCID.SkeletronPrime:
-                SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
-                SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>() }, !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
+                SetNewShopVariable([NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle], NPC.downedMechBossAny);
+                SetNewShopVariable([NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>()], !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
                 SetNewBossJustDowned(npc);
 
                 if (!NPC.downedMechBoss3 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -2010,7 +2010,7 @@ DukeEditFailed:
                 break;
 
             case NPCID.Plantera:
-                SetNewShopVariable(new int[] { NPCID.WitchDoctor, NPCID.Truffle, NPCID.BestiaryGirl, ModContent.NPCType<Bandit>() }, NPC.downedPlantBoss);
+                SetNewShopVariable([NPCID.WitchDoctor, NPCID.Truffle, NPCID.BestiaryGirl, ModContent.NPCType<Bandit>()], NPC.downedPlantBoss);
                 SetNewBossJustDowned(npc);
 
                 // Spawn Perennial Ore if Plantera has never been killed
@@ -2034,19 +2034,19 @@ DukeEditFailed:
                 break;
 
             case NPCID.Everscream:
-                SetNewShopVariable(new int[] { ModContent.NPCType<Archmage>() }, NPC.downedChristmasTree || !NPC.downedChristmasSantank || !NPC.downedChristmasIceQueen);
+                SetNewShopVariable([ModContent.NPCType<Archmage>()], NPC.downedChristmasTree || !NPC.downedChristmasSantank || !NPC.downedChristmasIceQueen);
                 break;
 
             case NPCID.SantaNK1:
-                SetNewShopVariable(new int[] { ModContent.NPCType<Archmage>() }, !NPC.downedChristmasTree || NPC.downedChristmasSantank || !NPC.downedChristmasIceQueen);
+                SetNewShopVariable([ModContent.NPCType<Archmage>()], !NPC.downedChristmasTree || NPC.downedChristmasSantank || !NPC.downedChristmasIceQueen);
                 break;
 
             case NPCID.IceQueen:
-                SetNewShopVariable(new int[] { ModContent.NPCType<Archmage>() }, !NPC.downedChristmasTree || !NPC.downedChristmasSantank || NPC.downedChristmasIceQueen);
+                SetNewShopVariable([ModContent.NPCType<Archmage>()], !NPC.downedChristmasTree || !NPC.downedChristmasSantank || NPC.downedChristmasIceQueen);
                 break;
 
             case NPCID.Golem:
-                SetNewShopVariable(new int[] { NPCID.ArmsDealer, NPCID.Cyborg, NPCID.Steampunker, NPCID.Wizard, NPCID.WitchDoctor, NPCID.DD2Bartender, ModContent.NPCType<Bandit>() }, NPC.downedGolemBoss);
+                SetNewShopVariable([NPCID.ArmsDealer, NPCID.Cyborg, NPCID.Steampunker, NPCID.Wizard, NPCID.WitchDoctor, NPCID.DD2Bartender, ModContent.NPCType<Bandit>()], NPC.downedGolemBoss);
                 SetNewBossJustDowned(npc);
 
                 // If Golem has never been killed, send a message about the Plague.
@@ -2077,11 +2077,11 @@ DukeEditFailed:
                 break;
 
             case NPCID.LunarTowerSolar:
-                SetNewShopVariable(new int[] { NPCID.BestiaryGirl }, NPC.downedTowerSolar);
+                SetNewShopVariable([NPCID.BestiaryGirl], NPC.downedTowerSolar);
                 break;
 
             case NPCID.MoonLordCore:
-                SetNewShopVariable(new int[] { NPCID.Princess, ModContent.NPCType<Bandit>() }, NPC.downedMoonlord);
+                SetNewShopVariable([NPCID.Princess, ModContent.NPCType<Bandit>()], NPC.downedMoonlord);
                 SetNewBossJustDowned(npc);
 
                 string key5 = "Mods.CalamityMod.Status.Progression.MoonBossText";

@@ -1,6 +1,7 @@
 author = The Calamity Dev Team
 version = 2.2.2
 displayName = Calamity Mod
+modReferences = CalamityModMusic
 homepage = https://calamitymod.com
 buildIgnore = .vs\*, Properties\*, *.csproj, *.user, obj\*, bin\*, *.config, .git\*, .github\*, *.tmp, *.md, .editorconfig, .gitignore, .gitattributes, Effects\Compiler\*
 hideCode = false

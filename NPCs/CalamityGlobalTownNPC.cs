@@ -537,7 +537,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
     #region Pets
     public static void ResetTownNPCNameBools()
     {
-        void ResetName(int npcID, ref bool nameBool)
+        static void ResetName(int npcID, ref bool nameBool)
         {
             if (NPC.FindFirstNPC(npcID) == -1)
                 nameBool = false;
@@ -547,8 +547,9 @@ public class CalamityGlobalTownNPC : GlobalNPC
         ResetName(NPCID.TownDog, ref CalamityWorld.dogName);
         ResetName(NPCID.TownBunny, ref CalamityWorld.bunnyName);
     }
+
     // Annoyingly, because npc.GivenName is a property, it can't be passed as a ref parameter.
-    private string ChooseName(ref bool alreadySet, string currentName, int numVanillaNames, string[] patreonNames, string[] globalNames)
+    private static string ChooseName(ref bool alreadySet, string currentName, int numVanillaNames, string[] patreonNames, string[] globalNames)
     {
         if (alreadySet)
         {
@@ -556,6 +557,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
             return currentName;
         }
         alreadySet = true;
+
         // PatreonNames can be null, so can global names, it short circuits in the next step if so
         int combinedLength = (patreonNames?.Length ?? 0) + (globalNames?.Length ?? 0);
         int index = Main.rand.Next(numVanillaNames + combinedLength);
@@ -563,8 +565,6 @@ public class CalamityGlobalTownNPC : GlobalNPC
         // If the roll isn't low enough, then a "vanilla name" was picked, meaning we change nothing.
         if (index >= combinedLength)
             return currentName;
-
-
 
         // Change the name to be a randomly selected Patreon name if the roll is low enough.
         if (index >= globalNames.Length)
@@ -661,16 +661,13 @@ public class CalamityGlobalTownNPC : GlobalNPC
     }
     #endregion
 
-    private void AddNewNames(List<string> nameList, string[] patreonNames)
+    private static void AddNewNames(List<string> nameList, string[] patreonNames)
     {
         if (patreonNames is null || patreonNames.Length == 0)
-        {
             return;
-        }
+
         for (int i = 0; i < patreonNames.Length; i++)
-        {
             nameList.Add(patreonNames[i]);
-        }
     }
 
     public override void ModifyNPCNameList(NPC npc, List<string> nameList)
@@ -907,7 +904,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
     public bool SearchForTheMonument(NPC npc)
     {
         Point tileCenter = npc.Center.ToTileCoordinates();
-        Rectangle searchArea = new((int)(tileCenter.X - Main.buffScanAreaWidth / 2), (int)(tileCenter.Y - Main.buffScanAreaHeight / 2), Main.buffScanAreaWidth, Main.buffScanAreaHeight);
+        Rectangle searchArea = new(tileCenter.X - Main.buffScanAreaWidth / 2, tileCenter.Y - Main.buffScanAreaHeight / 2, Main.buffScanAreaWidth, Main.buffScanAreaHeight);
 
         if (TheMonumentTileEntity.IsInArea(searchArea))
         {
@@ -929,35 +926,35 @@ public class CalamityGlobalTownNPC : GlobalNPC
 
     #region NPC New Shop Alert
 
-    public static List<(int, Predicate<Player>, Action<Player, bool>)> npcAlertList = new List<(int, Predicate<Player>, Action<Player, bool>)>()
-    {
-        (NPCID.Merchant, (Player player) => player.Calamity().newMerchantInventory, (Player player, bool enabled) =>{ player.Calamity().newMerchantInventory = enabled; }),
-        (NPCID.Painter, (Player player) => player.Calamity().newPainterInventory,(Player player, bool enabled) =>{ player.Calamity().newPainterInventory = enabled; }),
-        (NPCID.Golfer, (Player player) => player.Calamity().newGolferInventory, (Player player, bool enabled) =>{ player.Calamity().newGolferInventory = enabled; }),
-        (NPCID.BestiaryGirl, (Player player) => player.Calamity().newZoologistInventory,(Player player, bool enabled) =>{ player.Calamity().newZoologistInventory = enabled; }),
-        (NPCID.DyeTrader, (Player player) => player.Calamity().newDyeTraderInventory, (Player player, bool enabled) =>{ player.Calamity().newDyeTraderInventory = enabled; }),
-        (NPCID.PartyGirl, (Player player) => player.Calamity().newPartyGirlInventory,(Player player, bool enabled) =>{ player.Calamity().newPartyGirlInventory = enabled; }),
-        (NPCID.Stylist, (Player player) => player.Calamity().newStylistInventory, (Player player, bool enabled) =>{ player.Calamity().newStylistInventory = enabled; }),
-        (NPCID.Demolitionist, (Player player) => player.Calamity().newDemolitionistInventory, (Player player, bool enabled) =>{ player.Calamity().newDemolitionistInventory = enabled; }),
-        (NPCID.Dryad, (Player player) => player.Calamity().newDryadInventory, (Player player, bool enabled) =>{ player.Calamity().newDryadInventory = enabled; }),
-        (NPCID.DD2Bartender, (Player player) => player.Calamity().newTavernkeepInventory, (Player player, bool enabled) =>{ player.Calamity().newTavernkeepInventory = enabled; }),
-        (NPCID.ArmsDealer, (Player player) => player.Calamity().newArmsDealerInventory, (Player player, bool enabled) =>{ player.Calamity().newArmsDealerInventory = enabled; }),
-        (NPCID.GoblinTinkerer, (Player player) => player.Calamity().newGoblinTinkererInventory,(Player player, bool enabled) =>{ player.Calamity().newGoblinTinkererInventory = enabled; }),
-        (NPCID.WitchDoctor, (Player player) => player.Calamity().newWitchDoctorInventory, (Player player, bool enabled) =>{ player.Calamity().newWitchDoctorInventory = enabled; }),
-        (NPCID.Clothier, (Player player) => player.Calamity().newClothierInventory, (Player player, bool enabled) =>{ player.Calamity().newClothierInventory = enabled; }),
-        (NPCID.Mechanic, (Player player) => player.Calamity().newMechanicInventory, (Player player, bool enabled) =>{ player.Calamity().newMechanicInventory = enabled; }),
-        (NPCID.Pirate, (Player player) => player.Calamity().newPirateInventory, (Player player, bool enabled) =>{ player.Calamity().newPirateInventory = enabled; }),
-        (NPCID.Truffle, (Player player) => player.Calamity().newTruffleInventory,(Player player, bool enabled) =>{ player.Calamity().newTruffleInventory = enabled; }),
-        (NPCID.Wizard, (Player player) => player.Calamity().newWizardInventory, (Player player, bool enabled) =>{ player.Calamity().newWizardInventory = enabled; }),
-        (NPCID.Steampunker, (Player player) => player.Calamity().newSteampunkerInventory, (Player player, bool enabled) =>{ player.Calamity().newSteampunkerInventory = enabled; }),
-        (NPCID.Cyborg,(Player player) => player.Calamity().newCyborgInventory, (Player player, bool enabled) =>{ player.Calamity().newCyborgInventory = enabled; }),
-        (NPCID.Princess, (Player player) => player.Calamity().newPrincessInventory,(Player player, bool enabled) =>{ player.Calamity().newPrincessInventory = enabled; }),
-        (NPCID.SkeletonMerchant, (Player player) => player.Calamity().newSkeletonMerchantInventory, (Player player, bool enabled) =>{ player.Calamity().newSkeletonMerchantInventory = enabled; }),
-        (NPCType<SeaKing>(), (Player player) => player.Calamity().newAmidiasInventory,(Player player, bool enabled) =>{ player.Calamity().newAmidiasInventory = enabled; }),
-        (NPCType<Bandit>(), (Player player) => player.Calamity().newBanditInventory,(Player player, bool enabled) =>{ player.Calamity().newBanditInventory = enabled; }),
-        (NPCType<Archmage>(), (Player player) => player.Calamity().newPermafrostInventory,(Player player, bool enabled) =>{ player.Calamity().newPermafrostInventory = enabled; }),
-        (NPCType<BrimstoneWitch>(), (Player player) => player.Calamity().newCalamitasInventory,(Player player, bool enabled) =>{ player.Calamity().newCalamitasInventory = enabled; }) // lol
-    };
+    public static List<(int, Predicate<Player>, Action<Player, bool>)> npcAlertList =
+    [
+        (NPCID.Merchant, player => player.Calamity().newMerchantInventory, (player, enabled) =>{ player.Calamity().newMerchantInventory = enabled; }),
+        (NPCID.Painter, player => player.Calamity().newPainterInventory,(player, enabled) =>{ player.Calamity().newPainterInventory = enabled; }),
+        (NPCID.Golfer, player => player.Calamity().newGolferInventory, (player, enabled) =>{ player.Calamity().newGolferInventory = enabled; }),
+        (NPCID.BestiaryGirl, player => player.Calamity().newZoologistInventory,(player, enabled) =>{ player.Calamity().newZoologistInventory = enabled; }),
+        (NPCID.DyeTrader, player => player.Calamity().newDyeTraderInventory, (player, enabled) =>{ player.Calamity().newDyeTraderInventory = enabled; }),
+        (NPCID.PartyGirl, player => player.Calamity().newPartyGirlInventory,(player, enabled) =>{ player.Calamity().newPartyGirlInventory = enabled; }),
+        (NPCID.Stylist, player => player.Calamity().newStylistInventory, (player, enabled) =>{ player.Calamity().newStylistInventory = enabled; }),
+        (NPCID.Demolitionist, player => player.Calamity().newDemolitionistInventory, (player, enabled) =>{ player.Calamity().newDemolitionistInventory = enabled; }),
+        (NPCID.Dryad, player => player.Calamity().newDryadInventory, (player, enabled) =>{ player.Calamity().newDryadInventory = enabled; }),
+        (NPCID.DD2Bartender, player => player.Calamity().newTavernkeepInventory, (player, enabled) =>{ player.Calamity().newTavernkeepInventory = enabled; }),
+        (NPCID.ArmsDealer, player => player.Calamity().newArmsDealerInventory, (player, enabled) =>{ player.Calamity().newArmsDealerInventory = enabled; }),
+        (NPCID.GoblinTinkerer, player => player.Calamity().newGoblinTinkererInventory,(player, enabled) =>{ player.Calamity().newGoblinTinkererInventory = enabled; }),
+        (NPCID.WitchDoctor, player => player.Calamity().newWitchDoctorInventory, (player, enabled) =>{ player.Calamity().newWitchDoctorInventory = enabled; }),
+        (NPCID.Clothier, player => player.Calamity().newClothierInventory, (player, enabled) =>{ player.Calamity().newClothierInventory = enabled; }),
+        (NPCID.Mechanic, player => player.Calamity().newMechanicInventory, (player, enabled) =>{ player.Calamity().newMechanicInventory = enabled; }),
+        (NPCID.Pirate, player => player.Calamity().newPirateInventory, (player, enabled) =>{ player.Calamity().newPirateInventory = enabled; }),
+        (NPCID.Truffle, player => player.Calamity().newTruffleInventory,(player, enabled) =>{ player.Calamity().newTruffleInventory = enabled; }),
+        (NPCID.Wizard, player => player.Calamity().newWizardInventory, (player, enabled) =>{ player.Calamity().newWizardInventory = enabled; }),
+        (NPCID.Steampunker, player => player.Calamity().newSteampunkerInventory, (player, enabled) =>{ player.Calamity().newSteampunkerInventory = enabled; }),
+        (NPCID.Cyborg,player => player.Calamity().newCyborgInventory, (player, enabled) =>{ player.Calamity().newCyborgInventory = enabled; }),
+        (NPCID.Princess, player => player.Calamity().newPrincessInventory,(player, enabled) =>{ player.Calamity().newPrincessInventory = enabled; }),
+        (NPCID.SkeletonMerchant, player => player.Calamity().newSkeletonMerchantInventory, (player, enabled) =>{ player.Calamity().newSkeletonMerchantInventory = enabled; }),
+        (NPCType<SeaKing>(), player => player.Calamity().newAmidiasInventory,(player, enabled) =>{ player.Calamity().newAmidiasInventory = enabled; }),
+        (NPCType<Bandit>(), player => player.Calamity().newBanditInventory,(player, enabled) =>{ player.Calamity().newBanditInventory = enabled; }),
+        (NPCType<Archmage>(), player => player.Calamity().newPermafrostInventory,(player, enabled) =>{ player.Calamity().newPermafrostInventory = enabled; }),
+        (NPCType<BrimstoneWitch>(), player => player.Calamity().newCalamitasInventory,(player, enabled) =>{ player.Calamity().newCalamitasInventory = enabled; })
+    ];
 
     public void TownNPCAlertSystem(NPC npc, Mod mod, SpriteBatch spriteBatch)
     {
@@ -966,9 +963,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
             for (int i = 0; i < npcAlertList.Count; i++)
             {
                 if (npc.type == npcAlertList[i].Item1 && npcAlertList[i].Item2(Main.LocalPlayer))
-                {
                     DrawNewInventoryAlert(npc);
-                }
             }
 
             void DrawNewInventoryAlert(NPC npc2)
@@ -977,7 +972,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
                 Vector2 drawPos = npc2.Center - Main.screenPosition;
 
                 // The height of a single frame of the npc
-                float npcHeight = (float)(TextureAssets.Npc[npc2.type].Value.Height / Main.npcFrameCount[npc2.type] / 2) * npc2.scale;
+                float npcHeight = TextureAssets.Npc[npc2.type].Value.Height / Main.npcFrameCount[npc2.type] / 2 * npc2.scale;
 
                 // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
                 float drawPosY = npcHeight + npc.gfxOffY + 36f;
@@ -1006,9 +1001,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
         for (int i = 0; i < npcAlertList.Count; i++)
         {
             if (npc.type == npcAlertList[i].Item1)
-            {
                 npcAlertList[i].Item3(Main.LocalPlayer, false);
-            }
         }
     }
 
@@ -1022,9 +1015,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
                 for (int n = 0; n < npcAlertList.Count; n++)
                 {
                     if (types[i] == npcAlertList[n].Item1)
-                    {
                         npcAlertList[n].Item3(Main.LocalPlayer, true);
-                    }
                 }
             }
         }
@@ -1037,7 +1028,6 @@ public class CalamityGlobalTownNPC : GlobalNPC
         int permafrost = NPC.FindFirstNPC(NPCType<Archmage>());
         int seahorse = NPC.FindFirstNPC(NPCType<SeaKing>());
         int thief = NPC.FindFirstNPC(NPCType<Bandit>());
-        int angelstatue = NPC.FindFirstNPC(NPCID.Merchant);
 
         switch (npc.type)
         {
@@ -1236,9 +1226,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
                     for (int j = 0; j < player.inventory.Length; j++)
                     {
                         if (player.inventory[j].type == ItemID.PlatinumCoin)
-                        {
                             platinumCoins += player.inventory[j].stack;
-                        }
                     }
                 }
 
@@ -1280,7 +1268,7 @@ public class CalamityGlobalTownNPC : GlobalNPC
     #endregion
 
     #region NPC Stat Changes
-    public void BoundNPCSafety(Mod mod, NPC npc)
+    public static void BoundNPCSafety(Mod mod, NPC npc)
     {
         // Make Bound Town NPCs take no damage
         if (CalamityNPCSets.BoundTownNPC[npc.type])
