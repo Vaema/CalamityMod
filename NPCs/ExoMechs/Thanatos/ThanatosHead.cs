@@ -86,7 +86,7 @@ public class ThanatosHead : ModNPC
         set => NPC.Calamity().newAI[1] = value;
     }
 
-    public ThanatosSmokeParticleSet SmokeDrawer = new ThanatosSmokeParticleSet(-1, 3, 0f, 16f, 1.5f);
+    public ThanatosSmokeParticleSet SmokeDrawer = new(-1, 3, 0f, 16f, 1.5f);
 
     // Timer to prevent Thanatos from dealing contact damage for a bit
     private int noContactDamageTimer = 0;

@@ -15,5 +15,5 @@ public class PrismaticLaser : CooldownHandler
     public override Color CooldownStartColor => rainbowMode;
     public override Color CooldownEndColor => rainbowMode;
 
-    internal Color rainbowMode => MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.3f % 1, new Color[] { new Color(103, 244, 251), new Color(255, 167, 236), new Color(255, 225, 136) });
+    internal Color rainbowMode => MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.3f % 1, new Color[] { new(103, 244, 251), new(255, 167, 236), new(255, 225, 136) });
 }

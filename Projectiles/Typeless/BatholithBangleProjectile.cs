@@ -22,9 +22,9 @@ public class BatholithBangleProjectile : ModProjectile, ILocalizedModType
     public int Soundtime3 = 96;
     public int Soundtime4 = 107;
     public SlotId SoundSlot;
-    public Color clr1 = new Color(59, 28, 136); // Light Granite
-    public Color clr2 = new Color(16, 14, 36); // Dark Granite
-    public Color clr3 = new Color(23, 186, 218); // Granite energy
+    public Color clr1 = new(59, 28, 136); // Light Granite
+    public Color clr2 = new(16, 14, 36); // Dark Granite
+    public Color clr3 = new(23, 186, 218); // Granite energy
     public int spinDir = 1;
     public bool invalidTarget => (Projectile.ai[0] < 0f || Projectile.ai[0] > 199f || !Main.npc[(int)Projectile.ai[0]].active || Main.npc[(int)Projectile.ai[0]].life <= 0);
     public Player Owner => Main.player[Projectile.owner];

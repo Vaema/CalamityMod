@@ -126,50 +126,50 @@ public class SummonTag
     #endregion
 
     #region Vanilla whip stats
-    public static SummonTag LeatherWhip = new SummonTag(ItemID.BlandWhip)
+    public static SummonTag LeatherWhip = new(ItemID.BlandWhip)
     {
         FlatTagDamage = 2,
         UnlistedTagDamage = -4 //Negative value cancels out vanilla tag damage
     };
-    public static SummonTag Snapthorn = new SummonTag(ItemID.ThornWhip)
+    public static SummonTag Snapthorn = new(ItemID.ThornWhip)
     {
         FlatTagDamage = 1,
         UnlistedTagDamage = -6 //Negative value cancels out vanilla tag damage
     };
-    public static SummonTag SpinalTap = new SummonTag(ItemID.BoneWhip)
+    public static SummonTag SpinalTap = new(ItemID.BoneWhip)
     {
         FlatTagDamage = 4,
         UnlistedTagDamage = -7 //Negative value cancels out vanilla tag damage
     };
-    public static SummonTag Firecracker = new SummonTag(ItemID.FireWhip)
+    public static SummonTag Firecracker = new(ItemID.FireWhip)
     {
         TagCritChance = 1f, //Since we make firecracker do 2x damage, I make this apply as a crit for the ability to proc crit accessories and for visual style points
         UnlistedMultiplicativeTagDamage = -1.75f, //Cancels out the vanilla firecracker tag damage
         AutoDrawTooltip = false
     };
-    public static SummonTag CoolWhip = new SummonTag(ItemID.CoolWhip)
+    public static SummonTag CoolWhip = new(ItemID.CoolWhip)
     {
         FlatTagDamage = 6,
         UnlistedTagDamage = -6 //Negative value cancels out vanilla tag damage
     };
-    public static SummonTag Durendal = new SummonTag(ItemID.SwordWhip)
+    public static SummonTag Durendal = new(ItemID.SwordWhip)
     {
         FlatTagDamage = 4,
         TagCritChance = 0.05f,
         UnlistedTagDamage = -9 //Negative value cancels out vanilla tag damage
     };
-    public static SummonTag MorningStar = new SummonTag(ItemID.MaceWhip)
+    public static SummonTag MorningStar = new(ItemID.MaceWhip)
     {
         TagCritChance = 0.13f,
         UnlistedTagDamage = -8 //Negative value cancels out vanilla tag damage
     };
-    public static SummonTag DarkHarvest = new SummonTag(ItemID.ScytheWhip)
+    public static SummonTag DarkHarvest = new(ItemID.ScytheWhip)
     {
         FlatTagDamage = 10,
         UnlistedTagDamage = -10, //Negative value cancels out vanilla tag damage
         //This has a unique on hit effect from vanilla.
     };
-    public static SummonTag Kaleidoscope = new SummonTag(ItemID.RainbowWhip)
+    public static SummonTag Kaleidoscope = new(ItemID.RainbowWhip)
     {
         FlatTagDamage = 8,
         TagCritChance = 0.10f,

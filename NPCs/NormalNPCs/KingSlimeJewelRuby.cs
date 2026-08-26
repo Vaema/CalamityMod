@@ -17,9 +17,9 @@ namespace CalamityMod.NPCs.NormalNPCs;
 
 public class KingSlimeJewelRuby : ModNPC
 {
-    public static readonly SoundStyle ShatterSound = new SoundStyle("CalamityMod/Sounds/NPCKilled/CrownJewelShatter");
-    public static readonly SoundStyle ShootSound = new SoundStyle("CalamityMod/Sounds/Custom/RedJewelFire");
-    public static readonly SoundStyle ModeShiftSound = new SoundStyle("CalamityMod/Sounds/Custom/RedJewelModeShift");
+    public static readonly SoundStyle ShatterSound = new("CalamityMod/Sounds/NPCKilled/CrownJewelShatter");
+    public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/RedJewelFire");
+    public static readonly SoundStyle ModeShiftSound = new("CalamityMod/Sounds/Custom/RedJewelModeShift");
 
 
     private const int BoltShootGateValue = 60;

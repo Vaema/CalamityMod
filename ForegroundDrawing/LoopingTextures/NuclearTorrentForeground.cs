@@ -18,11 +18,11 @@ public class NuclearTorrentPlayer : ModPlayer
 }
 public class NuclearTorrentForeground : LoopingTextureForeground
 {
-    public override Vector2 ParallaxDepth => new Vector2(1f, 1f);
+    public override Vector2 ParallaxDepth => new(1f, 1f);
 
     public override float IntensityMaximum => 0.045f;
 
-    public static List<NuclearRaindrop> Raindrops = new List<NuclearRaindrop>();
+    public static List<NuclearRaindrop> Raindrops = new();
 
     public class NuclearRaindrop
     {

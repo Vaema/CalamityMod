@@ -26,10 +26,10 @@ public class HadalStew : ModItem, ILocalizedModType
         // Even though this uses the drinking animation, it does not use DrinkParticleColors
         // This is so that dusts fly out (like Bowl of Soup) instead of drip down (like Apple Juice)
         ItemID.Sets.FoodParticleColors[Type] = new Color[4] {
-            new Color(185, 117, 70),
-            new Color(214, 98, 44),
-            new Color(235, 156, 117),
-            new Color(89, 54, 46)
+            new(185, 117, 70),
+            new(214, 98, 44),
+            new(235, 156, 117),
+            new(89, 54, 46)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

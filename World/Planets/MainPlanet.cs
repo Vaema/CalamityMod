@@ -133,7 +133,7 @@ public class MainPlanet : Planetoid
     public void PlaceBeams(ushort beamType, int x, int startY, Vector2 planetCenter, int radius, params ushort[] ignoreWalls)
     {
         //lazy quick fix
-        List<ushort> walls = ignoreWalls.ToList();
+        List<ushort> walls = [.. ignoreWalls];
         while (!_tiles[x, startY].HasTile && !walls.Contains(_tiles[x, startY].WallType))
         {
             _tiles[x, startY].Get<TileWallWireStateData>().HasTile = true;

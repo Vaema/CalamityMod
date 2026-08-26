@@ -10,7 +10,7 @@ namespace CalamityMod.Buffs.StatDebuffs;
 
 public class Irradiated : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 20, //Base irradiated DOT. This is changed with some application sources.
         NPCLifeRegenMethod = IrradiatedNPCLifeRegen

@@ -106,14 +106,14 @@ public class AriesWrath : ModProjectile, ILocalizedModType
     }
 
     //Animation keys
-    public CurveSegment slowIn = new CurveSegment(EasingType.PolyIn, 0f, 0.2f, 1f, 3);
-    public CurveSegment bounce = new CurveSegment(EasingType.SineBump, 0.3f, 1f, 0.2f);
-    public CurveSegment remain = new CurveSegment(EasingType.SineBump, 0.6f, 1f, -0.1f);
+    public CurveSegment slowIn = new(EasingType.PolyIn, 0f, 0.2f, 1f, 3);
+    public CurveSegment bounce = new(EasingType.SineBump, 0.3f, 1f, 0.2f);
+    public CurveSegment remain = new(EasingType.SineBump, 0.6f, 1f, -0.1f);
     internal float ThrowDisplace() => PiecewiseAnimation(MathHelper.Clamp(ChainSwapTimer / 40f, 0, 1), new CurveSegment[] { slowIn, bounce, remain });
 
     //Animation keys
-    public CurveSegment scaleUp = new CurveSegment(EasingType.PolyIn, 0f, 0.2f, 1f, 3);
-    public CurveSegment scaleDown = new CurveSegment(EasingType.SineBump, 0.3f, 1f, 0.2f);
+    public CurveSegment scaleUp = new(EasingType.PolyIn, 0f, 0.2f, 1f, 3);
+    public CurveSegment scaleDown = new(EasingType.SineBump, 0.3f, 1f, 0.2f);
     internal float ScaleEquation() => PiecewiseAnimation(MathHelper.Clamp(ChainSwapTimer / 30f, 0, 1), new CurveSegment[] { scaleUp, scaleDown });
 
 

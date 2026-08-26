@@ -39,6 +39,6 @@ public class VoidWater : ModWaterStyle, IWaterStyleModifyColor
     public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
     public override int GetSplashDust() => SplashDust;
     public override int GetDropletGore() => DropletGore;
-    public override Color BiomeHairColor() => new Color(16, 8, 30);
+    public override Color BiomeHairColor() => new(16, 8, 30);
     public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
 }

@@ -32,9 +32,9 @@ public class RedWine : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(54, 5, 21),
-            new Color(82, 9, 36),
-            new Color(105, 4, 29)
+            new(54, 5, 21),
+            new(82, 9, 36),
+            new(105, 4, 29)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

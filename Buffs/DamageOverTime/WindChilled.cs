@@ -14,7 +14,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class WindChilled : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 12,
         NPCLifeRegenMethod = WindChilledNPCLifeRegen,

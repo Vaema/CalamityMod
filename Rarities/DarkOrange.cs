@@ -8,5 +8,5 @@ namespace CalamityMod.Rarities;
 
 public class DarkOrange : ModRarity
 {
-    public override Color RarityColor => new Color(204, 71, 35);
+    public override Color RarityColor => new(204, 71, 35);
 }

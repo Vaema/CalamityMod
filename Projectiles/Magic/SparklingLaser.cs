@@ -23,7 +23,7 @@ public class SparklingLaser : BaseLaserbeamProjectile, ILocalizedModType
     public const int ChargeupTime = 50;
 
     public Player Owner => Main.player[Projectile.owner];
-    public override Color LightCastColor => new Color(204, 204, 255); //#CCCCFF
+    public override Color LightCastColor => new(204, 204, 255); //#CCCCFF
     public override float Lifetime => 18000f;
     public override float MaxScale => 1f;
     public override float MaxLaserLength => 1600f; //100 tiles

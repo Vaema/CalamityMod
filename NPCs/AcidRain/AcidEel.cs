@@ -206,7 +206,7 @@ public class AcidEel : ModNPC
             for (int i = 0; i < segmentPositions.Length; i++)
                 segmentPositions[i] = NPC.TopLeft + Vector2.UnitX * i * 5f;
         }
-        segmentPositions = segmentPositions.Where(p => p != Vector2.Zero).ToArray();
+        segmentPositions = [.. segmentPositions.Where(p => p != Vector2.Zero)];
 
         for (int i = 0; i < segmentPositions.Length; i++)
         {

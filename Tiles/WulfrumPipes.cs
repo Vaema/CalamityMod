@@ -17,7 +17,7 @@ public class WulfrumPipes : ModTile, ISpecialTempTileDraw
     //public float PlaceProgress(Point pos) => Math.Clamp((PlaceTimeStart - Main.GameUpdateCount) / (pos.GetTileRNG() * 5f + 5f), 0, 1);
     //public float PlaceProgress(Point pos) => Math.Clamp((PlaceTimeStart - Main.GameUpdateCount) / (pos.GetTileRNG() * 5f + 5f), 0, 1);
 
-    public static Vector2 DisplaceStart(Point pos) => new Vector2(0, -(pos.GetTileRNG() * 10f + 7f));
+    public static Vector2 DisplaceStart(Point pos) => new(0, -(pos.GetTileRNG() * 10f + 7f));
     public static float RotationStart(Point pos) => -MathHelper.PiOver4 * 0.8f + MathHelper.PiOver4 * 1.6f * pos.GetTileRNG(1);
 
 

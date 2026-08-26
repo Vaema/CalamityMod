@@ -11,7 +11,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class CrushDepth : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 100,
         WaterDebuffScaling = 1

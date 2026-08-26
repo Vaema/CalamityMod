@@ -14,9 +14,9 @@ public class OmegaHealingPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 30;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(255, 31, 25),
-            new Color(162, 28, 25),
-            new Color(159, 10, 111)
+            new(255, 31, 25),
+            new(162, 28, 25),
+            new(159, 10, 111)
         };
     }
 

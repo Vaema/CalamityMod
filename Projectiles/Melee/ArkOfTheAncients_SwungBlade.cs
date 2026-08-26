@@ -62,10 +62,10 @@ public class ArkoftheAncientsSwungBlade : ModProjectile, ILocalizedModType
 
 
     //Swing animation keys
-    public CurveSegment anticipation = new CurveSegment(EasingType.ExpOut, 0f, 0f, 0.15f);
-    public CurveSegment thrust = new CurveSegment(EasingType.PolyInOut, 0.1f, 0.15f, 0.85f, 3);
-    public CurveSegment hold = new CurveSegment(EasingType.Linear, 0.5f, 1f, 0.2f);
-    public CurveSegment retract = new CurveSegment(EasingType.PolyInOut, 0.7f, 0.9f, -0.9f, 3);
+    public CurveSegment anticipation = new(EasingType.ExpOut, 0f, 0f, 0.15f);
+    public CurveSegment thrust = new(EasingType.PolyInOut, 0.1f, 0.15f, 0.85f, 3);
+    public CurveSegment hold = new(EasingType.Linear, 0.5f, 1f, 0.2f);
+    public CurveSegment retract = new(EasingType.PolyInOut, 0.7f, 0.9f, -0.9f, 3);
     internal float SwingRatio() => PiecewiseAnimation(Timer / MaxTime, new CurveSegment[] { anticipation, thrust, hold });
 
     public override void AI()

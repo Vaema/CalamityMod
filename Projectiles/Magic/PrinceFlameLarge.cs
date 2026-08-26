@@ -17,7 +17,7 @@ public class PrinceFlameLarge : ModProjectile, ILocalizedModType
     public ref float Time => ref Projectile.ai[0];
     public const int Lifetime = 60;
     public const int FadeoutTime = 24;
-    public static Color FlameColor => new Color(255, 180, 80);
+    public static Color FlameColor => new(255, 180, 80);
 
     public override void SetStaticDefaults()
     {

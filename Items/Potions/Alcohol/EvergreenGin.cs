@@ -36,9 +36,9 @@ public class EvergreenGin : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(201, 248, 248),
-            new Color(201, 248, 221),
-            new Color(177, 240, 184)
+            new(201, 248, 248),
+            new(201, 248, 221),
+            new(177, 240, 184)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

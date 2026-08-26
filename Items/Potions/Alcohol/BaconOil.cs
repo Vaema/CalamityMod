@@ -27,9 +27,9 @@ public class BaconOil : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(204, 90, 73),
-            new Color(168, 37, 37),
-            new Color(120, 28, 28)
+            new(204, 90, 73),
+            new(168, 37, 37),
+            new(120, 28, 28)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

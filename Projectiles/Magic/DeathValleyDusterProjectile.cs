@@ -16,7 +16,7 @@ public class DeathValleyDusterProjectile : ModProjectile, ILocalizedModType
 
     public ref float time => ref Projectile.ai[0];
     public int rotDirection = 1;
-    public List<bool> buffList = new List<bool>(new bool[Main.maxPlayers]);
+    public List<bool> buffList = new(new bool[Main.maxPlayers]);
     public override void SetStaticDefaults()
     {
         Main.projFrames[Type] = 6;

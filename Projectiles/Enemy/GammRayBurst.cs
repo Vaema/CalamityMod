@@ -27,7 +27,7 @@ public class GammaRayBurst : BaseLaserbeamProjectile, ILocalizedModType
     public override float MaxScale => 10f;
     public override float MaxLaserLength => 4800f;
     public override float Lifetime => 300;
-    public override Color LaserOverlayColor => new Color(0, 200, 50, 100);
+    public override Color LaserOverlayColor => new(0, 200, 50, 100);
     public override Color LightCastColor => Color.White;
     public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Type].Value;
     public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamMiddle", AssetRequestMode.ImmediateLoad).Value;

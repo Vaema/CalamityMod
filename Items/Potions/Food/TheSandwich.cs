@@ -19,9 +19,9 @@ namespace CalamityMod.Items.Potions.Food;
 			Item.ResearchUnlockCount = 5;
 			Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
 			ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
-				new Color(132, 171, 87),
-				new Color(174, 91, 107),
-				new Color(218, 176, 133)
+				new(132, 171, 87),
+				new(174, 91, 107),
+				new(218, 176, 133)
 			};
 			ItemID.Sets.IsFood[Type] = true;
     }

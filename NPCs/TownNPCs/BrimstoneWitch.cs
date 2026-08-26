@@ -81,7 +81,7 @@ public class BrimstoneWitch : ModNPC
 
     public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCalamitas && !NPC.AnyNPCs(NPCType<SCalBoss>());
 
-    public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Calamitas") };
+    public override List<string> SetNPCNameList() => new() { this.GetLocalizedValue("Name.Calamitas") };
 
     public override void FindFrame(int frameHeight)
     {

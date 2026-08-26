@@ -19,7 +19,7 @@ public class SarosPossession : ModItem, ILocalizedModType
 {
     public new string LocalizationCategory => "Items.Weapons.Summon";
     public static SoundStyle FiringSound => new SoundStyle("CalamityMod/Sounds/Item/Summon/SarosFiring") with { MaxInstances = 1 ,Volume = 0.3f, pitchVariance = 0.05f, pitch = 0.5f };
-    public static SoundStyle SpawnSound => new SoundStyle("CalamityMod/Sounds/Item/Summon/SarosSpawn");
+    public static SoundStyle SpawnSound => new("CalamityMod/Sounds/Item/Summon/SarosSpawn");
     public static SoundStyle LoopSound => SoundID.DD2_BetsyFlameBreath with { Volume = 0.2f };
     public override void SetDefaults()
     {

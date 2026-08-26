@@ -8,7 +8,7 @@ namespace CalamityMod.Buffs.StatBuffs;
 
 public class SmashedEvil : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 160,
         SicknessDebuffScaling = 1,

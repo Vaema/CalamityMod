@@ -11,7 +11,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class HolyFlames : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 300,
         HeatDebuffScaling = 1

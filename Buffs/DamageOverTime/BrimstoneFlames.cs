@@ -11,7 +11,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class BrimstoneFlames : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 60,
         HeatDebuffScaling = 1

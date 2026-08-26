@@ -36,8 +36,8 @@ public class PumpkaboomSmall : ModProjectile, ILocalizedModType
     private float progress = -1;
 
     public Color mainColor = Color.White;
-    public Color c1 = new Color(255, 117, 24);
-    public Color c2 = new Color(168, 47, 57);
+    public Color c1 = new(255, 117, 24);
+    public Color c2 = new(168, 47, 57);
     private bool hasDealtDamage = false;
 
     public override void SetDefaults()

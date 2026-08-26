@@ -15,9 +15,9 @@ public class FlaskOfCrumbling : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(243, 205, 45),
-            new Color(192, 97, 38),
-            new Color(225, 162, 58)
+            new(243, 205, 45),
+            new(192, 97, 38),
+            new(225, 162, 58)
         };
     }
 

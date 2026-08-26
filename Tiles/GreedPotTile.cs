@@ -39,7 +39,7 @@ public class GreedPotTile : ModTile
 
     public override void MouseOver(int i, int j)
     {
-        List<int> availableOres = GreedTransmutation.GreedChain.Where(p => p.Value.Availability.Invoke()).Select(p => p.Key).ToList();
+        List<int> availableOres = [.. GreedTransmutation.GreedChain.Where(p => p.Value.Availability.Invoke()).Select(p => p.Key)];
 
         Player player = Main.LocalPlayer;
         player.noThrow = 2;

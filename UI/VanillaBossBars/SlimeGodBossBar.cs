@@ -16,7 +16,7 @@ public class SlimeGodBossBar : ModBossBar
 {
     // Used to determine the max health of a multi-segmented boss
     public NPC FalseNPCSegment;
-    public List<int> SlimeGodSlimes = new List<int>
+    public List<int> SlimeGodSlimes = new()
     {
         NPCType<CrimulanPaladin>(),
         NPCType<EbonianPaladin>(),

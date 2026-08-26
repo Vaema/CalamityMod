@@ -17,7 +17,7 @@ public class SlagfireDouserHoldout : BaseGunHoldoutProjectile
 {
     public override int AssociatedItemID => ItemType<SlagfireDouser>();
 
-    private static readonly Vector2 CustomHoldoutOffset = new Vector2(25f, -5f);
+    private static readonly Vector2 CustomHoldoutOffset = new(25f, -5f);
 
     public static Asset<Texture2D> pistilTexture;
 

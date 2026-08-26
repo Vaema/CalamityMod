@@ -75,7 +75,7 @@ public class CatastropheMetaball : Metaball
     }
     public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
-    public override Color EdgeColor => new Color(0,255,255);
+    public override Color EdgeColor => new(0,255,255);
 
     public override void Update()
     {

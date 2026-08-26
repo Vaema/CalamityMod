@@ -25,7 +25,7 @@ public sealed class NetProtectionILChanges : ModSystem
 
     public override void OnModLoad()
     {
-        _ModNames = ModLoader.Mods.Select(mod => mod.Name).ToArray();
+        _ModNames = [.. ModLoader.Mods.Select(mod => mod.Name)];
 
         On_NPC.NewNPC += NewNPCRule;
     }

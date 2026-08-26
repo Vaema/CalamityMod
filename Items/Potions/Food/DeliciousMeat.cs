@@ -40,10 +40,10 @@ public class DeliciousMeat : ModItem, ILocalizedModType
 
         ItemID.Sets.IsFood[Type] = true;
         ItemID.Sets.FoodParticleColors[Type] = new Color[4] {
-            new Color(27, 103, 155),
-            new Color(164, 255, 253),
-            new Color(250, 219, 127),
-            new Color(248, 211, 179),
+            new(27, 103, 155),
+            new(164, 255, 253),
+            new(250, 219, 127),
+            new(248, 211, 179),
         };
     }
 

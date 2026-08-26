@@ -23,9 +23,9 @@ public class Baguette : ModItem, ILocalizedModType
         Item.ResearchUnlockCount = 5;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
-            new Color(231, 137, 159),
-            new Color(179, 104, 56),
-            new Color(108, 47, 16)
+            new(231, 137, 159),
+            new(179, 104, 56),
+            new(108, 47, 16)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

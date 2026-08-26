@@ -20,7 +20,7 @@ public class TruePureClarity : BaseCustomUseStyleProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Items/Weapons/Melee/TrueBiomeBlade";
 
     public override float HitboxOutset => 65f;
-    public override Vector2 HitboxSize => new Vector2(100, 100);
+    public override Vector2 HitboxSize => new(100, 100);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
     public override Vector2 SpriteOrigin => new(-2, 70);
 
@@ -34,7 +34,7 @@ public class TruePureClarity : BaseCustomUseStyleProjectile, ILocalizedModType
     public static readonly SoundStyle FullChargeSound = new("CalamityMod/Sounds/Item/MagicRockSound");
 
     public Color outlineColorGreen => (Main.player[Projectile.owner].HeldItem.ModItem as TrueBiomeBlade).mainAttunement.tooltipColor;
-    public Color outlineColorBlue => new Color(110, 216, 255);
+    public Color outlineColorBlue => new(110, 216, 255);
     public const int dashTime = 30;
     public float dashRotation;
     public Vector2 lastDisplacement;

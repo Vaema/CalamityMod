@@ -14,9 +14,9 @@ public class OddMushroom : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
-            new Color(232, 100, 90),
-            new Color(230, 215, 117),
-            new Color(143, 83, 64)
+            new(232, 100, 90),
+            new(230, 215, 117),
+            new(143, 83, 64)
         };
     }
 

@@ -116,19 +116,19 @@ public class ArkoftheElementsSwungBlade : ModProjectile, ILocalizedModType //"Ki
     }
 
     //Swing animation keys
-    public CurveSegment anticipation = new CurveSegment(EasingType.ExpOut, 0f, 0f, 0.15f);
-    public CurveSegment thrust = new CurveSegment(EasingType.PolyInOut, 0.1f, 0.15f, 0.85f, 3);
-    public CurveSegment hold = new CurveSegment(EasingType.Linear, 0.5f, 1f, 0.2f);
+    public CurveSegment anticipation = new(EasingType.ExpOut, 0f, 0f, 0.15f);
+    public CurveSegment thrust = new(EasingType.PolyInOut, 0.1f, 0.15f, 0.85f, 3);
+    public CurveSegment hold = new(EasingType.Linear, 0.5f, 1f, 0.2f);
     internal float SwingRatio() => PiecewiseAnimation(SwingCompletion, new CurveSegment[] { anticipation, thrust, hold });
 
     //Throw animation keys
-    public CurveSegment shoot = new CurveSegment(EasingType.CircOut, 0f, 0f, 1f);
-    public CurveSegment remain = new CurveSegment(EasingType.Linear, SnapWindowStart, 1f, 0f);
-    public CurveSegment goback = new CurveSegment(EasingType.CircIn, SnapWindowEnd, 1f, -1f);
+    public CurveSegment shoot = new(EasingType.CircOut, 0f, 0f, 1f);
+    public CurveSegment remain = new(EasingType.Linear, SnapWindowStart, 1f, 0f);
+    public CurveSegment goback = new(EasingType.CircIn, SnapWindowEnd, 1f, -1f);
     internal float ThrowRatio() => PiecewiseAnimation(ThrowCompletion, new CurveSegment[] { shoot, remain, goback });
 
 
-    public CurveSegment sizeCurve = new CurveSegment(EasingType.SineBump, 0f, 0f, 1f);
+    public CurveSegment sizeCurve = new(EasingType.SineBump, 0f, 0f, 1f);
     internal float ThrowScaleRatio() => PiecewiseAnimation(ThrowCompletion, new CurveSegment[] { sizeCurve });
 
 

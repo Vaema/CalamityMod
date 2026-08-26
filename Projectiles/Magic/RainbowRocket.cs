@@ -258,12 +258,12 @@ public class RainbowRocket : ModProjectile, ILocalizedModType
         // When mapped out, these points give a rough string, which when used with a bezier curve, can be smoothened out to make it look like a real string.
         Vector2[] bezierControlPoints = new Vector2[]
         {
-            new Vector2(0f, 40f),
-            new Vector2(20f, 76f),
-            new Vector2(-16f, 108f),
-            new Vector2(-20f, 146f),
-            new Vector2(-14f, 180f),
-            new Vector2(10f, 214f)
+            new(0f, 40f),
+            new(20f, 76f),
+            new(-16f, 108f),
+            new(-20f, 146f),
+            new(-14f, 180f),
+            new(10f, 214f)
         };
         BezierCurve bezierCurve = new BezierCurve(bezierControlPoints);
         for (int i = 0; i < evaluationPoints; i++)
@@ -336,13 +336,13 @@ public class RainbowRocket : ModProjectile, ILocalizedModType
         // When mapped out, these points give a rough apple stem shape.
         Vector2[] bezierControlPoints = new Vector2[]
         {
-            new Vector2(0f, 0f),
-            new Vector2(-20f, -26f),
-            new Vector2(-26f, -46f),
-            new Vector2(-30f, -60f),
-            new Vector2(-24f, -70f),
-            new Vector2(-10f, -40f),
-            new Vector2(0f, 0f),
+            new(0f, 0f),
+            new(-20f, -26f),
+            new(-26f, -46f),
+            new(-30f, -60f),
+            new(-24f, -70f),
+            new(-10f, -40f),
+            new(0f, 0f),
         };
         BezierCurve bezierCurve = new BezierCurve(bezierControlPoints);
         for (int i = 0; i < evaluationPoints; i++)
@@ -399,14 +399,14 @@ public class RainbowRocket : ModProjectile, ILocalizedModType
         // When mapped out, these points give a rough apple stem shape.
         Vector2[] bezierControlPoints = new Vector2[]
         {
-            new Vector2(0f, 60f),
-            new Vector2(0f, 30f),
-            new Vector2(10f, -28f),
-            new Vector2(20f, -42f),
-            new Vector2(30f, -48f),
-            new Vector2(42f, -40f),
-            new Vector2(50f, -30f),
-            new Vector2(52f, -24f),
+            new(0f, 60f),
+            new(0f, 30f),
+            new(10f, -28f),
+            new(20f, -42f),
+            new(30f, -48f),
+            new(42f, -40f),
+            new(50f, -30f),
+            new(52f, -24f),
         };
         BezierCurve bezierCurve = new BezierCurve(bezierControlPoints);
         for (int i = 0; i < evaluationPoints; i++)
@@ -523,22 +523,22 @@ public class RainbowRocket : ModProjectile, ILocalizedModType
         // When mapped out, these points give a rough (but slightly weird) lightning bolt.
         Vector2[] controlPoints = new Vector2[]
         {
-            new Vector2(-38f, -64f),
-            new Vector2(-42f, -44f),
-            new Vector2(-26f, -28f),
-            new Vector2(-24f, -10f),
-            new Vector2(-34f, -4f),
-            new Vector2(-48f, -10f),
-            new Vector2(-40f, 12f),
-            new Vector2(-30f, 30f),
-            new Vector2(-20f, 48f),
-            new Vector2(-8f, 28f),
-            new Vector2(2f, 6f),
-            new Vector2(-8f, -4f),
-            new Vector2(4f, -16f),
-            new Vector2(8f, -36f),
-            new Vector2(12f, -56f),
-            new Vector2(-38f, -64f)
+            new(-38f, -64f),
+            new(-42f, -44f),
+            new(-26f, -28f),
+            new(-24f, -10f),
+            new(-34f, -4f),
+            new(-48f, -10f),
+            new(-40f, 12f),
+            new(-30f, 30f),
+            new(-20f, 48f),
+            new(-8f, 28f),
+            new(2f, 6f),
+            new(-8f, -4f),
+            new(4f, -16f),
+            new(8f, -36f),
+            new(12f, -56f),
+            new(-38f, -64f)
         };
         for (int i = 0; i < evaluationPoints; i++)
         {
@@ -625,18 +625,18 @@ public class RainbowRocket : ModProjectile, ILocalizedModType
         // When mapped out, these points give a rough swerving stream shape.
         Vector2[] bezierControlPoints = new Vector2[]
         {
-            new Vector2(-38f, -58f),
-            new Vector2(-22f, -34f),
-            new Vector2(-10f, -22f),
-            new Vector2(6f, -11f),
-            new Vector2(13f, 1f),
-            new Vector2(-20f, 11f),
-            new Vector2(16f, 11f),
-            new Vector2(26f, 6f),
-            new Vector2(24f, -11f),
-            new Vector2(8f, -28f),
-            new Vector2(-10f, -39f),
-            new Vector2(-38f, -58f)
+            new(-38f, -58f),
+            new(-22f, -34f),
+            new(-10f, -22f),
+            new(6f, -11f),
+            new(13f, 1f),
+            new(-20f, 11f),
+            new(16f, 11f),
+            new(26f, 6f),
+            new(24f, -11f),
+            new(8f, -28f),
+            new(-10f, -39f),
+            new(-38f, -58f)
         };
         BezierCurve bezierCurve = new BezierCurve(bezierControlPoints);
 

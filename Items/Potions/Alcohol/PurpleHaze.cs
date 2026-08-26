@@ -33,9 +33,9 @@ public class PurpleHaze : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(239, 123, 202),
-            new Color(187, 56, 158),
-            new Color(165, 47, 255)
+            new(239, 123, 202),
+            new(187, 56, 158),
+            new(165, 47, 255)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

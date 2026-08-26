@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public static float SummonerTagEffectiveness => 1.67f;
-        public static SummonTag summonTag = new SummonTag()
+        public static SummonTag summonTag = new()
         {
             MultiplicativeTagDamage = 0.3f,
             AllowsWhipStacking = true,
@@ -406,7 +406,7 @@ namespace CalamityMod.Projectiles.Summon
                 GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
                 PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), Projectile.oldPos.Length + 32);
 
-                Vector2[] fireCoreLength = Projectile.oldPos.Take(8).ToArray();
+                Vector2[] fireCoreLength = [.. Projectile.oldPos.Take(8)];
                 GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
                 PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), fireCoreLength.Length + 24);
             }

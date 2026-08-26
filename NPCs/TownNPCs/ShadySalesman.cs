@@ -705,7 +705,7 @@ public class ShadySalesmanShopTooltips : GlobalItem
             {
                 if (placetoMove < 0)
                     placetoMove = i;
-                TextSnippet[] snippets = ChatManager.ParseMessage(line.Text, Color.White).ToArray();
+                TextSnippet[] snippets = [.. ChatManager.ParseMessage(line.Text, Color.White)];
                 ChatManager.ConvertNormalSnippets(snippets);
 
                 string lineText = "";

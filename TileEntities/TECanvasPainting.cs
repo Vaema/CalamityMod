@@ -11,7 +11,7 @@ namespace CalamityMod.TileEntities;
 
 public class TECanvasPainting : ModTileEntity
 {
-    public Vector2 framePosition = new Vector2(0, 0);
+    public Vector2 framePosition = new(0, 0);
     public float scale = 1f;
 
     public override bool IsTileValidForEntity(int x, int y)

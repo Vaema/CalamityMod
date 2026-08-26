@@ -11,7 +11,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class HadopelagicPressure : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 350, //175 dps
         WaterDebuffScaling = 1

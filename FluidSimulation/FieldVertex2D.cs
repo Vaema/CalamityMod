@@ -12,9 +12,9 @@ public struct FieldVertex2D : IVertexType
 
     private static readonly VertexDeclaration _vertexDeclaration = new(new VertexElement[]
     {
-        new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
-        new VertexElement(8, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
-        new VertexElement(24, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
+        new(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
+        new(8, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
+        new(24, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
     });
     public FieldVertex2D(Vector2 position, Vector4 color, Vector2 textureCoordinates)
     {

@@ -32,7 +32,7 @@ public class OntologicalDespoilerHoldout : BaseGunHoldoutProjectile
 
     public ref float CurrentChargingFrames => ref Projectile.ai[0];
     public float ShotsLoaded = 1;
-    public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
+    public Color baseColor = new(Main.DiscoR, Main.DiscoG, Main.DiscoB);
     public Color color1;
     public Color color2;
     public Color color3;

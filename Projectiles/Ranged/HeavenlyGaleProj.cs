@@ -30,8 +30,8 @@ public class HeavenlyGaleProj : BaseIdleHoldoutProjectile, ILocalizedModType
     public float StringReelbackDistance => Projectile.width * StringReelbackInterpolant * 0.3f;
 
     // Where the string should go, relative to the center of the projectile
-    public Vector2 topStringOffset => new Vector2(-40f, -56f);
-    public Vector2 bottomStringOffset => new Vector2(-40f, 46f);
+    public Vector2 topStringOffset => new(-40f, -56f);
+    public Vector2 bottomStringOffset => new(-40f, 46f);
     public float StringHalfHeight => (Math.Abs(topStringOffset.Y) + Math.Abs(bottomStringOffset.Y)) * 0.5f;
 
     public float ChargeupInterpolant => Utils.GetLerpValue(HeavenlyGale.ShootDelay, HeavenlyGale.MaxChargeTime, ChargeTimer, true);

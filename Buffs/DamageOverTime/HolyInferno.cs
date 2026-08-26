@@ -8,7 +8,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class HolyInferno : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 10000, //this is never applied to enemies
         HeatDebuffScaling = 1,

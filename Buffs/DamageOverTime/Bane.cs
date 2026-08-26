@@ -13,9 +13,9 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class Bane : ModBuff
 {
-    public static Color baneColor1 = new Color(217, 115, 0);
-    public static Color baneColor2 = new Color(0, 232, 146);
-    public static DebuffData debuffData = new DebuffData()
+    public static Color baneColor1 = new(217, 115, 0);
+    public static Color baneColor2 = new(0, 232, 146);
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 40,
         NPCLifeRegenMethod = BaneNPCLifeRegen

@@ -104,7 +104,7 @@ public abstract class BaseFlailProjectile : ModProjectile
     public Texture2D FlailTexture => Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
     #region Virtual Values
-    public virtual Color SpecialDrawColor => new Color(255, 200, 0);
+    public virtual Color SpecialDrawColor => new(255, 200, 0);
     public virtual int ExudeDustType => 244;
     public virtual int WhipDustType => 246;
     public virtual int HandleHeight => 54;

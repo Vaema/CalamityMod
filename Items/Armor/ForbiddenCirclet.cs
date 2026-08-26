@@ -28,7 +28,7 @@ public class ForbiddenCirclet : ModItem, ILocalizedModType
     public static int EaterSpawnCooldown = 15;
     public static int EaterDamage = 40;
 
-    public static SummonTag summonTag = new SummonTag()
+    public static SummonTag summonTag = new()
     {
         //These tag damage fields determine the damage of the spawned eater. The resulting number from each is added together
         //So, 0.5 multiplicative and 10 flat would make the damage be 50% of the spawning hit's damage, plus 10 more.

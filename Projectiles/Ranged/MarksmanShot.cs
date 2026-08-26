@@ -109,7 +109,7 @@ public class MarksmanShot : ModProjectile, ILocalizedModType
             if (struckCoin is not null)
             {
                 // Assemble an array of the remaining coins.
-                Projectile[] otherCoins = validCoins.Where((proj) => proj.whoAmI != struckCoin.whoAmI).ToArray();
+                Projectile[] otherCoins = [.. validCoins.Where((proj) => proj.whoAmI != struckCoin.whoAmI)];
                 RicoshotTarget nextCoin = Projectile.FindRicochetTarget(Projectile.Center, otherCoins, true);
                 RicochetOffCoin(nextCoin, struckCoin);
                 // Ricochet off of this coin to the next target.

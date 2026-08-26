@@ -67,14 +67,14 @@ public static class DraedonStructures
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
-            new ChestItem(ModContent.ItemType<SuspiciousScrap>(), 1),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
-            new ChestItem(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
+            new(ModContent.ItemType<SuspiciousScrap>(), 1),
+            new(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
+            new(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
+            new(potionType, WorldGen.genRand.Next(3, 5 + 1)),
         };
         float rng = WorldGen.genRand.NextFloat();
 
@@ -146,14 +146,14 @@ public static class DraedonStructures
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(10, 17 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(10, 15 + 1)),
-            new ChestItem(ModContent.ItemType<SuspiciousScrap>(), 1),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(20, 40 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 16 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(7, 10 + 1)),
-            new ChestItem(ItemID.Dynamite, WorldGen.genRand.Next(4, 6 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(4, 7 + 1)),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(10, 17 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(10, 15 + 1)),
+            new(ModContent.ItemType<SuspiciousScrap>(), 1),
+            new(ItemID.Torch, WorldGen.genRand.Next(20, 40 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 16 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(7, 10 + 1)),
+            new(ItemID.Dynamite, WorldGen.genRand.Next(4, 6 + 1)),
+            new(potionType, WorldGen.genRand.Next(4, 7 + 1)),
         };
         float rng = WorldGen.genRand.NextFloat();
 
@@ -225,13 +225,13 @@ public static class DraedonStructures
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
-            new ChestItem(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
+            new(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
+            new(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
+            new(potionType, WorldGen.genRand.Next(3, 5 + 1)),
         };
 
         //Adds the Ice Seeking Mechanism
@@ -312,13 +312,13 @@ public static class DraedonStructures
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
-            new ChestItem(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
+            new(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
+            new(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
+            new(potionType, WorldGen.genRand.Next(3, 5 + 1)),
         };
 
         //Adds the Planetoid Seeking Mechanism
@@ -401,13 +401,13 @@ public static class DraedonStructures
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
-            new ChestItem(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
+            new(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
+            new(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
+            new(potionType, WorldGen.genRand.Next(3, 5 + 1)),
         };
 
         //Adds the Base Seeking Mechanism
@@ -492,13 +492,13 @@ public static class DraedonStructures
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
-            new ChestItem(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
+            new(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
+            new(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
+            new(potionType, WorldGen.genRand.Next(3, 5 + 1)),
         };
 
         //Adds the Hell Seeking Mechanism
@@ -586,20 +586,20 @@ public static class DraedonStructures
 
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
-            new ChestItem(ItemID.HerbBag, WorldGen.genRand.Next(12, 17 + 1)),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
+            new(ItemID.HerbBag, WorldGen.genRand.Next(12, 17 + 1)),
             //new ChestItem(ItemID.DayBloomPlanterBox, WorldGen.genRand.Next(5, 9 + 1)), Removed from the chest because they're placed within the lab
-            new ChestItem(ItemID.BlinkrootPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
-            new ChestItem(ItemID.FireBlossomPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
-            new ChestItem(ItemID.MoonglowPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
-            new ChestItem(ItemID.ShiverthornPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
-            new ChestItem(ItemID.WaterleafPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
-            new ChestItem(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
+            new(ItemID.BlinkrootPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
+            new(ItemID.FireBlossomPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
+            new(ItemID.MoonglowPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
+            new(ItemID.ShiverthornPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
+            new(ItemID.WaterleafPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
+            new(ItemID.Torch, WorldGen.genRand.Next(15, 29 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 11 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 7 + 1)),
+            new(ItemID.Bomb, WorldGen.genRand.Next(6, 7 + 1)),
+            new(potionType, WorldGen.genRand.Next(3, 5 + 1)),
         };
         if (!WorldGen.crimson)
             contents.Insert(8, new ChestItem(ItemID.CorruptPlanterBox, WorldGen.genRand.Next(5, 9 + 1)));
@@ -640,14 +640,14 @@ public static class DraedonStructures
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(10, 17 + 1)),
-            new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(10, 15 + 1)),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(20, 40 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 16 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(7, 10 + 1)),
-            new ChestItem(ItemID.Dynamite, WorldGen.genRand.Next(4, 6 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(4, 7 + 1)),
-            new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1),
+            new(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(10, 17 + 1)),
+            new(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(10, 15 + 1)),
+            new(ItemID.Torch, WorldGen.genRand.Next(20, 40 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 16 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(7, 10 + 1)),
+            new(ItemID.Dynamite, WorldGen.genRand.Next(4, 6 + 1)),
+            new(potionType, WorldGen.genRand.Next(4, 7 + 1)),
+            new(ModContent.ItemType<LabSeekingMechanism>(), 1),
         };
 
         for (int i = 0; i < contents.Count; i++)

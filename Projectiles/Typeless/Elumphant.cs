@@ -22,8 +22,8 @@ public class Elumphant : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRe
 {
     public new string LocalizationCategory => "Projectiles.Typeless";
     public Player Owner => Main.player[Projectile.owner];
-    public static Color color1 = new Color(60, 103, 207);
-    public static Color color2 = new Color(103, 188, 214);
+    public static Color color1 = new(60, 103, 207);
+    public static Color color2 = new(103, 188, 214);
     public Color usedColor = Color.White;
     public ref float time => ref Projectile.ai[0];
     public float squashTimerX = 0; public float squashTimerY = 0; // Adjusts the X and Y centric squash effects
@@ -55,7 +55,7 @@ public class Elumphant : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRe
     public int attackTimeAdjusted = 0; // Attack speed adjusted for the slam attack
     public float damageScaling = 0; // The damage scaling on the mist and slam attacks
     public int cooldownTime = 0; // The cooldown between attacks
-    public List<NPC> hitNPCs = new List<NPC>();
+    public List<NPC> hitNPCs = new();
     public Vector2 lastHitNPCPos;
     public Vector2 lastProjPos;
     public bool spawnJumpDusts = true;
@@ -116,7 +116,7 @@ public class Elumphant : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRe
         {
             // Render the main trail
             string shader = "CalamityMod:TrailStreak";
-            Vector2[] length = Projectile.oldPos.Take((int)(Math.Max(10 - Projectile.numHits, 5))).ToArray();
+            Vector2[] length = [.. Projectile.oldPos.Take((int)(Math.Max(10 - Projectile.numHits, 5)))];
             GameShaders.Misc[shader].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/DoubleTrail"));
             PrimitiveRenderer.RenderTrail(length, new(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f, true, true, GameShaders.Misc[shader]), length.Length * 6);
         }

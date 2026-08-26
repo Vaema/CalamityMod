@@ -20,7 +20,7 @@ public class CustomPulsingSpark : Particle
     public Texture2D NewTexture;
     public Texture2D NewTextureBack;
     public float ExtraRotation;
-    public Vector2 Stretch = new Vector2(0.5f, 1.6f);
+    public Vector2 Stretch = new(0.5f, 1.6f);
     public float ShrinkSpeed = 0;
     public bool FlipHorizontal = false;
     public bool NoShrink = false;

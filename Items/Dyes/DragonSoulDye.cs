@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Dyes;
 
 public class DragonSoulDye : BaseDye
 {
-    public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/DragonSoulDyeShader"), "DyePass");
+    public override ArmorShaderData ShaderDataToBind => new(Mod.Assets.Request<Effect>("Effects/Dyes/DragonSoulDyeShader"), "DyePass");
     public override void SafeSetStaticDefaults()
     {
         Item.ResearchUnlockCount = 3;

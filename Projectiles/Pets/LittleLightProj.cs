@@ -11,7 +11,7 @@ public class LittleLightProj : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Pets";
     public Player Owner => Main.player[Projectile.owner];
 
-    public Color LightColor => new Color(160, 251, 255);
+    public Color LightColor => new(160, 251, 255);
     public ref float Time => ref Projectile.ai[0];
     public override void SetStaticDefaults()
     {

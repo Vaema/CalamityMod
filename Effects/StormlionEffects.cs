@@ -9,10 +9,10 @@ public class StormlionEffects
 {
     // Energy
     public static int EnergyDust = ModContent.DustType<LightDust>();
-    public static Color EnergyColor = new Color(5, 187, 177);
+    public static Color EnergyColor = new(5, 187, 177);
     // Flesh
     public static int FleshDust = 192;
-    public static Color FleshColor = new Color(171, 113, 91);
+    public static Color FleshColor = new(171, 113, 91);
 
     // Sounds
     public static readonly SoundStyle Hit = new("CalamityMod/Sounds/NPCHit/StormlionAltHit");

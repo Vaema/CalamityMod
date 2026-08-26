@@ -23,7 +23,7 @@ public class ModeIndicatorUI
 {
     public static Rectangle MouseScreenArea => Utils.CenteredRectangle(Main.MouseScreen, Vector2.One * 2f);
 
-    public static Vector2 FrameSize => new Vector2(74f, 74f);
+    public static Vector2 FrameSize => new(74f, 74f);
     public static Rectangle MainClickArea => Utils.CenteredRectangle(DrawCenter, FrameSize * MainIconScale);
     public static bool ClickingMouse => Main.mouseLeft && Main.mouseLeftRelease;
     public static Vector2 DrawCenter => new Vector2(Main.screenWidth - 400f - WidthForTier(MostAlternateDifficulties) * 0.5f, 82f) + FrameSize * 0.5f;
@@ -258,12 +258,12 @@ public class ModeIndicatorUI
     }
 
     #region Cool drawing stuff
-    private static CurveSegment lockGrow = new CurveSegment(SineOutEasing, 0f, 1f, 0.4f);
-    private static CurveSegment lockShrink = new CurveSegment(SineInEasing, 0.6f, 1.4f, -0.4f);
-    private static CurveSegment lockBump = new CurveSegment(SineBumpEasing, 0.9f, 1f, -0.2f);
+    private static CurveSegment lockGrow = new(SineOutEasing, 0f, 1f, 0.4f);
+    private static CurveSegment lockShrink = new(SineInEasing, 0.6f, 1.4f, -0.4f);
+    private static CurveSegment lockBump = new(SineBumpEasing, 0.9f, 1f, -0.2f);
     internal static float LockShakeScale => PiecewiseAnimation(lockClickTime / (float)LockAnimLength, new CurveSegment[] { lockGrow, lockShrink, lockBump });
 
-    private static CurveSegment barExpand = new CurveSegment(SineInOutEasing, 0f, 0f, 1f);
+    private static CurveSegment barExpand = new(SineInOutEasing, 0f, 0f, 1f);
     internal static float BarExpansionProgress
     {
         get
@@ -278,8 +278,8 @@ public class ModeIndicatorUI
     }
 
 
-    private static CurveSegment barWidthExpand = new CurveSegment(SineInOutEasing, 0f, 0f, 1.2f);
-    private static CurveSegment barWidthRetract = new CurveSegment(SineInEasing, 0.6f, 1.2f, -0.2f);
+    private static CurveSegment barWidthExpand = new(SineInOutEasing, 0f, 0f, 1.2f);
+    private static CurveSegment barWidthRetract = new(SineInEasing, 0.6f, 1.2f, -0.2f);
 
     internal static float BarWidthExpansionProgress
     {

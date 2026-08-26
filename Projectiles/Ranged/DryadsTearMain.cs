@@ -493,12 +493,12 @@ public class DryadsTearMain : ModProjectile, ILocalizedModType, IPixelatedPrimit
     {
         // Render the main trail
         string shader = "CalamityMod:TrailStreak";
-        Vector2[] length = Projectile.oldPos.Take((int)(Math.Max(40 * visualMult, 14))).ToArray();
+        Vector2[] length = [.. Projectile.oldPos.Take((int)(Math.Max(40 * visualMult, 14)))];
         GameShaders.Misc[shader].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing"));
         PrimitiveRenderer.RenderTrail(length, new(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f, true, true, GameShaders.Misc[shader]), length.Length * 2);
 
         // Render a smaller, pure white trail in the same position
-        Vector2[] length2 = Projectile.oldPos.Take((int)(Math.Max(18 * visualMult, 6))).ToArray();
+        Vector2[] length2 = [.. Projectile.oldPos.Take((int)(Math.Max(18 * visualMult, 6)))];
         GameShaders.Misc[shader].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
         PrimitiveRenderer.RenderTrail(length2, new(CoreWidthFunction, CoreColorFunction, (_, _) => Projectile.Size * 0.5f, true, true, GameShaders.Misc[shader]), length2.Length * 2);
     }

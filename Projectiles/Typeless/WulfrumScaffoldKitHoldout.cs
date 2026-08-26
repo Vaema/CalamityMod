@@ -65,7 +65,7 @@ public class WulfrumScaffoldKitHoldout : ModProjectile
 
     public static int tileGlowTime = 10;
 
-    public Dictionary<Point, int> SelectedTiles = new Dictionary<Point, int>(); //Might need some cloning stuff for mp? idk, probably not
+    public Dictionary<Point, int> SelectedTiles = new(); //Might need some cloning stuff for mp? idk, probably not
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
     public override void SetDefaults()
@@ -157,13 +157,13 @@ public class WulfrumScaffoldKitHoldout : ModProjectile
         tileEffect.Parameters["time"].SetValue(Main.GameUpdateCount);
         Vector4[] scanLines = new Vector4[]
         {
-            new Vector4(0f, 4f, 0.1f, 0.5f),
-            new Vector4(1f, 4f, 0.1f, 0.5f),
-            new Vector4(37f, 60f, 0.4f, 1f),
-            new Vector4(2f, 6f, -0.2f, 0.3f),
-            new Vector4(0f, 4f, 0.1f, 0.5f), //vertical start
-            new Vector4(1f, 4f, 0.1f, 0.5f),
-            new Vector4(2f, 6f, -0.2f, 0.3f)
+            new(0f, 4f, 0.1f, 0.5f),
+            new(1f, 4f, 0.1f, 0.5f),
+            new(37f, 60f, 0.4f, 1f),
+            new(2f, 6f, -0.2f, 0.3f),
+            new(0f, 4f, 0.1f, 0.5f), //vertical start
+            new(1f, 4f, 0.1f, 0.5f),
+            new(2f, 6f, -0.2f, 0.3f)
         };
 
         tileEffect.Parameters["ScanLines"].SetValue(scanLines);

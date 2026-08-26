@@ -11,7 +11,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class Dragonfire : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 960,
         HeatDebuffScaling = 1

@@ -361,7 +361,7 @@ public class OmegaBiomeBlade : ModItem, ILocalizedModType
         return false;
     }
 
-    internal static ChargingEnergyParticleSet BiomeEnergyParticles = new ChargingEnergyParticleSet(-1, 2, Color.White, Color.White, 0.04f, 20f);
+    internal static ChargingEnergyParticleSet BiomeEnergyParticles = new(-1, 2, Color.White, Color.White, 0.04f, 20f);
     internal static void UpdateAllParticleSets()
     {
         BiomeEnergyParticles.Update();

@@ -20,7 +20,7 @@ public class Shred : ModBuff
     // This deals 600 DPS per stack, is boosted by ranged stats and can supercrit.
     internal static int BaseDamage = 120;
     internal static int FramesPerDamageTick = 12;
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = BaseDamage
     };

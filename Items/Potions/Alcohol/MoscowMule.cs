@@ -31,9 +31,9 @@ public class MoscowMule : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(194, 252, 192),
-            new Color(226, 252, 192),
-            new Color(250, 225, 222)
+            new(194, 252, 192),
+            new(226, 252, 192),
+            new(250, 225, 222)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

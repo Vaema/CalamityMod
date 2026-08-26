@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
 public class BrainOfCthulhuAI : VanillaAIOverride
 {
-    private static SoundStyle StunnedHit = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Stun_Hit", 3);
+    private static SoundStyle StunnedHit = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Stun_Hit", 3);
     private static SoundStyle ShieldDown = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle ShieldUp = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Up") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle IntroRoar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
@@ -32,9 +32,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     public static SoundStyle Laugh = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Laugh") with { PauseBehavior = PauseBehavior.PauseWithGame, MaxInstances = 5 };
     private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
-    private static SoundStyle BloodShot = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodShot");
-    private static SoundStyle BloodBomb = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodBomb");
-    private static SoundStyle BloodExplosion = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Explosion", 2);
+    private static SoundStyle BloodShot = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodShot");
+    private static SoundStyle BloodBomb = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodBomb");
+    private static SoundStyle BloodExplosion = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Explosion", 2);
 
 
     internal static bool SummonedViaItem = false;
@@ -657,7 +657,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             if(SpawnDelay == 1 && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 bool targetLeft = AttackCounter % 2 == 0;
-                List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && n.AIOverride<CreeperAI>().CreeperID % 2 == (targetLeft ? 0 : 1)).ToList();
+                List<NPC> creepers = [.. Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && n.AIOverride<CreeperAI>().CreeperID % 2 == (targetLeft ? 0 : 1))];
 
                 if (creepers.Count > 0)
                 {
@@ -665,7 +665,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 }
                 else
                 {
-                    creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1).ToList();
+                    creepers = [.. Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1)];
                     AttackTime = creepers.Count == 0 ? -1 : creepers[Main.rand.Next(creepers.Count)].whoAmI;
                 }
 
@@ -1331,7 +1331,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
             if (Time < attackDur && Time % attackDelay == 0)
             {
-                List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains((byte)n.whoAmI)).ToList();
+                List<NPC> creepers = [.. Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains((byte)n.whoAmI))];
                 if (creepers.Count > 1 && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     float rotation;
@@ -1488,7 +1488,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         }
         else if (Time >= OrbitAttackInterval && Time < OrbitDuration && Time % OrbitAttackInterval == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
-            List<NPC> mainOrbitMembers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.TryGetAIOverride<CreeperAI>(out var ai) && ai.CachedValue2 == -1).ToList();
+            List<NPC> mainOrbitMembers = [.. Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.TryGetAIOverride<CreeperAI>(out var ai) && ai.CachedValue2 == -1)];
             if (mainOrbitMembers.Count > 0)
             {
                 int rand = Main.rand.Next(mainOrbitMembers.Count);
@@ -2902,10 +2902,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         AttackPosition = binaryReader.ReadPackedWorldPosition();
 
         int availableLength = binaryReader.ReadByte();
-        availableAttacks = binaryReader.ReadBytes(availableLength).Select(e => (BrainAIState)e).ToList();
+        availableAttacks = [.. binaryReader.ReadBytes(availableLength).Select(e => (BrainAIState)e)];
 
         byte attackLength = binaryReader.ReadByte();
-        AttackList = binaryReader.ReadBytes(attackLength).ToList();
+        AttackList = [.. binaryReader.ReadBytes(attackLength)];
     }
 
     public override bool? CanBeHitByProjectile(Mod mod, Projectile projectile)
@@ -2994,7 +2994,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         if (phase1)
         {
-            List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper).ToList();
+            List<NPC> creepers = [.. Main.npc.Where(n => n.active && n.type == NPCID.Creeper)];
             creepers.Sort((a, b) => b.DistanceSQ(NPC.Center).CompareTo(a.DistanceSQ(NPC.Center)));
 
             var tendrils = BrainOfCthulhuSystem.VerletTendrils.ToList();
@@ -3062,7 +3062,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         }
         else
         {
-            List<NPC> falseBrains = Main.npc.Where(n => n.active && n.type == ModContent.NPCType<FalseBrain>()).ToList();
+            List<NPC> falseBrains = [.. Main.npc.Where(n => n.active && n.type == ModContent.NPCType<FalseBrain>())];
             if (falseBrains.Count > 0)
             {
                 drawBrain = false;

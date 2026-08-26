@@ -232,14 +232,14 @@ public class ArkoftheCosmosBlast : ModProjectile, ILocalizedModType
     }
 
     //Animation keys
-    public CurveSegment anticipation = new CurveSegment(EasingType.SineBump, 0f, 0.2f, -0.1f);
-    public CurveSegment thrust = new CurveSegment(EasingType.PolyOut, 0.3f, 0.2f, 3f, 3);
+    public CurveSegment anticipation = new(EasingType.SineBump, 0f, 0.2f, -0.1f);
+    public CurveSegment thrust = new(EasingType.PolyOut, 0.3f, 0.2f, 3f, 3);
     internal float ThrustDisplaceRatio() => PiecewiseAnimation(SnapProgress, new CurveSegment[] { anticipation, thrust });
 
 
-    public CurveSegment openMore = new CurveSegment(EasingType.SineBump, 0f, 0f, -0.15f);
-    public CurveSegment close = new CurveSegment(EasingType.PolyIn, 0.35f, 0f, 1f, 4);
-    public CurveSegment stayClosed = new CurveSegment(EasingType.Linear, 0.5f, 1f, 0f);
+    public CurveSegment openMore = new(EasingType.SineBump, 0f, 0f, -0.15f);
+    public CurveSegment close = new(EasingType.PolyIn, 0.35f, 0f, 1f, 4);
+    public CurveSegment stayClosed = new(EasingType.Linear, 0.5f, 1f, 0f);
     internal float RotationRatio() => PiecewiseAnimation(SnapProgress, new CurveSegment[] { openMore, close, stayClosed });
 
     public override bool PreDraw(ref Color lightColor)

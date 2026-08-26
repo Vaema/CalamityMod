@@ -16,13 +16,13 @@ public class RainbowPartyCannon : ModItem, ILocalizedModType
     public new string LocalizationCategory => "Items.Weapons.Magic";
     public static readonly Color[] ColorSet = new Color[]
     {
-        new Color(188, 192, 193), // White
-        new Color(157, 100, 183), // Purple
-        new Color(249, 166, 77), // Honey-ish orange
-        new Color(255, 105, 234), // Pink
-        new Color(67, 204, 219), // Sky blue
-        new Color(249, 245, 99), // Bright yellow
-        new Color(236, 168, 247), // Purplish pink
+        new(188, 192, 193), // White
+        new(157, 100, 183), // Purple
+        new(249, 166, 77), // Honey-ish orange
+        new(255, 105, 234), // Pink
+        new(67, 204, 219), // Sky blue
+        new(249, 245, 99), // Bright yellow
+        new(236, 168, 247), // Purplish pink
     };
     public override void SetDefaults()
     {

@@ -59,11 +59,11 @@ public class EarthenTides : ModProjectile, ILocalizedModType
         return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center, Owner.Center + (direction * bladeLength), bladeWidth, ref collisionPoint);
     }
 
-    public CurveSegment QuickOut = new CurveSegment(EasingType.PolyIn, 0f, 0f, 0.2f, 3);
-    public CurveSegment Bump = new CurveSegment(EasingType.SineBump, 0.06f, 0.2f, 0.1f);
-    public CurveSegment QuickDraw = new CurveSegment(EasingType.Linear, 0.25f, 0.2f, -0.45f);
-    public CurveSegment SlowDrawOut = new CurveSegment(EasingType.PolyIn, 0.50f, -0.25f, -0.2f, 3);
-    public CurveSegment OverShoot = new CurveSegment(EasingType.SineBump, 0.93f, -0.45f, -0.1f);
+    public CurveSegment QuickOut = new(EasingType.PolyIn, 0f, 0f, 0.2f, 3);
+    public CurveSegment Bump = new(EasingType.SineBump, 0.06f, 0.2f, 0.1f);
+    public CurveSegment QuickDraw = new(EasingType.Linear, 0.25f, 0.2f, -0.45f);
+    public CurveSegment SlowDrawOut = new(EasingType.PolyIn, 0.50f, -0.25f, -0.2f, 3);
+    public CurveSegment OverShoot = new(EasingType.SineBump, 0.93f, -0.45f, -0.1f);
 
     internal float ChargeDisplacement() => PiecewiseAnimation(Charge / MaxCharge, new CurveSegment[] { QuickOut, Bump, QuickDraw, SlowDrawOut, OverShoot });
 

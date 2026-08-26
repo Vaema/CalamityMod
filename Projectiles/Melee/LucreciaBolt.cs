@@ -152,7 +152,7 @@ public class LucreciaBolt : ModProjectile, ILocalizedModType
         Vector2 offset = Projectile.Size * 0.5f;
 
         // Apply the offset to the projectile's old position
-        Vector2[] oldPosWithOffset = Projectile.oldPos.Select(p => p - offset).ToArray();
+        Vector2[] oldPosWithOffset = [.. Projectile.oldPos.Select(p => p - offset)];
 
         PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 

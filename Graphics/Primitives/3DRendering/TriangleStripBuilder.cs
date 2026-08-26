@@ -658,7 +658,7 @@ public static class TriangleStripBuilder
             else if (endCap == StripCapStyle.HalfCircle)
                 AddHalfCircleCap(vertexList, indexList, centers[^1], tangents[^1], rights[^1], halfWidths[^1], sectionColors[^1], endU, endLeftIndex, endRightIndex, false, capSteps);
 
-            return new PrimitiveMesh(vertexList.ToArray(), indexList.ToArray(), PrimitiveType.TriangleList);
+            return new PrimitiveMesh(vertexList.ToArray(), [.. indexList], PrimitiveType.TriangleList);
         }
         else
         {
@@ -682,7 +682,7 @@ public static class TriangleStripBuilder
             else if (endCap == StripCapStyle.HalfCircle)
                 AddHalfCircleCap(vertexList, indexList, centers[^1], tangents[^1], rights[^1], halfWidths[^1], sectionColors[^1], endLeftIndex, endRightIndex, false, capSteps);
 
-            return new PrimitiveMesh(vertexList.ToArray(), indexList.ToArray(), PrimitiveType.TriangleList);
+            return new PrimitiveMesh(vertexList.ToArray(), [.. indexList], PrimitiveType.TriangleList);
         }
     }
 

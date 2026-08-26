@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Melee;
 public class DevilsSunriseProj : ModProjectile
 {
     public static readonly SoundStyle HitSound = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2) with { Pitch = 0.8f };
-    public static readonly SoundStyle FullChargeSound = new SoundStyle("CalamityMod/Sounds/Item/HellbornImpact");
+    public static readonly SoundStyle FullChargeSound = new("CalamityMod/Sounds/Item/HellbornImpact");
     public static readonly SoundStyle ThrowSound = new SoundStyle("CalamityMod/Sounds/Item/SwingMid") with { Pitch = 1.2f };
     public override LocalizedText DisplayName => CalamityUtils.GetItemName<DevilsSunrise>();
 

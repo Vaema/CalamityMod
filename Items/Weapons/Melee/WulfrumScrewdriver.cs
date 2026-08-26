@@ -28,7 +28,7 @@ public class WulfrumScrewdriver : ModItem, ILocalizedModType
     public static bool ScrewQeuedForStorage = false;
     public bool ScrewStored = false;
     public bool ScrewAvailable => ScrewStored && ScrewTimer == 0;
-    public static Vector3 ScrewStart = new Vector3(0);
+    public static Vector3 ScrewStart = new(0);
     public static Vector3 ScrewPosition;
     public static Vector2 PrevOffset;
     public static float ScrewTimer;
@@ -154,10 +154,10 @@ public class WulfrumScrewdriver : ModItem, ILocalizedModType
         return base.Shoot(player, source, position, velocity, type, damage, knockback);
     }
 
-    public CurveSegment InitialAway = new CurveSegment(SineOutEasing, 0f, 0f, -0.2f, 3);
-    public CurveSegment AccelerateTowards = new CurveSegment(PolyInEasing, 0.3f, -0.2f, 1.2f, 3);
-    public CurveSegment Bump1Segment = new CurveSegment(SineBumpEasing, 0.5f, 1f, 0.24f);
-    public CurveSegment Bump2Segment = new CurveSegment(SineBumpEasing, 0.8f, 1f, -0.1f);
+    public CurveSegment InitialAway = new(SineOutEasing, 0f, 0f, -0.2f, 3);
+    public CurveSegment AccelerateTowards = new(PolyInEasing, 0.3f, -0.2f, 1.2f, 3);
+    public CurveSegment Bump1Segment = new(SineBumpEasing, 0.5f, 1f, 0.24f);
+    public CurveSegment Bump2Segment = new(SineBumpEasing, 0.8f, 1f, -0.1f);
     internal float ProgressionOfScrew => PiecewiseAnimation(ScrewTimer / ScrewTime, new CurveSegment[] { InitialAway, AccelerateTowards, Bump1Segment, Bump2Segment });
 
     public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)

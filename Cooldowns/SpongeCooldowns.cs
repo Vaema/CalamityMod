@@ -15,8 +15,8 @@ namespace CalamityMod.Cooldowns;
 
 public class SpongeDurability : CooldownHandler
 {
-    private static Color ringColorLerpStart = new Color(82, 203, 222);
-    private static Color ringColorLerpEnd = new Color(113, 178, 222);
+    private static Color ringColorLerpStart = new(82, 203, 222);
+    private static Color ringColorLerpEnd = new(113, 178, 222);
 
     private float AdjustedCompletion => instance.timeLeft / (float)TheSponge.ShieldDurabilityMax;
 
@@ -27,7 +27,7 @@ public class SpongeDurability : CooldownHandler
     public override string Texture => "CalamityMod/Cooldowns/SpongeDurability";
     public override string OutlineTexture => "CalamityMod/Cooldowns/SpongeOutline";
     public override string OverlayTexture => "CalamityMod/Cooldowns/SpongeOverlay";
-    public override Color OutlineColor => new Color(133, 204, 237);
+    public override Color OutlineColor => new(133, 204, 237);
     public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override bool SavedWithPlayer => false;
@@ -75,8 +75,8 @@ public class SpongeDurability : CooldownHandler
 
 public class SpongeRecharge : CooldownHandler
 {
-    private static Color ringColorLerpStart = new Color(179, 212, 242);
-    private static Color ringColorLerpEnd = new Color(113, 178, 222);
+    private static Color ringColorLerpStart = new(179, 212, 242);
+    private static Color ringColorLerpEnd = new(113, 178, 222);
 
     public static new string ID => "SpongeRecharge";
     public override bool ShouldDisplay => true;
@@ -86,7 +86,7 @@ public class SpongeRecharge : CooldownHandler
     public override string OverlayTexture => "CalamityMod/Cooldowns/SpongeOverlay";
     public override bool SavedWithPlayer => false;
     public override bool PersistsThroughDeath => false;
-    public override Color OutlineColor => new Color(133, 204, 237);
+    public override Color OutlineColor => new(133, 204, 237);
     public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override SoundStyle? EndSound => TheSponge.ActivationSound;

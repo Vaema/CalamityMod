@@ -1383,7 +1383,7 @@ public partial class CalamityGlobalItem : GlobalItem
     /// 44-60 extremely slow <br />
     /// 61+   snail
     /// </remarks>
-    private static readonly Dictionary<int, LocalizedText> SpeedTooltips = new Dictionary<int, LocalizedText>()
+    private static readonly Dictionary<int, LocalizedText> SpeedTooltips = new()
     {
         { 5, Language.GetText("LegacyTooltip.6") },
         { 10, Language.GetText("LegacyTooltip.7") },

@@ -13,7 +13,7 @@ public class HomingGammaBullet : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Summon";
     private int targetNPC = -1;
-    private List<int> previousNPCs = new List<int>() { -1 };
+    private List<int> previousNPCs = new() { -1 };
 
     public override string Texture => "CalamityMod/Projectiles/Enemy/NuclearBulletMedium";
 

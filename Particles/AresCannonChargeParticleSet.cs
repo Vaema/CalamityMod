@@ -13,7 +13,7 @@ public class AresCannonChargeParticleSet : BaseParticleSet
     public float MoveRotationOffset;
     public float chargeProgress = 0f;
     public Particle bloom;
-    public List<Particle> Pulses = new List<Particle>();
+    public List<Particle> Pulses = new();
 
     public AresCannonChargeParticleSet(int setLifetime, int particleSpawnRate, float spawnAreaCompactness, Color particleColor) :
         base(setLifetime, particleSpawnRate)
@@ -30,20 +30,20 @@ public class AresCannonChargeParticleSet : BaseParticleSet
         return new ChargeUpLineVFX(originPoint, originPoint.ToRotation(), 0.5f, ParticleColor, ParticleLifetime, 0.75f, true, 0.2f, 10f);
     }
 
-    public CurveSegment Rise1 = new CurveSegment(EasingType.SineInOut, 0f, 0f, 0.25f);
-    public CurveSegment Fall1 = new CurveSegment(EasingType.SineInOut, 0.13f, 0.25f, -0.05f);
+    public CurveSegment Rise1 = new(EasingType.SineInOut, 0f, 0f, 0.25f);
+    public CurveSegment Fall1 = new(EasingType.SineInOut, 0.13f, 0.25f, -0.05f);
 
-    public CurveSegment Rise2 = new CurveSegment(EasingType.SineInOut, 0.2f, 0.2f, 0.3f);
-    public CurveSegment Fall2 = new CurveSegment(EasingType.SineInOut, 0.33f, 0.5f, -0.1f);
+    public CurveSegment Rise2 = new(EasingType.SineInOut, 0.2f, 0.2f, 0.3f);
+    public CurveSegment Fall2 = new(EasingType.SineInOut, 0.33f, 0.5f, -0.1f);
 
-    public CurveSegment Rise3 = new CurveSegment(EasingType.SineInOut, 0.4f, 0.4f, 0.3f);
-    public CurveSegment Fall3 = new CurveSegment(EasingType.SineInOut, 0.53f, 0.7f, -0.1f);
+    public CurveSegment Rise3 = new(EasingType.SineInOut, 0.4f, 0.4f, 0.3f);
+    public CurveSegment Fall3 = new(EasingType.SineInOut, 0.53f, 0.7f, -0.1f);
 
-    public CurveSegment Rise4 = new CurveSegment(EasingType.SineInOut, 0.6f, 0.6f, 0.3f);
-    public CurveSegment Fall4 = new CurveSegment(EasingType.SineInOut, 0.73f, 0.9f, -0.1f);
+    public CurveSegment Rise4 = new(EasingType.SineInOut, 0.6f, 0.6f, 0.3f);
+    public CurveSegment Fall4 = new(EasingType.SineInOut, 0.73f, 0.9f, -0.1f);
 
-    public CurveSegment Rise5 = new CurveSegment(EasingType.SineInOut, 0.8f, 0.8f, 0.3f);
-    public CurveSegment Finale = new CurveSegment(EasingType.SineIn, 0.93f, 1.1f, -1.1f);
+    public CurveSegment Rise5 = new(EasingType.SineInOut, 0.8f, 0.8f, 0.3f);
+    public CurveSegment Finale = new(EasingType.SineIn, 0.93f, 1.1f, -1.1f);
     public float ChargeSize() => PiecewiseAnimation(chargeProgress, new CurveSegment[] { Rise1, Fall1, Rise2, Fall2, Rise3, Fall3, Rise4, Fall4, Rise5, Finale });
 
     public override void Update()

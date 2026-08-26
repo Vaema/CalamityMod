@@ -243,12 +243,12 @@ public class BendyPet : ModProjectile, ILocalizedModType
             spriteEffects = SpriteEffects.FlipHorizontally;
         Color rainbow = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f % 1f, new Color[]
         {
-            new Color(255, 0, 0, 50), //Red
-            new Color(255, 255, 0, 50), //Yellow
-            new Color(0, 255, 0, 50), //Green
-            new Color(0, 255, 255, 50), //Cyan
-            new Color(0, 0, 255, 50), //Blue
-            new Color(255, 0, 255, 50), //Fuschia
+            new(255, 0, 0, 50), //Red
+            new(255, 255, 0, 50), //Yellow
+            new(0, 255, 0, 50), //Green
+            new(0, 255, 255, 50), //Cyan
+            new(0, 0, 255, 50), //Blue
+            new(255, 0, 255, 50), //Fuschia
         });
 
         Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, frameHeight, texture.Width, height)), rainbow, Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)height / 2f), Projectile.scale, spriteEffects, 0);

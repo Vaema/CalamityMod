@@ -16,8 +16,8 @@ public class Auralis : ModItem, ILocalizedModType
 {
     public static readonly SoundStyle HeavyShotSound = new("CalamityMod/Sounds/Item/PlasmaRifleMain");
     public new string LocalizationCategory => "Items.Weapons.Ranged";
-    public static readonly Color blueColor = new Color(0, 77, 255);
-    public static readonly Color greenColor = new Color(0, 255, 77);
+    public static readonly Color blueColor = new(0, 77, 255);
+    public static readonly Color greenColor = new(0, 255, 77);
 
     public override void SetDefaults()
     {

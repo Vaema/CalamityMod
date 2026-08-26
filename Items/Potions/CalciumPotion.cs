@@ -19,8 +19,8 @@ public class CalciumPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
-            new Color(194, 202, 134),
-            new Color(149, 144, 86)
+            new(194, 202, 134),
+            new(149, 144, 86)
         };
     }
 

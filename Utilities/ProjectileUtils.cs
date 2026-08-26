@@ -842,7 +842,7 @@ public static partial class CalamityUtils
             proj.netSpam = 0;
     }
 
-    private static readonly List<int> vanillaBlastImmuneTiles = new List<int>()
+    private static readonly List<int> vanillaBlastImmuneTiles = new()
     {
         TileID.Cobalt,
         TileID.Mythril,

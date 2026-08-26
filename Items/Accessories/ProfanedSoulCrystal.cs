@@ -569,8 +569,8 @@ public class ProfanedSoulCrystal : TransformationAccessory, ILocalizedModType, I
         }
     }
 
-    public KeyValuePair<int, int> profanedCrystalWingCounter = new KeyValuePair<int, int>(1, 10);
-    public KeyValuePair<int, int> profanedCrystalAnimCounter = new KeyValuePair<int, int>(0, 10);
+    public KeyValuePair<int, int> profanedCrystalWingCounter = new(1, 10);
+    public KeyValuePair<int, int> profanedCrystalAnimCounter = new(0, 10);
 
     private bool IsValidTransitionFrame(AnimationType currentAnim, AnimationType newAnim, int frame, int counter) //this exists so it doesn't loop through the entire walk/idle anim just to find one frame for switching.
     {

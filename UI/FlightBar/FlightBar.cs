@@ -249,7 +249,7 @@ public sealed class FlightBar : ModSystem
         return false;
     }
 
-    public static List<int> infiniteFlightMounts = new List<int>
+    public static List<int> infiniteFlightMounts = new()
     {
         MountID.UFO, MountID.Drill, MountID.PirateShip, MountID.WitchBroom, MountID.CuteFishron
     };

@@ -46,5 +46,5 @@ public class TriactisTruePaladinianMageHammerofMight : ModItem, ILocalizedModTyp
             Register();
     }
 
-    public static Color RarityColor() => new Color(227, 226, 180);
+    public static Color RarityColor() => new(227, 226, 180);
 }

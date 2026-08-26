@@ -22,7 +22,7 @@ public class BlueJellyAura : ModProjectile, ILocalizedModType
     public int PulseOnce3 = 1;
     public static readonly SoundStyle Spawnsound = new("CalamityMod/Sounds/Custom/OrbHeal1") { Volume = 0.5f };
     public ref int CleansingEffect => ref Main.player[Projectile.owner].Calamity().CleansingEffect;
-    public List<bool> cleanseList = new List<bool>(new bool[Main.maxPlayers]);
+    public List<bool> cleanseList = new(new bool[Main.maxPlayers]);
 
 
     public override void SetDefaults()

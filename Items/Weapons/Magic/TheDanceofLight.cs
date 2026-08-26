@@ -24,7 +24,7 @@ public class TheDanceofLight : ModItem, ILocalizedModType
     private const float MinSpawnDist = 40;
     private const float MaxSpawnDist = 140;
 
-    public static Color GetLightColor(float deviation) => new Color(1f, 0.5f + 0.35f * MathHelper.Clamp(deviation, 0f, 1f), 1f);
+    public static Color GetLightColor(float deviation) => new(1f, 0.5f + 0.35f * MathHelper.Clamp(deviation, 0f, 1f), 1f);
     public static Color GetSyncedLightColor() => GetLightColor(Main.DiscoG / 255f);
     public static Color GetRandomLightColor() => GetLightColor(Main.rand.NextFloat());
 

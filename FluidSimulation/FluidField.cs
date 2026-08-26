@@ -71,7 +71,7 @@ public class FluidField : IDisposable
     }
 
     // A surface format of Vector4 is used here to allow for both 0-1 ranged colors and other things at the same time.
-    public static RenderTargetDescriptor FluidDescriptor => new RenderTargetDescriptor(SurfaceFormat.Vector4, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents, true);
+    public static RenderTargetDescriptor FluidDescriptor => new(SurfaceFormat.Vector4, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents, true);
 
     internal FluidField(int size, float scale, float viscosity, float diffusionFactor, float dissipationFactor)
     {

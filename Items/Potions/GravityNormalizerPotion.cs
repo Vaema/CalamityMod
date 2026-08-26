@@ -15,9 +15,9 @@ public class GravityNormalizerPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(255, 164, 94),
-            new Color(109, 242, 196),
-            new Color(255, 255, 191)
+            new(255, 164, 94),
+            new(109, 242, 196),
+            new(255, 255, 191)
         };
     }
 

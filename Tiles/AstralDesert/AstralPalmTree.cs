@@ -24,7 +24,7 @@ public class AstralPalmTree : GlowMaskPalmTree
     }
 
     //Copypasted from vanilla, just as ExampleMod did, due to the lack of proper explanation
-    public override TreePaintingSettings TreeShaderSettings => new TreePaintingSettings
+    public override TreePaintingSettings TreeShaderSettings => new()
     {
         UseSpecialGroups = true,
         SpecialGroupMinimalHueValue = 11f / 72f,

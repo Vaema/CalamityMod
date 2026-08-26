@@ -65,8 +65,8 @@ public class CrushsawCrasher : RogueWeapon
                 if (!HasHoveredOverNameInGFB)
                 {
                     HasHoveredOverNameInGFB = true;
-                    string[] firstWords = this.GetLocalizedValue("GFBFirstWords").Split('\n', '\r').Select(str => str.Trim()).ToArray();
-                    string[] lastWords = this.GetLocalizedValue("GFBLastWords").Split('\n', '\r').Select(str => str.Trim()).ToArray();
+                    string[] firstWords = [.. this.GetLocalizedValue("GFBFirstWords").Split('\n', '\r').Select(str => str.Trim())];
+                    string[] lastWords = [.. this.GetLocalizedValue("GFBLastWords").Split('\n', '\r').Select(str => str.Trim())];
 
                     string firstWord = firstWords[Main.rand.Next(firstWords.Length)];
                     string lastWord = lastWords[Main.rand.Next(lastWords.Length)];

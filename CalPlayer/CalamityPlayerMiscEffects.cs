@@ -4343,18 +4343,18 @@ public partial class CalamityPlayer : ModPlayer
             {
                 Color color = Utils.SelectRandom(Main.rand, new Color[]
                 {
-                    new Color(255, 0, 0, 50), //Red
-                    new Color(255, 128, 0, 50), //Orange
-                    new Color(255, 255, 0, 50), //Yellow
-                    new Color(128, 255, 0, 50), //Lime
-                    new Color(0, 255, 0, 50), //Green
-                    new Color(0, 255, 128, 50), //Turquoise
-                    new Color(0, 255, 255, 50), //Cyan
-                    new Color(0, 128, 255, 50), //Light Blue
-                    new Color(0, 0, 255, 50), //Blue
-                    new Color(128, 0, 255, 50), //Purple
-                    new Color(255, 0, 255, 50), //Fuschia
-                    new Color(255, 0, 128, 50) //Hot Pink
+                    new(255, 0, 0, 50), //Red
+                    new(255, 128, 0, 50), //Orange
+                    new(255, 255, 0, 50), //Yellow
+                    new(128, 255, 0, 50), //Lime
+                    new(0, 255, 0, 50), //Green
+                    new(0, 255, 128, 50), //Turquoise
+                    new(0, 255, 255, 50), //Cyan
+                    new(0, 128, 255, 50), //Light Blue
+                    new(0, 0, 255, 50), //Blue
+                    new(128, 0, 255, 50), //Purple
+                    new(255, 0, 255, 50), //Fuschia
+                    new(255, 0, 128, 50) //Hot Pink
                 });
                 Vector2 source = Vector2.Normalize(Player.velocity) * new Vector2(Player.width / 2f, Player.height) * 0.75f;
                 source = source.RotatedBy((dustIndex - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt, default) + Player.Center;

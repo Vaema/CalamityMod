@@ -380,7 +380,7 @@ public class LamentationsOfTheChained : ModProjectile, ILocalizedModType
         //First chain
         BezierCurve curve = new(new Vector2[] { Owner.MountedCenter, control0, control1, control2, control3 });
         int numPoints = 40;
-        chainPositions = curve.GetPoints(numPoints).ToArray();
+        chainPositions = [.. curve.GetPoints(numPoints)];
 
         //Draw each chain segment bar the very first one
         for (int i = 1; i < numPoints; i++)

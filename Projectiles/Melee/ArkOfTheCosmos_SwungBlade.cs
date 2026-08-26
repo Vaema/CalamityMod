@@ -118,24 +118,24 @@ public class ArkoftheCosmosSwungBlade : ModProjectile, ILocalizedModType
     }
 
     //Swing animation keys
-    public CurveSegment anticipation = new CurveSegment(EasingType.ExpOut, 0f, 0f, 0.15f);
-    public CurveSegment thrust = new CurveSegment(EasingType.PolyInOut, 0.1f, 0.15f, 0.85f, 3);
-    public CurveSegment hold = new CurveSegment(EasingType.Linear, 0.5f, 1f, 0.2f);
+    public CurveSegment anticipation = new(EasingType.ExpOut, 0f, 0f, 0.15f);
+    public CurveSegment thrust = new(EasingType.PolyInOut, 0.1f, 0.15f, 0.85f, 3);
+    public CurveSegment hold = new(EasingType.Linear, 0.5f, 1f, 0.2f);
     internal float SwingRatio() => PiecewiseAnimation(SwingCompletion, new CurveSegment[] { anticipation, thrust, hold });
 
     //Wide swing animation keys
-    public CurveSegment startup = new CurveSegment(EasingType.SineIn, 0f, 0f, 0.25f);
-    public CurveSegment swing = new CurveSegment(EasingType.SineOut, 0.1f, 0.25f, 0.75f);
+    public CurveSegment startup = new(EasingType.SineIn, 0f, 0f, 0.25f);
+    public CurveSegment swing = new(EasingType.SineOut, 0.1f, 0.25f, 0.75f);
     internal float SwirlRatio() => PiecewiseAnimation(SwingCompletion, new CurveSegment[] { startup, swing });
 
     //Throw animation keys. This one is on the esoteric side, since the first 2 anim segments get used to determine the strenght of the cursor homing of the scissor blade, while the retract part is actually used for the retraction
-    public CurveSegment shoot = new CurveSegment(EasingType.PolyIn, 0f, 1f, -0.2f, 3);
-    public CurveSegment remain = new CurveSegment(EasingType.Linear, SnapWindowStart, 0.8f, 0f);
-    public CurveSegment retract = new CurveSegment(EasingType.SineIn, SnapWindowEnd, 1f, -1f);
+    public CurveSegment shoot = new(EasingType.PolyIn, 0f, 1f, -0.2f, 3);
+    public CurveSegment remain = new(EasingType.Linear, SnapWindowStart, 0.8f, 0f);
+    public CurveSegment retract = new(EasingType.SineIn, SnapWindowEnd, 1f, -1f);
     internal float ThrowRatio() => PiecewiseAnimation(ThrowCompletion, new CurveSegment[] { shoot, remain, retract });
 
 
-    public CurveSegment sizeCurve = new CurveSegment(EasingType.SineBump, 0f, 0f, 1f);
+    public CurveSegment sizeCurve = new(EasingType.SineBump, 0f, 0f, 1f);
     internal float ThrowScaleRatio() => PiecewiseAnimation(ThrowCompletion, new CurveSegment[] { sizeCurve });
 
     public override void AI()

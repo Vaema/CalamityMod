@@ -15,9 +15,9 @@ public class StarmadaStar : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Ranged";
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
     public int time = 0;
-    public Color c1 = new Color(164, 47, 160);
-    public Color c2 = new Color(227, 97, 72);
-    public Color c3 = new Color(193, 255, 146);
+    public Color c1 = new(164, 47, 160);
+    public Color c2 = new(227, 97, 72);
+    public Color c3 = new(193, 255, 146);
     public Color shiftColor;
     public Player Owner => Main.player[Projectile.owner];
     public override void SetDefaults()

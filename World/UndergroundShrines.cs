@@ -54,13 +54,13 @@ public class UndergroundShrines
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.BattlePotion, ItemID.HunterPotion, ItemID.TrapsightPotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<CorruptionEffigy>(), 1),
-            new ChestItem(ItemID.RottenChunk, WorldGen.genRand.Next(24, 28 + 1)),
-            new ChestItem(ItemID.CorruptionKey, 1),
-            new ChestItem(ItemID.CorruptTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
+            new(ItemType<CorruptionEffigy>(), 1),
+            new(ItemID.RottenChunk, WorldGen.genRand.Next(24, 28 + 1)),
+            new(ItemID.CorruptionKey, 1),
+            new(ItemID.CorruptTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(10, 12 + 1)),
         };
 
         if (Main.zenithWorld)
@@ -68,14 +68,14 @@ public class UndergroundShrines
             int evil = Utils.SelectRandom(WorldGen.genRand, ItemType<StressPills>(), ItemType<Laudanum>(), ItemType<HeartofDarkness>());
             contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<CorruptionEffigy>(), 1),
-            new ChestItem(ItemID.RottenChunk, WorldGen.genRand.Next(24, 28 + 1)),
-            new ChestItem(ItemID.CorruptionKey, 1),
-            new ChestItem(ItemID.CorruptTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(evil, 1),
-            new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
-            new ChestItem(ItemID.GasTrap,1),
+            new(ItemType<CorruptionEffigy>(), 1),
+            new(ItemID.RottenChunk, WorldGen.genRand.Next(24, 28 + 1)),
+            new(ItemID.CorruptionKey, 1),
+            new(ItemID.CorruptTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(evil, 1),
+            new(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
+            new(ItemID.GasTrap,1),
         };
         }
 
@@ -144,13 +144,13 @@ public class UndergroundShrines
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.BattlePotion, ItemID.HunterPotion, ItemID.TrapsightPotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<CrimsonEffigy>(), 1),
-            new ChestItem(ItemID.Vertebrae, WorldGen.genRand.Next(24, 28 + 1)),
-            new ChestItem(ItemID.CrimsonKey, 1),
-            new ChestItem(ItemID.CrimsonTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
+            new(ItemType<CrimsonEffigy>(), 1),
+            new(ItemID.Vertebrae, WorldGen.genRand.Next(24, 28 + 1)),
+            new(ItemID.CrimsonKey, 1),
+            new(ItemID.CrimsonTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(10, 12 + 1)),
         };
 
         //Gfb loot change
@@ -159,14 +159,14 @@ public class UndergroundShrines
             //Cannot modify the return value of List<ChestItem>.this[int] because its not a variable so gotta do this instead
             contents = new List<ChestItem>()
             {
-            new ChestItem(ItemType<CrimsonEffigy>(), 1),
-            new ChestItem(ItemID.Vertebrae, WorldGen.genRand.Next(24, 28 + 1)),
-            new ChestItem(ItemID.CrimsonKey, 1),
-            new ChestItem(ItemID.CrimsonTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemType<BloodyMary>(), WorldGen.genRand.Next(2, 2 + 1)),
-            new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
-            new ChestItem(ItemID.GasTrap, 1),
+            new(ItemType<CrimsonEffigy>(), 1),
+            new(ItemID.Vertebrae, WorldGen.genRand.Next(24, 28 + 1)),
+            new(ItemID.CrimsonKey, 1),
+            new(ItemID.CrimsonTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemType<BloodyMary>(), WorldGen.genRand.Next(2, 2 + 1)),
+            new(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
+            new(ItemID.GasTrap, 1),
             };
         }
 
@@ -237,27 +237,27 @@ public class UndergroundShrines
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.ShinePotion, ItemID.MiningPotion, ItemID.BuilderPotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<LuxorsGift>(), 1),
-            new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
-            new ChestItem(ItemID.DungeonDesertKey, 1),
-            new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
+            new(ItemType<LuxorsGift>(), 1),
+            new(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
+            new(ItemID.DungeonDesertKey, 1),
+            new(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(10, 12 + 1)),
         };
         if (Main.zenithWorld)
         {
             int golfClub = Utils.SelectRandom(WorldGen.genRand, ItemID.GolfClubBronzeWedge, ItemID.GolfClubWedge, ItemID.GasTrap);
             contents = new List<ChestItem>()
             {
-            new ChestItem(ItemType<LuxorsGift>(), 1),
-            new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
-            new ChestItem(ItemID.DungeonDesertKey, 1),
-            new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemType<SpelunkersAmulet>(), 1),
-            new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
-            new ChestItem(golfClub, 1), //Implying that the golfer messed with the loot but forgot this, OR its trapped
+            new(ItemType<LuxorsGift>(), 1),
+            new(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
+            new(ItemID.DungeonDesertKey, 1),
+            new(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemType<SpelunkersAmulet>(), 1),
+            new(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
+            new(golfClub, 1), //Implying that the golfer messed with the loot but forgot this, OR its trapped
             };
         }
 
@@ -322,13 +322,13 @@ public class UndergroundShrines
 
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<UnstableGraniteCore>(), 1),
-            new ChestItem(ItemID.Geode, WorldGen.genRand.Next(6, 8 + 1)),
-            new ChestItem(ItemID.BlueTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(Main.zenithWorld ? 1 : 10, (Main.zenithWorld ? 2 : 12) + 1)),
-            new ChestItem((Main.rand.NextBool() && Main.zenithWorld) ? ItemID.GasTrap : ItemID.Granite, Main.zenithWorld ? 1 : WorldGen.genRand.Next(7,15+1)),
+            new(ItemType<UnstableGraniteCore>(), 1),
+            new(ItemID.Geode, WorldGen.genRand.Next(6, 8 + 1)),
+            new(ItemID.BlueTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(Main.zenithWorld ? 1 : 10, (Main.zenithWorld ? 2 : 12) + 1)),
+            new((Main.rand.NextBool() && Main.zenithWorld) ? ItemID.GasTrap : ItemID.Granite, Main.zenithWorld ? 1 : WorldGen.genRand.Next(7,15+1)),
         };
 
         for (int i = 0; i < contents.Count; i++)
@@ -430,26 +430,26 @@ public class UndergroundShrines
     {
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<FrozenCube>(), 1),
-            new ChestItem(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
-            new ChestItem(ItemID.FrozenKey, 1),
-            new ChestItem(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(ItemID.IceCream, WorldGen.genRand.Next(10, 12 + 1)),
+            new(ItemType<FrozenCube>(), 1),
+            new(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
+            new(ItemID.FrozenKey, 1),
+            new(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(ItemID.IceCream, WorldGen.genRand.Next(10, 12 + 1)),
         };
 
         if (Main.zenithWorld)
         {
             contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<FrozenCube>(), 1),
-            new ChestItem(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
-            new ChestItem(ItemID.FrozenKey, 1),
-            new ChestItem(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.Eggnog, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(Main.rand.NextBool() ? ItemID.GasTrap : ItemID.Marshmallow, 1)
+            new(ItemType<FrozenCube>(), 1),
+            new(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
+            new(ItemID.FrozenKey, 1),
+            new(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.Eggnog, WorldGen.genRand.Next(10, 12 + 1)),
+            new(Main.rand.NextBool() ? ItemID.GasTrap : ItemID.Marshmallow, 1)
         };
         }
 
@@ -514,13 +514,13 @@ public class UndergroundShrines
             potionType = ItemID.RedPotion;
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<GladiatorsLocket>(), 1),
-            new ChestItem(GenVars.goldBar == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(12, 15 + 1)),
-            new ChestItem(ItemID.WhiteTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(Main.zenithWorld ? 1 : 10, (Main.zenithWorld ? 2 : 12) + 1)),
-            new ChestItem((Main.rand.NextBool() && Main.zenithWorld) ? ItemID.GasTrap : ItemID.Marble, Main.zenithWorld ? 1 : WorldGen.genRand.Next(7,15+1)),
+            new(ItemType<GladiatorsLocket>(), 1),
+            new(GenVars.goldBar == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(12, 15 + 1)),
+            new(ItemID.WhiteTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(Main.zenithWorld ? 1 : 10, (Main.zenithWorld ? 2 : 12) + 1)),
+            new((Main.rand.NextBool() && Main.zenithWorld) ? ItemID.GasTrap : ItemID.Marble, Main.zenithWorld ? 1 : WorldGen.genRand.Next(7,15+1)),
         };
 
         for (int i = 0; i < contents.Count; i++)
@@ -635,12 +635,12 @@ public class UndergroundShrines
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.ShinePotion, ItemID.MiningPotion, ItemID.BuilderPotion);
         List<ChestItem> contents = new List<ChestItem>()
             {
-            new ChestItem(ItemType<FungalSymbiote>(), 1),
-            new ChestItem(ItemID.TruffleWorm, 3),
-            new ChestItem(ItemID.MushroomTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
+            new(ItemType<FungalSymbiote>(), 1),
+            new(ItemID.TruffleWorm, 3),
+            new(ItemID.MushroomTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(10, 12 + 1)),
             };
 
         // Gfb loot change
@@ -649,13 +649,13 @@ public class UndergroundShrines
             //"Cannot modify the return value of List<ChestItem>.this[int] because its not a variable" so gotta do this instead, I could add a bunch of bools but I feel this is better for how much is changed
             contents = new List<ChestItem>()
             {
-            new ChestItem(ItemType<FungalSymbiote>(), 1),
-            new ChestItem(ItemID.TruffleWorm, 3),
-            new ChestItem(ItemID.MushroomTorch, WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemType<OddMushroom>(), WorldGen.genRand.Next(2, 3 + 1)),
-            new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
-            new ChestItem(ItemID.GasTrap, 1)
+            new(ItemType<FungalSymbiote>(), 1),
+            new(ItemID.TruffleWorm, 3),
+            new(ItemID.MushroomTorch, WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemType<OddMushroom>(), WorldGen.genRand.Next(2, 3 + 1)),
+            new(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
+            new(ItemID.GasTrap, 1)
             };
         }
 
@@ -743,13 +743,13 @@ public class UndergroundShrines
             potionType = ItemID.Sake;
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<TrinketofChi>(), 1),
-            new ChestItem(ItemID.PinkGel, WorldGen.genRand.Next(12, 15 + 1)),
-            new ChestItem(ItemID.Torch, WorldGen.genRand.Next(50, 60 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(2, 4 + 1)),
-            new ChestItem(Main.zenithWorld ? ItemID.RestorationPotion : ItemID.LesserHealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(Main.zenithWorld ? ItemID.GasTrap : ItemID.Mushroom, Main.zenithWorld ? 1 : WorldGen.genRand.Next(5,9+1)),
+            new(ItemType<TrinketofChi>(), 1),
+            new(ItemID.PinkGel, WorldGen.genRand.Next(12, 15 + 1)),
+            new(ItemID.Torch, WorldGen.genRand.Next(50, 60 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(2, 4 + 1)),
+            new(Main.zenithWorld ? ItemID.RestorationPotion : ItemID.LesserHealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(10, 12 + 1)),
+            new(Main.zenithWorld ? ItemID.GasTrap : ItemID.Mushroom, Main.zenithWorld ? 1 : WorldGen.genRand.Next(5,9+1)),
         };
 
         for (int i = 0; i < contents.Count; i++)
@@ -992,12 +992,12 @@ public class UndergroundShrines
         }
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemType<Terminus>(), 1),
-            new ChestItem(dropType, 1),
-            new ChestItem(ItemType<VoidTorch>(), WorldGen.genRand.Next(100, 110 + 1)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
-            new ChestItem(ItemType<HadalStew>(), WorldGen.genRand.Next(10, 12 + 1)),
-            new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
+            new(ItemType<Terminus>(), 1),
+            new(dropType, 1),
+            new(ItemType<VoidTorch>(), WorldGen.genRand.Next(100, 110 + 1)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
+            new(ItemType<HadalStew>(), WorldGen.genRand.Next(10, 12 + 1)),
+            new(potionType, WorldGen.genRand.Next(10, 12 + 1)),
         };
 
         if (Main.zenithWorld)

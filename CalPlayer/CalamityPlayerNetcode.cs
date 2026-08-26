@@ -55,7 +55,7 @@ public partial class CalamityPlayer : ModPlayer
         if (Main.netMode == NetmodeID.SinglePlayer)
             return;
 
-        CooldownRemovalPacket.Send(this, cooldownIDs.Select(id => CooldownRegistry.Get(id).netID).ToArray());
+        CooldownRemovalPacket.Send(this, [.. cooldownIDs.Select(id => CooldownRegistry.Get(id).netID)]);
     }
 
     public void SyncCooldownDictionary(bool server)

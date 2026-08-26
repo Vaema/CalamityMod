@@ -49,7 +49,7 @@ public class SulphuricWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyle
     public override Asset<Texture2D> GetRainTexture() => RainTexture ??= ModContent.Request<Texture2D>("CalamityMod/Waters/SulphuricRain");
 
     public override byte GetRainVariant() => (byte)Main.rand.Next(3);
-    public override Color BiomeHairColor() => new Color(43, 168, 110);
+    public override Color BiomeHairColor() => new(43, 168, 110);
     public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
     public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
     {

@@ -207,7 +207,7 @@ public class AerSigilMissile : ModProjectile, ILocalizedModType
         GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
 
         Vector2 offset = Projectile.Size * 0.5f;
-        Vector2[] oldPosWithOffset = Projectile.oldPos.Select(p => p - offset).ToArray();
+        Vector2[] oldPosWithOffset = [.. Projectile.oldPos.Select(p => p - offset)];
 
         PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 

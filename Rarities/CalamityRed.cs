@@ -17,8 +17,8 @@ public class CalamityRed : ModRarity
     public override Color RarityColor => TextClr * 2f;
 
     public static float MaxY = 4.5f;
-    public static Color BloomClr = new Color(180, 20, 75, 0);
-    public static Color TextClr = new Color(242, 27, 27, 255);
+    public static Color BloomClr = new(180, 20, 75, 0);
+    public static Color TextClr = new(242, 27, 27, 255);
 
     public sealed class CustomTextSnippet(string text) : TextSnippet
     {
@@ -119,7 +119,7 @@ public class CalamityRed : ModRarity
         Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font)
     {
         // Get all snippets and convert all plain text snippets to the custom rarity snippet
-        TextSnippet[] snippets = ChatManager.ParseMessage(text, textColor).ToArray();
+        TextSnippet[] snippets = [.. ChatManager.ParseMessage(text, textColor)];
         for (int i = 0; i < snippets.Length; i++)
         {
             TextSnippet textSnippet = snippets[i];

@@ -39,6 +39,6 @@ public class UpperAbyssWater : ModWaterStyle, IWaterStyleModifyColor
     public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
     public override int GetSplashDust() => SplashDust;
     public override int GetDropletGore() => DropletGore;
-    public override Color BiomeHairColor() => new Color(9, 69, 82);
+    public override Color BiomeHairColor() => new(9, 69, 82);
     public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
 }

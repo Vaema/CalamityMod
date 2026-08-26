@@ -19,8 +19,8 @@ public class BurnishedAuric : ModRarity
     public override Color RarityColor => TextClr * 2f;
 
     public static float MaxY = 4.5f;
-    public static Color BloomClr = new Color(48, 33, 4, 0);
-    public static Color TextClr = new Color(157, 110, 11, 255);
+    public static Color BloomClr = new(48, 33, 4, 0);
+    public static Color TextClr = new(157, 110, 11, 255);
     static float lastFlashTime = 0f;
     static bool isFlashing = false;
 
@@ -116,7 +116,7 @@ public class BurnishedAuric : ModRarity
             }
         }
         // Get all snippets and convert all plain text snippets to the custom rarity snippet
-        TextSnippet[] snippets = ChatManager.ParseMessage(text, textColor).ToArray();
+        TextSnippet[] snippets = [.. ChatManager.ParseMessage(text, textColor)];
         for (int i = 0; i < snippets.Length; i++)
         {
             TextSnippet textSnippet = snippets[i];

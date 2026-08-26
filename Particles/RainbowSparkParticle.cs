@@ -13,7 +13,7 @@ public class RainbowGlowSparkParticle : Particle
     public bool QuickShrink;
     public bool Glowing;
     public float ShrinkSpeed = 1;
-    public Vector2 Squash = new Vector2(0.5f, 1.6f);
+    public Vector2 Squash = new(0.5f, 1.6f);
     public float HueShift;
 
     public override bool SetLifetime => true;

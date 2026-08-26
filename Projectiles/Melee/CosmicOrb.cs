@@ -60,10 +60,10 @@ public class CosmicOrb : ModProjectile, ILocalizedModType
         {
             int MaxLaserCountPerShot = 5;
             int targetCount = 0;
-            List<NPC> targets = Main.npc.Where(npc =>
+            List<NPC> targets = [.. Main.npc.Where(npc =>
             {
                 return npc.active && Projectile.Distance(npc.Center) < 500 && npc.CanBeChasedBy();
-            }).ToList();
+            })];
             foreach (var target in targets)
             {
                 if (targetCount >= MaxLaserCountPerShot)

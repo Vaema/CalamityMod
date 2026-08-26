@@ -54,7 +54,7 @@ public class ArtAttackStar : ModProjectile, ILocalizedModType
         float distanceTraveled = (Projectile.position - Projectile.oldPos[1]).Length();
 
         // Determine if two points are intersecting with the star.
-        List<Vector2> cleanOldPositions = Projectile.oldPos.Where(p => p != Vector2.Zero).ToList();
+        List<Vector2> cleanOldPositions = [.. Projectile.oldPos.Where(p => p != Vector2.Zero)];
         if (Time > StarShapeCreationDelay)
         {
             int start = 12;

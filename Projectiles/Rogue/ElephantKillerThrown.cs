@@ -57,7 +57,7 @@ public class ElephantKillerThrown : ModProjectile, ILocalizedModType
     public int tileHits = 0;
     public bool setReturnTime = false;
 
-    public List<(NPC, float, bool)> hitNPCs = new List<(NPC, float, bool)>();
+    public List<(NPC, float, bool)> hitNPCs = new();
     public static Asset<Texture2D> Gun { get; private set; }
     public static Asset<Texture2D> GunFlash { get; private set; }
     public static Asset<Texture2D> Smear { get; private set; }
@@ -511,7 +511,7 @@ public class ElephantKillerThrown : ModProjectile, ILocalizedModType
                 }
             }
             bool resetHits = false;
-            hitNPCs = hitNPCs.OrderBy(x => x.Item2).ToList(); // Order hit NPCs by distance to hit them in order
+            hitNPCs = [.. hitNPCs.OrderBy(x => x.Item2)]; // Order hit NPCs by distance to hit them in order
             for (int index = 0; index < hitNPCs.Count(); index++)
             {
                 NPC target = hitNPCs.ElementAt(index).Item1;

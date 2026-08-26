@@ -56,7 +56,7 @@ public class GlobalSaveDataSystem : ModSystem
         // If it does exist, read all keys from the text file and save them into the list.
         else
         {
-            GlobalSaveDataKeys = File.ReadAllLines(GlobalSaveDataKeysPath).ToList();
+            GlobalSaveDataKeys = [.. File.ReadAllLines(GlobalSaveDataKeysPath)];
         }
     }
 

@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Melee;
 public class SpineOfThanatosProjectile : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Melee";
-    public List<Vector2> WhipPoints = new List<Vector2>();
+    public List<Vector2> WhipPoints = new();
     public Player Owner => Main.player[Projectile.owner];
     public float CurrentBendFactor => MaximumBendFactor * CalamityUtils.Convert01To010(Time / Lifetime);
     public Vector2 WhipEnd => Projectile.Center + WhipOutwardness;
@@ -69,7 +69,7 @@ public class SpineOfThanatosProjectile : ModProjectile, ILocalizedModType
         }
         initialPoints.Add(Projectile.Center);
 
-        BezierCurve bezierCurve = new BezierCurve(initialPoints.ToArray());
+        BezierCurve bezierCurve = new BezierCurve([.. initialPoints]);
         int totalChains = (int)(Projectile.Distance(startingPosition) / 24f / Projectile.scale);
         totalChains = (int)MathHelper.Clamp(totalChains, 40f, 440f);
 

@@ -23,7 +23,7 @@ public class ArcNovaDiffuser : ModItem, ILocalizedModType
     public static int AftershotCooldownFrames = 9;
     public static int Charge1Frames = 156;
     public static int Charge2Frames = 308;
-    public static Color mainColor = new Color(116, 225, 0);
+    public static Color mainColor = new(116, 225, 0);
 
     public new string LocalizationCategory => "Items.Weapons.Ranged";
 

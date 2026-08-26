@@ -11,7 +11,7 @@ namespace CalamityMod.Tiles.Pylons;
 
 public class CragsPylonTile : BasePylonTile
 {
-    public override Color LightColor => new Color(1f, 0.3f, 0f);
+    public override Color LightColor => new(1f, 0.3f, 0f);
     public override int AssociatedItem => ModContent.ItemType<CragsPylon>();
     public override Color PylonMapColor => Color.OrangeRed;
     public override Color DustColor => Color.OrangeRed;

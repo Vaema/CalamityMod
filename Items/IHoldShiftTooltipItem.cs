@@ -39,7 +39,7 @@ public interface IHoldShiftTooltipItem
     /// <summary>
     /// The default color of the default tooltip extension indicator message.
     /// </summary>
-    public static readonly Color DefaultExtensionIndicatorColor = new Color(184, 184, 184); // #B8B8B8
+    public static readonly Color DefaultExtensionIndicatorColor = new(184, 184, 184); // #B8B8B8
     
     /// <summary>
     /// The default lang/localization key which is queried to show an item's tooltip extension.

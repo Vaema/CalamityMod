@@ -218,9 +218,9 @@ public class CnidarianJellyfishOnTheString : ModProjectile, ILocalizedModType
     }
 
     //Squish animation keys
-    public CurveSegment anticipation = new CurveSegment(EasingType.PolyInOut, 0f, 1f, 0.35f, 3);
-    public CurveSegment contraction = new CurveSegment(EasingType.PolyOut, 0.5f, 1.35f, -0.85f, 5);
-    public CurveSegment retract = new CurveSegment(EasingType.SineInOut, 0.7f, 0.5f, 0.5f);
+    public CurveSegment anticipation = new(EasingType.PolyInOut, 0f, 1f, 0.35f, 3);
+    public CurveSegment contraction = new(EasingType.PolyOut, 0.5f, 1.35f, -0.85f, 5);
+    public CurveSegment retract = new(EasingType.SineInOut, 0.7f, 0.5f, 0.5f);
     internal float StretchRatio() => PiecewiseAnimation(MathHelper.Clamp((Timer + 45) % ElectrifyTimer, 0, 80) / 80f, new CurveSegment[] { anticipation, contraction, retract });
 
     public float PrimWidthFunction(float completionRatio, Vector2 vertexPos)
@@ -240,7 +240,7 @@ public class CnidarianJellyfishOnTheString : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Vector2[] segmentPositions = Segments.Select(x => x.position).ToArray();
+        Vector2[] segmentPositions = [.. Segments.Select(x => x.position)];
 
         PrimitiveRenderer.RenderTrail(segmentPositions, new(PrimWidthFunction, PrimColorFunction), 66);
 

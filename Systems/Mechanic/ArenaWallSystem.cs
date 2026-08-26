@@ -40,10 +40,10 @@ public class ArenaWallSystem : ModSystem
 
         public Vector2 Center => (TopLeft + BottomRight) * 0.5f;
 
-        public Vector2 Size => new Vector2(DistanceLeft + DistanceRight, DistanceUp + DistanceDown);
+        public Vector2 Size => new(DistanceLeft + DistanceRight, DistanceUp + DistanceDown);
 
-        public Vector4 Hitbox => new Vector4(TopLeft.X, TopLeft.Y, Size.X, Size.Y);
-        public Rectangle HitboxRectangle => new Rectangle((int)TopLeft.X, (int)TopLeft.Y, (int)Size.X, (int)Size.Y);
+        public Vector4 Hitbox => new(TopLeft.X, TopLeft.Y, Size.X, Size.Y);
+        public Rectangle HitboxRectangle => new((int)TopLeft.X, (int)TopLeft.Y, (int)Size.X, (int)Size.Y);
 
         public Box oldData = null;
 
@@ -170,7 +170,7 @@ public class ArenaWallSystem : ModSystem
 
 public class ArenaWallPlayer : ModPlayer
 {
-    public Vector2 touchingSides = new Vector2();
+    public Vector2 touchingSides = new();
     public override void PreUpdateMovement()
     {
 

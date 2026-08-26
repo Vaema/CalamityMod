@@ -14,9 +14,9 @@ public class ZergPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(223, 135, 244),
-            new Color(94, 74, 213),
-            new Color(156, 217, 246)
+            new(223, 135, 244),
+            new(94, 74, 213),
+            new(156, 217, 246)
         };
     }
 

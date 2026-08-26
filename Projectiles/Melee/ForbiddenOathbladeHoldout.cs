@@ -28,7 +28,7 @@ public class ForbiddenOathbladeHoldout : BaseCustomUseStyleProjectile, ILocalize
     public override string Texture => "CalamityMod/Items/Weapons/Melee/ForbiddenOathblade";
     public int size = 74 + 10;
     public override float HitboxOutset => size * 0.85f;
-    public override Vector2 HitboxSize => new Vector2(size, size);
+    public override Vector2 HitboxSize => new(size, size);
     public override Vector2 SpriteOrigin => new(0, size - 10);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
     public override float AdditionalScale => 0.15f;

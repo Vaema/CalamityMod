@@ -25,7 +25,7 @@ public class HellkiteHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Items/Weapons/Melee/Hellkite";
     public override float HitboxOutset => 100;
 
-    public override Vector2 HitboxSize => new Vector2(185, 185);
+    public override Vector2 HitboxSize => new(185, 185);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 
     public override Vector2 SpriteOrigin => new(-3, 124);

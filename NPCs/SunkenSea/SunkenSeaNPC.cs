@@ -94,12 +94,11 @@ public abstract class SunkenSeaNPC : ModNPC, IPathfinder
         NPC.aiStyle = -1;
         AIType = -1;
 
-        SpawnModBiomes = Enum.GetValues<SunkenSeaBiomeFlags>()
+        SpawnModBiomes = [.. Enum.GetValues<SunkenSeaBiomeFlags>()
             .Where(flag => flag != SunkenSeaBiomeFlags.None &&
                            flag != SunkenSeaBiomeFlags.UndergroundDesert &&
                            BiomeDesignation.HasFlag(flag))
-            .Select(flag => SunkenSeaBiomeCorrespondentDict.Dict[flag].BiomeType)
-            .ToArray();
+            .Select(flag => SunkenSeaBiomeCorrespondentDict.Dict[flag].BiomeType)];
     }
 
     public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

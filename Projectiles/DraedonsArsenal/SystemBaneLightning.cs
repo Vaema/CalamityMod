@@ -99,7 +99,7 @@ public class SystemBaneLightning : ModProjectile, ILocalizedModType
     public override bool PreDraw(ref Color lightColor)
     {
         // If you have any ideas of making lightning that isn't the same as the cultist lightning and looks more like real lightning, please change this.
-        List<Vector2> oldPositions = Projectile.oldPos.Where(oldPosition => oldPosition != Vector2.Zero).ToList();
+        List<Vector2> oldPositions = [.. Projectile.oldPos.Where(oldPosition => oldPosition != Vector2.Zero)];
         for (int i = 0; i < oldPositions.Count - 1; i++)
         {
             // Draw two types of lightning to make it look like it has an outer and an inner part.

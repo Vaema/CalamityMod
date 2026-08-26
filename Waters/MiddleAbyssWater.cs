@@ -39,7 +39,7 @@ public class MiddleAbyssWater : ModWaterStyle, IWaterStyleModifyColor
     public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
     public override int GetSplashDust() => SplashDust;
     public override int GetDropletGore() => DropletGore;
-    public override Color BiomeHairColor() => new Color(36, 23, 19);
+    public override Color BiomeHairColor() => new(36, 23, 19);
 
     public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
 }

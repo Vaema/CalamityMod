@@ -18,9 +18,9 @@ public class CosmicPurple : ModRarity
     public override Color RarityColor => TextClr * 2f;
 
     public static float MaxY = 4.5f;
-    public static Color BloomClr = new Color(65, 38, 87, 0);
-    public static Color TextClr = new Color(103, 66, 138, 255);
-    public static UnifiedRandom rand = new UnifiedRandom(1);
+    public static Color BloomClr = new(65, 38, 87, 0);
+    public static Color TextClr = new(103, 66, 138, 255);
+    public static UnifiedRandom rand = new(1);
 
     public sealed class CustomTextSnippet(string text) : TextSnippet
     {
@@ -29,9 +29,7 @@ public class CosmicPurple : ModRarity
             size = new Vector2(GetStringLength(FontAssets.MouseText.Value), FontAssets.MouseText.Value.MeasureString(" ").Y * scale);
 
             if (color == default || color == Main.MouseTextColorReal)
-            {
                 color = Colors.AlphaDarken(TextClr);
-            }
 
             if (!justCheckingString && (color.R != 0 || color.G != 0 || color.B != 0))
             {
@@ -39,14 +37,14 @@ public class CosmicPurple : ModRarity
                 color.A = 255;
                 float pulsing = 2.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 5f);
                 for (float f = 0f; f < MathHelper.TwoPi; f += 0.79f)
-                {
                     ChatManager.DrawColorCodedString(spriteBatch, font, text, position + new Vector2(pulsing, 0f).RotatedBy(f + Main.GlobalTimeWrappedHourly * 2f % MathHelper.TwoPi), color with { A = 0 } * 0.5f, 0, Vector2.Zero, new(scale));
-                }
+
                 ChatManager.DrawColorCodedStringShadow(spriteBatch, font, text, position, color * 2f, 0, Vector2.Zero, new(scale));
                 ChatManager.DrawColorCodedString(spriteBatch, font, text, position, Color.Black, 0, Vector2.Zero, new(scale));
             }
             return true;
         }
+
         public override float GetStringLength(DynamicSpriteFont font)
         {
             float size = font.MeasureString(text).X;
@@ -64,7 +62,7 @@ public class CosmicPurple : ModRarity
         if (Item.expert) textColor = Main.DiscoColor;
 
         // Get all snippets and convert all plain text snippets to the custom rarity snippet
-        TextSnippet[] snippets = ChatManager.ParseMessage(text, textColor).ToArray();
+        TextSnippet[] snippets = [.. ChatManager.ParseMessage(text, textColor)];
         for (int i = 0; i < snippets.Length; i++)
         {
             TextSnippet textSnippet = snippets[i];
@@ -80,15 +78,14 @@ public class CosmicPurple : ModRarity
            new Vector2(1.6f, fontSize.X / crystalTextGlow.Height * 1.2f), SpriteEffects.None, 0f);
 
         //Draw text
-        ChatManager.DrawColorCodedString(spriteBatch, font, snippets, new(X,Y), textColor, 0, Vector2.Zero, baseScale, out _, -1, true);
+        ChatManager.DrawColorCodedString(spriteBatch, font, snippets, new(X, Y), textColor, 0, Vector2.Zero, baseScale, out _, -1, true);
 
         //Draw sparkles
         if (!renderTextSparkles)
             return;
 
-
         rand.SetSeed(1);
-        
+
         int sparkleCount = rand.Next((int)fontSize.X / 7, (int)fontSize.X / 5) + 1;
         var color2 = lightColor;
         color2.A = 0;

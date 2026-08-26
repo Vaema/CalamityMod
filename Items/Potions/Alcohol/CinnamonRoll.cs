@@ -28,9 +28,9 @@ public class CinnamonRoll : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(245, 223, 181),
-            new Color(222, 186, 147),
-            new Color(176, 129, 106)
+            new(245, 223, 181),
+            new(222, 186, 147),
+            new(176, 129, 106)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

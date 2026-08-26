@@ -232,7 +232,7 @@ public class WulfrumKnifeProj : ModProjectile, ILocalizedModType
 
         Vector2 drawScale = new Vector2(stretchFactorX, stretchFactorY) * Projectile.scale;
         Vector2 offset = Projectile.Size * 0.5f; 
-        Vector2[] oldPosWithOffset = Projectile.oldPos.Select(p => p - offset).ToArray();
+        Vector2[] oldPosWithOffset = [.. Projectile.oldPos.Select(p => p - offset)];
 
         if (Projectile.Calamity().stealthStrike && StuckEnemyID == 0)
         {

@@ -19,7 +19,7 @@ public class NullShot : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Ranged";
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
     public ref float time => ref Projectile.ai[0];
-    public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
+    public Color baseColor = new(Main.DiscoR, Main.DiscoG, Main.DiscoB);
     public int sineDir = 1;
     public override void SetStaticDefaults()
     {

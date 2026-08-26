@@ -27,7 +27,7 @@ public class BallOFuguProj : BaseMaceFlailProjectile
     public static float SpikeRate = 10f;
     public static float SpikeDamage => 0.6f;
     public static float SpikeKnockback => 0.2f;
-    public static Color SpikeColor => new Color(91, 62, 153);
+    public static Color SpikeColor => new(91, 62, 153);
 
     public ref float SpikeTimer => ref Projectile.ai[2];
 

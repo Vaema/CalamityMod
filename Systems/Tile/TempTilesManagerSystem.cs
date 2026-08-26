@@ -60,8 +60,8 @@ public class TempTilesManagerSystem : ModSystem
 {
     public static int[] TemporaryTileIDs;
 
-    public static List<TemporaryTile> ManagedTiles = new List<TemporaryTile>();
-    public static List<TemporaryTile> DeletableTiles = new List<TemporaryTile>();
+    public static List<TemporaryTile> ManagedTiles = new();
+    public static List<TemporaryTile> DeletableTiles = new();
 
     public override void Load()
     {

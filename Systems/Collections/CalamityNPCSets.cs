@@ -343,7 +343,7 @@ public static class CalamityNPCSets
     /// Allows an NPC to be automatically registered as a critter in the Bestiary when the player is near them. <br/>
     /// Should only be used in cases where an NPC does NOT follow the Vanilla definition of a critter. See <see cref="NPC.CountsAsACritter"/>.
     /// </summary>
-    public static List<int> ForciblyRegisterAsCritterInBestiary = new List<int>
+    public static List<int> ForciblyRegisterAsCritterInBestiary = new()
     {
         NPCType<Androomba>(),
         NPCType<RepairUnitCritter>(),
@@ -359,7 +359,7 @@ public static class CalamityNPCSets
     /// Allows a variant of an NPC to count as credits towards another in the Bestiary. <br/>
     /// This exists to prevent cases where dupilcate entries are made for two variants of the same creature, such as worms and their segments.
     /// </summary>
-    public static Dictionary<int, int> CountVariantsAsTheSameInBestiary = new Dictionary<int, int>
+    public static Dictionary<int, int> CountVariantsAsTheSameInBestiary = new()
     {
         { NPCType<AstralachneaGround>(), NPCType<AstralachneaWall>() },
         { NPCType<DevilFishAlt>(), NPCType<DevilFish>() },
@@ -371,7 +371,7 @@ public static class CalamityNPCSets
     /// Associates an NPC type with the base value of their max health in Boss Rush.<br/>
     /// If an NPC type is not a key in this dictionary, then it will use its standard max health value.
     /// </summary>
-    public static Dictionary<int, int> BossRushHealth = new Dictionary<int, int>
+    public static Dictionary<int, int> BossRushHealth = new()
     {
         // Tier 1
         { NPCID.KingSlime, 300000 }, // 30 seconds
@@ -453,7 +453,7 @@ public static class CalamityNPCSets
     /// Associates an NPC type with an ID number used for Calamity's Speedrun Timer. Used for drawing the correct map icon for the boss.<br/>
     /// If an NPC type is not a key in this dictionary, then it will not be displayed on the Speedrun Timer.
     /// </summary>
-    public static Dictionary<int, int> BossSpeedrunTimerID = new Dictionary<int, int>
+    public static Dictionary<int, int> BossSpeedrunTimerID = new()
     {
         { NPCID.KingSlime, 1 },
         { NPCType<DesertScourgeHead>(), 2 },

@@ -41,9 +41,9 @@ public class StarfleetHoldout : BaseGunHoldoutProjectile
     public Vector2 recoilDirection;
     public bool setVel = true;
     public float glowIntensity = 1;
-    public Color c1 = new Color(146, 255, 211);
-    public Color c2 = new Color(222, 225, 146);
-    public Color c3 = new Color(255, 233, 146);
+    public Color c1 = new(146, 255, 211);
+    public Color c2 = new(222, 225, 146);
+    public Color c3 = new(255, 233, 146);
     public Color shiftColor;
     public Vector2 gunBackPosition;
     public ref float starburstCooldown => ref Projectile.ai[2];

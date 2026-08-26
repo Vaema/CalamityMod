@@ -13,7 +13,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class DemonicFlames : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 60, //Unused in the method, this is the amount of DoT from Forbidden Oathblade demon flames
         HeatDebuffScaling = 1, //Unused in the method, but kept so other things can know this is a heat debuff

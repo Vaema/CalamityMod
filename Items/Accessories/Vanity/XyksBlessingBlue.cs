@@ -23,10 +23,10 @@ public class XyksBlessingBlue : TransformationAccessory, ILocalizedModType
     int itemFrameTimer = 1;
     int pulseTimer = 0;
     public static Vector2 extraPosition = Vector2.Zero;
-    public static Color baseEffectColor = new Color(150, 255, 210); // Teal-ish Glow
-    public static Color animEffectColor = new Color(255, 85, 252); // Purple Flash
-    public static Color baseMainColor = new Color(25, 118, 218); // Mid Blue
-    public static Color baseAccentColor = new Color(0, 255, 250); // Light blue
+    public static Color baseEffectColor = new(150, 255, 210); // Teal-ish Glow
+    public static Color animEffectColor = new(255, 85, 252); // Purple Flash
+    public static Color baseMainColor = new(25, 118, 218); // Mid Blue
+    public static Color baseAccentColor = new(0, 255, 250); // Light blue
     public override (EquipType, string, string)[] EquipSlots =>
     [
         (EquipType.Head, "Xyk", null),

@@ -40,7 +40,7 @@ public class SCalSky : CustomSky
     private bool isActive = false;
     private float intensity = 0f;
     private int SCalIndex = -1;
-    public List<Cinder> Cinders = new List<Cinder>();
+    public List<Cinder> Cinders = new();
     private Asset<Texture2D> backgroundTex;
     private Asset<Texture2D> cinderTex;
 

@@ -29,5 +29,5 @@ public class ApolloMask : ModItem, IExtendedHat, ILocalizedModType
     }
 
     public string ExtensionTexture => "CalamityMod/Items/Armor/Vanity/ApolloMask_Extra";
-    public Vector2 ExtensionSpriteOffset(PlayerDrawSet drawInfo) => new Vector2(drawInfo.drawPlayer.direction == 1f ? -6f : 0, 0f);
+    public Vector2 ExtensionSpriteOffset(PlayerDrawSet drawInfo) => new(drawInfo.drawPlayer.direction == 1f ? -6f : 0, 0f);
 }

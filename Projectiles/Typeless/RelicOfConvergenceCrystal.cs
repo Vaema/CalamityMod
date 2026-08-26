@@ -24,7 +24,7 @@ public class RelicOfConvergenceCrystal : ModProjectile
     public float MaxDustOffsetRadius = 70f;
 
     private Player Owner => Main.player[Projectile.owner];
-    public List<bool> healList = new List<bool>(new bool[Main.maxPlayers]);
+    public List<bool> healList = new(new bool[Main.maxPlayers]);
 
     public ref float time => ref Projectile.ai[0];
     public float completion = 0;

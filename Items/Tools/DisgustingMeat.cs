@@ -35,12 +35,12 @@ public class DisgustingMeat : ModItem, ILocalizedModType
     public override void SetStaticDefaults()
     {
         ItemID.Sets.FoodParticleColors[Type] = new Color[6] {
-            new Color(61, 69, 41),
-            new Color(91, 100, 48),
-            new Color(122, 123, 67),
-            new Color(128, 69, 46),
-            new Color(183, 116, 80),
-            new Color(95, 59, 46),
+            new(61, 69, 41),
+            new(91, 100, 48),
+            new(122, 123, 67),
+            new(128, 69, 46),
+            new(183, 116, 80),
+            new(95, 59, 46),
         };
     }
 

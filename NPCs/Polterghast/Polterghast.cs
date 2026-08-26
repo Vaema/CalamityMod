@@ -62,7 +62,7 @@ public class Polterghast : ModNPC
     public static Asset<Texture2D> Texture_Glow;
     public static Asset<Texture2D> Texture_Glow2;
 
-    public static List<SoundStyle> creepySounds = new List<SoundStyle>
+    public static List<SoundStyle> creepySounds = new()
     {
         DevourerofGods.DevourerofGodsHead.AttackSound,
         Providence.Providence.HolyRaySound,
@@ -298,7 +298,7 @@ public class Polterghast : ModNPC
             int gate = threeAM ? 60 : phase4 ? 300 : phase3 ? 420 : phase2 ? 540 : 600;
             if (soundTimer % gate == 0)
             {
-                SoundStyle[] creepyArray = creepySounds.ToArray();
+                SoundStyle[] creepyArray = [.. creepySounds];
                 SoundStyle selectedSound = creepyArray[Main.rand.Next(0, creepyArray.Length - 1)];
                 SoundEngine.PlaySound(selectedSound with { Pitch = selectedSound.Pitch - 0.8f, Volume = selectedSound.Volume - 0.2f }, NPC.Center);
             }

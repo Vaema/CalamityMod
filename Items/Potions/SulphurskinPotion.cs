@@ -15,9 +15,9 @@ public class SulphurskinPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(133, 180, 49),
-            new Color(80, 139, 81),
-            new Color(117, 95, 133)
+            new(133, 180, 49),
+            new(80, 139, 81),
+            new(117, 95, 133)
         };
     }
 

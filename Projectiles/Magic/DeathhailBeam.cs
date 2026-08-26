@@ -13,8 +13,8 @@ public class DeathhailBeam : BaseLaserbeamProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Magic";
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-    private Color startingColor = new Color(119, 210, 255);
-    private Color secondColor = new Color(247, 119, 255);
+    private Color startingColor = new(119, 210, 255);
+    private Color secondColor = new(247, 119, 255);
     public override float MaxScale => 0.7f;
     public override float MaxLaserLength => 1599.999999f;
     public override float Lifetime => 20f;

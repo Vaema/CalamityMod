@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Ranged;
 public class PrismMine : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Ranged";
-    public List<Vector2> MinesToConnectTo = new List<Vector2>();
+    public List<Vector2> MinesToConnectTo = new();
     public ref float Time => ref Projectile.ai[0];
     public const float DamageFactorLowerBound = 0.425f;
     public const float MineConnectDistanceMax = 1200f;

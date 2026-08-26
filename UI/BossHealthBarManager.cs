@@ -89,8 +89,8 @@ public class BossHealthBarManager : ModBossBarStyle
     public static Dictionary<int, int[]> OneToMany;
     public static List<int> BossExclusionList;
     public static List<int> MinibossHPBarList;
-    public static Dictionary<int, BossEntityExtension> EntityExtensionHandler = new Dictionary<int, BossEntityExtension>();
-    public static Dictionary<NPCSpecialHPGetRequirement, NPCSpecialHPGetFunction> SpecialHPRequirements = new Dictionary<NPCSpecialHPGetRequirement, NPCSpecialHPGetFunction>();
+    public static Dictionary<int, BossEntityExtension> EntityExtensionHandler = new();
+    public static Dictionary<NPCSpecialHPGetRequirement, NPCSpecialHPGetFunction> SpecialHPRequirements = new();
 
     public delegate bool NPCSpecialHPGetRequirement(NPC npc);
     public delegate long NPCSpecialHPGetFunction(NPC npc, bool checkingForMaxLife);
@@ -586,8 +586,8 @@ public class BossHealthBarManager : ModBossBarStyle
         public const int IncreasedDefenseOrDRAnimationTime = 120;
         public const int VerticalOffsetPerBar = 70;
         public const float SmallTextScale = 0.75f;
-        public static Color MainColor = new Color(229, 189, 62);
-        public static Color MainBorderColour = new Color(197, 127, 46);
+        public static Color MainColor = new(229, 189, 62);
+        public static Color MainBorderColour = new(197, 127, 46);
 
         public BossHPUI(int index, string overridingName = null)
         {

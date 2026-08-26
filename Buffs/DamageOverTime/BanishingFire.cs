@@ -8,7 +8,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class BanishingFire : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 4000, //This is the minimum DoT. Banishing Fire scales with max HP
         HeatDebuffScaling = 1, //Unused in the method, but kept so other things can know this is a heat debuff

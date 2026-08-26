@@ -41,9 +41,9 @@ public class TrueBiomeBladeHoldout : ModProjectile, ILocalizedModType //Visuals
         Projectile.damage = 0;
     }
 
-    public CurveSegment anticipation = new CurveSegment(EasingType.SineBump, 0f, 0f, -0.3f);
-    public CurveSegment rise = new CurveSegment(EasingType.ExpIn, 0f, 0f, 1f);
-    public CurveSegment overshoot = new CurveSegment(EasingType.SineBump, 0.80f, 1f, 0.1f);
+    public CurveSegment anticipation = new(EasingType.SineBump, 0f, 0f, -0.3f);
+    public CurveSegment rise = new(EasingType.ExpIn, 0f, 0f, 1f);
+    public CurveSegment overshoot = new(EasingType.SineBump, 0.80f, 1f, 0.1f);
     internal float SwordHeight() => PiecewiseAnimation(ChannelTimer / (float)ChannelTime, new CurveSegment[] { rise, overshoot });
 
     public override void AI()

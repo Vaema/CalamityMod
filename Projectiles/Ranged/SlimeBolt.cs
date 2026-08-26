@@ -16,7 +16,7 @@ public class SlimeBolt : ModProjectile, ILocalizedModType
     public static float Fadetime => 225f;
     public static float EmpowerTime => 135f;
     public static float DamageFalloff => 0.85f;
-    public static Color SlimeColor => new Color(133, 133, 224);
+    public static Color SlimeColor => new(133, 133, 224);
 
     public ref float Time => ref Projectile.ai[0];
     public bool Empowered => Projectile.ai[0] >= EmpowerTime;

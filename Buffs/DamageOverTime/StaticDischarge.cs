@@ -10,7 +10,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class StaticDischarge : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData(DebuffData.DebuffBehavior.Electric)
+    public static DebuffData debuffData = new(DebuffData.DebuffBehavior.Electric)
     {
         EnemyLostRegen = 5,
         ElectricDebuffScaling = 1

@@ -106,7 +106,7 @@ public class Bandit : ModNPC
         return false;
     }
 
-    public override List<string> SetNPCNameList() => new List<string>()
+    public override List<string> SetNPCNameList() => new()
     {
         // Dedicated names
         "Xplizzy", // <@!98826096237109248> (whitegiraffe)

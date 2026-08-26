@@ -16,9 +16,9 @@ public class TheElixir : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(159, 67, 199),
-            new Color(176, 147, 243),
-            new Color(84, 50, 185)
+            new(159, 67, 199),
+            new(176, 147, 243),
+            new(84, 50, 185)
         };
     }
 

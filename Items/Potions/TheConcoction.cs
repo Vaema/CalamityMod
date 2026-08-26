@@ -20,9 +20,9 @@ public class TheConcoction : ModItem, ILocalizedModType
         Item.ResearchUnlockCount = 30;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] 
         {
-            new Color(255, 190, 250),
-            new Color(255, 225, 183),
-            new Color(246, 34, 79)
+            new(255, 190, 250),
+            new(255, 225, 183),
+            new(246, 34, 79)
         };
     }
     public override void SetDefaults()

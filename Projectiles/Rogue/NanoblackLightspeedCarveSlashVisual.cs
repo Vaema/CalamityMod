@@ -65,7 +65,7 @@ public class NanoblackLightspeedCarveSlashVisual : ModProjectile, ILocalizedModT
     private const float GiantSlashImpactFlashDuration = 3f;
     #endregion
 
-    private static readonly BlendState GiantSlashDarkenBlend = new BlendState
+    private static readonly BlendState GiantSlashDarkenBlend = new()
     {
         ColorSourceBlend = Blend.Zero,
         ColorDestinationBlend = Blend.InverseSourceAlpha,

@@ -24,7 +24,7 @@ public class TEPlayerLaserTurret : TEBaseTurret
     public override int FiringUseTime => 60;
 
     // Projectile spawn location variables
-    public override Vector2 TurretCenterOffset => new Vector2(22f + 4f * Direction, -2f);
+    public override Vector2 TurretCenterOffset => new(22f + 4f * Direction, -2f);
     protected override float ShootForwardsOffset => 36f;
 
     // Targeting variables

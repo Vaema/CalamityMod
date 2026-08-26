@@ -45,7 +45,7 @@ public class WulfrumHat : ModItem, IExtendedHat, ILocalizedModType
     public static int TimeLostPerHit = CalamityUtils.SecondsToFrames(2);
     public static int BastionCooldown = CalamityUtils.SecondsToFrames(20);
 
-    internal static Item DummyCannon = new Item(); //Used for the attack swap. Basically we force the player to hold a fake item.
+    internal static Item DummyCannon = new(); //Used for the attack swap. Basically we force the player to hold a fake item.
 
     public static bool PowerModeEngaged(Player player, out CooldownInstance cd)
     {

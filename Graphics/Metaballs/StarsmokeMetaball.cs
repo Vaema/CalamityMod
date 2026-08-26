@@ -102,7 +102,7 @@ public class StarsmokeMetaball : Metaball
         float rate = Main.GlobalTimeWrappedHourly * 19;
         List<Color> colors = new List<Color>()
         {
-            new Color (192, 10, 111),
+            new(192, 10, 111),
             Color.Coral,
             Color.DarkOrange
         };

@@ -64,11 +64,11 @@ public class MagicHat : ModProjectile, ILocalizedModType
         {
             List<Tuple<int, float>> Projectiles = new List<Tuple<int, float>>()
             {
-                new Tuple<int, float>(ModContent.ProjectileType<MagicArrow>(), 2f),
-                new Tuple<int, float>(ModContent.ProjectileType<MagicHammer>(), 3f),
-                new Tuple<int, float>(ModContent.ProjectileType<MagicAxe>(), 1f),
-                new Tuple<int, float>(ModContent.ProjectileType<MagicUmbrella>(), 1f),
-                new Tuple<int, float>(ModContent.ProjectileType<MagicRifle>(), 1f),
+                new(ModContent.ProjectileType<MagicArrow>(), 2f),
+                new(ModContent.ProjectileType<MagicHammer>(), 3f),
+                new(ModContent.ProjectileType<MagicAxe>(), 1f),
+                new(ModContent.ProjectileType<MagicUmbrella>(), 1f),
+                new(ModContent.ProjectileType<MagicRifle>(), 1f),
             };
             for (int i = 0; i < Projectiles.Count; i++)
             {

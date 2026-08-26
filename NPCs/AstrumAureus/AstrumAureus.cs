@@ -1507,7 +1507,7 @@ public class AddAureusGFBDrop : ModSystem
         }
         // Define the conditional for GFB.
         LeadingConditionRule GFBOnly = new LeadingConditionRule(DropHelper.GFB);
-        GFBOnly.OnSuccess(ItemDropRule.OneFromOptionsNotScalingWithLuck(1, luminiteStuff.ToArray()));
+        GFBOnly.OnSuccess(ItemDropRule.OneFromOptionsNotScalingWithLuck(1, [.. luminiteStuff]));
         Main.ItemDropsDB.RegisterToNPCNetId(ModContent.NPCType<AstrumAureus>(), GFBOnly);
     }
 }

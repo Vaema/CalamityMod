@@ -34,9 +34,9 @@ public class Screwdriver : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(225, 84, 33),
-            new Color(244, 176, 77),
-            new Color(255, 218, 102)
+            new(225, 84, 33),
+            new(244, 176, 77),
+            new(255, 218, 102)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

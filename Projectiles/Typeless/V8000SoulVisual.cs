@@ -74,7 +74,7 @@ public class V8000SoulVisual : ModProjectile, ILocalizedModType, IPixelatedPrimi
         shader.SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
         PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f, true, true, shader), Projectile.oldPos.Length * 2);
 
-        Vector2[] corePos = Projectile.oldPos.Take(4).ToArray();
+        Vector2[] corePos = [.. Projectile.oldPos.Take(4)];
         shader.SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
         PrimitiveRenderer.RenderTrail(corePos, new((c, _) => WidthFunction(c, _) * 0.6f, (c, _) => Color.White * Projectile.Opacity * (1f - c), (_, _) => Projectile.Size * 0.5f, true, true, shader), corePos.Length * 2);
     }

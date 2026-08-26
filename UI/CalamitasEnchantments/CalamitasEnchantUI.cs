@@ -17,7 +17,7 @@ public class CalamitasEnchantUI
     public static int NPCIndex = -1;
     public static int EnchantIndex = 0;
     public static Enchantment? SelectedEnchantment = null;
-    public static Item CurrentlyHeldItem = new Item();
+    public static Item CurrentlyHeldItem = new();
     public static float TopButtonClickCountdown = 0f;
     public static float BottomButtonClickCountdown = 0f;
     public static float ReforgeButtonClickCountdown = 0f;

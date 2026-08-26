@@ -18,7 +18,7 @@ public class AngelicBeam : ModProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
     // Due to how far/fast this thing moves, it'd require way too many points for a smooth long trail using oldPos
-    public List<Vector2> TrailPos = new List<Vector2>();
+    public List<Vector2> TrailPos = new();
     public static int Lifetime = 300;
     public static int Fadetime = 30;
 

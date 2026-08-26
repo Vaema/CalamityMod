@@ -14,8 +14,8 @@ public class AnechoicCoating : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
-            new Color(118, 182, 199),
-            new Color(150, 227, 230)
+            new(118, 182, 199),
+            new(150, 227, 230)
         };
     }
 

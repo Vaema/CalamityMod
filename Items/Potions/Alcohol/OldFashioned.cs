@@ -31,9 +31,9 @@ public class OldFashioned : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(255, 118, 3),
-            new Color(255, 200, 82),
-            new Color(255, 228, 122)
+            new(255, 118, 3),
+            new(255, 200, 82),
+            new(255, 228, 122)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

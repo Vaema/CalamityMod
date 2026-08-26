@@ -25,7 +25,7 @@ public class BlightFlames : ModProjectile, ILocalizedModType
     public NPC targeted;
     public Vector2 savedDist;
 
-    public Color FogColor = new Color(30, 255, 30);
+    public Color FogColor = new(30, 255, 30);
 
     public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
     public override void SetDefaults()

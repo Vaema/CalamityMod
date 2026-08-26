@@ -35,7 +35,7 @@ public class ScionsCurioMini : ModProjectile, ILocalizedModType
     public int chosenSecret = 0;
     public int idleMax = 10800; // 3 minutes
     Vector2 goalPosition;
-    public List<int> listNumbers = new List<int>();
+    public List<int> listNumbers = new();
     public override void SetDefaults()
     {
         Projectile.width = 32;

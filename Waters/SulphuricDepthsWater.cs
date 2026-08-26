@@ -43,7 +43,7 @@ public class SulphuricDepthsWater : ModWaterStyle, IWaterStyleModifyColor, IWate
     public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
     public override int GetSplashDust() => SplashDust;
     public override int GetDropletGore() => DropletGore;
-    public override Color BiomeHairColor() => new Color(35, 117, 89);
+    public override Color BiomeHairColor() => new(35, 117, 89);
     public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
     public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
     {

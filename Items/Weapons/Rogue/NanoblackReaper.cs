@@ -22,15 +22,15 @@ public class NanoblackReaper : RogueWeapon, IHoldShiftTooltipItem
     internal const float PiOver3 = MathHelper.Pi / 3f;
     internal const float TwoPiOver3 = MathHelper.TwoPi / 3f;
 
-    internal static readonly Color NanoblackSlashColor1     = new Color(47, 248, 211); // #2FF8D4
-    internal static readonly Color NanoblackSlashColor2     = new Color(15, 15, 15); // #0F0F0F
-    internal static readonly Color NanoblackDustColor1      = new Color(52, 239, 184); // #34EFB8
-    internal static readonly Color TesselationParticleColor = new Color(79, 240, 168); // 4FF0A8
-    internal static readonly Color ZeroPointLineColor       = new Color(24, 191, 160); // #1FBFA0
-    internal static readonly Color ZeroPointImpactColor     = new Color(31, 223, 128, 96); // #1FDF80
-    internal static readonly Color PiercingStrikeColor      = new Color(36, 252, 212); // #24FCD4
-    internal static readonly Color LightspeedCarveColor1    = new Color(68, 242, 242); // #44F2F2
-    internal static readonly Color LightspeedCarveColor2    = new Color(66, 219, 173); // #42DBAD
+    internal static readonly Color NanoblackSlashColor1     = new(47, 248, 211); // #2FF8D4
+    internal static readonly Color NanoblackSlashColor2     = new(15, 15, 15); // #0F0F0F
+    internal static readonly Color NanoblackDustColor1      = new(52, 239, 184); // #34EFB8
+    internal static readonly Color TesselationParticleColor = new(79, 240, 168); // 4FF0A8
+    internal static readonly Color ZeroPointLineColor       = new(24, 191, 160); // #1FBFA0
+    internal static readonly Color ZeroPointImpactColor     = new(31, 223, 128, 96); // #1FDF80
+    internal static readonly Color PiercingStrikeColor      = new(36, 252, 212); // #24FCD4
+    internal static readonly Color LightspeedCarveColor1    = new(68, 242, 242); // #44F2F2
+    internal static readonly Color LightspeedCarveColor2    = new(66, 219, 173); // #42DBAD
 
     public bool ShowExtensionIndicator => false;
     public bool HasFlavorTooltip => true;
@@ -175,5 +175,5 @@ public class NanoblackReaper : RogueWeapon, IHoldShiftTooltipItem
             Register();
     }
 
-    public static Color RarityColor() => new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
+    public static Color RarityColor() => new(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
 }

@@ -119,11 +119,11 @@ public class MechanicShed
         int gizmoGoobabGadgets = Utils.SelectRandom(WorldGen.genRand, ItemID.BrickLayer, ItemID.ExtendoGrip, ItemID.PaintSprayer, ItemID.PortableCementMixer);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemID.Toolbox, 1),
-            new ChestItem(ItemID.ActuationAccessory, 1),
-            new ChestItem(gizmoGoobabGadgets, 1),
-            new ChestItem(ItemID.BuilderPotion, WorldGen.genRand.Next(1, 3)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(1, 3)),
+            new(ItemID.Toolbox, 1),
+            new(ItemID.ActuationAccessory, 1),
+            new(gizmoGoobabGadgets, 1),
+            new(ItemID.BuilderPotion, WorldGen.genRand.Next(1, 3)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(1, 3)),
         };
 
         for (int i = 0; i < contents.Count; i++)

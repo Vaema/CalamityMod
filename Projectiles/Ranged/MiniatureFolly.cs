@@ -21,7 +21,7 @@ public class MiniatureFolly : ModProjectile, ILocalizedModType
     public bool SpawnedByFatFuck => Projectile.ai[2] == 1f;
 
     // Randomized trail offsets required
-    public List<Vector2> TrailPos = new List<Vector2>();
+    public List<Vector2> TrailPos = new();
     public const int TrailLength = 12;
 
     public override void SetStaticDefaults()

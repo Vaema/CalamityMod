@@ -31,9 +31,9 @@ public class TequilaSunrise : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(220, 75, 59),
-            new Color(229, 147, 47),
-            new Color(255, 190, 76)
+            new(220, 75, 59),
+            new(229, 147, 47),
+            new(255, 190, 76)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

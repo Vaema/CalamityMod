@@ -29,7 +29,7 @@ public class TEChargingStation : ModTileEntity
             SendSyncPacket();
         }
     }
-    public Item PluggedItem = new Item();
+    public Item PluggedItem = new();
     private bool syncItemCharge = false;
     public bool ClientChargingDust = false;
 

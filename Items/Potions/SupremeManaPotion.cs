@@ -13,9 +13,9 @@ public class SupremeManaPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 30;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(0, 255, 250),
-            new Color(26, 117, 177),
-            new Color(160, 82, 144)
+            new(0, 255, 250),
+            new(26, 117, 177),
+            new(160, 82, 144)
         };
     }
 

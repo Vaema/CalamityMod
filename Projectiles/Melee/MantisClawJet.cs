@@ -19,7 +19,7 @@ public class MantisClawJet : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Melee";
     public override string Texture => "CalamityMod/Particles/ThunderBolt";
 
-    public static Color WaterColor = new Color(114, 197, 255, 0);
+    public static Color WaterColor = new(114, 197, 255, 0);
 
     public override void SetStaticDefaults()
     {

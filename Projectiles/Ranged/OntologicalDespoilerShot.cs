@@ -18,7 +18,7 @@ public class OntologicalDespoilerShot : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Ranged";
     public override string Texture => "CalamityMod/Projectiles/Ranged/OntologicalDespoilerShot";
     public ref float time => ref Projectile.ai[0];
-    public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
+    public Color baseColor = new(Main.DiscoR, Main.DiscoG, Main.DiscoB);
     public int sineDir = 1;
 
     public Player Owner => Main.player[Projectile.owner];

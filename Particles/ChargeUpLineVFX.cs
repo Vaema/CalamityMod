@@ -44,12 +44,12 @@ public class ChargeUpLineVFX : Particle
     }
 
 
-    public CurveSegment goBack = new CurveSegment(EasingType.SineInOut, 0f, 1f, 0.25f);
-    public CurveSegment goForward = new CurveSegment(EasingType.SineIn, 0.35f, 1.25f, -1.25f);
+    public CurveSegment goBack = new(EasingType.SineInOut, 0f, 1f, 0.25f);
+    public CurveSegment goForward = new(EasingType.SineIn, 0.35f, 1.25f, -1.25f);
     public float offsetPosition() => PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { goBack, goForward });
 
-    public CurveSegment noSquish = new CurveSegment(EasingType.Linear, 0f, 1f, 0f);
-    public CurveSegment squishSpeed = new CurveSegment(EasingType.SineIn, 0.35f, 1f, 0.8f);
+    public CurveSegment noSquish = new(EasingType.Linear, 0f, 1f, 0f);
+    public CurveSegment squishSpeed = new(EasingType.SineIn, 0.35f, 1f, 0.8f);
     public float Squish() => PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { noSquish, squishSpeed });
 
 

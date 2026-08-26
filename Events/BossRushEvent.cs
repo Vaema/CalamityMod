@@ -86,7 +86,7 @@ public sealed class BossRushEvent : ModSystem
             ToChangeTimeTo = toChangeTimeTo;
             SpawnContext = spawnContext;
             DimnessFactor = dimnessFactor;
-            HostileNPCsToNotDelete = permittedNPCs.ToList();
+            HostileNPCsToNotDelete = [.. permittedNPCs];
 
             // Add the NPC type to delete blacklist list by default.
             if (!HostileNPCsToNotDelete.Contains(id))
@@ -103,9 +103,9 @@ public sealed class BossRushEvent : ModSystem
     public static bool DeactivateStupidFuckingBullshit = false; // Force Boss Rush to inactive.
     public static int BossRushStage = 0; // Boss Rush Stage.
     public static int BossRushSpawnCountdown = 180; // Delay before another Boss Rush boss can spawn.
-    public static List<Boss> Bosses = new List<Boss>();
-    public static Dictionary<int, int[]> BossIDsAfterDeath = new Dictionary<int, int[]>();
-    public static Dictionary<int, Action<NPC>> BossDeathEffects = new Dictionary<int, Action<NPC>>();
+    public static List<Boss> Bosses = new();
+    public static Dictionary<int, int[]> BossIDsAfterDeath = new();
+    public static Dictionary<int, Action<NPC>> BossDeathEffects = new();
     public static int StartTimer;
     public static int EndTimer;
     public static float WhiteDimness;
@@ -144,7 +144,7 @@ public sealed class BossRushEvent : ModSystem
         // TODO -- Multiple different lists might be ideal for this at some point instead of a god-struct? This is a lot of parameters.
         Bosses = new List<Boss>()
         {
-            new Boss(NPCID.KingSlime, spawnContext: type => {
+            new(NPCID.KingSlime, spawnContext: type => {
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
 
                 // When King Slime spawns, Boss Rush is considered to be started at least once.
@@ -154,7 +154,7 @@ public sealed class BossRushEvent : ModSystem
             permittedNPCs: new int[] { NPCID.BlueSlime, NPCID.YellowSlime, NPCID.PurpleSlime, NPCID.RedSlime, NPCID.GreenSlime, NPCID.RedSlime,
                 NPCID.IceSlime, NPCID.UmbrellaSlime, NPCID.Pinky, NPCID.SlimeSpiked, NPCID.RainbowSlime, ModContent.NPCType<KingSlimeJewelRuby>()}),
 
-            new Boss(ModContent.NPCType<DesertScourgeHead>(), spawnContext: type =>
+            new(ModContent.NPCType<DesertScourgeHead>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
                 SoundEngine.PlaySound(DesertMedallion.SummonSound, player.Center);
@@ -164,9 +164,9 @@ public sealed class BossRushEvent : ModSystem
                 ModContent.NPCType<DesertNuisanceBody>(), ModContent.NPCType<DesertNuisanceTail>(), ModContent.NPCType<DesertNuisanceHeadYoung>(),
                 ModContent.NPCType<DesertNuisanceBodyYoung>(), ModContent.NPCType<DesertNuisanceTailYoung>() }),
 
-            new Boss(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.ServantofCthulhu }),
+            new(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.ServantofCthulhu }),
 
-            new Boss(ModContent.NPCType<Crabulon>(), TimeChangeContext.Day, type =>
+            new(ModContent.NPCType<Crabulon>(), TimeChangeContext.Day, type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
                 int thePefectOne = NPC.NewNPC(Source, (int)(player.position.X + Main.rand.Next(-100, 101)), (int)(player.position.Y - 400f), type, 1);
@@ -174,19 +174,19 @@ public sealed class BossRushEvent : ModSystem
                 CalamityUtils.BossAwakenMessage(thePefectOne);
             }, permittedNPCs: ModContent.NPCType<CrabShroom>()),
 
-            new Boss(NPCID.EaterofWorldsHead, permittedNPCs: new int[] { NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.VileSpitEaterOfWorlds }),
+            new(NPCID.EaterofWorldsHead, permittedNPCs: new int[] { NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.VileSpitEaterOfWorlds }),
 
-            new Boss(NPCID.BrainofCthulhu, permittedNPCs: new int[] { NPCID.Creeper, ModContent.NPCType<BrainIllusion>(), ModContent.NPCType<FalseBrain>() }),
+            new(NPCID.BrainofCthulhu, permittedNPCs: new int[] { NPCID.Creeper, ModContent.NPCType<BrainIllusion>(), ModContent.NPCType<FalseBrain>() }),
 
-            new Boss(ModContent.NPCType<HiveMind>(), permittedNPCs: new int[] { ModContent.NPCType<DankCreeper>(), ModContent.NPCType<DarkHeart>(), ModContent.NPCType<HiveBlob>() }),
+            new(ModContent.NPCType<HiveMind>(), permittedNPCs: new int[] { ModContent.NPCType<DankCreeper>(), ModContent.NPCType<DarkHeart>(), ModContent.NPCType<HiveBlob>() }),
 
-            new Boss(ModContent.NPCType<PerforatorHive>(), permittedNPCs: new int[] { ModContent.NPCType<PerforatorHeadLarge>(), ModContent.NPCType<PerforatorBodyLarge>(), ModContent.NPCType<PerforatorTailLarge>(),
+            new(ModContent.NPCType<PerforatorHive>(), permittedNPCs: new int[] { ModContent.NPCType<PerforatorHeadLarge>(), ModContent.NPCType<PerforatorBodyLarge>(), ModContent.NPCType<PerforatorTailLarge>(),
                 ModContent.NPCType<PerforatorHeadMedium>(), ModContent.NPCType<PerforatorBodyMedium>(), ModContent.NPCType<PerforatorTailMedium>(), ModContent.NPCType<PerforatorHeadSmall>(),
                 ModContent.NPCType<PerforatorBodySmall>() ,ModContent.NPCType<PerforatorTailSmall>() }),
 
-            new Boss(NPCID.QueenBee, permittedNPCs: new int[] { NPCID.Bee, NPCID.BeeSmall, NPCID.LittleHornetHoney, NPCID.HornetHoney, NPCID.BigHornetHoney }),
+            new(NPCID.QueenBee, permittedNPCs: new int[] { NPCID.Bee, NPCID.BeeSmall, NPCID.LittleHornetHoney, NPCID.HornetHoney, NPCID.BigHornetHoney }),
 
-            new Boss(NPCID.Deerclops, spawnContext: type =>
+            new(NPCID.Deerclops, spawnContext: type =>
             {
                 Player plr = Main.player[ClosestPlayerToWorldCenter];
                 int deer = NPC.NewNPC(Source, (int)plr.Center.X, (int)(plr.Center.Y - 400f), type, 1);
@@ -194,7 +194,7 @@ public sealed class BossRushEvent : ModSystem
                 CalamityUtils.BossAwakenMessage(deer);
             } ),
 
-            new Boss(NPCID.SkeletronHead, TimeChangeContext.Night, type =>
+            new(NPCID.SkeletronHead, TimeChangeContext.Night, type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
                 int sans = NPC.NewNPC(Source, (int)(player.position.X + Main.rand.Next(-100, 101)), (int)(player.position.Y - 400f), type, 1);
@@ -202,51 +202,51 @@ public sealed class BossRushEvent : ModSystem
                 CalamityUtils.BossAwakenMessage(sans);
             }, permittedNPCs: NPCID.SkeletronHand),
 
-            new Boss(ModContent.NPCType<SlimeGodCore>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<EbonianPaladin>(), ModContent.NPCType<CrimulanPaladin>(), ModContent.NPCType<SplitEbonianPaladin>(), ModContent.NPCType<SplitCrimulanPaladin>(),
+            new(ModContent.NPCType<SlimeGodCore>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<EbonianPaladin>(), ModContent.NPCType<CrimulanPaladin>(), ModContent.NPCType<SplitEbonianPaladin>(), ModContent.NPCType<SplitCrimulanPaladin>(),
                 ModContent.NPCType<CorruptSlimeSpawn>(), ModContent.NPCType<CorruptSlimeSpawn2>(), ModContent.NPCType<CrimsonSlimeSpawn>(), ModContent.NPCType<CrimsonSlimeSpawn2>() }),
 
-            new Boss(NPCID.WallofFlesh, spawnContext: type =>
+            new(NPCID.WallofFlesh, spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
                 NPC.SpawnWOF(player.position);
             }, permittedNPCs: new int[] { NPCID.WallofFleshEye, NPCID.LeechHead, NPCID.LeechBody, NPCID.LeechTail, NPCID.TheHungry, NPCID.TheHungryII }),
 
-            new Boss(NPCID.QueenSlimeBoss, specialSpawnCountdown: 120, permittedNPCs: new int[] { NPCID.QueenSlimeMinionBlue, NPCID.QueenSlimeMinionPink, NPCID.QueenSlimeMinionPurple }),
+            new(NPCID.QueenSlimeBoss, specialSpawnCountdown: 120, permittedNPCs: new int[] { NPCID.QueenSlimeMinionBlue, NPCID.QueenSlimeMinionPink, NPCID.QueenSlimeMinionPurple }),
 
-            new Boss(ModContent.NPCType<Cryogen>(), permittedNPCs: ModContent.NPCType<CryogenShield>()),
+            new(ModContent.NPCType<Cryogen>(), permittedNPCs: ModContent.NPCType<CryogenShield>()),
 
-            new Boss(NPCID.Spazmatism, TimeChangeContext.Night, type =>
+            new(NPCID.Spazmatism, TimeChangeContext.Night, type =>
             {
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, NPCID.Spazmatism);
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, NPCID.Retinazer);
             }, permittedNPCs: new int[] { NPCID.Retinazer }),
 
-            new Boss(ModContent.NPCType<AquaticScourgeHead>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<AquaticScourgeBody>(), ModContent.NPCType<AquaticScourgeBodyAlt>(), ModContent.NPCType<AquaticScourgeTail>() }),
+            new(ModContent.NPCType<AquaticScourgeHead>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<AquaticScourgeBody>(), ModContent.NPCType<AquaticScourgeBodyAlt>(), ModContent.NPCType<AquaticScourgeTail>() }),
 
-            new Boss(NPCID.TheDestroyer, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.TheDestroyerBody, NPCID.TheDestroyerTail, NPCID.Probe }),
+            new(NPCID.TheDestroyer, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.TheDestroyerBody, NPCID.TheDestroyerTail, NPCID.Probe }),
 
-            new Boss(ModContent.NPCType<BrimstoneElemental>(), TimeChangeContext.Day, permittedNPCs: ModContent.NPCType<Brimling>()),
+            new(ModContent.NPCType<BrimstoneElemental>(), TimeChangeContext.Day, permittedNPCs: ModContent.NPCType<Brimling>()),
 
-            new Boss(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser }),
+            new(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser }),
 
-            new Boss(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
+            new(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
                 ModContent.NPCType<SoulSeeker>() }),
 
-            new Boss(NPCID.Plantera, TimeChangeContext.Day, permittedNPCs: new int[] { NPCID.PlanterasTentacle, ModContent.NPCType<PlanterasFreeTentacle>(), NPCID.PlanterasHook, NPCID.Spore }),
+            new(NPCID.Plantera, TimeChangeContext.Day, permittedNPCs: new int[] { NPCID.PlanterasTentacle, ModContent.NPCType<PlanterasFreeTentacle>(), NPCID.PlanterasHook, NPCID.Spore }),
 
-            new Boss(ModContent.NPCType<Anahita>(), specialSpawnCountdown: 120, permittedNPCs: new int[] { ModContent.NPCType<Leviathan>(), ModContent.NPCType<AquaticAberration>(),
+            new(ModContent.NPCType<Anahita>(), specialSpawnCountdown: 120, permittedNPCs: new int[] { ModContent.NPCType<Leviathan>(), ModContent.NPCType<AquaticAberration>(),
                 ModContent.NPCType<AnahitasIceShield>(), NPCID.DetonatingBubble}),
 
-            new Boss(ModContent.NPCType<AstrumAureus>(), TimeChangeContext.Night, permittedNPCs: ModContent.NPCType<AureusSpawn>()),
+            new(ModContent.NPCType<AstrumAureus>(), TimeChangeContext.Night, permittedNPCs: ModContent.NPCType<AureusSpawn>()),
 
-            new Boss(NPCID.Golem, TimeChangeContext.Day, type =>
+            new(NPCID.Golem, TimeChangeContext.Day, type =>
             {
                 int shittyStatueBoss = NPC.NewNPC(Source, (int)(Main.player[ClosestPlayerToWorldCenter].position.X + Main.rand.Next(-100, 101)), (int)(Main.player[ClosestPlayerToWorldCenter].position.Y - 600f), type, 1);
                 Main.npc[shittyStatueBoss].timeLeft *= 20;
                 CalamityUtils.BossAwakenMessage(shittyStatueBoss);
             }, permittedNPCs: new int[] { NPCID.GolemFistLeft, NPCID.GolemFistRight, NPCID.GolemHead, NPCID.GolemHeadFree }),
 
-            new Boss(ModContent.NPCType<PlaguebringerGoliath>(), spawnContext: type =>
+            new(ModContent.NPCType<PlaguebringerGoliath>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -254,9 +254,9 @@ public sealed class BossRushEvent : ModSystem
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<PlagueHomingMissile>(), ModContent.NPCType<PlagueMine>() }),
 
-            new Boss(NPCID.HallowBoss, TimeChangeContext.Night),
+            new(NPCID.HallowBoss, TimeChangeContext.Night),
 
-            new Boss(NPCID.DukeFishron, TimeChangeContext.Day, type =>
+            new(NPCID.DukeFishron, TimeChangeContext.Day, type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
                 int dukeFishron = NPC.NewNPC(Source, (int)(player.position.X + Main.rand.Next(-100, 101)), (int)(player.position.Y - 400f), type, 1);
@@ -264,7 +264,7 @@ public sealed class BossRushEvent : ModSystem
                 CalamityUtils.BossAwakenMessage(dukeFishron);
             }, permittedNPCs: new int[] { NPCID.DetonatingBubble, NPCID.Sharkron, NPCID.Sharkron2 }),
 
-            new Boss(ModContent.NPCType<RavagerBody>(), spawnContext: type =>
+            new(ModContent.NPCType<RavagerBody>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -275,7 +275,7 @@ public sealed class BossRushEvent : ModSystem
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<FlamePillar>(), ModContent.NPCType<RockPillar>(), ModContent.NPCType<RavagerLegLeft>(), ModContent.NPCType<RavagerLegRight>(),
                ModContent.NPCType<RavagerClawLeft>(), ModContent.NPCType<RavagerClawRight>(), ModContent.NPCType<RavagerHead>(), ModContent.NPCType<RavagerHead2>() }),
 
-            new Boss(NPCID.CultistBoss, spawnContext: type =>
+            new(NPCID.CultistBoss, spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
                 int doctorLooneyTunes = NPC.NewNPC(Source, (int)player.Center.X, (int)player.Center.Y - 400, type, 1);
@@ -285,7 +285,7 @@ public sealed class BossRushEvent : ModSystem
             }, permittedNPCs: new int[] { NPCID.CultistBossClone, NPCID.CultistDragonHead, NPCID.CultistDragonBody1, NPCID.CultistDragonBody2, NPCID.CultistDragonBody3, NPCID.CultistDragonBody4,
                 NPCID.CultistDragonTail, NPCID.AncientCultistSquidhead, NPCID.AncientLight, NPCID.AncientDoom }),
 
-            new Boss(ModContent.NPCType<AstrumDeusHead>(), TimeChangeContext.Night, type =>
+            new(ModContent.NPCType<AstrumDeusHead>(), TimeChangeContext.Night, type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -304,19 +304,19 @@ public sealed class BossRushEvent : ModSystem
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<AstrumDeusBody>(), ModContent.NPCType<AstrumDeusTail>() }),
 
-            new Boss(NPCID.MoonLordCore, spawnContext: type =>
+            new(NPCID.MoonLordCore, spawnContext: type =>
             {
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, permittedNPCs: new int[] { NPCID.MoonLordLeechBlob, NPCID.MoonLordHand, NPCID.MoonLordHead, NPCID.MoonLordFreeEye }),
 
-            new Boss(ModContent.NPCType<ProfanedGuardianCommander>(), TimeChangeContext.Day, type =>
+            new(ModContent.NPCType<ProfanedGuardianCommander>(), TimeChangeContext.Day, type =>
             {
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, permittedNPCs: new int[] { ModContent.NPCType<ProfanedGuardianDefender>(), ModContent.NPCType<ProfanedGuardianHealer>(), ModContent.NPCType<ProfanedRocks>() }),
 
-            new Boss(ModContent.NPCType<Dragonfolly>(), permittedNPCs: new int[] { ModContent.NPCType<DraconicSwarmer>() }),
+            new(ModContent.NPCType<Dragonfolly>(), permittedNPCs: new int[] { ModContent.NPCType<DraconicSwarmer>() }),
 
-            new Boss(ModContent.NPCType<Providence>(), TimeChangeContext.Day, type =>
+            new(ModContent.NPCType<Providence>(), TimeChangeContext.Day, type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -326,7 +326,7 @@ public sealed class BossRushEvent : ModSystem
                 CalamityUtils.BossAwakenMessage(prov);
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<ProvSpawnOffense>(), ModContent.NPCType<ProvSpawnHealer>(), ModContent.NPCType<ProvSpawnDefense>() }),
 
-            new Boss(ModContent.NPCType<CeaselessVoid>(), spawnContext: type =>
+            new(ModContent.NPCType<CeaselessVoid>(), spawnContext: type =>
             {
                 foreach (Player p in Main.ActivePlayers)
                 {
@@ -340,7 +340,7 @@ public sealed class BossRushEvent : ModSystem
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, usesSpecialSound: true, permittedNPCs: ModContent.NPCType<DarkEnergy>()),
 
-            new Boss(ModContent.NPCType<StormWeaverHead>(), spawnContext: type =>
+            new(ModContent.NPCType<StormWeaverHead>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -348,7 +348,7 @@ public sealed class BossRushEvent : ModSystem
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<StormWeaverBody>(), ModContent.NPCType<StormWeaverTail>(), }),
 
-            new Boss(ModContent.NPCType<Signus>(), spawnContext: type =>
+            new(ModContent.NPCType<Signus>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -356,7 +356,7 @@ public sealed class BossRushEvent : ModSystem
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<CosmicLantern>(), ModContent.NPCType<CosmicMine>() }),
 
-            new Boss(ModContent.NPCType<Polterghast>(), spawnContext: type =>
+            new(ModContent.NPCType<Polterghast>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -365,7 +365,7 @@ public sealed class BossRushEvent : ModSystem
 
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<PhantomFuckYou>(), ModContent.NPCType<PolterghastHook>(), ModContent.NPCType<PolterPhantom>() }),
 
-            new Boss(ModContent.NPCType<OldDuke>(), spawnContext: type =>
+            new(ModContent.NPCType<OldDuke>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
                 int boomerDuke = NPC.NewNPC(Source, (int)(player.position.X + Main.rand.Next(-100, 101)), (int)(player.position.Y - 400f), type, 1);
@@ -373,7 +373,7 @@ public sealed class BossRushEvent : ModSystem
                 CalamityUtils.BossAwakenMessage(boomerDuke);
             }, permittedNPCs: new int[] { ModContent.NPCType<OldDukeToothBall>(), ModContent.NPCType<SulphurousSharkron>() }),
 
-            new Boss(ModContent.NPCType<DevourerofGodsHead>(), spawnContext: type =>
+            new(ModContent.NPCType<DevourerofGodsHead>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -381,7 +381,7 @@ public sealed class BossRushEvent : ModSystem
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<DevourerofGodsBody>(), ModContent.NPCType<DevourerofGodsTail>() }),
 
-            new Boss(ModContent.NPCType<Yharon>(), spawnContext: type =>
+            new(ModContent.NPCType<Yharon>(), spawnContext: type =>
             {
                 Player player = Main.player[ClosestPlayerToWorldCenter];
 
@@ -389,7 +389,7 @@ public sealed class BossRushEvent : ModSystem
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
             }, usesSpecialSound: true),
 
-            new Boss(ModContent.NPCType<Draedon>(), spawnContext: type =>
+            new(ModContent.NPCType<Draedon>(), spawnContext: type =>
             {
                 if (!NPC.AnyNPCs(ModContent.NPCType<Draedon>()))
                 {
@@ -402,7 +402,7 @@ public sealed class BossRushEvent : ModSystem
                 }
             }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<ApolloBoss>(), ModContent.NPCType<AresBody>(), ModContent.NPCType<AresGaussNuke>(), ModContent.NPCType<AresLaserCannon>(), ModContent.NPCType<AresPlasmaFlamethrower>(), ModContent.NPCType<AresTeslaCannon>(), ModContent.NPCType<ArtemisBoss>(), ModContent.NPCType<ThanatosBody1>(), ModContent.NPCType<ThanatosBody2>(), ModContent.NPCType<ThanatosHead>(), ModContent.NPCType<ThanatosTail>() }),
 
-            new Boss(ModContent.NPCType<SupremeCalamitas>(), spawnContext: type =>
+            new(ModContent.NPCType<SupremeCalamitas>(), spawnContext: type =>
             {
                 SoundEngine.PlaySound(SupremeCalamitas.SpawnSound, Main.player[ClosestPlayerToWorldCenter].Center);
                 CalamityUtils.SpawnBossBetter(Main.player[ClosestPlayerToWorldCenter].Top - new Vector2(42f, 84f), type);

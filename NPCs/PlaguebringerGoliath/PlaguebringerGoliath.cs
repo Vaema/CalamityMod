@@ -35,7 +35,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath;
 public class PlaguebringerGoliath : ModNPC
 {
     // Use for all projectiles and spawned enemies.
-    public static Color BackglowColor => new Color(255, 100, 24, 80);
+    public static Color BackglowColor => new(255, 100, 24, 80);
 
     private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
     private const float MissileAngleSpread = 60;

@@ -105,7 +105,7 @@ public static class CalamityBuffSets
         BuffType<VoidConcentrationSummonTagBuff>(), VoidConcentrationStaff.summonTag
     );
 
-    private static DebuffData Alch(int level) => new DebuffData() { AlcoholLevel = level };
+    private static DebuffData Alch(int level) => new() { AlcoholLevel = level };
     /// <summary>
     /// Associates a buff type with its unique <see cref="DebuffData"/>. This class is used to store information about the buff such as DoT, elemental affliation, and whether or not it is an alcohol.<br/>
     /// Defaults to null, or having no assigned <see cref="DebuffData"/>.

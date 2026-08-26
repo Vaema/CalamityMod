@@ -19,7 +19,7 @@ public class CosmicShivTrail : ModProjectile, ILocalizedModType
     public const float ExplosionDamageMultiplier = 2f;
     public const int FadeInTime = 12;
 
-    public static List<Color> DustColors = new List<Color>
+    public static List<Color> DustColors = new()
     {
         new Color(69, 69, 222),
         new Color(99, 66, 212),

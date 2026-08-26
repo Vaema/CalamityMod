@@ -11,7 +11,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class AuricRebuke : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData(DebuffData.DebuffBehavior.Electric)
+    public static DebuffData debuffData = new(DebuffData.DebuffBehavior.Electric)
     {
         EnemyLostRegen = 200,
         ElectricDebuffScaling = 1

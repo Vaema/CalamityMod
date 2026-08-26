@@ -9,7 +9,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 [LegacyName("CragsLava")]
 public class SearingLava : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 40,
         HeatDebuffScaling = 2,

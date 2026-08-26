@@ -65,7 +65,7 @@ public class BossRushSky : CustomSky
         return Utils.GetLerpValue(0.57f, 1f, fadeRatio, true);
     }
 
-    public override Color OnTileColor(Color inColor) => new Color(Vector4.Lerp(GeneralColor.ToVector4() * 0.5f, inColor.ToVector4(), 1f - GetIntensity()));
+    public override Color OnTileColor(Color inColor) => new(Vector4.Lerp(GeneralColor.ToVector4() * 0.5f, inColor.ToVector4(), 1f - GetIntensity()));
 
     public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
     {

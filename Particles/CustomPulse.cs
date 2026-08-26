@@ -47,7 +47,7 @@ public class CustomPulse : Particle
 
     public override void Update()
     {
-        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4) });
+        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new(EasingType.PolyOut, 0f, 0f, 1f, 4) });
         Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
 
         opacity = (FadeOut ? (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2) : 1f) * BaseOpacity;

@@ -15,9 +15,9 @@ public class FlaskOfBrimstone : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(240, 95, 64),
-            new Color(227, 52, 68),
-            new Color(189, 112, 123)
+            new(240, 95, 64),
+            new(227, 52, 68),
+            new(189, 112, 123)
         };
     }
 

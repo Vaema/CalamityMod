@@ -15,7 +15,7 @@ public sealed class CooldownRegistry : ModSystem
     private const ushort defaultSize = 256;
     private static ushort nextCDNetID = 0;
 
-    private static Dictionary<string, ushort> nameToNetID = new Dictionary<string, ushort>(defaultSize);
+    private static Dictionary<string, ushort> nameToNetID = new(defaultSize);
 
     #region Unused manual registration left here as backup
     /*public override void Load()

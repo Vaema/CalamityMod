@@ -7,7 +7,7 @@ namespace CalamityMod.Rarities;
 public class PureGreen : ModRarity
 {
     // Pure Green is Rarity 13
-    public override Color RarityColor => new Color(0, 255, 0);
+    public override Color RarityColor => new(0, 255, 0);
 
     public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
     {

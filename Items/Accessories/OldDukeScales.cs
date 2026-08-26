@@ -38,7 +38,7 @@ public class OldDukeScalesPlayer : ModPlayer
     public bool OldDukeScalesOn = false;
     public bool IsTired = false;
     public bool HasBoostedDashFirstFrame = false;
-    private SoundStyle TiredSound => new SoundStyle("CalamityMod/Sounds/Custom/OldDukeHuff") { PitchVariance = .1f, Volume = .8f };
+    private SoundStyle TiredSound => new("CalamityMod/Sounds/Custom/OldDukeHuff") { PitchVariance = .1f, Volume = .8f };
 
     public int Fatigue = 0;
     public int RecoverTimer = 0;

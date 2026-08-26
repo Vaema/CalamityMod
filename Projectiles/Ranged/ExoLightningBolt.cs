@@ -146,7 +146,7 @@ public class ExoLightningBolt : ModProjectile, ILocalizedModType
 
     public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
     {
-        List<Vector2> checkPoints = Projectile.oldPos.Where(oldPos => oldPos != Vector2.Zero).ToList();
+        List<Vector2> checkPoints = [.. Projectile.oldPos.Where(oldPos => oldPos != Vector2.Zero)];
         if (checkPoints.Count <= 2)
             return false;
 

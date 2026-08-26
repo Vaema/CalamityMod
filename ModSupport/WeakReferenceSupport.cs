@@ -982,7 +982,7 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "AcidRainT1";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> enemies = AcidRainEvent.PossibleEnemiesPreHM.Select(enemy => enemy.Key).ToList();
+            List<int> enemies = [.. AcidRainEvent.PossibleEnemiesPreHM.Select(enemy => enemy.Key)];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/Events/AcidRainT1_BossChecklist").Value;
@@ -1002,7 +1002,7 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "AcidRainT2";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> enemies = AcidRainEvent.PossibleEnemiesAS.Select(enemy => enemy.Key).ToList();
+            List<int> enemies = [.. AcidRainEvent.PossibleEnemiesAS.Select(enemy => enemy.Key)];
             enemies.Add(NPCType<IrradiatedSlime>());
             enemies.AddRange(AcidRainEvent.PossibleMinibossesAS.Select(miniboss => miniboss.Key));
             List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<RadiatingCrystal>() };
@@ -1026,7 +1026,7 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "AcidRainT3";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> enemies = AcidRainEvent.PossibleEnemiesPolter.Select(enemy => enemy.Key).ToList();
+            List<int> enemies = [.. AcidRainEvent.PossibleEnemiesPolter.Select(enemy => enemy.Key)];
             enemies.AddRange(AcidRainEvent.PossibleMinibossesPolter.Select(miniboss => miniboss.Key));
             List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<MaulerRelic>(), ItemType<MaulerTrophy>(), ItemType<NuclearTerrorRelic>(), ItemType<NuclearTerrorTrophy>(), ItemType<RadiatingCrystal>() };
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
@@ -1223,17 +1223,17 @@ internal class WeakReferenceSupport : ModSystem
 
         sAssociation.Call("AddMinionInfo", ItemType<EntropysVigil>(), BuffType<EntropysVigilBuff>(), new List<Dictionary<string, object>>
         {
-            new Dictionary<string, object>()
+            new()
             {
                 ["ProjID"] = ProjectileType<Calamitamini>(),
                 ["Slot"] = 1-(1f/3f)
             },
-            new Dictionary<string, object>()
+            new()
             {
                 ["ProjID"] = ProjectileType<Cataclymini>(),
                 ["Slot"] = 2f/3f
             },
-            new Dictionary<string, object>()
+            new()
             {
                 ["ProjID"] = ProjectileType<Catastromini>(),
                 ["Slot"] = 2f/3f
@@ -1242,22 +1242,22 @@ internal class WeakReferenceSupport : ModSystem
         //Entropy's Vigil is a bruh moment
         sAssociation.Call("AddMinionInfo", ItemType<ResurrectionButterfly>(), BuffType<ResurrectionButterflyBuff>(), new List<Dictionary<string, object>>
         {
-            new Dictionary<string, object>()
+            new()
             {
                 ["ProjID"] = ProjectileType<PurpleButterfly>()
             },
-            new Dictionary<string, object>()
+            new()
             {
                 ["ProjID"] = ProjectileType<PinkButterfly>()
             }
         });
         sAssociation.Call("AddMinionInfo", ItemType<KingofConstellationsTenryu>(), BuffType<KingofConstellationsBuff>(), new List<Dictionary<string, object>>
         {
-            new Dictionary<string, object>()
+            new()
             {
                 ["ProjID"] = ProjectileType<BlackDragonHead>()
             },
-            new Dictionary<string, object>()
+            new()
             {
                 ["ProjID"] = ProjectileType<WhiteDragonHead>()
             }

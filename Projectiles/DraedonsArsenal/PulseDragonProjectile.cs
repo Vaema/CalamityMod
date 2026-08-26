@@ -156,7 +156,7 @@ public class PulseDragonProjectile : ModProjectile, ILocalizedModType
         }
         bezierPoints.Add(Projectile.Center);
 
-        BezierCurve bezierCurve = new BezierCurve(bezierPoints.ToArray());
+        BezierCurve bezierCurve = new BezierCurve([.. bezierPoints]);
         int totalChains = (int)(Projectile.Distance(mountedCenter) / chainTexture.Height);
         totalChains = (int)MathHelper.Clamp(totalChains, 40f, 1000f);
         for (int i = 0; i < totalChains - 1; i++)

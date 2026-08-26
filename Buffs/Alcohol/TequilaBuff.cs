@@ -7,7 +7,7 @@ namespace CalamityMod.Buffs.Alcohol;
 
 public class TequilaBuff : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         AlcoholLevel = 1
     };

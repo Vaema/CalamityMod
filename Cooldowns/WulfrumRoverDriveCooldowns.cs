@@ -15,8 +15,8 @@ namespace CalamityMod.Cooldowns;
 
 public class WulfrumRoverDriveDurability : CooldownHandler
 {
-    private static Color ringColorLerpStart = new Color(49, 220, 221);
-    private static Color ringColorLerpEnd = new Color(99, 226, 142);
+    private static Color ringColorLerpStart = new(49, 220, 221);
+    private static Color ringColorLerpEnd = new(99, 226, 142);
 
     private float AdjustedCompletion => instance.timeLeft / (float)RoverDrive.ShieldDurabilityMax;
 
@@ -27,7 +27,7 @@ public class WulfrumRoverDriveDurability : CooldownHandler
     public override string Texture => "CalamityMod/Cooldowns/WulfrumRoverDriveActive";
     public override string OutlineTexture => "CalamityMod/Cooldowns/WulfrumRoverDriveOutline";
     public override string OverlayTexture => "CalamityMod/Cooldowns/WulfrumRoverDriveOverlay";
-    public override Color OutlineColor => new Color(112, 244, 244);
+    public override Color OutlineColor => new(112, 244, 244);
     public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override bool SavedWithPlayer => false;
@@ -76,8 +76,8 @@ public class WulfrumRoverDriveDurability : CooldownHandler
 
 public class WulfrumRoverDriveRecharge : CooldownHandler
 {
-    private static Color ringColorLerpStart = new Color(194, 255, 57);
-    private static Color ringColorLerpEnd = new Color(92, 187, 99);
+    private static Color ringColorLerpStart = new(194, 255, 57);
+    private static Color ringColorLerpEnd = new(92, 187, 99);
 
     public static new string ID => "WulfrumRoverDriveRecharge";
     public override bool ShouldDisplay => true;
@@ -87,7 +87,7 @@ public class WulfrumRoverDriveRecharge : CooldownHandler
     public override string OverlayTexture => "CalamityMod/Cooldowns/WulfrumRoverDriveOverlay";
     public override bool SavedWithPlayer => false;
     public override bool PersistsThroughDeath => false;
-    public override Color OutlineColor => new Color(194, 255, 67);
+    public override Color OutlineColor => new(194, 255, 67);
     public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
 

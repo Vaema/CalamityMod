@@ -23,10 +23,10 @@ public class XyksBlessingOrange : TransformationAccessory, ILocalizedModType
     int itemFrameTimer = 1;
     int pulseTimer = 0;
     public static Vector2 extraPosition = Vector2.Zero;
-    public static Color baseEffectColor = new Color(255, 153, 153); // Red-ish Glow
-    public static Color animEffectColor = new Color(255, 105, 85); // Crimson Flash
-    public static Color baseMainColor = new Color(239, 117, 34); // Mid Orange
-    public static Color baseAccentColor = new Color(251, 242, 54); // Light Orange/Yellow
+    public static Color baseEffectColor = new(255, 153, 153); // Red-ish Glow
+    public static Color animEffectColor = new(255, 105, 85); // Crimson Flash
+    public static Color baseMainColor = new(239, 117, 34); // Mid Orange
+    public static Color baseAccentColor = new(251, 242, 54); // Light Orange/Yellow
     public override (EquipType, string, string)[] EquipSlots =>
     [
         (EquipType.Head, "Xyk2", null),

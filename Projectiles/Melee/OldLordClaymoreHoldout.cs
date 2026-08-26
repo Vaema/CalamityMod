@@ -24,7 +24,7 @@ public class OldLordClaymoreHoldout : BaseCustomUseStyleProjectile, ILocalizedMo
     public override string Texture => "CalamityMod/Items/Weapons/Melee/OldLordClaymore";
     public int size = 76;
     public override float HitboxOutset => size * 0.85f;
-    public override Vector2 HitboxSize => new Vector2(size, size);
+    public override Vector2 HitboxSize => new(size, size);
     public override Vector2 SpriteOrigin => new(0, size);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
     public override float AdditionalScale => 0.2f;

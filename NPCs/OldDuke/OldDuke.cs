@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.OldDuke;
 [AutoloadBossHead]
 public class OldDuke : ModNPC
 {
-    public static Color GlowColor = new Color(55, 255, 25, 0);
+    public static Color GlowColor = new(55, 255, 25, 0);
 
     // Old Duke doesn't have a phase 3 in normal mode
     public const float LifePercentagePhase2_Normal = 0.5f;
@@ -60,7 +60,7 @@ public class OldDuke : ModNPC
     public static readonly SoundStyle VortexSpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortexSpawn");
     public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/OldDukeDash");
     public static readonly SoundStyle DashSoundP3 = new("CalamityMod/Sounds/Custom/OldDukeDashP3");
-    private static Color FireGreen = new Color(155, 255, 55);
+    private static Color FireGreen = new(155, 255, 55);
     private SlotId RoarSoundSlot;
 
     public static Asset<Texture2D> GlowTexture;

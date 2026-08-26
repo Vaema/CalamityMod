@@ -17,7 +17,7 @@ public class PureClarity : BaseCustomUseStyleProjectile, ILocalizedModType
     public override int AssignedItemID => ModContent.ItemType<BrokenBiomeBlade>();
     public override string Texture => "CalamityMod/Items/Weapons/Melee/BrokenBiomeBlade";
     public override float HitboxOutset => 50f;
-    public override Vector2 HitboxSize => new Vector2(48, 48);
+    public override Vector2 HitboxSize => new(48, 48);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
     public override Vector2 SpriteOrigin => new(-5, 40);
 

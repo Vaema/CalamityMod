@@ -20,8 +20,8 @@ public class BoundingPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
-            new Color(213, 255, 226),
-            new Color(141, 220, 166)
+            new(213, 255, 226),
+            new(141, 220, 166)
         };
     }
 

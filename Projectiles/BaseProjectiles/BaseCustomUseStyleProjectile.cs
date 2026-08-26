@@ -62,7 +62,7 @@ public abstract class BaseCustomUseStyleProjectile : ModProjectile
     /// <summary>
     /// The projectile's hitbox size in pixels. Scales with Projectile.scale.
     /// </summary>
-    public virtual Vector2 HitboxSize => new Vector2(30, 30);
+    public virtual Vector2 HitboxSize => new(30, 30);
 
     /// <summary>
     /// The number of animations that this projectile has gone through. Useful for things like swing combos.

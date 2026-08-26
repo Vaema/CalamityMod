@@ -14,9 +14,9 @@ public class ZenPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(216, 230, 236),
-            new Color(137, 149, 173),
-            new Color(102, 85, 128)
+            new(216, 230, 236),
+            new(137, 149, 173),
+            new(102, 85, 128)
         };
     }
 

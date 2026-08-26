@@ -46,7 +46,7 @@ public class SepulcherMinion : ModProjectile, ILocalizedModType
                 writer.Write(Rotation);
             }
 
-            public static SepulcherArmLimb ReceiveData(BinaryReader reader) => new SepulcherArmLimb(reader.ReadPackedVector2(), reader.ReadSingle());
+            public static SepulcherArmLimb ReceiveData(BinaryReader reader) => new(reader.ReadPackedVector2(), reader.ReadSingle());
         }
 
         public SepulcherArmLimb[] Limbs = new SepulcherArmLimb[2];
@@ -64,8 +64,8 @@ public class SepulcherMinion : ModProjectile, ILocalizedModType
             Direction = direction;
             Limbs = new SepulcherArmLimb[2]
             {
-                new SepulcherArmLimb(center, rotation),
-                new SepulcherArmLimb(center, rotation)
+                new(center, rotation),
+                new(center, rotation)
             };
         }
     }
@@ -82,7 +82,7 @@ public class SepulcherMinion : ModProjectile, ILocalizedModType
     public int AttackTimer;
     public int HeartAttackCountdown;
     public SepulcherSegment[] Segments = new SepulcherSegment[24];
-    public List<SepulcherArm> Arms = new List<SepulcherArm>();
+    public List<SepulcherArm> Arms = new();
     public Player Owner => Main.player[Projectile.owner];
     public AIState CurrentAIState
     {

@@ -22,7 +22,7 @@ public class CometQuasherHoldout : BaseCustomUseStyleProjectile, ILocalizedModTy
     public override string Texture => "CalamityMod/Items/Weapons/Melee/CometQuasher";
     public int size = 94;
     public override float HitboxOutset => size * 0.85f;
-    public override Vector2 HitboxSize => new Vector2(size, size);
+    public override Vector2 HitboxSize => new(size, size);
     public override Vector2 SpriteOrigin => new(-4, size);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
     public Vector2 mousePos;

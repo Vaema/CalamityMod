@@ -39,8 +39,8 @@ public static partial class CalamityUtils
     public static void SetRevExclusive(this Item item) => item.Calamity().revengeanceItem = true;
 
     #region Color Constants
-    internal static readonly Color DevItemColor = new Color(255, 0, 255);
-    internal static readonly Color DonatorItemColor = new Color(255, 121, 156);
+    internal static readonly Color DevItemColor = new(255, 0, 255);
+    internal static readonly Color DonatorItemColor = new(255, 121, 156);
     #endregion
 
     /// <summary>

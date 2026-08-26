@@ -40,9 +40,9 @@ public class Margarita : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(219, 227, 191),
-            new Color(186, 189, 147),
-            new Color(142, 161, 125)
+            new(219, 227, 191),
+            new(186, 189, 147),
+            new(142, 161, 125)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

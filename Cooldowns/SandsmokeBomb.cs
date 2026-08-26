@@ -24,7 +24,7 @@ public class SandsmokeBomb : CooldownHandler
     public override string Texture => "CalamityMod/Cooldowns/SandsmokeBomb";
     public override string OutlineTexture => "CalamityMod/Cooldowns/SandsmokeBombOutline";
     public override string OverlayTexture => "CalamityMod/Cooldowns/SandsmokeBombOverlay";
-    public override Color OutlineColor => new Color(255, 299, 156);
+    public override Color OutlineColor => new(255, 299, 156);
     public override Color CooldownStartColor => PowerActive ? Color.Lerp(new Color(204, 181, 72), new Color(169, 142, 16), PowerPercent) : new Color(204, 181, 72);
     public override Color CooldownEndColor => PowerActive ? Color.Lerp(new Color(204, 181, 72), new Color(169, 142, 16), PowerPercent) : new Color(169, 142, 16);
     public override SoundStyle? EndSound => new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerSmokeBombReload");

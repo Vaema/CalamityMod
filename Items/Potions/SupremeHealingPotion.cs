@@ -14,9 +14,9 @@ public class SupremeHealingPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 30;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(255, 31, 25),
-            new Color(217, 19, 15),
-            new Color(255, 0, 221)
+            new(255, 31, 25),
+            new(217, 19, 15),
+            new(255, 0, 221)
         };
     }
 

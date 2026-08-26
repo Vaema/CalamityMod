@@ -23,7 +23,7 @@ public class VolatileSlime : ModNPC
     public bool released => NPC.ai[3] != 0;
     public bool doOnSpawnEffects = true;
     public Color effectColor = Color.BlueViolet;
-    public List<Vector2> oldVelocities = new List<Vector2>();
+    public List<Vector2> oldVelocities = new();
     public Vector2 randPos = Vector2.Zero;
     public Vector2 goalPositionRand = Vector2.Zero;
     public float travelSpeed = 25;
@@ -252,7 +252,7 @@ public class VolatileSlime : ModNPC
                 chainPointCount = 14;
 
 
-            BezierCurve bezierCurve = new BezierCurve(controlPoints.ToArray());
+            BezierCurve bezierCurve = new BezierCurve([.. controlPoints]);
             List<Vector2> chainPoints = bezierCurve.GetPoints(chainPointCount);
 
             for (int i = 0; i < chainPoints.Count; i++)

@@ -147,7 +147,7 @@ public static class PrimitiveMeshExtensions
             }
         }
 
-        return new PrimitiveMesh(vertices.ToArray(), indices.ToArray(), PrimitiveType.TriangleList);
+        return new PrimitiveMesh(vertices.ToArray(), [.. indices], PrimitiveType.TriangleList);
     }
 
     private static PrimitiveMesh ExtrudeColored(in PrimitiveMesh mesh, Vector3 direction, bool closeCaps)
@@ -221,7 +221,7 @@ public static class PrimitiveMeshExtensions
             }
         }
 
-        return new PrimitiveMesh(vertices.ToArray(), indices.ToArray(), PrimitiveType.TriangleList);
+        return new PrimitiveMesh(vertices.ToArray(), [.. indices], PrimitiveType.TriangleList);
     }
 
     public static PrimitiveMesh CurveEdges(this in PrimitiveMesh mesh, in Vector3 axis, float magnitude, float exponent = 2f)
@@ -487,6 +487,6 @@ public static class PrimitiveMeshExtensions
             Length = length;
         }
 
-        public OrientedEdge Reversed() => new OrientedEdge(End, Start, Length);
+        public OrientedEdge Reversed() => new(End, Start, Length);
     }
 }

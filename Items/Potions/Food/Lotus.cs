@@ -14,9 +14,9 @@ namespace CalamityMod.Items.Potions.Food;
 			Item.ResearchUnlockCount = 5;
 			Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
 			ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
-				new Color(198, 83, 236),
-				new Color(207, 81, 108),
-				new Color(233, 184, 87)
+				new(198, 83, 236),
+				new(207, 81, 108),
+				new(233, 184, 87)
 			};
 			ItemID.Sets.IsFood[Type] = true;
         ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Ambrosia;

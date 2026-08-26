@@ -98,24 +98,13 @@ public class CalamityMod : Mod
             int day = date.DayOfYear - Convert.ToInt32(DateTime.IsLeapYear(date.Year) && date.DayOfYear > 59);
 
             if (day < 80 || day >= 355)
-            {
                 return Season.Winter;
-            }
-
             else if (day >= 80 && day < 172)
-            {
                 return Season.Spring;
-            }
-
             else if (day >= 172 && day < 266)
-            {
                 return Season.Summer;
-            }
-
             else
-            {
                 return Season.Fall;
-            }
         }
     }
     #endregion

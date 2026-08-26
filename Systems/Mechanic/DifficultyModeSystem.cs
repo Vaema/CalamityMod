@@ -23,7 +23,7 @@ public class DifficultyModeSystem : ModSystem
     internal static bool _hasCheckedItOutYet = false; //Simple variable to add a cool effect to the mode selector 
     internal static int _newGameModeID = GameModeID.Normal;
 
-    public static List<DifficultyMode> Difficulties = new List<DifficultyMode>(); //Difficulty modes ordered by ascending difficulty
+    public static List<DifficultyMode> Difficulties = new(); //Difficulty modes ordered by ascending difficulty
     public static List<DifficultyMode[]> DifficultyTiers; //Difficulty modes grouped together by difficulty
     public static int MostAlternateDifficulties; //The most alternate difficulties at any tier that exists. Used to know the widest space to take in the ui
 
@@ -164,7 +164,7 @@ public class DifficultyModeSystem : ModSystem
     public static void CalculateDifficultyData()
     {
         MostAlternateDifficulties = 1;
-        Difficulties = Difficulties.OrderBy(d => d.DifficultyScale).ToList();
+        Difficulties = [.. Difficulties.OrderBy(d => d.DifficultyScale)];
 
         //Difficulties are arranged in "tiers". This is done so that multiple mods can add their own alternate difficulties sharing a tier with the base ones
         DifficultyTiers = new List<DifficultyMode[]>();
@@ -189,7 +189,7 @@ public class DifficultyModeSystem : ModSystem
             else
             {
                 //ugly
-                DifficultyTiers[tierIndex] = DifficultyTiers[tierIndex].Append(Difficulties[i]).ToArray();
+                DifficultyTiers[tierIndex] = [.. DifficultyTiers[tierIndex], Difficulties[i]];
                 MostAlternateDifficulties = Math.Max(DifficultyTiers[tierIndex].Length, MostAlternateDifficulties);
             }
 
@@ -509,7 +509,7 @@ public class RevengeanceDifficulty : DifficultyMode
 
     public override LocalizedText Name => GetText("UI.Revengeance");
 
-    public override Color ChatTextColor => new Color(211, 42, 42);
+    public override Color ChatTextColor => new(211, 42, 42);
 
     public override LocalizedText ShortDescription => GetText("UI.RevengeanceShortInfo");
 
@@ -565,7 +565,7 @@ public class DeathDifficulty : DifficultyMode
 
     public override LocalizedText Name => GetText("UI.Death");
 
-    public override Color ChatTextColor => new Color(192, 64, 219);
+    public override Color ChatTextColor => new(192, 64, 219);
 
     public override LocalizedText ShortDescription => GetText("UI.DeathShortInfo");
 
@@ -586,7 +586,7 @@ public class DeathDifficulty : DifficultyMode
         if (difficulties.Count <= 0)
             difficulties.Add(0);
 
-        return difficulties.ToArray();
+        return [.. difficulties];
     }
 }
 
@@ -626,7 +626,7 @@ public class MaliceDifficulty : DifficultyMode
 
     public override LocalizedText Name => GetText("UI.Malice");
 
-    public override Color ChatTextColor => new Color(240, 128, 128);
+    public override Color ChatTextColor => new(240, 128, 128);
 
     public override LocalizedText ShortDescription => GetText("UI.MaliceShortInfo");
 
@@ -648,6 +648,6 @@ public class MaliceDifficulty : DifficultyMode
         if (difficulties.Count <= 0)
             difficulties.Add(0);
 
-        return difficulties.ToArray();
+        return [.. difficulties];
     }
 }

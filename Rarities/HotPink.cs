@@ -61,13 +61,12 @@ public class HotPink : ModRarity
     };
 
     public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, Color textColor, Color lightColor, float rotation,
-    Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font)
+        Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font)
     {
         if (CustomColors.TryGetValue(Item.type, out var color)) // For items which use a custom item color, give them that custom color.
-        {
             textColor = color.Invoke();
-        }
-        TextSnippet[] snippets = ChatManager.ParseMessage(text, textColor).ToArray();
+
+        TextSnippet[] snippets = [.. ChatManager.ParseMessage(text, textColor)];
 
         if (CustomRarities.ContainsKey(Item.type)) // For items in the custom rarity table, give them custom rarity effects.
         {
@@ -97,5 +96,4 @@ public class HotPink : ModRarity
     {
         Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
     }
-
 }

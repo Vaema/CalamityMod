@@ -31,9 +31,9 @@ public class StarBeamRye : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(89, 18, 10),
-            new Color(102, 39, 14),
-            new Color(128, 31, 9)
+            new(89, 18, 10),
+            new(102, 39, 14),
+            new(128, 31, 9)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

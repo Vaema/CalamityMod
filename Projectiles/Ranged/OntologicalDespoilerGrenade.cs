@@ -19,7 +19,7 @@ public class OntologicalDespoilerGrenade : ModProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Projectiles/Ranged/OntologicalDespoilerGrenade";
     public ref float time => ref Projectile.ai[0];
     public bool explode = true;
-    public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
+    public Color baseColor = new(Main.DiscoR, Main.DiscoG, Main.DiscoB);
     public Player Owner => Main.player[Projectile.owner];
     public Color color1;
     public Color color2;

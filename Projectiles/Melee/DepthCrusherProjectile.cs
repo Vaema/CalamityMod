@@ -60,8 +60,8 @@ public class DepthCrusherProjectile : ModProjectile, ILocalizedModType
     }
 
     //Swing animation keys
-    public CurveSegment pullback = new CurveSegment(EasingType.PolyOut, 0f, 0f, MathHelper.PiOver4 * -1.2f, 2);
-    public CurveSegment throwout = new CurveSegment(EasingType.PolyOut, 0.7f, MathHelper.PiOver4 * -1.2f, MathHelper.PiOver4 * 1.2f + MathHelper.PiOver2, 3);
+    public CurveSegment pullback = new(EasingType.PolyOut, 0f, 0f, MathHelper.PiOver4 * -1.2f, 2);
+    public CurveSegment throwout = new(EasingType.PolyOut, 0.7f, MathHelper.PiOver4 * -1.2f, MathHelper.PiOver4 * 1.2f + MathHelper.PiOver2, 3);
     internal float ArmAnticipationMovement() => PiecewiseAnimation(ChargeProgress, new CurveSegment[] { pullback, throwout });
 
     public override void AI()

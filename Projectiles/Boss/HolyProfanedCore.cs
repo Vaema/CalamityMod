@@ -53,7 +53,7 @@ public class HolyProfanedCore : ModProjectile, ILocalizedModType
             // Awesome particle effects or something
             if (Timer > ShakeThreshold)
             {
-                Color flameColor = new Color(255, 223, 112), crystalColor = new Color(190, 141, 184);
+                Color flameColor = new(255, 223, 112), crystalColor = new(190, 141, 184);
 
                 float starScale = MathHelper.Lerp(0f, 6f, (Timer - ShakeThreshold) / (Lifetime - ShakeThreshold));
                 CustomSpark attacka = new(proviCoreLocation, Vector2.Zero, "CalamityMod/Particles/FullStar", false, 2, starScale, flameColor, Vector2.One, extraRotation: MathHelper.PiOver4);

@@ -21,7 +21,7 @@ public class PrimordialAncientProjectile : ModProjectile, ILocalizedModType
     public Vector2 mousePos;
     public float CenterX;
     public float CenterY;
-    public List<bool> buffList = new List<bool>(new bool[Main.maxPlayers]);
+    public List<bool> buffList = new(new bool[Main.maxPlayers]);
     public override void SetStaticDefaults()
     {
         Main.projFrames[Type] = 6;

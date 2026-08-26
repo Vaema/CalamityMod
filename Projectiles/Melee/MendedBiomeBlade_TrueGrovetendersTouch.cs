@@ -63,7 +63,7 @@ public class TrueGrovetendersTouch : ModProjectile, ILocalizedModType
         BezierCurve curve = new(new Vector2[] { Owner.MountedCenter, controlPoint1, controlPoint2, Projectile.Center });
 
         int numPoints = 32;
-        Vector2[] chainPositions = curve.GetPoints(numPoints).ToArray();
+        Vector2[] chainPositions = [.. curve.GetPoints(numPoints)];
         float collisionPoint = 0;
         for (int i = 1; i < numPoints; i++)
         {
@@ -281,7 +281,7 @@ public class TrueGrovetendersTouch : ModProjectile, ILocalizedModType
 
         BezierCurve curve = new(new Vector2[] { Owner.MountedCenter, controlPoint1, controlPoint2, projBottom });
         int numPoints = 30;
-        chainPositions = curve.GetPoints(numPoints).ToArray();
+        chainPositions = [.. curve.GetPoints(numPoints)];
 
         //Draw each chain segment bar the very first one
         for (int i = 1; i < numPoints; i++)

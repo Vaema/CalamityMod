@@ -17,7 +17,7 @@ public class GalvanicCorrosion : ModBuff
         CalamityBuffSets.DebuffDataset[Type] = debuffData;
     }
     // Purely to make it get electric color in tooltips
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         ElectricDebuffScaling = 1
     };

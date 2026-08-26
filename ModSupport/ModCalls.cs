@@ -1896,7 +1896,7 @@ public class ModCalls
 
                 castID(args[1], out int npcType3);
 
-                int[] npcsInRelationship = args.Skip(2).Select(a => (int)a).ToArray();
+                int[] npcsInRelationship = [.. args.Skip(2).Select(a => (int)a)];
                 BossHealthBarManager.OneToMany[npcType3] = npcsInRelationship;
                 return null;
 
@@ -1922,7 +1922,7 @@ public class ModCalls
                 if (!args.Skip(3).All(a => a is int))
                     return new ArgumentException("ERROR: All ternary and onward arguments to \"CreateNameExtensionHandlerForHealthBar\" must be ints.");
 
-                int[] npcsToCheckFor = args.Skip(3).Select(a => (int)a).ToArray();
+                int[] npcsToCheckFor = [.. args.Skip(3).Select(a => (int)a)];
                 BossHealthBarManager.EntityExtensionHandler[npcType4] = new BossHealthBarManager.BossEntityExtension(name, npcsToCheckFor);
                 return null;
 

@@ -50,9 +50,9 @@ public class Starmada : ModItem, ILocalizedModType
         float rate = (Main.GlobalTimeWrappedHourly * 3);
         List<Color> eColors = new List<Color>()
         {
-            new Color(164, 47, 160),
-            new Color(227, 97, 72),
-            new Color(193, 255, 146)
+            new(164, 47, 160),
+            new(227, 97, 72),
+            new(193, 255, 146)
         };
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

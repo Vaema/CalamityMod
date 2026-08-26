@@ -12,7 +12,7 @@ public abstract class LiquidDropletGore : ModGore
 {
     public virtual bool lavaDroplet => false;
 
-    public virtual Vector3 lavaColor => new Vector3(0, 0, 0);
+    public virtual Vector3 lavaColor => new(0, 0, 0);
 
     public override void SetStaticDefaults()
     {

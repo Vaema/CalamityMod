@@ -250,7 +250,7 @@ public struct SchematicData
         // This allows for index zero to always refer to a fully blank tile.
         uniqueTiles = new List<SchematicMetaTile>(DefaultUniqueTileCount)
         {
-            new SchematicMetaTile()
+            new()
         };
         modTileNames = new List<string>(DefaultModTileCount);
         modWallNames = new List<string>(DefaultModWallCount);

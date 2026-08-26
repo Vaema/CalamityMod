@@ -143,7 +143,7 @@ public partial class CalamityGlobalItem : GlobalItem
         set => flag0[4] = value;
     }
 
-    public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
+    public static readonly Color ExhumedTooltipColor = new(198, 27, 64);
 
     // Ozzatron 21MAY2022: This function is required by TML 1.4's new clone behavior.
     // This behavior is sadly mandatory because there are a few places in vanilla Terraria which use cloning.
@@ -1428,7 +1428,7 @@ public partial class CalamityGlobalItem : GlobalItem
     #endregion
 
     #region Inventory Drawing
-    internal static ChargingEnergyParticleSet EnchantmentEnergyParticles = new ChargingEnergyParticleSet(-1, 2, Color.DarkViolet, Color.White, 0.04f, 24f);
+    internal static ChargingEnergyParticleSet EnchantmentEnergyParticles = new(-1, 2, Color.DarkViolet, Color.White, 0.04f, 24f);
 
     internal static void UpdateAllParticleSets()
     {

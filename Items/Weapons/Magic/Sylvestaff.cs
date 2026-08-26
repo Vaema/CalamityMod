@@ -112,5 +112,5 @@ public class Sylvestaff : ModItem, ILocalizedModType
         return false;
     }
 
-    public static Color RarityColor() => new Color(249, 197, 255);
+    public static Color RarityColor() => new(249, 197, 255);
 }

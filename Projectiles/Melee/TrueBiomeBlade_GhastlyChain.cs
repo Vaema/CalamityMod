@@ -71,7 +71,7 @@ public class GhastlyChain : ModProjectile, ILocalizedModType
 
         BezierCurve curve = new BezierCurve(new Vector2[] { Target.Center, Target.Center + Vector2.UnitY * Gravity, NPCfrom.Center + Vector2.UnitY * Gravity, NPCfrom.Center });
         int numPoints = 20;
-        Vector2[] Nodes = curve.GetPoints(numPoints).ToArray();
+        Vector2[] Nodes = [.. curve.GetPoints(numPoints)];
 
         for (int i = 1; i < numPoints; i++)
         {

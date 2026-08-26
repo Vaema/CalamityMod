@@ -1741,7 +1741,7 @@ public partial class CalamityPlayer : ModPlayer
     #endregion Calamitas Enchant Effects
 
     #region Draw Effects
-    public FireParticleSet ProvidenceBurnEffectDrawer = new FireParticleSet(-1, int.MaxValue, Color.Yellow, Color.Red * 1.2f, 10f, 0.65f);
+    public FireParticleSet ProvidenceBurnEffectDrawer = new(-1, int.MaxValue, Color.Yellow, Color.Red * 1.2f, 10f, 0.65f);
 
     public FluidField CalamityFireDrawer;
 
@@ -2056,7 +2056,7 @@ public partial class CalamityPlayer : ModPlayer
         lastSplitType = tag.GetInt("lastSplitType");
         ticks = tag.GetLong("lastSplitTicks");
         lastSplit = new TimeSpan(ticks);
-        SeenDraedonDialogs = tag.GetList<ulong>("SeenDraedonDialogs").ToList();
+        SeenDraedonDialogs = [.. tag.GetList<ulong>("SeenDraedonDialogs")];
 
         // Clear the player's cooldowns in preparation for loading.
         cooldowns.Clear();

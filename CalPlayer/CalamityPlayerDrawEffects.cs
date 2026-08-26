@@ -713,8 +713,8 @@ public partial class CalamityPlayer : ModPlayer
     {
         float interval = (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.6f + angleOffset) * 0.5f + 0.5f;
         interval = MathHelper.Clamp(interval, 0f, 0.995f);
-        Color dayColorToUse = CalamityUtils.MulticolorLerp(interval, MoonlightDyeDayColors.ToArray());
-        Color nightColorToUse = CalamityUtils.MulticolorLerp(interval, MoonlightDyeNightColors.ToArray());
+        Color dayColorToUse = CalamityUtils.MulticolorLerp(interval, [.. MoonlightDyeDayColors]);
+        Color nightColorToUse = CalamityUtils.MulticolorLerp(interval, [.. MoonlightDyeNightColors]);
         DetermineMoonlightDyeColors(out Color drawColor, dayColorToUse, nightColorToUse);
         return drawColor;
     }

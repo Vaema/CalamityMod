@@ -83,5 +83,5 @@ public class Svantechnical : ModItem, ILocalizedModType
             Register();
     }
 
-    public static Color RarityColor() => new Color(220, 20, 60);
+    public static Color RarityColor() => new(220, 20, 60);
 }

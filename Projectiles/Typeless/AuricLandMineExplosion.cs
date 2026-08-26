@@ -18,7 +18,7 @@ public class AuricLandMineExplosion : ModProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
     private Player Owner => Main.player[Projectile.owner];
 
-    public List<List<Vector2>> lightningTrails = new List<List<Vector2>>();
+    public List<List<Vector2>> lightningTrails = new();
     public static int lightningCount = 15;
     public static int totalPoints = 10;
 
@@ -97,7 +97,7 @@ public class AuricLandMineExplosion : ModProjectile, ILocalizedModType
     }
 
     internal float WidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
-    internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => new Color(123, 205, 237); // Auric blue
+    internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => new(123, 205, 237); // Auric blue
 
     internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 2f;
     internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos) => ColorFunction(completionRatio, vertexPos) * 0.5f;

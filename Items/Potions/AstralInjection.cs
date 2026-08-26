@@ -19,8 +19,8 @@ public class AstralInjection : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 30;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
-            new Color(255, 164, 94),
-            new Color(109, 242, 196)
+            new(255, 164, 94),
+            new(109, 242, 196)
         };
     }
 

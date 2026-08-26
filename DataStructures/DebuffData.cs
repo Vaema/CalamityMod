@@ -357,31 +357,31 @@ public class DebuffData
     #endregion
 
     #region Vanilla debuff stats
-    public static DebuffData OnFire = new DebuffData()
+    public static DebuffData OnFire = new()
     {
         EnemyLostRegen = 12,
         EnemyVanillaRegenToCancelOut = 12,
         HeatDebuffScaling = 1
     };
-    public static DebuffData Hellfire = new DebuffData()
+    public static DebuffData Hellfire = new()
     {
         EnemyLostRegen = 30,
         EnemyVanillaRegenToCancelOut = 30,
         HeatDebuffScaling = 1
     };
-    public static DebuffData CursedInferno = new DebuffData()
+    public static DebuffData CursedInferno = new()
     {
         EnemyLostRegen = 48,
         EnemyVanillaRegenToCancelOut = 48,
         HeatDebuffScaling = 1
     };
-    public static DebuffData Shadowflame = new DebuffData()
+    public static DebuffData Shadowflame = new()
     {
         EnemyLostRegen = 40,
         EnemyVanillaRegenToCancelOut = 30,
         HeatDebuffScaling = 1
     };
-    public static DebuffData Daybroken = new DebuffData()
+    public static DebuffData Daybroken = new()
     {
         EnemyLostRegen = 200,
         EnemyVanillaRegenToCancelOut = 200,
@@ -389,48 +389,48 @@ public class DebuffData
         NPCLifeRegenMethod = DaybrokenRegen
     };
     // Provided purely to classify it as a heat debuff
-    public static DebuffData Burning = new DebuffData()
+    public static DebuffData Burning = new()
     {
         HeatDebuffScaling = 1
     };
-    public static DebuffData Frostburn = new DebuffData()
+    public static DebuffData Frostburn = new()
     {
         EnemyLostRegen = 16,
         EnemyVanillaRegenToCancelOut = 16,
         ColdDebuffScaling = 1
     };
-    public static DebuffData Frostbite = new DebuffData()
+    public static DebuffData Frostbite = new()
     {
         EnemyLostRegen = 50,
         EnemyVanillaRegenToCancelOut = 50,
         ColdDebuffScaling = 1
     };
-    public static DebuffData Poisoned = new DebuffData()
+    public static DebuffData Poisoned = new()
     {
         EnemyLostRegen = 12,
         EnemyVanillaRegenToCancelOut = 12,
         SicknessDebuffScaling = 1
     };
-    public static DebuffData AcidVenom = new DebuffData()
+    public static DebuffData AcidVenom = new()
     {
         EnemyLostRegen = 60,
         EnemyVanillaRegenToCancelOut = 60,
         SicknessDebuffScaling = 1
     };
-    public static DebuffData Electrified = new DebuffData(DebuffBehavior.Electric)
+    public static DebuffData Electrified = new(DebuffBehavior.Electric)
     {
         EnemyLostRegen = 30, // 15 dps stationary, 60 dps moving
         EnemyVanillaRegenToCancelOut = 8,
         ElectricDebuffScaling = 1
     };
-    public static DebuffData Oiled = new DebuffData()
+    public static DebuffData Oiled = new()
     {
         EnemyLostRegen = 50, //This is how much DPS Oiled does when applied alongside a valid debuff
         EnemyVanillaRegenToCancelOut = 50,
         HeatDebuffScaling = 2, //Oiled scales twice as hard with heat debuff scaling to reward debuff builds who use such a rare and difficult to apply debuff.
         NPCLifeRegenMethod = OiledNPCMethod
     };
-    public static DebuffData DryadsBane = new DebuffData()
+    public static DebuffData DryadsBane = new()
     {
         EnemyLostRegen = 8, //This is not used in the method, serves as a token amount for anything that may need to interface in the future.
         NPCLifeRegenMethod = DryadsBaneNPCMethod

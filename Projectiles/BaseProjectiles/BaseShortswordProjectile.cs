@@ -103,10 +103,10 @@ public abstract class BaseShortswordProjectile : ModProjectile, ILocalizedModTyp
     }
 
     public override bool ShouldUpdatePosition() => false;
-    public CurveSegment ThrustSegment = new CurveSegment(LinearEasing, 0f, 0f, 1f, 3);
-    public CurveSegment HoldSegment = new CurveSegment(SineBumpEasing, 0.2f, 1f, 0.2f);
-    public CurveSegment RetractSegment = new CurveSegment(PolyOutEasing, 0.76f, 1f, -0.8f, 3);
-    public CurveSegment BumpSegment = new CurveSegment(SineBumpEasing, 0.9f, 0.2f, 0.15f);
+    public CurveSegment ThrustSegment = new(LinearEasing, 0f, 0f, 1f, 3);
+    public CurveSegment HoldSegment = new(SineBumpEasing, 0.2f, 1f, 0.2f);
+    public CurveSegment RetractSegment = new(PolyOutEasing, 0.76f, 1f, -0.8f, 3);
+    public CurveSegment BumpSegment = new(SineBumpEasing, 0.9f, 0.2f, 0.15f);
     internal float DistanceFromPlayer => PiecewiseAnimation(FullUse, new CurveSegment[] { ThrustSegment, HoldSegment, RetractSegment, BumpSegment });
     public Vector2 OffsetFromPlayer => Projectile.velocity * DistanceFromPlayer * 12f;
 

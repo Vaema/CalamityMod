@@ -8,7 +8,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class SagePoison : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 50,
         SicknessDebuffScaling = 1,

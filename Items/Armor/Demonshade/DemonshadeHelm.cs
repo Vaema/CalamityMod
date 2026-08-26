@@ -77,7 +77,7 @@ public class DemonshadeHelm : ModItem, IExtendedHat, ILocalizedModType
     }
 
     public string ExtensionTexture => "CalamityMod/Items/Armor/Demonshade/DemonshadeHelm_Extension";
-    public Vector2 ExtensionSpriteOffset(PlayerDrawSet drawInfo) => new Vector2(0, -4f);
+    public Vector2 ExtensionSpriteOffset(PlayerDrawSet drawInfo) => new(0, -4f);
 
     public static Color DemonshadeRarityColor() => CalamityUtils.ColorSwap(new Color(255, 132, 22), new Color(221, 85, 7), 4f);
 }

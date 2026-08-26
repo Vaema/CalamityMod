@@ -21,10 +21,10 @@ public class AuroraFire : ModProjectile, ILocalizedModType
     public ref float LightPower => ref Projectile.ai[1];
 
     // The Fog is Coming
-    public Color OrangeFogColor = new Color(255, 160, 100);
+    public Color OrangeFogColor = new(255, 160, 100);
     public float OrangeFogRot = 0f;
     public float OrangeFogScale = 1f;
-    public Color BlueFogColor = new Color(150, 120, 255);
+    public Color BlueFogColor = new(150, 120, 255);
     public float BlueFogRot = 0f;
     public float BlueFogScale = 1f;
     public float damageMult = 1;

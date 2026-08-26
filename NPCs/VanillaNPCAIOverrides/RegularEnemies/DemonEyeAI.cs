@@ -12,7 +12,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 public class DemonEyeAI : VanillaAIOverride
 {
     // Subtypes of enemies with this AI. Made for programmer convenience.
-    public static List<int> NightTimeEnemies => new List<int>()
+    public static List<int> NightTimeEnemies => new()
     {
         NPCID.DemonEye,
         NPCID.WanderingEye,
@@ -25,7 +25,7 @@ public class DemonEyeAI : VanillaAIOverride
         NPCID.DemonEyeSpaceship,
     };
 
-    public static List<int> Pigrons => new List<int>()
+    public static List<int> Pigrons => new()
     {
         NPCID.PigronCorruption,
         NPCID.PigronCrimson,

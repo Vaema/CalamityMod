@@ -277,7 +277,7 @@ public class WulfrumHook : ModProjectile, ILocalizedModType
         Vector2[] segmentPositions = new Vector2[] { Projectile.Center, Owner.Center };
 
         if (State == HookState.Grappling)
-            segmentPositions = Owner.GetModPlayer<WulfrumPackPlayer>().Segments.Select(x => x.position).ToArray();
+            segmentPositions = [.. Owner.GetModPlayer<WulfrumPackPlayer>().Segments.Select(x => x.position)];
         PrimitiveRenderer.RenderTrail(new List<Vector2>(segmentPositions) { Owner.Center }, new(PrimWidthFunction, PrimColorFunction, smoothen: State is HookState.Grappling), 30);
 
         Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;

@@ -8,7 +8,7 @@ namespace CalamityMod;
 public static partial class CalamityUtils
 {
 
-    internal static readonly List<Vector2> Directions = new List<Vector2>()
+    internal static readonly List<Vector2> Directions = new()
     {
         new Vector2(-1f, -1f),
         new Vector2(1f, -1f),

@@ -43,9 +43,9 @@ public class StarmadaHoldout : BaseGunHoldoutProjectile
     public bool setVel = true;
     public float glowIntensity = 1;
     public float attackVisualMult = 0;
-    public Color c1 = new Color(164, 47, 160);
-    public Color c2 = new Color(227, 97, 72);
-    public Color c3 = new Color(193, 255, 146);
+    public Color c1 = new(164, 47, 160);
+    public Color c2 = new(227, 97, 72);
+    public Color c3 = new(193, 255, 146);
     public Color shiftColor;
     public Vector2 gunBackPosition;
     public int gunPower = 1;

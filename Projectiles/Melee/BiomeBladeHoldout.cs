@@ -44,9 +44,9 @@ public class BiomeBladeHoldout : ModProjectile, ILocalizedModType //Visuals
         Projectile.damage = 0;
     }
 
-    public CurveSegment anticipation = new CurveSegment(EasingType.SineOut, 0f, 1f, 0.35f);
-    public CurveSegment thrust = new CurveSegment(EasingType.ExpIn, 0.85f, 1.35f, -1.45f);
-    public CurveSegment bounceback = new CurveSegment(EasingType.SineOut, 0.95f, -0.1f, 0.1f);
+    public CurveSegment anticipation = new(EasingType.SineOut, 0f, 1f, 0.35f);
+    public CurveSegment thrust = new(EasingType.ExpIn, 0.85f, 1.35f, -1.45f);
+    public CurveSegment bounceback = new(EasingType.SineOut, 0.95f, -0.1f, 0.1f);
     internal float SwordHeight() => PiecewiseAnimation(ChannelTimer / (float)ChannelTime, new CurveSegment[] { anticipation, thrust, bounceback });
 
     public override void AI()

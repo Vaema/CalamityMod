@@ -29,14 +29,14 @@ public static partial class CalamityUtils
 
     public static readonly Color[] ExoPalette = new Color[]
     {
-        new Color(250, 255, 112),
-        new Color(211, 235, 108),
-        new Color(166, 240, 105),
-        new Color(105, 240, 220),
-        new Color(64, 130, 145),
-        new Color(145, 96, 145),
-        new Color(242, 112, 73),
-        new Color(199, 62, 62),
+        new(250, 255, 112),
+        new(211, 235, 108),
+        new(166, 240, 105),
+        new(105, 240, 220),
+        new(64, 130, 145),
+        new(145, 96, 145),
+        new(242, 112, 73),
+        new(199, 62, 62),
     };
 
     /// <summary>

@@ -10,7 +10,7 @@ namespace CalamityMod.Buffs.StatDebuffs;
 
 public class AbsorberAffliction : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 400,
         SicknessDebuffScaling = 1,

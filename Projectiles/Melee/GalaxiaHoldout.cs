@@ -118,24 +118,24 @@ public class GalaxiaHoldout : ModProjectile, ILocalizedModType //Visuals. Now mu
         switch (attunement.id)
         {
             case AttunementID.Aries: // Drawing Aries
-                StarPositions = new Vector2[] { new Vector2(-160, -150), new Vector2(45, -170), new Vector2(137, 40), new Vector2(146, 126), new Vector2(129, 151) };
+                StarPositions = new Vector2[] { new(-160, -150), new(45, -170), new(137, 40), new(146, 126), new(129, 151) };
                 ExtraLines = new Vector2[] { };
                 StarColor = Color.Orchid;
                 break;
             case AttunementID.Polaris: //Drawing Ursa Minor
-                StarPositions = new Vector2[] { new Vector2(69, -188), new Vector2(18, -122), new Vector2(-23, -39), new Vector2(-13, 63), new Vector2(42, 147), new Vector2(-8, 184), new Vector2(-61, 83) };
-                ExtraLines = new Vector2[] { new Vector2(3, 6) };
+                StarPositions = new Vector2[] { new(69, -188), new(18, -122), new(-23, -39), new(-13, 63), new(42, 147), new(-8, 184), new(-61, 83) };
+                ExtraLines = new Vector2[] { new(3, 6) };
                 StarColor = Color.CornflowerBlue;
                 break;
             case AttunementID.Andromeda: //Drawing Andromeda
                                          //https://media.discordapp.net/attachments/802291445360623686/934200685254291546/unknown.png
                 StarPositions = new Vector2[] {
-                    new Vector2(-210, -46), new Vector2(-150, -35), new Vector2(-69, 18), new Vector2(33, 61), new Vector2(127, 72), //The horizontal line
-                    new Vector2(-41, -27), new Vector2(-41, -67), new Vector2(-100, -124), new Vector2(-160, -130), //The first branch from the left
-                    new Vector2(15, 147), new Vector2(35, 126), new Vector2(37, 23), new Vector2(67, -47), new Vector2(126, -109), new Vector2(146, -136), //The second branch from the left
-                    new Vector2(95, -117)
+                    new(-210, -46), new(-150, -35), new(-69, 18), new(33, 61), new(127, 72), //The horizontal line
+                    new(-41, -27), new(-41, -67), new(-100, -124), new(-160, -130), //The first branch from the left
+                    new(15, 147), new(35, 126), new(37, 23), new(67, -47), new(126, -109), new(146, -136), //The second branch from the left
+                    new(95, -117)
                 };
-                ExtraLines = new Vector2[] { new Vector2(2, 5), new Vector2(13, 15) };
+                ExtraLines = new Vector2[] { new(2, 5), new(13, 15) };
                 IgnoredLines.Add(5);
                 IgnoredLines.Add(9);
                 IgnoredLines.Add(15);
@@ -143,10 +143,10 @@ public class GalaxiaHoldout : ModProjectile, ILocalizedModType //Visuals. Now mu
                 break;
             case AttunementID.Phoenix: //Drawing Phoenix
             default:
-                StarPositions = new Vector2[] { new Vector2(-206, -99), new Vector2(-150, -43), new Vector2(-120, -146), new Vector2(-60, -71), new Vector2(-106, 71), new Vector2(-59, 138), new Vector2(116, -22),//The main line
-                new Vector2(246, -26),  new Vector2(192, 36), new Vector2(138, 81), //The side bit
-                new Vector2(88, -107), new Vector2(84, -75) }; //Complete the loop
-                ExtraLines = new Vector2[] { new Vector2(3, 10), new Vector2(11, 6) };
+                StarPositions = new Vector2[] { new(-206, -99), new(-150, -43), new(-120, -146), new(-60, -71), new(-106, 71), new(-59, 138), new(116, -22),//The main line
+                new(246, -26),  new(192, 36), new(138, 81), //The side bit
+                new(88, -107), new(84, -75) }; //Complete the loop
+                ExtraLines = new Vector2[] { new(3, 10), new(11, 6) };
                 IgnoredLines.Add(10);
                 StarColor = Color.OrangeRed;
                 break;

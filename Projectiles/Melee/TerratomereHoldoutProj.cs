@@ -182,7 +182,7 @@ public class TerratomereHoldoutProj : ModProjectile, ILocalizedModType
             if (Main.projectile.IndexInRange(slash))
             {
                 Main.projectile[slash].ai[0] = (Direction == 1f).ToInt();
-                Main.projectile[slash].ModProjectile<TerratomereMeleeSlash>().ControlPoints = GenerateSlashPoints().ToArray();
+                Main.projectile[slash].ModProjectile<TerratomereMeleeSlash>().ControlPoints = [.. GenerateSlashPoints()];
             }
         }
     }

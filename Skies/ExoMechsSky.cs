@@ -131,7 +131,7 @@ public class ExoMechsSky : CustomSky
         Opacity = BackgroundIntensity;
     }
 
-    public override Color OnTileColor(Color inColor) => new Color(Vector4.Lerp(DrawColor.ToVector4(), inColor.ToVector4(), 1f - BackgroundIntensity));
+    public override Color OnTileColor(Color inColor) => new(Vector4.Lerp(DrawColor.ToVector4(), inColor.ToVector4(), 1f - BackgroundIntensity));
 
     public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
     {

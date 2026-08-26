@@ -530,7 +530,7 @@ public class CreeperAI : VanillaAIOverride
         {
             if (bossCounter == 1)
             {
-                List<NPC> mainOrbitMembers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.TryGetAIOverride<CreeperAI>(out var ai) && ai.CachedValue2 == -1).ToList();
+                List<NPC> mainOrbitMembers = [.. Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.TryGetAIOverride<CreeperAI>(out var ai) && ai.CachedValue2 == -1)];
                 CachedValue1 = MathHelper.TwoPi / mainOrbitMembers.Count * mainOrbitMembers.IndexOf(NPC);
             }
             else if (bossCounter == 0 && Main.netMode != NetmodeID.MultiplayerClient)
@@ -609,7 +609,7 @@ public class CreeperAI : VanillaAIOverride
         if (bossCounter == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
             AttackPosition = NPC.Center;
-            List<NPC> myGroup = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && (n.ai[0] % TendrilCount) + 1 == tendrilID).ToList();
+            List<NPC> myGroup = [.. Main.npc.Where(n => n.active && n.type == NPCID.Creeper && (n.ai[0] % TendrilCount) + 1 == tendrilID)];
             CachedValue1 = myGroup.IndexOf(NPC);
             CachedValue2 = myGroup.Count;
             

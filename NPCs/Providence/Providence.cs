@@ -82,8 +82,8 @@ public class Providence : ModNPC
         Rainbow = 1,
     }
 
-    Color HighFireColor = new Color(255, 191, 73);
-    Color LowFireColor = new Color(116, 45, 23);
+    Color HighFireColor = new(255, 191, 73);
+    Color LowFireColor = new(116, 45, 23);
 
     private bool text = false;
     private bool useDefenseFrames = false;
@@ -111,7 +111,7 @@ public class Providence : ModNPC
 
     public static readonly SoundStyle NearBurnSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceSizzle");
     public static readonly SoundStyle BurnStartSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
-    public static readonly SoundStyle BurnLoopSound = new SoundStyle("CalamityMod/Sounds/Custom/Providence/ProvidenceBurnLoop")
+    public static readonly SoundStyle BurnLoopSound = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurnLoop")
     {
         IsLooped = true,
         PauseBehavior = PauseBehavior.PauseWithGame,

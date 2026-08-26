@@ -75,7 +75,7 @@ public class SeekersMetaball : Metaball
     }
     public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
-    public override Color EdgeColor => new Color(255,106,0);
+    public override Color EdgeColor => new(255,106,0);
 
     public override void Update()
     {

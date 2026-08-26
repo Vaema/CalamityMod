@@ -26,7 +26,7 @@ public class LifeSteal : CooldownHandler
         : new Color(255, 181, 181);
     public override Color CooldownEndColor => CooldownStartColor;
     private Color TextColor => Color.White;
-    private Color TextBorderColor => new Color(40, 0, 0);
+    private Color TextBorderColor => new(40, 0, 0);
     public override void DrawExpanded(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
     {
         base.DrawExpanded(spriteBatch, position, opacity, scale);

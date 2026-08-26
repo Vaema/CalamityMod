@@ -38,8 +38,8 @@ public class Vodka : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
-            new Color(219, 219, 208, 180),
-            new Color(181, 181, 176, 180)
+            new(219, 219, 208, 180),
+            new(181, 181, 176, 180)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

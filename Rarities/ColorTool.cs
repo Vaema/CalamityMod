@@ -12,7 +12,6 @@ public sealed class ColorTool : GlobalItem
     public static int RarityExoticRainbow => ModContent.GetInstance<ExoticRainbow>().Type;
     public static int RarityCustomDev => ModContent.GetInstance<HotPink>().Type;
 
-
     public override bool PreDrawTooltipLine(Item Item, DrawableTooltipLine line, ref int yOffset)
     {
         if (line.Mod == "Terraria" && line.Name == "ItemName" && CalamityClientConfig.Instance.TextEffects)
@@ -32,7 +31,6 @@ public sealed class ColorTool : GlobalItem
                 CalamityRed.Draw(Item, line);
                 return false;
             }
-
             if (Item.rare == RarityExoticRainbow)
             {
                 ExoticRainbow.Draw(Item, line);
@@ -46,6 +44,7 @@ public sealed class ColorTool : GlobalItem
         }
         return true;
     }
+
     public static Color colorLerps(Color[] colors, float time)
     {
         int index = (int)time;

@@ -32,8 +32,8 @@ public class Everclear : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
-            new Color(153, 168, 162, 180),
-            new Color(198, 205, 207, 180)
+            new(153, 168, 162, 180),
+            new(198, 205, 207, 180)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

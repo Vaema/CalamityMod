@@ -32,9 +32,9 @@ public class AuraPulseRing : Particle
 
     public override void Update()
     {
-        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(SineBumpEasing, 0f, 0f, 1f) });
+        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new(SineBumpEasing, 0f, 0f, 1f) });
 
-        float heightProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(SineInOutEasing, 0f, 0f, 1f) });
+        float heightProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new(SineInOutEasing, 0f, 0f, 1f) });
 
         opacity = (float)Math.Sin(LifetimeCompletion * MathHelper.Pi) * 0.8f + 0.2f;
 

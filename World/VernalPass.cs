@@ -64,12 +64,12 @@ public class VernalPass
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.ThornsPotion, ItemID.BattlePotion, ItemID.ShinePotion, ItemID.HunterPotion);
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(bars, WorldGen.genRand.Next(4, 7)),
-            new ChestItem(ItemID.JungleSpores, WorldGen.genRand.Next(4, 8)),
-            new ChestItem(ItemID.Stinger, WorldGen.genRand.Next(2, 5)),
-            new ChestItem(ItemID.JungleTorch, WorldGen.genRand.Next(2, 5)),
-            new ChestItem(potionType, WorldGen.genRand.Next(1, 4)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(1, 3)),
+            new(bars, WorldGen.genRand.Next(4, 7)),
+            new(ItemID.JungleSpores, WorldGen.genRand.Next(4, 8)),
+            new(ItemID.Stinger, WorldGen.genRand.Next(2, 5)),
+            new(ItemID.JungleTorch, WorldGen.genRand.Next(2, 5)),
+            new(potionType, WorldGen.genRand.Next(1, 4)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(1, 3)),
         };
 
         if (!firstItem)

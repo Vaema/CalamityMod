@@ -94,7 +94,7 @@ public class AresBody : ModNPC
         set => NPC.localAI[2] = value;
     }
 
-    public ThanatosSmokeParticleSet SmokeDrawer = new ThanatosSmokeParticleSet(-1, 3, 0f, 16f, 1.5f);
+    public ThanatosSmokeParticleSet SmokeDrawer = new(-1, 3, 0f, 16f, 1.5f);
 
     // This stores the sound slot of the deathray sound Ares makes, so it may be properly updated in terms of position and looped.
     public SlotId DeathraySoundSlot;

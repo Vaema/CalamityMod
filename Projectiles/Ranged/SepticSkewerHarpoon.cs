@@ -420,7 +420,7 @@ public class SepticSkewerHarpoon : ModProjectile, ILocalizedModType
         int chainPointCount = (int)(Vector2.Distance(controlPoints.First(), controlPoints.Last()) / 7f);
         if (chainPointCount < 12)
             chainPointCount = 12;
-        BezierCurve bezierCurve = new BezierCurve(controlPoints.ToArray());
+        BezierCurve bezierCurve = new BezierCurve([.. controlPoints]);
         List<Vector2> chainPoints = bezierCurve.GetPoints(chainPointCount);
         if (hasLatchedTarget)
         {

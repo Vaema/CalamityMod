@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles;
 
 public class CalamityGlobalTile : GlobalTile
 {
-    public static List<int> GrowthTiles = new List<int>()
+    public static List<int> GrowthTiles = new()
     {
         TileType<SeaPrism>(),
         TileType<AbyssGravel>(),

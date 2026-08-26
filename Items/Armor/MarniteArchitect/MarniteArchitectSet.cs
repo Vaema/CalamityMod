@@ -332,7 +332,7 @@ public class MarniteLift : ModMount
         // Frame data and player offsets
         MountData.totalFrames = 1; // Amount of animation frames for the mount
         MountData.heightBoost = 0; // Height between the mount and the ground
-        MountData.playerYOffsets = Enumerable.Repeat(33, 1).ToArray(); // Fills an array with values for less repeating code
+        MountData.playerYOffsets = [.. Enumerable.Repeat(33, 1)]; // Fills an array with values for less repeating code
         MountData.xOffset = 0;
         MountData.yOffset = 0;
         MountData.bodyFrame = 0;

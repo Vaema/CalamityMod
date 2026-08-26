@@ -20,9 +20,9 @@ public class ShadowPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(45, 45, 45),
-            new Color(0, 0, 0),
-            new Color(95, 0, 36)
+            new(45, 45, 45),
+            new(0, 0, 0),
+            new(95, 0, 36)
         };
     }
 

@@ -28,7 +28,7 @@ public class CosmicDischargeFlail : BaseFlailProjectile, ILocalizedModType
         Projectile.coldDamage = true;
     }
 
-    public override Color SpecialDrawColor => new Color(150, 255, 255);
+    public override Color SpecialDrawColor => new(150, 255, 255);
     public override int ExudeDustType => 67;
     public override int WhipDustType => 187;
     public override int HandleHeight => 62;

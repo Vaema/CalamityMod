@@ -314,7 +314,7 @@ public static class PrimitiveShapeBuilder
                 }
             }
 
-            return new PrimitiveMesh(vertices, indices.ToArray(), PrimitiveType.TriangleList);
+            return new PrimitiveMesh(vertices, [.. indices], PrimitiveType.TriangleList);
         }
 
         var colorVertices = new VertexPositionColor[vertexCount];
@@ -352,7 +352,7 @@ public static class PrimitiveShapeBuilder
             }
         }
 
-        return new PrimitiveMesh(colorVertices, colorIndices.ToArray(), PrimitiveType.TriangleList);
+        return new PrimitiveMesh(colorVertices, [.. colorIndices], PrimitiveType.TriangleList);
     }
 
     // Heres your vertice, sir. You probably don't need to call this directly.

@@ -31,9 +31,9 @@ public class WhiteWine : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(242, 252, 177, 180),
-            new Color(250, 252, 215, 180),
-            new Color(228, 245, 181, 180)
+            new(242, 252, 177, 180),
+            new(250, 252, 215, 180),
+            new(228, 245, 181, 180)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

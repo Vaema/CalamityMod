@@ -11,7 +11,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class Voidfrost : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 500, //250 dps is extra strong for its tier due to being difficult to inflict
         ColdDebuffScaling = 1

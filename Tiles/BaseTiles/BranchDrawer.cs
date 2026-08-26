@@ -154,7 +154,7 @@ public class BranchDrawer
             // Sometimes simply extend an existing branch instead of creating new ones.
             if (RNG.NextFloat() > ChanceToCreateNewBranches)
             {
-                List<Branch> potentialBranchesToExtend = existingBranches.Where(b => b.Key.CurveLength < trunkSize * 0.4f && b.Key.CurveLength > MinBranchLength).Select(b => b.Key).ToList();
+                List<Branch> potentialBranchesToExtend = [.. existingBranches.Where(b => b.Key.CurveLength < trunkSize * 0.4f && b.Key.CurveLength > MinBranchLength).Select(b => b.Key)];
                 if (potentialBranchesToExtend.Count <= 0)
                     continue;
 
@@ -167,7 +167,7 @@ public class BranchDrawer
             }
 
             // Pick a random branch to attach to and determine the properties of the potential next one.
-            List<Branch> validBranches = existingBranches.Where(b => b.Value.Count < MaxCutoffBranchesPerBranch && b.Key.EndingWidth >= 6f).Select(b => b.Key).ToList();
+            List<Branch> validBranches = [.. existingBranches.Where(b => b.Value.Count < MaxCutoffBranchesPerBranch && b.Key.EndingWidth >= 6f).Select(b => b.Key)];
             if (validBranches.Count <= 0)
                 continue;
 
@@ -320,8 +320,8 @@ public class BranchDrawer
     {
         // Declare the vertex cache.
         GetVertexData(p, out var vertices, out var indices, out IEnumerable<Branch> outwardmostBranches);
-        vertexCache = vertices.ToArray();
-        indexCache = indices.ToArray();
+        vertexCache = [.. vertices];
+        indexCache = [.. indices];
         PreviousPoint = p;
 
         // Redefine the perspective matrices of the shader.
@@ -346,7 +346,7 @@ public class BranchDrawer
         TileObjectData.newTile.Height = (int)Math.Ceiling(DistanceUsedForTrunk / 16);
         TileObjectData.newTile.Origin = new Point16(TileObjectData.newTile.Width / 2, TileObjectData.newTile.Height - 1);
         TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, TileObjectData.newTile.Width, 0);
-        TileObjectData.newTile.CoordinateHeights = Enumerable.Repeat(16, TileObjectData.newTile.Height).ToArray();
+        TileObjectData.newTile.CoordinateHeights = [.. Enumerable.Repeat(16, TileObjectData.newTile.Height)];
         TileObjectData.newTile.CoordinateWidth = 16;
         TileObjectData.newTile.CoordinatePadding = 2;
         TileObjectData.newTile.DrawYOffset = 2;

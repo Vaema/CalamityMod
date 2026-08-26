@@ -77,7 +77,7 @@ public abstract class DraedonsLogGUI : PopupGUI
         {
             int textWidth = (int)(xScale * pageTexture.Width) - TextStartOffsetX;
             textWidth = (int)(textWidth * xResolutionScale);
-            List<string> dialogLines = Utils.WordwrapString(GetTextByPage(), FontAssets.MouseText.Value, (int)(textWidth / xResolutionScale), 250, out _).ToList();
+            List<string> dialogLines = [.. Utils.WordwrapString(GetTextByPage(), FontAssets.MouseText.Value, (int)(textWidth / xResolutionScale), 250, out _)];
             dialogLines.RemoveAll(text => string.IsNullOrEmpty(text));
 
             int trimmedTextCharacterCount = string.Concat(dialogLines).Length;

@@ -34,7 +34,7 @@ public class BloomParticle : Particle
 
     public override void Update()
     {
-        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4) });
+        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new(EasingType.PolyOut, 0f, 0f, 1f, 4) });
         Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
         if (Fade)
             opacity = (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2);

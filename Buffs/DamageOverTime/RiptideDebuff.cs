@@ -10,7 +10,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class RiptideDebuff : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 30,
         WaterDebuffScaling = 1

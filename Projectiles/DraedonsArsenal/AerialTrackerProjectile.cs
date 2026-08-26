@@ -114,10 +114,10 @@ public class AerialTrackerProjectile : ModProjectile, ILocalizedModType
         if (Projectile.Calamity().stealthStrike)
         {
             int targetCount = 0;
-            List<NPC> targets = Main.npc.Where(npc =>
+            List<NPC> targets = [.. Main.npc.Where(npc =>
             {
                 return npc.active && Projectile.Distance(npc.Center) < MaxTargetSearchStealth && npc.CanBeChasedBy();
-            }).ToList();
+            })];
             foreach (var target in targets)
             {
                 if (targetCount >= MaxLaserCountPerShot)

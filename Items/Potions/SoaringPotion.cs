@@ -20,9 +20,9 @@ public class SoaringPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(85, 181, 217),
-            new Color(190, 237, 232),
-            new Color(81, 114, 173)
+            new(85, 181, 217),
+            new(190, 237, 232),
+            new(81, 114, 173)
         };
     }
 

@@ -15,9 +15,9 @@ public class CeaselessHungerPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(12, 18, 28),
-            new Color(110, 197, 212),
-            new Color(158, 81, 153)
+            new(12, 18, 28),
+            new(110, 197, 212),
+            new(158, 81, 153)
         };
     }
 

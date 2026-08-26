@@ -193,16 +193,16 @@ public class TrueBitingEmbrace : ModProjectile, ILocalizedModType
     }
 
     //Animation keys
-    public CurveSegment anticipation = new CurveSegment(EasingType.SineBump, 0f, 0f, -0.15f);
-    public CurveSegment thrust = new CurveSegment(EasingType.PolyInOut, 0.2f, 0f, 0.9f, 3);
-    public CurveSegment hold = new CurveSegment(EasingType.SineBump, 0.35f, 0.9f, 0.1f);
-    public CurveSegment retract = new CurveSegment(EasingType.PolyInOut, 0.7f, 0.9f, -0.9f, 3);
+    public CurveSegment anticipation = new(EasingType.SineBump, 0f, 0f, -0.15f);
+    public CurveSegment thrust = new(EasingType.PolyInOut, 0.2f, 0f, 0.9f, 3);
+    public CurveSegment hold = new(EasingType.SineBump, 0.35f, 0.9f, 0.1f);
+    public CurveSegment retract = new(EasingType.PolyInOut, 0.7f, 0.9f, -0.9f, 3);
     internal float ThrustDisplaceRatio() => PiecewiseAnimation(Timer / MaxTime, new CurveSegment[] { anticipation, thrust, hold, retract });
 
     //Animation keys
-    public CurveSegment expandSize = new CurveSegment(EasingType.ExpIn, 0f, 0f, 1f);
-    public CurveSegment holdSize = new CurveSegment(EasingType.Linear, 0.1f, 1f, 0f);
-    public CurveSegment shrinkSize = new CurveSegment(EasingType.ExpIn, 0.85f, 1f, -1f);
+    public CurveSegment expandSize = new(EasingType.ExpIn, 0f, 0f, 1f);
+    public CurveSegment holdSize = new(EasingType.Linear, 0.1f, 1f, 0f);
+    public CurveSegment shrinkSize = new(EasingType.ExpIn, 0.85f, 1f, -1f);
     internal float ThrustScaleRatio() => PiecewiseAnimation(Timer / MaxTime, new CurveSegment[] { expandSize, holdSize, shrinkSize });
 
     public override bool PreDraw(ref Color lightColor)

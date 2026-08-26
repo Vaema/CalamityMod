@@ -543,7 +543,7 @@ public class VoidEaterMarionetteProjectile : BaseWormProjectile, ILocalizedModTy
             return internalTexAssetsGlow;
         }
     }
-    private List<Asset<Texture2D>> internalTexAssetsGlow = new List<Asset<Texture2D>>();
+    private List<Asset<Texture2D>> internalTexAssetsGlow = new();
 
     private Asset<Texture2D> GlowTexAsset;
     private Asset<Texture2D> Jaws;

@@ -54,13 +54,13 @@ public class ShimmerShrine
     {
         List<ChestItem> contents = new List<ChestItem>()
         {
-            new ChestItem(ItemID.AngelStatue, 1),
-            new ChestItem(WorldGen.genRand.NextBool() ? ItemID.LifeCrystal : ItemID.ManaCrystal, 1),
-            new ChestItem(GenVars.gold == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(5, 16)),
-            new ChestItem(ItemID.CanOfWorms, WorldGen.genRand.Next(3, 5)),
-            new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 11)),
-            new ChestItem(ItemID.LuckPotionGreater, WorldGen.genRand.Next(1, 3)),
-            new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(2, 5)),
+            new(ItemID.AngelStatue, 1),
+            new(WorldGen.genRand.NextBool() ? ItemID.LifeCrystal : ItemID.ManaCrystal, 1),
+            new(GenVars.gold == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(5, 16)),
+            new(ItemID.CanOfWorms, WorldGen.genRand.Next(3, 5)),
+            new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 11)),
+            new(ItemID.LuckPotionGreater, WorldGen.genRand.Next(1, 3)),
+            new(ItemID.GoldCoin, WorldGen.genRand.Next(2, 5)),
         };
 
         for (int i = 0; i < contents.Count; i++)

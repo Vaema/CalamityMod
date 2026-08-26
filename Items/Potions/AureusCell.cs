@@ -13,9 +13,9 @@ public class AureusCell : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
-            new Color(187, 220, 237),
-            new Color(237, 93, 83),
-            new Color(123, 99, 130)
+            new(187, 220, 237),
+            new(237, 93, 83),
+            new(123, 99, 130)
         };
     }
 

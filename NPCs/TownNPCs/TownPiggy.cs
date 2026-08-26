@@ -158,7 +158,7 @@ public class TownPiggy : ModNPC
         }
     }
 
-    public override List<string> SetNPCNameList() => new List<string>()
+    public override List<string> SetNPCNameList() => new()
     {
         // Original names
         this.GetLocalizedValue("Name.Curly"),

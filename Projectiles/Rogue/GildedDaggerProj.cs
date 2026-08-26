@@ -13,7 +13,7 @@ public class GildedDaggerProj : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Rogue";
     private bool hasHitEnemy = false;
     private int targetNPC = -1;
-    private List<int> previousNPCs = new List<int>() { -1 };
+    private List<int> previousNPCs = new() { -1 };
 
     public override void SetDefaults()
     {

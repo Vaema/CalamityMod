@@ -9,7 +9,7 @@ namespace CalamityMod.Items.Fishing;
 public class GlimmeringGemfish : ModItem, ILocalizedModType
 {
     public new string LocalizationCategory => "Items.Fishing";
-    public static List<int> LootDisplay = new List<int>
+    public static List<int> LootDisplay = new()
     {
         ItemID.Amethyst,
         ItemID.Topaz,

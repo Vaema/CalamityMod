@@ -21,7 +21,7 @@ public class AndroombaFriendly : ModNPC
     public static int AstralConversionType;
 
     // Allow for solutions from other mods. The first integer is the solution's item ID, the texture is what face shoul dappear, the Action is what modders should use for spread code
-    public static List<(int, string, Action<NPC>)> customConversionTypes = new List<(int, string, Action<NPC>)>{};
+    public static List<(int, string, Action<NPC>)> customConversionTypes = new() { };
 
     public override void SetStaticDefaults()
     {

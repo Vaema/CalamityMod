@@ -15,9 +15,9 @@ public class FlaskOfHolyFlames : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(252, 23, 23),
-            new Color(199, 14, 51),
-            new Color(143, 36, 72)
+            new(252, 23, 23),
+            new(199, 14, 51),
+            new(143, 36, 72)
         };
     }
 

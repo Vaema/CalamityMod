@@ -10,7 +10,7 @@ namespace CalamityMod.Tiles.Pylons;
 
 public class AstralPylonTile : BasePylonTile
 {
-    public override Color LightColor => new Color(0.8f, 0.5f, 0.8f);
+    public override Color LightColor => new(0.8f, 0.5f, 0.8f);
     public override int AssociatedItem => ModContent.ItemType<AstralPylon>();
     public override Color PylonMapColor => Color.Coral;
     public override Color DustColor => Main.rand.NextBool() ? Color.Coral : Color.MediumTurquoise;

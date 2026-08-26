@@ -25,7 +25,7 @@ public abstract class BaseParticleSet
     /// <summary>
     /// The particles in the set
     /// </summary>
-    public List<Particle> Particles = new List<Particle>();
+    public List<Particle> Particles = new();
     /// <summary>
     /// The lifetime of the particles in the set.
     /// If the particles spawned don't have this same lifetime set they may get cut off when the set dies.

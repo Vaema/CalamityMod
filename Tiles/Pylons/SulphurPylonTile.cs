@@ -15,7 +15,7 @@ public class SulphurPylonTile : BasePylonTile
     public override int AssociatedItem => ModContent.ItemType<SulphurPylon>();
     public override Color PylonMapColor => Color.YellowGreen;
     public override Color DustColor => Color.GreenYellow;
-    public override Color LightColor => new Color(1f, 0.8f, 0f);
+    public override Color LightColor => new(1f, 0.8f, 0f);
 
     public override NPCShop.Entry GetNPCShopEntry()
     {

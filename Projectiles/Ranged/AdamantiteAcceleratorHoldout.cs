@@ -102,13 +102,13 @@ public class AdamantiteAcceleratorHoldout : BaseGunHoldoutProjectile
         }
     }
 
-    public CurveSegment bounceAway = new CurveSegment(SineOutEasing, 0f, 0.5f, 0.5f);
-    public CurveSegment moveBack = new CurveSegment(SineInEasing, 0.56f, 1f, -1f);
-    public CurveSegment bounceBack = new CurveSegment(SineBumpEasing, 0.7f, 0f, -0.35f);
+    public CurveSegment bounceAway = new(SineOutEasing, 0f, 0.5f, 0.5f);
+    public CurveSegment moveBack = new(SineInEasing, 0.56f, 1f, -1f);
+    public CurveSegment bounceBack = new(SineBumpEasing, 0.7f, 0f, -0.35f);
     internal float RecoilDisplacement => PiecewiseAnimation(1 - BounceBackPower, new CurveSegment[] { bounceAway, moveBack, bounceBack });
 
-    public CurveSegment unsquish = new CurveSegment(SineOutEasing, 0f, 1f, -1f);
-    public CurveSegment oversquish = new CurveSegment(SineBumpEasing, 0.7f, 0f, -0.6f);
+    public CurveSegment unsquish = new(SineOutEasing, 0f, 1f, -1f);
+    public CurveSegment oversquish = new(SineBumpEasing, 0.7f, 0f, -0.6f);
     internal float RecoilSquish => PiecewiseAnimation(1 - MathHelper.Clamp(BounceBackPower * 2f, 0f, 1f), new CurveSegment[] { unsquish, oversquish });
 
     private void FiringEffects(Color color)

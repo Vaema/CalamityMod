@@ -145,5 +145,5 @@ public class CrystylCrusher : ModItem, ILocalizedModType
             Register();
     }
 
-    public static Color RarityColor() => new Color(129, 29, 149);
+    public static Color RarityColor() => new(129, 29, 149);
 }

@@ -8,7 +8,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class SnapClamDebuff : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 15, //Damage per shellfish
         NPCLifeRegenMethod = ShellfishStacking

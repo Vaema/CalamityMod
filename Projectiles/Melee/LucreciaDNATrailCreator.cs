@@ -12,8 +12,8 @@ namespace CalamityMod.Projectiles.Melee;
 
 public class LucreciaDNATrailCreator : ModProjectile, ILocalizedModType
 {
-    private List<Vector2> oldPositionsLeft = new List<Vector2>();
-    private List<Vector2> oldPositionsRight = new List<Vector2>();
+    private List<Vector2> oldPositionsLeft = new();
+    private List<Vector2> oldPositionsRight = new();
     private int trailTimer = 0;
     // The timer is initialized with a delay. It will reset to 6 after the first shot.
     private int middleStreakTimer = 40;

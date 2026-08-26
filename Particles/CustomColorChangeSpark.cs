@@ -19,7 +19,7 @@ public class CustomColorChangeSpark : Particle
     public float GlowOpacity = 1;
     public string NewTexture;
     public float ExtraRotation;
-    public Vector2 Stretch = new Vector2(0.5f, 1.6f);
+    public Vector2 Stretch = new(0.5f, 1.6f);
     public float ShrinkSpeed = 0;
     public bool FlipHorizontal = false;
     public bool NoShrink = false;

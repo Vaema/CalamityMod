@@ -35,8 +35,8 @@ public class AresLaserCannon : ModNPC
         set => NPC.Calamity().newAI[0] = value;
     }
 
-    public ThanatosSmokeParticleSet SmokeDrawer = new ThanatosSmokeParticleSet(-1, 3, 0f, 16f, 1.5f);
-    public AresCannonChargeParticleSet EnergyDrawer = new AresCannonChargeParticleSet(-1, 15, 40f, Color.OrangeRed);
+    public ThanatosSmokeParticleSet SmokeDrawer = new(-1, 3, 0f, 16f, 1.5f);
+    public AresCannonChargeParticleSet EnergyDrawer = new(-1, 15, 40f, Color.OrangeRed);
 
     public Vector2 CoreSpritePosition => NPC.Center + NPC.spriteDirection * NPC.rotation.ToRotationVector2() * 30f + (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * 15f;
 

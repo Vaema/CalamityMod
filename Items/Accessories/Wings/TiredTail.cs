@@ -202,12 +202,12 @@ public class TailDraw : PlayerDrawLayer
                 if (i % texture.Width == 0)
                 {
                     if (pal.Count > 0)
-                        ColorPallettes.Add(pal.ToArray());
+                        ColorPallettes.Add([.. pal]);
                     pal = new();
                 }
                 pal.Add(BaseArray[i].ToVector4());
             }
-            ColorPallettes.Add(pal.ToArray());
+            ColorPallettes.Add([.. pal]);
             ArmorPallettes =
             [
                 //silva 

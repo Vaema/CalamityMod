@@ -28,17 +28,17 @@ public class SwordsmithsPrideMonolith : ModProjectile, ILocalizedModType
     public const float BaseWidth = 90f;
     public const float BaseHeight = 420f;
 
-    public CurveSegment StaySmall = new CurveSegment(EasingType.Linear, 0f, 0.2f, 0f);
-    public CurveSegment GoBig = new CurveSegment(EasingType.SineOut, 0.25f, 0.2f, 1f);
-    public CurveSegment GoNormal = new CurveSegment(EasingType.CircIn, 0.4f, 1.2f, -0.2f);
-    public CurveSegment StayNormal = new CurveSegment(EasingType.Linear, 0.5f, 1f, 0f);
+    public CurveSegment StaySmall = new(EasingType.Linear, 0f, 0.2f, 0f);
+    public CurveSegment GoBig = new(EasingType.SineOut, 0.25f, 0.2f, 1f);
+    public CurveSegment GoNormal = new(EasingType.CircIn, 0.4f, 1.2f, -0.2f);
+    public CurveSegment StayNormal = new(EasingType.Linear, 0.5f, 1f, 0f);
 
     internal float Width() => PiecewiseAnimation(Timer, new CurveSegment[] { StaySmall, GoBig, GoNormal, StayNormal }) * BaseWidth * Size;
 
-    public CurveSegment Anticipate = new CurveSegment(EasingType.CircIn, 0f, 0f, 0.15f);
-    public CurveSegment Overextend = new CurveSegment(EasingType.SineOut, 0.2f, 0.15f, 1f);
-    public CurveSegment Unextend = new CurveSegment(EasingType.CircIn, 0.25f, 1.15f, -0.15f);
-    public CurveSegment Hold = new CurveSegment(EasingType.ExpOut, 0.70f, 1f, -0.1f);
+    public CurveSegment Anticipate = new(EasingType.CircIn, 0f, 0f, 0.15f);
+    public CurveSegment Overextend = new(EasingType.SineOut, 0.2f, 0.15f, 1f);
+    public CurveSegment Unextend = new(EasingType.CircIn, 0.25f, 1.15f, -0.15f);
+    public CurveSegment Hold = new(EasingType.ExpOut, 0.70f, 1f, -0.1f);
     internal float Height() => PiecewiseAnimation(Timer, new CurveSegment[] { Anticipate, Overextend, Unextend, Hold }) * BaseHeight * Size;
 
     public override void SetDefaults()

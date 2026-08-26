@@ -10,6 +10,6 @@ public class NebulousCore : CooldownHandler
     public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
     public override string Texture => "CalamityMod/Cooldowns/NebulousCore";
     public override Color OutlineColor => Color.Lerp(new Color(252, 109, 203), new Color(58, 91, 146), instance.Completion);
-    public override Color CooldownStartColor => new Color(148, 62, 216);
-    public override Color CooldownEndColor => new Color(255, 187, 207);
+    public override Color CooldownStartColor => new(148, 62, 216);
+    public override Color CooldownEndColor => new(255, 187, 207);
 }

@@ -16,7 +16,7 @@ public class DebuffSpreadEffect : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Typeless";
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
     public Player Owner => Main.player[Projectile.owner];
-    public List<int> listNPCs = new List<int>();
+    public List<int> listNPCs = new();
     public NPC lastNPC;
     public int minCooldown = 48;
     public static Color startingColor = Bane.baneColor2;

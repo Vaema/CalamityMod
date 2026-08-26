@@ -79,7 +79,7 @@ public class VolterionOrb : ModProjectile, ILocalizedModType
                 if (ExplosionTimer == 0f)
                     SoundEngine.PlaySound(ExplosionSound, Projectile.Center);
 
-                float scaleLevel = PiecewiseAnimation(ExplosionTimer / ExplosionLifetime, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4) });
+                float scaleLevel = PiecewiseAnimation(ExplosionTimer / ExplosionLifetime, new CurveSegment[] { new(EasingType.PolyOut, 0f, 0f, 1f, 4) });
                 Projectile.scale = MathHelper.Lerp(1f, MaxScale, scaleLevel);
                 Projectile.Opacity = MathF.Sin(MathHelper.PiOver2 + MathHelper.PiOver2 * ExplosionTimer / ExplosionLifetime);
 

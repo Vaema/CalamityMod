@@ -46,7 +46,7 @@ public class ProfanedSoulShield : CooldownHandler
     public override string Texture => "CalamityMod/Cooldowns/ProfanedSoulShieldActive";
     public override string OutlineTexture => "CalamityMod/Cooldowns/ProfanedSoulShieldOutline";
     public override string OverlayTexture => "CalamityMod/Cooldowns/ProfanedSoulShieldOverlay";
-    public override Color OutlineColor => new Color(255, 191, 73);
+    public override Color OutlineColor => new(255, 191, 73);
     public override Color CooldownStartColor => Color.Lerp(GetColor(true), GetColor(false), instance.Completion);
     public override Color CooldownEndColor => Color.Lerp(GetColor(true), GetColor(false), instance.Completion);
     public override bool SavedWithPlayer => false;
@@ -94,8 +94,8 @@ public class ProfanedSoulShield : CooldownHandler
 
 public class ProfanedSoulShieldRecharge : CooldownHandler
 {
-    private static Color ringColorLerpStart = new Color(217, 159, 78);
-    private static Color ringColorLerpEnd = new Color(214, 185, 144);
+    private static Color ringColorLerpStart = new(217, 159, 78);
+    private static Color ringColorLerpEnd = new(214, 185, 144);
 
     public static new string ID => "ProfanedSoulShieldRecharge";
     public override bool ShouldDisplay => true;
@@ -105,7 +105,7 @@ public class ProfanedSoulShieldRecharge : CooldownHandler
     public override string OverlayTexture => "CalamityMod/Cooldowns/ProfanedSoulShieldOverlay";
     public override bool SavedWithPlayer => false;
     public override bool PersistsThroughDeath => false;
-    public override Color OutlineColor => new Color(57, 195, 237);
+    public override Color OutlineColor => new(57, 195, 237);
     public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
     public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
 

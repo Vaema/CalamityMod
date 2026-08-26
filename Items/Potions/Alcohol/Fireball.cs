@@ -35,9 +35,9 @@ public class Fireball : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(245, 171, 22),
-            new Color(227, 128, 41),
-            new Color(237, 82, 31)
+            new(245, 171, 22),
+            new(227, 128, 41),
+            new(237, 82, 31)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

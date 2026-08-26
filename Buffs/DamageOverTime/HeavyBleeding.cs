@@ -12,7 +12,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class HeavyBleeding : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 80
     };

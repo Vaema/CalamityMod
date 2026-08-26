@@ -184,7 +184,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
 
 
-            frags = frags.OrderBy(x => x.timeLeft).ToList();
+            frags = [.. frags.OrderBy(x => x.timeLeft)];
             int toRemove = frags.Count(x => x.ai[0] == 0) - EclipsesFall.MaxFragmentCount;
             foreach (var item in frags)
             {

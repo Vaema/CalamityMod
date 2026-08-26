@@ -31,9 +31,9 @@ public class Moonshine : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(237, 237, 218, 128),
-            new Color(227, 219, 191, 128),
-            new Color(209, 204, 194, 128)
+            new(237, 237, 218, 128),
+            new(227, 219, 191, 128),
+            new(209, 204, 194, 128)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

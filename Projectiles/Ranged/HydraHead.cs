@@ -209,7 +209,7 @@ public class HydraHead : ModProjectile, ILocalizedModType
         int chainPointCount = (int)(Vector2.Distance(controlPoints.First(), controlPoints.Last()) / 5f);
         if (chainPointCount < 12)
             chainPointCount = 12;
-        BezierCurve bezierCurve = new BezierCurve(controlPoints.ToArray());
+        BezierCurve bezierCurve = new BezierCurve([.. controlPoints]);
         List<Vector2> chainPoints = bezierCurve.GetPoints(chainPointCount);
 
         for (int i = 0; i < chainPoints.Count; i++)

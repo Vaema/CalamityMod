@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Summon;
 public class BlackDragonHead : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Summon";
-    Dictionary<int, Projectile> segments = new Dictionary<int, Projectile>();
+    Dictionary<int, Projectile> segments = new();
     public override void SetStaticDefaults()
     {
         Main.projPet[Type] = true;

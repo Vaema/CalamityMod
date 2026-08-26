@@ -31,9 +31,9 @@ public class Rum : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(237, 165, 9),
-            new Color(247, 219, 54),
-            new Color(255, 195, 31)
+            new(237, 165, 9),
+            new(247, 219, 54),
+            new(255, 195, 31)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

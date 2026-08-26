@@ -56,7 +56,7 @@ public class MagnusBoom : ModProjectile, ILocalizedModType
             }
         }
 
-        Projectile.scale = MathHelper.Lerp(0f, 1f, PiecewiseAnimation(Time / 20f, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4) }));
+        Projectile.scale = MathHelper.Lerp(0f, 1f, PiecewiseAnimation(Time / 20f, new CurveSegment[] { new(EasingType.PolyOut, 0f, 0f, 1f, 4) }));
         if (Time < 10f)
         {
             for (int i = 0; i < 3; i++)

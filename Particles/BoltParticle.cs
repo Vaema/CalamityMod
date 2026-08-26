@@ -13,7 +13,7 @@ public class BoltParticle : Particle
     public bool FadeIn = false;
     public float FadeInScale = 0f;
     public bool GlowCenter = false;
-    public Vector2 Stretch = new Vector2(0.5f, 1.6f);
+    public Vector2 Stretch = new(0.5f, 1.6f);
     public float ShrinkSpeed = 0;
     public bool Fliped = false;
     public bool GlowFade = false;

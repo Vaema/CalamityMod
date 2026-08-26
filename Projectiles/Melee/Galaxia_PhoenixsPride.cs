@@ -69,9 +69,9 @@ public class PhoenixsPride : ModProjectile, ILocalizedModType
     }
 
 
-    public CurveSegment launch = new CurveSegment(EasingType.CircOut, 0f, 0f, 1f, 4);
-    public CurveSegment hold = new CurveSegment(EasingType.Linear, snapPoint, 1f, 0f);
-    public CurveSegment retract = new CurveSegment(EasingType.PolyInOut, retractionPoint, 1f, -1.05f, 3);
+    public CurveSegment launch = new(EasingType.CircOut, 0f, 0f, 1f, 4);
+    public CurveSegment hold = new(EasingType.Linear, snapPoint, 1f, 0f);
+    public CurveSegment retract = new(EasingType.PolyInOut, retractionPoint, 1f, -1.05f, 3);
     internal float ThrowCurve() => PiecewiseAnimation((throwOutTime - Projectile.timeLeft) / throwOutTime, new CurveSegment[] { launch, hold, retract });
 
     public override void AI()

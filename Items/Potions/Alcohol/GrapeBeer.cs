@@ -33,9 +33,9 @@ public class GrapeBeer : ModItem, ILocalizedModType, IAlcoholItem
         Item.ResearchUnlockCount = 20;
         Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(36, 2, 41),
-            new Color(56, 0, 64),
-            new Color(82, 10, 92)
+            new(36, 2, 41),
+            new(56, 0, 64),
+            new(82, 10, 92)
         };
         ItemID.Sets.IsFood[Type] = true;
     }

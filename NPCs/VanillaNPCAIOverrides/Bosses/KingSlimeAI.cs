@@ -12,8 +12,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 
 public class KingSlimeAI : VanillaAIOverride
 {
-    public static readonly SoundStyle SpawnCrystalSound = new SoundStyle("CalamityMod/Sounds/Custom/KingSlimeJewelSpawn");
-    public static readonly SoundStyle ShootSound = new SoundStyle("CalamityMod/Sounds/Custom/RedJewelFire");
+    public static readonly SoundStyle SpawnCrystalSound = new("CalamityMod/Sounds/Custom/KingSlimeJewelSpawn");
+    public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/RedJewelFire");
 
     public override bool AI(Mod mod)
     {

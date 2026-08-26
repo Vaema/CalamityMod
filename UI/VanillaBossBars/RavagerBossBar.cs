@@ -16,7 +16,7 @@ public class RavagerBossBar : ModBossBar
 {
     // Used to determine the max health of a multi-segmented boss
     public NPC FalseNPCSegment;
-    public List<int> RavagerParts = new List<int>
+    public List<int> RavagerParts = new()
     {
         NPCType<RavagerClawLeft>(),
         NPCType<RavagerClawRight>(),

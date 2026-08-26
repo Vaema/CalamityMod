@@ -19,9 +19,9 @@ public class PhotosynthesisPotion : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
-            new Color(246, 235, 143),
-            new Color(230, 204, 121),
-            new Color(214, 173, 78)
+            new(246, 235, 143),
+            new(230, 204, 121),
+            new(214, 173, 78)
         };
     }
 

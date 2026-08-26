@@ -79,7 +79,7 @@ public class SupremeCalamitas : ModNPC
     }
     public static Color GriefColor => Color.Crimson;
     public static Color LamentColor => Color.RoyalBlue;
-    public static Color EpiphanyColor => new Color(219, 75, 2);
+    public static Color EpiphanyColor => new(219, 75, 2);
     public static Color AcceptanceColor => Color.Gray;
 
     public const int BulletHellDuration = 900;
@@ -3380,7 +3380,7 @@ public class SupremeCalamitas : ModNPC
         int firstHeartIndex = heartIndices.First();
         int lastHeartIndex = heartIndices.Last();
 
-        heartIndices = heartIndices.OrderByDescending(heart => Math.Abs(Main.npc[heart].Center.X - safeBox.Left)).ToList();
+        heartIndices = [.. heartIndices.OrderByDescending(heart => Math.Abs(Main.npc[heart].Center.X - safeBox.Left))];
 
         for (int i = 0; i < hearts.Count(); i++)
         {

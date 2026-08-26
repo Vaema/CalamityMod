@@ -35,7 +35,7 @@ public class SHPV : ModProjectile, ILocalizedModType
     // Maximum number of souls per visual ring drawn on the gun. Additional souls get moved into additional rings.
     private const int MaxSoulsRing = 10;
     // Manual offset used for drawing the gun.
-    private static Vector2 Offset => new Vector2(27f, -10f);
+    private static Vector2 Offset => new(27f, -10f);
     // The position of the tip of the gun. Used for most projectile logic.
     public Vector2 TipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * 62f + Vector2.UnitY * Offset.Y;
     // A list containing the ai[0] values of each soul that is sucked in, used for determining the color to draw the soul as.

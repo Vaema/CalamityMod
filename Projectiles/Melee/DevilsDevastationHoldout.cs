@@ -33,7 +33,7 @@ public class DevilsDevastationHoldout : BaseCustomUseStyleProjectile, ILocalized
     public SlotId SoundSlot;
     public int size = 118 + 285;
     public override float HitboxOutset => size * 0.85f;
-    public override Vector2 HitboxSize => new Vector2(size, size);
+    public override Vector2 HitboxSize => new(size, size);
     public override Vector2 SpriteOrigin => new(0, size - 285);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
     public override float AdditionalScale => 0.15f;

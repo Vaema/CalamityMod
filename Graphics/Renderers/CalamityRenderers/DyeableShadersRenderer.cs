@@ -172,7 +172,7 @@ public class DyeableShadersRenderer : BaseRenderer
             return;
 
         // Sort the list by draw order.
-        RenderersToDrawThisFrame = RenderersToDrawThisFrame.OrderByDescending(renderer => renderer.RenderDepth).ToList();
+        RenderersToDrawThisFrame = [.. RenderersToDrawThisFrame.OrderByDescending(renderer => renderer.RenderDepth)];
 
         foreach (var renderer in RenderersToDrawThisFrame)
         {

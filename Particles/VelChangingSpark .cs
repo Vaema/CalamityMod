@@ -14,7 +14,7 @@ public class VelChangingSpark : Particle
     public bool GlowCenter = false;
     public string NewTexture;
     public float ExtraRotation;
-    public Vector2 Stretch = new Vector2(0.5f, 1.6f);
+    public Vector2 Stretch = new(0.5f, 1.6f);
     public float ShrinkSpeed = 0;
     public Vector2 EndVelocity;
     public float LerpRate = 0.1f;

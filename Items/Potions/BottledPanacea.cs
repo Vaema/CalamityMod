@@ -17,8 +17,8 @@ public class BottledPanacea : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 20;
         ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
-            new Color(84, 215, 254),
-            new Color(35, 101, 192)
+            new(84, 215, 254),
+            new(35, 101, 192)
         };
     }
 

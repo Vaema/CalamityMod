@@ -39,7 +39,7 @@ public class CrackParticle : Particle
         if (Velocity != Vector2.Zero)
             Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
         ++Stop;
-        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new CurveSegment(EasingType.PolyOut, 0f, 0f, 1f, 4) });
+        float pulseProgress = PiecewiseAnimation(LifetimeCompletion, new CurveSegment[] { new(EasingType.PolyOut, 0f, 0f, 1f, 4) });
         Scale = MathHelper.Lerp(OriginalScale, FinalScale, pulseProgress);
         if (Stop > 1)
             Velocity *= 0;

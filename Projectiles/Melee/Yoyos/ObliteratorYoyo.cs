@@ -122,7 +122,7 @@ public class ObliteratorYoyo : ModProjectile
                 }
                 if (targets.Count == 0)
                     return;
-                targets = targets.OrderBy(x => x.Distance(Projectile.Center)).ToList();
+                targets = [.. targets.OrderBy(x => x.Distance(Projectile.Center))];
                 Projectile.velocity = Projectile.DirectionTo(targets[0].Center);
                 Projectile.Center = targets[0].Center - new Vector2(Projectile.velocity.X * targets[0].width*0.5f, Projectile.velocity.Y * targets[0].height*0.5f);
                 Projectile.velocity *= 15;

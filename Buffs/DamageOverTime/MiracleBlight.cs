@@ -19,7 +19,7 @@ namespace CalamityMod.Buffs.DamageOverTime;
 
 public class MiracleBlight : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         EnemyLostRegen = 3000
     };

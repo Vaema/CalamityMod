@@ -85,7 +85,7 @@ public class ExobladeProj : ModProjectile, ILocalizedModType
     #region A lot of angles
     public int Direction => Math.Sign(Projectile.velocity.X) <= 0 ? -1 : 1;
     public float BaseRotation => Projectile.velocity.ToRotation(); //The rotation of the swing's "main" diretion
-    public Vector2 SquishVector => new Vector2(1f + (1 - SquishFactor) * 0.6f, SquishFactor); //The vector for the swords squish
+    public Vector2 SquishVector => new(1f + (1 - SquishFactor) * 0.6f, SquishFactor); //The vector for the swords squish
 
 
     public static float MaxSwingAngle = MathHelper.PiOver2 * 1.8f;

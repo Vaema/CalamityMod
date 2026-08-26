@@ -20,7 +20,7 @@ public class Teslabeam : BaseLaserbeamProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Magic";
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
     public Player Owner => Main.player[Projectile.owner];
-    public override Color LightCastColor => new Color(92, 144, 245);
+    public override Color LightCastColor => new(92, 144, 245);
     public override float Lifetime => 18000f;
     public override float MaxScale => 1f;
     public override float MaxLaserLength => 1600f; //100 tiles
@@ -28,7 +28,7 @@ public class Teslabeam : BaseLaserbeamProjectile, ILocalizedModType
     public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj", AssetRequestMode.ImmediateLoad).Value;
     public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj", AssetRequestMode.ImmediateLoad).Value;
 
-    List<Vector2> offsetPoints = new List<Vector2>();
+    List<Vector2> offsetPoints = new();
     NPC Victim;
     public float damageMultiplier = 1f; // a multiplier for how much damage the beam deals
     public bool damageShouldDecay = false; // if this is true, the weapon's damage will decay if the grace period is over

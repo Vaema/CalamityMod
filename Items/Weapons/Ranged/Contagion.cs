@@ -54,5 +54,5 @@ public class Contagion : ModItem, ILocalizedModType
         return false;
     }
 
-    public static Color RarityColor() => new Color(207, 17, 117);
+    public static Color RarityColor() => new(207, 17, 117);
 }

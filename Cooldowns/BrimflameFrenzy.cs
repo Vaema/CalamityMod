@@ -13,7 +13,7 @@ public class BrimflameFrenzy : CooldownHandler
     public override bool ShouldDisplay => true;
     public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
     public override string Texture => "CalamityMod/Cooldowns/BrimflameFrenzy";
-    public override Color OutlineColor => new Color(211, 124, 93);
+    public override Color OutlineColor => new(211, 124, 93);
     public override Color CooldownStartColor => Color.Lerp(new Color(107, 6, 6), new Color(228, 78, 78), 1 - instance.Completion);
     public override Color CooldownEndColor => Color.Lerp(new Color(107, 6, 6), new Color(228, 78, 78), 1 - instance.Completion);
 

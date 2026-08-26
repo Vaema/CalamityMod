@@ -6,7 +6,7 @@ namespace CalamityMod.Buffs.Alcohol;
 
 public class StarBeamRyeBuff : ModBuff
 {
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         AlcoholLevel = 1
     };

@@ -764,21 +764,21 @@ public static partial class CalamityUtils
     {
         Vector2 position = npc.position;
         position.X += npc.velocity.X;
-        int x = (int)((position.X + (float)(npc.width / 2) + (float)((npc.width / 2 + 1)) * npc.direction) / 16f);
-        int y = (int)((position.Y + (float)npc.height - 1f) / 16f);
+        int x = (int)((position.X + npc.width / 2 + (float)((npc.width / 2 + 1)) * npc.direction) / 16f);
+        int y = (int)((position.Y + npc.height - 1f) / 16f);
 
-        if ((float)(x * 16) >= position.X + (float)npc.width || (float)(x * 16 + 16) <= position.X)
+        if (x * 16 >= position.X + npc.width || x * 16 + 16 <= position.X)
             return;
 
-        bool nextTileValid = Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[(int)Main.tile[x, y].TileType] && !Main.tileSolidTop[(int)Main.tile[x, y].TileType];
+        bool nextTileValid = Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[Main.tile[x, y].TileType] && !Main.tileSolidTop[Main.tile[x, y].TileType];
         bool aboveTileHalfBlock = Main.tile[x, y - 1].IsHalfBlock && Main.tile[x, y - 1].HasUnactuatedTile;
         bool aboveTileHasRoom = Main.tile[x, y - 1].IsHalfBlock && IsPassableTile(x, y - 4);
-        bool aboveTileEmpty = !Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 1].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 1].TileType] || aboveTileHasRoom;
-        bool tile3AbovePassable = !Main.tile[x - npc.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x - npc.direction, y - 3].TileType];
+        bool aboveTileEmpty = !Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[Main.tile[x, y - 1].TileType] || Main.tileSolidTop[Main.tile[x, y - 1].TileType] || aboveTileHasRoom;
+        bool tile3AbovePassable = !Main.tile[x - npc.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[Main.tile[x - npc.direction, y - 3].TileType];
 
         if ((nextTileValid || aboveTileHalfBlock) && aboveTileEmpty && IsPassableTile(x, y - 2) && IsPassableTile(x, y - 3) && tile3AbovePassable)
         {
-            float npcBottom = (float)(y * 16);
+            float npcBottom = y * 16;
             if (Main.tile[x, y].IsHalfBlock)
             {
                 npcBottom += 8f;
@@ -787,21 +787,17 @@ public static partial class CalamityUtils
             {
                 npcBottom -= 8f;
             }
-            if (npcBottom < position.Y + (float)npc.height)
+            if (npcBottom < position.Y + npc.height)
             {
-                float percentageTileRisen = position.Y + (float)npc.height - npcBottom;
+                float percentageTileRisen = position.Y + npc.height - npcBottom;
                 if (percentageTileRisen <= 16.1f)
                 {
-                    npc.gfxOffY += npc.position.Y + (float)npc.height - npcBottom;
-                    npc.position.Y = npcBottom - (float)npc.height;
+                    npc.gfxOffY += npc.position.Y + npc.height - npcBottom;
+                    npc.position.Y = npcBottom - npc.height;
                     if (percentageTileRisen < 9f)
-                    {
                         npc.stepSpeed = 1f;
-                    }
                     else
-                    {
                         npc.stepSpeed = 2f;
-                    }
                 }
             }
         }
@@ -810,24 +806,17 @@ public static partial class CalamityUtils
     public static bool IsPassableTile(int x, int y)
     {
         return (!Main.tile[x, y].HasUnactuatedTile ||
-            !Main.tileSolid[(int)Main.tile[x, y].TileType] || Main.tileSolidTop[(int)Main.tile[x, y].TileType]);
+            !Main.tileSolid[Main.tile[x, y].TileType] || Main.tileSolidTop[Main.tile[x, y].TileType]);
     }
-
 
     public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
     {
         if (Main.rand.NextBool(4))
-        {
             target.AddBuff(buff, SecondsToFrames(timeBase * 3f), false);
-        }
         else if (Main.rand.NextBool())
-        {
             target.AddBuff(buff, SecondsToFrames(timeBase * 2f), false);
-        }
         else
-        {
             target.AddBuff(buff, SecondsToFrames(timeBase), false);
-        }
     }
 
     /// <summary>
@@ -1037,8 +1026,6 @@ public static partial class CalamityUtils
                 tileIndexFound = null;
             }
         }
-
-
 
         if (tileFoundPosition.HasValue)
             return tileFoundPosition.Value;

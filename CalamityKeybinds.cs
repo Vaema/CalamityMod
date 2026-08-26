@@ -92,7 +92,7 @@ public class CalamityKeybinds : ModSystem
 
     public override void PostUpdateEverything()
     {
-        RentedKeybinds = KeybindRentalQueue.ToList();
+        RentedKeybinds = [.. KeybindRentalQueue];
         KeybindRentalQueue.Clear();
     }
 }

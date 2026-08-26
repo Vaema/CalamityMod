@@ -24,7 +24,7 @@ public class SkytideDragoonHoldout : BaseCustomUseStyleProjectile, ILocalizedMod
     public override string Texture => "CalamityMod/Items/Weapons/Melee/SkytideDragoon";
     public int size = 140;
     public override float HitboxOutset => size * 1.45f;
-    public override Vector2 HitboxSize => new Vector2(30, 30); // Has custom collision
+    public override Vector2 HitboxSize => new(30, 30); // Has custom collision
     public override Vector2 SpriteOrigin => new(0, size);
     public override float HitboxRotationOffset => MathHelper.ToRadians(-45);
 

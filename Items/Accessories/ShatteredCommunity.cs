@@ -25,8 +25,8 @@ public class ShatteredCommunity : ModItem, ILocalizedModType
     // It is pretty hard to have less than 10 iframes for any reason, but this is a stopgap measure against Rage abuse.
     public static readonly int RageGainCooldown = 10;
 
-    private static readonly Color rarityColorOne = new Color(128, 62, 128);
-    private static readonly Color rarityColorTwo = new Color(245, 105, 245);
+    private static readonly Color rarityColorOne = new(128, 62, 128);
+    private static readonly Color rarityColorTwo = new(245, 105, 245);
 
     // Base level cost is 400,000 damage dealt while Rage is active.
     // Each successive level costs (400,000 * level) MORE damage, so the total required goes up quadratically.

@@ -130,7 +130,7 @@ public static partial class CalamityUtils
                 coins.Add(proj);
         }
 
-        return coins.ToArray();
+        return [.. coins];
     }
 
     /// <summary>

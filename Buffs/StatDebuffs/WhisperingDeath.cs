@@ -12,7 +12,7 @@ public class WhisperingDeath : ModBuff
     public static float EnemyDamageReduction = 0.1f;
 
     // Whispering Death does not deal DoT, but is classified as a sickness debuff.
-    public static DebuffData debuffData = new DebuffData()
+    public static DebuffData debuffData = new()
     {
         SicknessDebuffScaling = 1
     };

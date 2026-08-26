@@ -18,8 +18,8 @@ public class Eternity : ModItem, ILocalizedModType
     public const int ExplosionDamage = 8400;
     public const int MaxHomers = 40;
     public const int DustID = 16;
-    public static readonly Color BlueColor = new Color(34, 34, 160);
-    public static readonly Color PinkColor = new Color(169, 30, 184);
+    public static readonly Color BlueColor = new(34, 34, 160);
+    public static readonly Color PinkColor = new(169, 30, 184);
 
     public override void SetDefaults()
     {

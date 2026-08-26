@@ -60,7 +60,7 @@ public class AcidRainEvent : ModSystem
 
     public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesPolter = new();
 
-    public static List<int> AllMinibosses => PossibleMinibossesAS.Select(miniboss => miniboss.Key).Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct().ToList();
+    public static List<int> AllMinibosses => [.. PossibleMinibossesAS.Select(miniboss => miniboss.Key).Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct()];
 
     public static bool AnyRainMinibosses
     {

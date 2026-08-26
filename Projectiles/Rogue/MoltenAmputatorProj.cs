@@ -18,7 +18,7 @@ public class MoltenAmputatorProj : ModProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Items/Weapons/Rogue/MoltenAmputator";
 
     public int time = 0;
-    public Vector2 squash = new Vector2(1, 1);
+    public Vector2 squash = new(1, 1);
     public float fakeRot = 0;
     public int returnTime = 180;
     public bool pulled = false;
