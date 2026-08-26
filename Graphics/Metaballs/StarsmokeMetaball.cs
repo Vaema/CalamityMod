@@ -67,7 +67,7 @@ public class StarsmokeMetaball : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 
@@ -100,12 +100,12 @@ public class StarsmokeMetaball : Metaball
         scrollDir = Vector2.Lerp(scrollDir, goalDir, 0.01f);
 
         float rate = Main.GlobalTimeWrappedHourly * 19;
-        List<Color> colors = new List<Color>()
-        {
+        List<Color> colors =
+        [
             new(192, 10, 111),
             Color.Coral,
             Color.DarkOrange
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % colors.Count);
         Color currentColor = colors[colorIndex];

@@ -18,7 +18,7 @@ public class RendererManager : ModSystem
     {
         get;
         private set;
-    } = new();
+    } = [];
     #endregion
 
     #region Loading

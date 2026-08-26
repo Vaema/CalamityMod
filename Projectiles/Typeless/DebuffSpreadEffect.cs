@@ -16,7 +16,7 @@ public class DebuffSpreadEffect : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Typeless";
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
     public Player Owner => Main.player[Projectile.owner];
-    public List<int> listNPCs = new();
+    public List<int> listNPCs = [];
     public NPC lastNPC;
     public int minCooldown = 48;
     public static Color startingColor = Bane.baneColor2;
@@ -134,7 +134,7 @@ public class DebuffSpreadEffect : ModProjectile, ILocalizedModType
                         return;
                     }
 
-                    List<int> best = new List<int> { heat, sick, cold, shock, water };
+                    List<int> best = [heat, sick, cold, shock, water];
                     int highest = best.Max();
                     if (highest != 0)
                     {

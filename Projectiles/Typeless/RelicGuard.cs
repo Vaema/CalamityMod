@@ -43,11 +43,11 @@ public class RelicGuard : ModProjectile, ILocalizedModType
         float sine = (float)Math.Sin(time * 0.13f / MathHelper.Pi);
         float sine2 = (float)Math.Sin(time * 0.13f / 2 / MathHelper.Pi);
         float rate = Main.GlobalTimeWrappedHourly * 2;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Sienna,
             Color.Peru
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

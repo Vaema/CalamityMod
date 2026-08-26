@@ -78,12 +78,12 @@ public class LeviAmberDash : ModProjectile, ILocalizedModType
 
 
         float rate = Main.GlobalTimeWrappedHourly * 22;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.DarkTurquoise,
             Color.DeepSkyBlue,
             Color.MediumTurquoise
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

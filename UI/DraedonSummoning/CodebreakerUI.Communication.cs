@@ -208,7 +208,7 @@ public partial class CodebreakerUI : ModSystem
     {
         get;
         set;
-    } = new();
+    } = [];
 
     /// <summary>
     /// The scroller responsible for navigating topic options.

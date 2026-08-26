@@ -19,31 +19,31 @@ namespace CalamityMod.Projectiles.Pets;
 public class BurrowerPet : BaseWormProjectile, ILocalizedModType
 {
     public override string Texture => "CalamityMod/NPCs/Deconstructors/DeconstructorMK1Head";
-    public override List<string> SegmentTextures => new()
-    {
+    public override List<string> SegmentTextures =>
+    [
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1Body",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt1",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt2",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1Tail"
-    };
+    ];
 
-    public override List<string?> GlowTextures => new()
-    {
+    public override List<string?> GlowTextures =>
+    [
         null,
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyGlow",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt1Glow",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt2Glow"
-    };
+    ];
     public override int SegmentCount => 3;
 
-    public override List<float> SegmentTypePositionOffsets => new()
-    {
+    public override List<float> SegmentTypePositionOffsets =>
+    [
         32,
         32,
         32,
         32,
         32
-    };
+    ];
     public new string LocalizationCategory => "Projectiles.Pets";
     public Player Owner => Main.player[Projectile.owner];
     public override void SetStaticDefaults()

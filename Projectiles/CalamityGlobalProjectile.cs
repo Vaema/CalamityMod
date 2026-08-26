@@ -3411,7 +3411,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
                             var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
                             GeneralParticleHandler.SpawnParticle(particle);
                         }
-                        List<(Vector2, int)> validRifts = new();
+                        List<(Vector2, int)> validRifts = [];
 
                         foreach (var item in Main.ActiveProjectiles)
                         {
@@ -3805,7 +3805,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
                             var particle = new CustomSpark(PersistentFishingDataVector2, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 25, 0.02f, Color.Green, Vector2.One);
                             GeneralParticleHandler.SpawnParticle(particle);
                         }
-                        List<(Vector2, int)> validRifts = new();
+                        List<(Vector2, int)> validRifts = [];
 
                         foreach (var item in Main.ActiveProjectiles)
                         {
@@ -4163,7 +4163,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
             int auricRepulserID = TileType<AuricRepulserPanelTile>();
             // Get a list of tiles that are colliding with the ball.
             // This is just Collision.GetEntityTiles but with a larger detection square because golf balls are too small and dumb to get detected half the time apparently
-            List<Point> EdgeTiles = new List<Point>();
+            List<Point> EdgeTiles = [];
             int extraDist = 8;
             int left = (int)projectile.position.X - extraDist;
             int up = (int)projectile.position.Y - extraDist;
@@ -5313,11 +5313,11 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
         {
             Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
             float rate = (projectile.timeLeft * 0.05f);
-            List<Color> eColors = new List<Color>()
-            {
+            List<Color> eColors =
+            [
                 Color.SlateBlue,
                 Color.BlueViolet
-            };
+            ];
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

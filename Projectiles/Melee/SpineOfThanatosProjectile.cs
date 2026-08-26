@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Melee;
 public class SpineOfThanatosProjectile : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Melee";
-    public List<Vector2> WhipPoints = new();
+    public List<Vector2> WhipPoints = [];
     public Player Owner => Main.player[Projectile.owner];
     public float CurrentBendFactor => MaximumBendFactor * CalamityUtils.Convert01To010(Time / Lifetime);
     public Vector2 WhipEnd => Projectile.Center + WhipOutwardness;
@@ -51,10 +51,10 @@ public class SpineOfThanatosProjectile : ModProjectile, ILocalizedModType
     {
         Vector2 startingPosition = Owner.RotatedRelativePoint(Owner.MountedCenter);
 
-        List<Vector2> initialPoints = new List<Vector2>()
-        {
+        List<Vector2> initialPoints =
+        [
             startingPosition
-        };
+        ];
         for (int i = 0; i < 12; i++)
         {
             Vector2 bendOffset = Vector2.UnitX * -SwingDirection;

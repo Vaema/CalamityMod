@@ -146,8 +146,9 @@ public class MirrorBlast : ModProjectile, ILocalizedModType
                 Projectile.netUpdate = true;
                 return;
             }
-            List<Vector2> positions = new List<Vector2>() //Hardcoded positions for the mirror shield shards so we can make it look nice
-            {
+            List<Vector2> positions =
+            //Hardcoded positions for the mirror shield shards so we can make it look nice
+            [
                 new(0,75),
                 new(10,65),
                 new(-10,65),
@@ -158,7 +159,7 @@ public class MirrorBlast : ModProjectile, ILocalizedModType
                 new(14,55),
                 new(-14,55),
                 new(0,45)
-            };
+            ];
             Projectile.velocity = Vector2.Zero;
             Projectile.Center = Vector2.Lerp(Projectile.Center,
             player.Center + player.DirectionTo(player.Calamity().mouseWorld)

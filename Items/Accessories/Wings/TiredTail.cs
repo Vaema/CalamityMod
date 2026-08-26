@@ -140,7 +140,7 @@ public class TiredTailPlayer : ModPlayer
         {
             if (tailPos == null)
             {
-                tailPos = new();
+                tailPos = [];
                 for (var i = 0; i < 3; i++)
                 {
 
@@ -186,7 +186,7 @@ public class TiredTailPlayer : ModPlayer
 }
 public class TailDraw : PlayerDrawLayer
 {
-    List<Vector4[]> ColorPallettes = new();
+    List<Vector4[]> ColorPallettes = [];
     public override void SetStaticDefaults()
     {
         if (Main.netMode != NetmodeID.Server)
@@ -196,14 +196,14 @@ public class TailDraw : PlayerDrawLayer
             var texture = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Wings/TiredTailPallette", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             var BaseArray = new Color[texture.Width * texture.Height];
             texture.GetData(BaseArray);
-            List<Vector4> pal = new();
+            List<Vector4> pal = [];
             for (var i = 0; i < BaseArray.Length; i++)
             {
                 if (i % texture.Width == 0)
                 {
                     if (pal.Count > 0)
                         ColorPallettes.Add([.. pal]);
-                    pal = new();
+                    pal = [];
                 }
                 pal.Add(BaseArray[i].ToVector4());
             }

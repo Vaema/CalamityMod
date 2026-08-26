@@ -19,10 +19,10 @@ public class LabHologramProjectorUI
     public const float YOffsetPerLine = 30f;
     public static string ChooseDialogue()
     {
-        List<string> dialogueOptions = new List<string>()
-        {
+        List<string> dialogueOptions =
+        [
             "Text1", "Text2", "Text3", "Text4", "Text5", "Text6", "Text7", "Text8", "Text9", "Text10", "Text11"
-        };
+        ];
         if (NPC.downedAncientCultist)
             dialogueOptions.Add("PostCultistText");
 

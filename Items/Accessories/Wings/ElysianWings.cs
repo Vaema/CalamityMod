@@ -39,11 +39,11 @@ public class ElysianWings : BaseWings
     private void DrawWingEffects(Player player)
     {
         float rate = Main.GlobalTimeWrappedHourly * 2;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Gold,
             Color.Khaki
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

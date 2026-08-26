@@ -438,7 +438,7 @@ public class ExobladeProj : ModProjectile, ILocalizedModType
 
     public List<Vector2> GenerateSlashPoints()
     {
-        List<Vector2> result = new();
+        List<Vector2> result = [];
 
         for (int i = 0; i < 40; i++)
         {

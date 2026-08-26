@@ -23,7 +23,7 @@ public class FurtasticDuoBuff : ModBuff
         // Spawn both component pets individually
         if (player.whoAmI == Main.myPlayer)
         {
-            List<int> pets = new List<int> { ModContent.ProjectileType<Bear>(), ModContent.ProjectileType<KendraPet>() };
+            List<int> pets = [ModContent.ProjectileType<Bear>(), ModContent.ProjectileType<KendraPet>()];
             foreach (int petProjID in pets)
                 if (player.ownedProjectileCounts[petProjID] <= 0)
                     Projectile.NewProjectile(player.GetSource_Buff(buffIndex), player.Center, Vector2.Zero, petProjID, 0, 0f, player.whoAmI);

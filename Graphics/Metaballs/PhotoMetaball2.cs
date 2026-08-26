@@ -42,7 +42,7 @@ public class PhotoMetaball2 : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 

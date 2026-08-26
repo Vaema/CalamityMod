@@ -185,15 +185,15 @@ public class Orderbringer : ModItem, ILocalizedModType
             return;
 
         float rate = Main.GlobalTimeWrappedHourly * 7;
-        List<Color> eColors = new List<Color>()
-            {
+        List<Color> eColors =
+            [
                 Color.PaleVioletRed,
                 Color.Coral,
                 Color.Khaki,
                 Color.PaleGreen,
                 Color.Turquoise,
                 Color.Violet
-            };
+            ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

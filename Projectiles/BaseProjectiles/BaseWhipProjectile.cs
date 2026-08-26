@@ -88,7 +88,7 @@ public abstract class BaseWhipProjectile : ModProjectile
 
     #endregion
 
-    internal List<Vector2> whipPoints = new();
+    internal List<Vector2> whipPoints = [];
     internal float Timer
     {
         get => Projectile.ai[0];

@@ -249,8 +249,8 @@ public sealed class FlightBar : ModSystem
         return false;
     }
 
-    public static List<int> infiniteFlightMounts = new()
-    {
+    public static List<int> infiniteFlightMounts =
+    [
         MountID.UFO, MountID.Drill, MountID.PirateShip, MountID.WitchBroom, MountID.CuteFishron
-    };
+    ];
 }

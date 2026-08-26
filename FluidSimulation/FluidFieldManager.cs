@@ -8,7 +8,7 @@ namespace CalamityMod.FluidSimulation;
 
 public class FluidFieldManager : ModSystem
 {
-    internal static List<FluidField> Fields = new();
+    internal static List<FluidField> Fields = [];
 
     public static FluidField CreateField(int size, float scale, float viscosity, float diffusionFactor, float dissipationFactor)
     {

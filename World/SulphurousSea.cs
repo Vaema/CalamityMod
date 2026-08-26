@@ -170,12 +170,12 @@ public class SulphurousSea
         set;
     }
 
-    public static readonly List<int> SulphSeaTiles = new()
-    {
+    public static readonly List<int> SulphSeaTiles =
+    [
         ModContent.TileType<SulphurousSand>(),
         ModContent.TileType<SulphurousSandstone>(),
         ModContent.TileType<HardenedSulphurousSandstone>()
-    };
+    ];
 
     // Vines cannot grow any higher than this. This is done to prevent vines from growing very close to the sea surface.
     public static int VineGrowTopLimit => (Main.remixWorld ? (int)Main.rockLayer : YStart + 100);
@@ -522,12 +522,12 @@ public class SulphurousSea
     {
         int width = BiomeWidth;
         int depth = BlockDepth;
-        List<ushort> blockTileTypes = new()
-        {
+        List<ushort> blockTileTypes =
+        [
             (ushort)ModContent.TileType<SulphurousSand>(),
             (ushort)ModContent.TileType<SulphurousSandstone>(),
             (ushort)ModContent.TileType<HardenedSulphurousSandstone>(),
-        };
+        ];
         ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
 
         void getAttachedPoints(int x, int y, List<Point> points)
@@ -551,7 +551,7 @@ public class SulphurousSea
             int x = GetActualX(i);
             for (int y = YStart; y < YStart + depth; y++)
             {
-                List<Point> chunkPoints = new();
+                List<Point> chunkPoints = [];
                 getAttachedPoints(x, y, chunkPoints);
 
                 int cutoffLimit = y >= YStart + depth * OpenCavernStartDepthPercentage ? 432 : 50;
@@ -889,12 +889,12 @@ public class SulphurousSea
     {
         int width = BiomeWidth;
         int depth = BlockDepth;
-        List<ushort> blockTileTypes = new()
-        {
+        List<ushort> blockTileTypes =
+        [
             (ushort)ModContent.TileType<SulphurousSand>(),
             (ushort)ModContent.TileType<SulphurousSandstone>(),
             (ushort)ModContent.TileType<HardenedSulphurousSandstone>(),
-        };
+        ];
 
         for (int i = 0; i < width; i++)
         {
@@ -925,7 +925,7 @@ public class SulphurousSea
     public static List<Vector2> PlaceScrapPiles()
     {
         int tries = 0;
-        List<Vector2> pastPlacementPositions = new List<Vector2>();
+        List<Vector2> pastPlacementPositions = [];
         for (int i = 0; i < 3; i++)
         {
             tries++;
@@ -1300,7 +1300,7 @@ public class SulphurousSea
     public static void GenerateOpenAirChestChest()
     {
         int width = BiomeWidth;
-        Dictionary<int, int> depthMap = new();
+        Dictionary<int, int> depthMap = [];
 
         for (int i = 60; i < width - 50; i++)
         {
@@ -1412,8 +1412,8 @@ public class SulphurousSea
     #endregion Generation Functions
 
     #region Misc Functions
-    public static readonly List<int> YStartWhitelist = new()
-    {
+    public static readonly List<int> YStartWhitelist =
+    [
         TileID.Stone,
         TileID.Dirt,
         TileID.Sand,
@@ -1451,10 +1451,10 @@ public class SulphurousSea
         TileID.DyePlants,
         TileID.JungleGrass, // Yes, this can happen on rare occasion.
         TileID.SeaOats
-    };
+    ];
 
-    public static readonly List<int> OtherTilesForSulphSeaToDestroy = new()
-    {
+    public static readonly List<int> OtherTilesForSulphSeaToDestroy =
+    [
         TileID.PalmTree,
         TileID.Sunflower,
         TileID.CorruptThorns,
@@ -1471,10 +1471,10 @@ public class SulphurousSea
         TileID.VanityTreeSakura,
         TileID.VanityTreeYellowWillow,
         TileID.ShellPile
-    };
+    ];
 
-    public static readonly List<int> WallsForSulphSeaToDestroy = new()
-    {
+    public static readonly List<int> WallsForSulphSeaToDestroy =
+    [
         WallID.Dirt,
         WallID.DirtUnsafe,
         WallID.DirtUnsafe1,
@@ -1489,10 +1489,10 @@ public class SulphurousSea
         WallID.CorruptGrassUnsafe,
         WallID.EbonstoneUnsafe,
         WallID.CrimstoneUnsafe,
-    };
+    ];
 
-    public static readonly List<int> ValidBeachCovertTiles = new()
-    {
+    public static readonly List<int> ValidBeachCovertTiles =
+    [
         TileID.Dirt,
         TileID.Stone,
         TileID.Crimstone,
@@ -1505,10 +1505,10 @@ public class SulphurousSea
         TileID.CrimsonGrass,
         TileID.ClayBlock,
         TileID.Mud,
-    };
+    ];
 
-    public static readonly List<int> ValidBeachDestroyTiles = new()
-    {
+    public static readonly List<int> ValidBeachDestroyTiles =
+    [
         TileID.Coral,
         TileID.BeachPiles,
         TileID.Plants,
@@ -1528,7 +1528,7 @@ public class SulphurousSea
         TileID.BloomingHerbs,
         TileID.VanityTreeSakura,
         TileID.VanityTreeYellowWillow,
-    };
+    ];
 
     // This method is an involutory function, meaning that applying it to the same number twice always yields the original number.
     public static int GetActualX(int x)

@@ -55,7 +55,7 @@ public class StratusSphere : ModItem, ILocalizedModType
     }
     public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
     {
-        List<Projectile> holes = new();
+        List<Projectile> holes = [];
             foreach (var item in Main.ActiveProjectiles)
             {
                 if (item.type == type && item.owner == player.whoAmI && item.timeLeft > 30)

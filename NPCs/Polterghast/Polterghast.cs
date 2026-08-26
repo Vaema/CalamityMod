@@ -62,8 +62,8 @@ public class Polterghast : ModNPC
     public static Asset<Texture2D> Texture_Glow;
     public static Asset<Texture2D> Texture_Glow2;
 
-    public static List<SoundStyle> creepySounds = new()
-    {
+    public static List<SoundStyle> creepySounds =
+    [
         DevourerofGods.DevourerofGodsHead.AttackSound,
         Providence.Providence.HolyRaySound,
         ExoMechs.Ares.AresBody.EnragedSound,
@@ -87,7 +87,7 @@ public class Polterghast : ModNPC
         AstrumAureus.AstrumAureus.HitSound,
         SoundID.ScaryScream,
         SoundID.DD2_KoboldFlyerHurt
-    };
+    ];
 
     public override void SetStaticDefaults()
     {

@@ -130,7 +130,7 @@ public abstract class Quest<TEnum> : ModSystem where TEnum : Enum
     /// </summary>
     private static Dictionary<TEnum, bool> ResetQuestProgression()
     {
-        Dictionary<TEnum, bool> questProgression = new();
+        Dictionary<TEnum, bool> questProgression = [];
         var progressionPoints = Enum.GetValues(typeof(TEnum));
         foreach (TEnum progressionPoint in progressionPoints)
             questProgression.Add(progressionPoint, false);

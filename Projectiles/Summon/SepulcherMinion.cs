@@ -82,7 +82,7 @@ public class SepulcherMinion : ModProjectile, ILocalizedModType
     public int AttackTimer;
     public int HeartAttackCountdown;
     public SepulcherSegment[] Segments = new SepulcherSegment[24];
-    public List<SepulcherArm> Arms = new();
+    public List<SepulcherArm> Arms = [];
     public Player Owner => Main.player[Projectile.owner];
     public AIState CurrentAIState
     {

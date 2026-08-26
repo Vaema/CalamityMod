@@ -50,11 +50,11 @@ public class NullShot : ModProjectile, ILocalizedModType
             sineDir = Main.rand.NextBool() ? 1 : -1;
         }
         float rate = (Main.GlobalTimeWrappedHourly * 5);
-        List<Color> eColors = new List<Color>()
-            {
+        List<Color> eColors =
+            [
                 Color.Turquoise,
                 Color.Orchid
-            };
+            ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

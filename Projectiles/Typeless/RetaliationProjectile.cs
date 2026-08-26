@@ -40,11 +40,11 @@ public class RetaliationProjectile : ModProjectile, ILocalizedModType
     {
         float fadeOut = Utils.GetLerpValue(0, 50, Projectile.timeLeft, true);
 
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.DarkRed,
             Color.Crimson,
-        };
+        ];
         float rate = (Main.GlobalTimeWrappedHourly * 20);
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

@@ -103,9 +103,9 @@ public sealed class BossRushEvent : ModSystem
     public static bool DeactivateStupidFuckingBullshit = false; // Force Boss Rush to inactive.
     public static int BossRushStage = 0; // Boss Rush Stage.
     public static int BossRushSpawnCountdown = 180; // Delay before another Boss Rush boss can spawn.
-    public static List<Boss> Bosses = new();
-    public static Dictionary<int, int[]> BossIDsAfterDeath = new();
-    public static Dictionary<int, Action<NPC>> BossDeathEffects = new();
+    public static List<Boss> Bosses = [];
+    public static Dictionary<int, int[]> BossIDsAfterDeath = [];
+    public static Dictionary<int, Action<NPC>> BossDeathEffects = [];
     public static int StartTimer;
     public static int EndTimer;
     public static float WhiteDimness;
@@ -139,11 +139,11 @@ public sealed class BossRushEvent : ModSystem
     #region Loading and Unloading
     public override void OnModLoad()
     {
-        BossIDsAfterDeath = new Dictionary<int, int[]>();
+        BossIDsAfterDeath = [];
 
         // TODO -- Multiple different lists might be ideal for this at some point instead of a god-struct? This is a lot of parameters.
-        Bosses = new List<Boss>()
-        {
+        Bosses =
+        [
             new(NPCID.KingSlime, spawnContext: type => {
                 NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
 
@@ -408,7 +408,7 @@ public sealed class BossRushEvent : ModSystem
                 CalamityUtils.SpawnBossBetter(Main.player[ClosestPlayerToWorldCenter].Top - new Vector2(42f, 84f), type);
             }, specialSpawnCountdown: 840, permittedNPCs: new int[] { ModContent.NPCType<SepulcherArm>(), ModContent.NPCType<SepulcherHead>(), ModContent.NPCType<SepulcherBody>(), ModContent.NPCType<SepulcherBodyEnergyBall>(), ModContent.NPCType<SepulcherTail>(),
                 ModContent.NPCType<SoulSeekerSupreme>(), ModContent.NPCType<BrimstoneHeart>(), ModContent.NPCType<SupremeCataclysm>(), ModContent.NPCType<SupremeCatastrophe>() }),
-        };
+        ];
 
         BossDeathEffects = new Dictionary<int, Action<NPC>>()
         {

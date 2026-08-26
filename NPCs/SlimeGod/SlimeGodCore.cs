@@ -508,7 +508,7 @@ public class SlimeGodCore : ModNPC
         int splitCrimulanPaladin = ModContent.NPCType<SplitCrimulanPaladin>();
         int largeEbonianPaladin = ModContent.NPCType<EbonianPaladin>();
         int splitEbonianPaladin = ModContent.NPCType<SplitEbonianPaladin>();
-        List<NPC> largeSlimes = new();
+        List<NPC> largeSlimes = [];
 
         float ignoreGeneralAreaDistanceThreshold = 750f;
         float ignoreAllSlimesDistanceThreshold = 3200f;

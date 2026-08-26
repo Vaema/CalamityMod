@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item122 with { Volume = SoundID.Item122.Volume * 0.4f }, Projectile.position);
 
 
-            List<Projectile> frags = new();
+            List<Projectile> frags = [];
             var p = -2;
             foreach (var item in Main.ActiveProjectiles)
             {

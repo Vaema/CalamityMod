@@ -17,8 +17,8 @@ namespace CalamityMod.Items.Fishing.FishingRods;
 
 public class TheDevourerofCods : ModItem, ILocalizedModType
 {
-    public static List<int> FishToEat = new()
-                {
+    public static List<int> FishToEat =
+                [
                     ItemID.Bass,
                     ItemID.AtlanticCod,
                     ItemID.Flounder,
@@ -34,7 +34,7 @@ public class TheDevourerofCods : ModItem, ILocalizedModType
                     ModContent.ItemType<ProcyonidPrawn>(),
                     ModContent.ItemType<TwinklingPollox>(),
                     ModContent.ItemType<PlantyMush>()
-};
+];
     public new string LocalizationCategory => "Items.Fishing";
     public override void SetStaticDefaults()
     {

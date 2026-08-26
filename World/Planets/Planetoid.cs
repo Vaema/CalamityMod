@@ -129,7 +129,7 @@ public class Planetoid : MicroBiome
             return false;
         }
 
-        Dictionary<ushort, int> dict = new Dictionary<ushort, int>();
+        Dictionary<ushort, int> dict = [];
         CustomActions.SolidScanner scanner = new CustomActions.SolidScanner();
         WorldUtils.Gen(_area.Location, new Shapes.Rectangle(_area.Width, _area.Height), scanner);
         if (scanner.GetCount() > 2)

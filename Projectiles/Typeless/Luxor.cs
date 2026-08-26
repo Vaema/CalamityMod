@@ -79,11 +79,11 @@ public class Luxor : ModProjectile, ILocalizedModType
         lastDamageClass = itemClass;
 
         float rate = Main.GlobalTimeWrappedHourly * 7;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Lerp(classColor, Color.White, 0.15f),
             Color.Lerp(classColor, Color.Black, 0.15f)
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

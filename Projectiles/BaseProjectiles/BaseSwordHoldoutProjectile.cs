@@ -208,9 +208,9 @@ public abstract class BaseSwordHoldoutProjectile : ModProjectile
     /// <summary>
     /// Old weapon scales used to track for trail drawing
     /// </summary>
-    public List<float> oldScale = new();
-    List<float> oldProjectileRot = new() { };
-    List<Vector2> oldProjectilePos = new() { };
+    public List<float> oldScale = [];
+    List<float> oldProjectileRot = [];
+    List<Vector2> oldProjectilePos = [];
 
     public int ExistsTime = 20;
     public bool inStartup => timer < StartupTime;

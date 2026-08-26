@@ -143,10 +143,10 @@ public class PulseDragonProjectile : ModProjectile, ILocalizedModType
         Vector2 mountedCenter = Main.player[Projectile.owner].MountedCenter;
 
         // Chain drawing.
-        List<Vector2> bezierPoints = new List<Vector2>()
-        {
+        List<Vector2> bezierPoints =
+        [
             mountedCenter
-        };
+        ];
         for (int i = 0; i < 20; i++)
         {
             Vector2 offset = Vector2.UnitX * -SwingDirection;

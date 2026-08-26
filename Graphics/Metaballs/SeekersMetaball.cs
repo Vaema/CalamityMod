@@ -50,7 +50,7 @@ public class SeekersMetaball : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
     public static Asset<Texture2D> LayerAsset

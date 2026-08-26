@@ -34,7 +34,7 @@ public class WorldSelectionDifficultySystem : ModSystem
 
     public record WorldDifficulty(string name, Func<AWorldListItem, bool> function, Color color);
 
-    public static List<WorldDifficulty> WorldDifficulties = new();
+    public static List<WorldDifficulty> WorldDifficulties = [];
     public static bool GetRevengeance(AWorldListItem item)
     {
         if (item.Data.TryGetHeaderData<WorldSelectionDifficultySystem>(out TagCompound tag))

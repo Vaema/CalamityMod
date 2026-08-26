@@ -35,7 +35,7 @@ public class ScionsCurioMini : ModProjectile, ILocalizedModType
     public int chosenSecret = 0;
     public int idleMax = 10800; // 3 minutes
     Vector2 goalPosition;
-    public List<int> listNumbers = new();
+    public List<int> listNumbers = [];
     public override void SetDefaults()
     {
         Projectile.width = 32;
@@ -51,11 +51,11 @@ public class ScionsCurioMini : ModProjectile, ILocalizedModType
     {
         if (Main.zenithWorld) idleMax = 301;
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Chartreuse,
             Color.LimeGreen
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

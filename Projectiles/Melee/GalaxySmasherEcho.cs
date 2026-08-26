@@ -44,11 +44,11 @@ public class GalaxySmasherEcho : ModProjectile, ILocalizedModType
     }
     public override void AI()
     {
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Aqua,
             Color.Magenta,
-        };
+        ];
         float rate = (Main.GlobalTimeWrappedHourly * 43);
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

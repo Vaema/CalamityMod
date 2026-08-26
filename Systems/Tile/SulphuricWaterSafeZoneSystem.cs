@@ -11,7 +11,7 @@ public class SulphuricWaterSafeZoneSystem : ModSystem
     {
         get;
         set;
-    } = new();
+    } = [];
 
     public override void PreUpdateEntities()
     {

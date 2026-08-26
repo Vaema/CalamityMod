@@ -1276,7 +1276,7 @@ public class Providence : ModNPC
                 // Fire a flame towards every player, with a limit of 5
                 if (NPC.ai[3] % 60f == 0f && expertMode)
                 {
-                    List<int> targets = new List<int>();
+                    List<int> targets = [];
                     foreach (Player plr in Main.ActivePlayers)
                     {
                         if (!plr.dead)
@@ -2558,8 +2558,8 @@ public class Providence : ModNPC
     {
         if (challenge)
         {
-            List<int> exceptionList = new List<int>()
-            {
+            List<int> exceptionList =
+            [
                 ModContent.ProjectileType<MiniGuardianDefense>(),
                 ModContent.ProjectileType<MiniGuardianAttack>(),
                 ModContent.ProjectileType<MiniGuardianRock>(),
@@ -2571,7 +2571,7 @@ public class Providence : ModNPC
                 ModContent.ProjectileType<SummonAstralExplosion>(),
                 ModContent.ProjectileType<ApparatusExplosion>(),
                 ModContent.ProjectileType<TarragonAura>()
-            };
+            ];
 
             bool allowedClass = projectile.CountsAsClass<SummonDamageClass>() || (!projectile.CountsAsClass<MeleeDamageClass>() && !projectile.CountsAsClass<RangedDamageClass>() &&
                 !projectile.CountsAsClass<MagicDamageClass>() && !projectile.CountsAsClass<ThrowingDamageClass>() && !projectile.CountsAsClass<SummonMeleeSpeedDamageClass>());

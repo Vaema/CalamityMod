@@ -67,7 +67,7 @@ public class MagicUmbrella : ModProjectile, ILocalizedModType
         }
 
         // Not sure what this is for, a lot of the code is taken from Terraprisma
-        List<int> blackListedTargets = new List<int> { };
+        List<int> blackListedTargets = [];
 
         DelegateMethods.v3_1 = Color.Transparent.ToVector3();
         Point point = Projectile.Center.ToTileCoordinates();

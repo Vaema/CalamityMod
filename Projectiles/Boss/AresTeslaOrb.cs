@@ -170,7 +170,7 @@ public class AresTeslaOrb : ModProjectile, ILocalizedModType
 
     public static List<Vector2> DetermineElectricArcPoints(Vector2 start, Vector2 end, int seed)
     {
-        List<Vector2> points = new List<Vector2>();
+        List<Vector2> points = [];
 
         // Determine the base points based on a linear path from the start the end end point.
         for (int i = 0; i <= 75; i++)

@@ -82,7 +82,7 @@ public class StarburstEntity
     public float opacity = 1;
     public Color color = Color.Black;
     public StarburstEntity MergeTarget = null;
-    public List<StarburstEntity> MergeChildren = new();
+    public List<StarburstEntity> MergeChildren = [];
     public bool ShouldRemoveFromList = false;
 
     public StarburstEntity(Vector2 position, bool shouldRandomize = true)
@@ -119,7 +119,7 @@ public class StarburstEntity
     {
         if (AICooldown > 0)
         {
-            MergeChildren = new();
+            MergeChildren = [];
             AICooldown--;
             return;
         }

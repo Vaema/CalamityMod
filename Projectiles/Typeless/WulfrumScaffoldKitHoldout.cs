@@ -65,7 +65,7 @@ public class WulfrumScaffoldKitHoldout : ModProjectile
 
     public static int tileGlowTime = 10;
 
-    public Dictionary<Point, int> SelectedTiles = new(); //Might need some cloning stuff for mp? idk, probably not
+    public Dictionary<Point, int> SelectedTiles = []; //Might need some cloning stuff for mp? idk, probably not
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
     public override void SetDefaults()

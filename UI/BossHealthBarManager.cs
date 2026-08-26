@@ -89,8 +89,8 @@ public class BossHealthBarManager : ModBossBarStyle
     public static Dictionary<int, int[]> OneToMany;
     public static List<int> BossExclusionList;
     public static List<int> MinibossHPBarList;
-    public static Dictionary<int, BossEntityExtension> EntityExtensionHandler = new();
-    public static Dictionary<NPCSpecialHPGetRequirement, NPCSpecialHPGetFunction> SpecialHPRequirements = new();
+    public static Dictionary<int, BossEntityExtension> EntityExtensionHandler = [];
+    public static Dictionary<NPCSpecialHPGetRequirement, NPCSpecialHPGetFunction> SpecialHPRequirements = [];
 
     public delegate bool NPCSpecialHPGetRequirement(NPC npc);
     public delegate long NPCSpecialHPGetFunction(NPC npc, bool checkingForMaxLife);
@@ -105,7 +105,7 @@ public class BossHealthBarManager : ModBossBarStyle
 
     public override void SetStaticDefaults()
     {
-        Bars = new List<BossHPUI>();
+        Bars = [];
 
         if (!Main.dedServ)
         {
@@ -115,7 +115,7 @@ public class BossHealthBarManager : ModBossBarStyle
             HPBarFont = Request<DynamicSpriteFont>("CalamityMod/Fonts/HPBarFont", AssetRequestMode.ImmediateLoad).Value;
         }
 
-        OneToMany = new Dictionary<int, int[]>();
+        OneToMany = [];
 
         int[] EoW = new int[] { NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail };
         OneToMany[NPCID.EaterofWorldsHead] = EoW;

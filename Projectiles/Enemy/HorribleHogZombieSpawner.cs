@@ -20,8 +20,8 @@ public class HorribleHogZombieSpawner : ModProjectile, ILocalizedModType
 
     private static SoundStyle ZombieEmergeSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogZombieEmerge");
 
-    public List<int> Zombies = new()
-    {
+    public List<int> Zombies =
+    [
         NPCID.Zombie,
         NPCID.FemaleZombie,
         NPCID.BaldZombie,
@@ -33,7 +33,7 @@ public class HorribleHogZombieSpawner : ModProjectile, ILocalizedModType
         NPCID.BloodZombie,
         NPCID.MaggotZombie,
         ModContent.NPCType<BucketZombie>(),
-    };
+    ];
 
     public static CalamityUtils.CurveSegment Rise => new(CalamityUtils.EasingType.ExpOut, 0f, 0f, 1.08f);
 

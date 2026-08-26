@@ -103,7 +103,7 @@ public static partial class CalamityUtils
     /// <returns>An array of Projectiles. This array may be empty, but it will never be null.</returns>
     public static Projectile[] GetAvailableCoins(this Projectile searchingShot)
     {
-        IList<Projectile> coins = new List<Projectile>();
+        IList<Projectile> coins = [];
 
         // Search for all nearby coins/clips.
         // Coins/clips do not necessarily have to be owned by the same player as the searching projectile!

@@ -277,7 +277,7 @@ public class IVDripOnTheRocks : ModItem, ILocalizedModType
 
 public class IVDripPlayer : ModPlayer
 {
-    public Dictionary<Action<Player, float>, float> IVDripAlcoholEffects = new();
+    public Dictionary<Action<Player, float>, float> IVDripAlcoholEffects = [];
     public bool ivDripEquipped;
     public AlcoholType currentAlcohol = AlcoholType.None;
 

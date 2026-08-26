@@ -116,7 +116,7 @@ internal sealed class MainThreadedFileSystemWatcher : IDisposable
     private sealed class MainThreadedFileSystemWatcherSystem : ILoadable
     {
         private static MainThreadedFileSystemWatcher[] _Watchers = [];
-        private static HashSet<MainThreadedFileSystemWatcher> _WatchersList = [];
+        private static readonly HashSet<MainThreadedFileSystemWatcher> _WatchersList = [];
 
         public static void Register(MainThreadedFileSystemWatcher watcher)
         {

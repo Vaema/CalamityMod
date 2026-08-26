@@ -6,7 +6,7 @@ namespace CalamityMod.CalPlayer.Dashes;
 
 public sealed class PlayerDashManager : ModSystem
 {
-    internal static Dictionary<string, PlayerDashEffect> DashIdentificationTable = new();
+    internal static Dictionary<string, PlayerDashEffect> DashIdentificationTable = [];
 
     public static bool FindByID(string id, out PlayerDashEffect dashEffect)
     {

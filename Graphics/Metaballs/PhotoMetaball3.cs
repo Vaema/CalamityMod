@@ -35,7 +35,7 @@ public class PhotoMetaball3 : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 
@@ -62,13 +62,13 @@ public class PhotoMetaball3 : Metaball
             Particles[i].Update();
         Particles.RemoveAll(p => p.Size <= 2f);
 
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.OrangeRed,
             Color.MediumTurquoise,
             Color.Orange,
             Color.LawnGreen
-        };
+        ];
         float rate = (Main.GlobalTimeWrappedHourly * 8);
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

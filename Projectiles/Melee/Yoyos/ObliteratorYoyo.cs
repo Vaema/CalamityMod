@@ -111,7 +111,7 @@ public class ObliteratorYoyo : ModProjectile
             {
                 DashQueue--;
 
-                List<NPC> targets = new List<NPC>();
+                List<NPC> targets = [];
                 float laserRange = 600f;
                 foreach (NPC n in Main.ActiveNPCs)
                 {

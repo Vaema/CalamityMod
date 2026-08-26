@@ -1223,13 +1223,13 @@ public class Abyss
     //method to clean up small clumps of tiles
     public static void AbyssCleanup()
     {
-        List<ushort> blockTileTypes = new()
-        {
+        List<ushort> blockTileTypes =
+        [
             (ushort)ModContent.TileType<SulphurousShale>(),
             (ushort)ModContent.TileType<AbyssGravel>(),
             (ushort)ModContent.TileType<PyreMantle>(),
             (ushort)ModContent.TileType<Voidstone>(),
-        };
+        ];
 
         void getAttachedPoints(int x, int y, List<Point> points)
         {
@@ -1253,7 +1253,7 @@ public class Abyss
         {
             for (int y = 20; y < Main.maxTilesY - 20; y++)
             {
-                List<Point> chunkPoints = new();
+                List<Point> chunkPoints = [];
                 getAttachedPoints(x, y, chunkPoints);
 
                 int cutoffLimit = 75;

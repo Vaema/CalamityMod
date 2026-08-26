@@ -17,7 +17,7 @@ public class WormAnimation
 {
 
 
-    public Dictionary<int, (WormKeyframe, float)> AnimationKeyframes = new();
+    public Dictionary<int, (WormKeyframe, float)> AnimationKeyframes = [];
 
     /// <summary>
     /// The rigidity of segments
@@ -331,7 +331,7 @@ public abstract class BaseWormNPC : ModNPC
     /// <summary>
     /// Offsets for drawing each segment
     /// </summary>
-    public List<Vector2> SegmentTypeDrawOffsets = new();
+    public List<Vector2> SegmentTypeDrawOffsets = [];
 
     /// <summary>
     /// How far through the current animation this worm is
@@ -347,7 +347,7 @@ public abstract class BaseWormNPC : ModNPC
     /// <summary>
     /// The list of all segments of this worm
     /// </summary>
-    public List<BaseWormSegment> Segments = new();
+    public List<BaseWormSegment> Segments = [];
 
     /// <summary>
     /// The textures for each segment type of this worm. Works like getting a texture from TextureAssets
@@ -373,7 +373,7 @@ public abstract class BaseWormNPC : ModNPC
     /// Internal list that stores the textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalTexAssets = new();
+    private List<Asset<Texture2D>> internalTexAssets = [];
     /// <summary>
     /// The textures for each glow type of this worm. Works like getting a texture from TextureAssets
     /// </summary>
@@ -396,7 +396,7 @@ public abstract class BaseWormNPC : ModNPC
     /// Internal list that stores the glow textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalGlowAssets = new();
+    private List<Asset<Texture2D>> internalGlowAssets = [];
 
     public enum SegmentFollowLogic
     {
@@ -423,7 +423,7 @@ public abstract class BaseWormNPC : ModNPC
     /// <summary>
     /// The points used by ExactSegmentLogic to exactly follow the head
     /// </summary>
-    private List<Vector2> segmentPoints = new();
+    private List<Vector2> segmentPoints = [];
 
     /// <summary>
     /// Updates the positions of the segments based on the value set in SegmentFollowType

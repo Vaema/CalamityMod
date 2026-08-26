@@ -70,11 +70,11 @@ public class ArtifactOfResilienceShards : ModProjectile, ILocalizedModType
         float angleDisplacementSine = (float)Math.Sin((Main.GlobalTimeWrappedHourly * attackMult + Owner.Calamity().rOfResilienceOrbitOffset) * (4.5f) / MathHelper.Pi);
 
         float rate = time * 0.004f;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Sienna,
             Color.Peru
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

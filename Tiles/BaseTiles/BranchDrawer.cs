@@ -130,7 +130,7 @@ public class BranchDrawer
         Branch trunk = GenerateBranchCurve(startOfTrunk, endOfTrunk, TrunkWidth, TrunkWidth);
         Dictionary<Branch, List<Branch>> existingBranches = new()
         {
-            [trunk] = new()
+            [trunk] = []
         };
 
         void extendLengthOfBranch(Branch branch, float lengthToAdd)
@@ -204,7 +204,7 @@ public class BranchDrawer
 
             // Create the new branch in the dictionary and make the old branch count count as having one extra branch attached.
             existingBranches[branchToAttachTo].Add(newBranch);
-            existingBranches[newBranch] = new();
+            existingBranches[newBranch] = [];
 
             // Add to traversed distance.
             distanceTraversed += lengthOfNextBranch;
@@ -220,8 +220,8 @@ public class BranchDrawer
     public void GetVertexData(Point p, out List<VertexPositionColorTexture> vertices, out List<short> indices, out IEnumerable<Branch> outwardmostBranches)
     {
         // Initialize vertex and index data.
-        vertices = new();
-        indices = new();
+        vertices = [];
+        indices = [];
 
         // Determine branch data.
         var branchData = GenerateBranches(p);

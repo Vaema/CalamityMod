@@ -842,8 +842,8 @@ public static partial class CalamityUtils
             proj.netSpam = 0;
     }
 
-    private static readonly List<int> vanillaBlastImmuneTiles = new()
-    {
+    private static readonly List<int> vanillaBlastImmuneTiles =
+    [
         TileID.Cobalt,
         TileID.Mythril,
         TileID.Adamantite,
@@ -853,7 +853,7 @@ public static partial class CalamityUtils
         TileID.Chlorophyte,
         TileID.LihzahrdBrick,
         TileID.LihzahrdAltar
-    };
+    ];
 
     public static void ExplodeTiles(this Projectile p, int explosionRadius, bool respectStandardBlastImmunity = true, IEnumerable<int> customBlastImmuneTiles = null, IEnumerable<int> customBlastImmuneWalls = null)
         => ExplodeTiles(p.Center, explosionRadius, respectStandardBlastImmunity, customBlastImmuneTiles, customBlastImmuneWalls);
@@ -900,11 +900,11 @@ public static partial class CalamityUtils
         }
 
         // Tiles which can never be exploded under any circumstances. Bad things happen if they blow up.
-        HashSet<int> blastImmuneTiles = new()
-        {
+        HashSet<int> blastImmuneTiles =
+        [
             TileID.DemonAltar,
             TileID.ElderCrystalStand
-        };
+        ];
 
         // If respecting vanilla blast immunities, toss in that whole list.
         if (respectStandardBlastImmunity)
@@ -933,9 +933,7 @@ public static partial class CalamityUtils
         HashSet<int> blastImmuneWalls = null;
         if (customBlastImmuneWalls is not null)
         {
-            blastImmuneWalls = new();
-            foreach (int wallID in customBlastImmuneWalls)
-                blastImmuneWalls.Add(wallID);
+            blastImmuneWalls = [.. customBlastImmuneWalls];
         }
 
         // Actually perform the explosion.

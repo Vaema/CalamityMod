@@ -158,11 +158,11 @@ public partial class CalamityPlayer : ModPlayer
                     itemDrop = ModContent.ItemType<Havocfish>();
                 else if (attempt.rare)
                 {
-                    List<int> uncommonCatches = new List<int>()
-                    {
+                    List<int> uncommonCatches =
+                    [
                         ModContent.ItemType<CoastalDemonfish>(),
                         ModContent.ItemType<Shadowfish>()
-                    };
+                    ];
                     itemDrop = uncommonCatches[Main.rand.Next(uncommonCatches.Count)];
                 }
                 // Lava fish usually don't have plentiful catches but we can be more lenient
@@ -238,14 +238,14 @@ public partial class CalamityPlayer : ModPlayer
         }
 
         // Ignore all top priority legendary vanilla catches
-        List<int> keepCatchList = new List<int>()
-        {
+        List<int> keepCatchList =
+        [
             ItemID.CombatBook,
             ItemID.DreadoftheRedSea,
             ItemID.FrogLeg,
             ItemID.BalloonPufferfish,
             ItemID.ZephyrFish
-        };
+        ];
         if (keepCatchList.Contains(itemDrop))
             return;
 
@@ -470,8 +470,8 @@ public partial class CalamityPlayer : ModPlayer
         // Increases the yield of potion ingredient fish with Alluring Bait
         if (alluringBait)
         {
-            List<int> fishList = new List<int>()
-            {
+            List<int> fishList =
+            [
                 ItemID.FlarefinKoi,
                 ItemID.Obsidifish,
                 ItemID.ArmoredCavefish,
@@ -491,7 +491,7 @@ public partial class CalamityPlayer : ModPlayer
                 ModContent.ItemType<Shadowfish>(),
                 ModContent.ItemType<AldebaranAlewife>(),
                 ModContent.ItemType<SunkenSailfish>(),
-            };
+            ];
 
             if (fishList.Contains(fish.type))
                 fish.stack += Main.rand.Next(1, 3 + 1);

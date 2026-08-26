@@ -532,14 +532,14 @@ public class BrimstoneCrag
     public static void FillBrimstoneChests(Chest chest, int Type, bool firstItem)
     {
         int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.ObsidianSkinPotion, ItemID.BattlePotion, ItemID.InfernoPotion, ItemID.PotionOfReturn);
-        List<ChestItem> contents = new List<ChestItem>()
-        {
+        List<ChestItem> contents =
+        [
             new(ItemID.HellstoneBar, WorldGen.genRand.Next(4, 6)),
             new(ModContent.ItemType<Items.Fishing.BrimstoneCragCatches.CoastalDemonfish>(), WorldGen.genRand.Next(2, 5)),
             new(ItemID.HellfireArrow, WorldGen.genRand.Next(25, 50)),
             new(potionType, WorldGen.genRand.Next(1, 3)),
             new(ItemID.GoldCoin, WorldGen.genRand.Next(2, 12)),
-        };
+        ];
 
         if (!firstItem)
         {

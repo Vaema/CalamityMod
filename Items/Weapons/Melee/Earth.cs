@@ -49,12 +49,12 @@ public class Earth : CustomUseProjItem, ILocalizedModType
     }
     public override void ModifyTooltips(List<TooltipLine> list)
     {
-        List<Color> earthColors = new List<Color>()
-        {
+        List<Color> earthColors =
+        [
             Color.OrangeRed,
             Color.MediumTurquoise,
             Color.LimeGreen
-        };
+        ];
 
         int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 2 % earthColors.Count);
         Color currentColor = earthColors[colorIndex];

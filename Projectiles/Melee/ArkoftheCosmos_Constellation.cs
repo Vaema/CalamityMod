@@ -59,7 +59,7 @@ public class ArkoftheCosmosConstellation : ModProjectile, ILocalizedModType
     public override void AI()
     {
         if (Particles == null)
-            Particles = new List<Particle>();
+            Particles = [];
 
         Projectile.Center = Owner.Center;
 

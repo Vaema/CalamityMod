@@ -15,13 +15,13 @@ public class WulfrumLureSignal : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Typeless";
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-    public static List<int> LureSpawnPool => new()
-    {
+    public static List<int> LureSpawnPool =>
+    [
         ModContent.NPCType<WulfrumDrone>(),
         ModContent.NPCType<WulfrumGyrator>(),
         ModContent.NPCType<WulfrumHovercraft>(),
         ModContent.NPCType<WulfrumRover>()
-    };
+    ];
 
     public ref float Time => ref Projectile.ai[0];
 

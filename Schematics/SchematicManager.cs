@@ -106,7 +106,7 @@ public sealed class SchematicManager : ModSystem
     #region Load/Unload
     public override void OnModLoad()
     {
-        PilePlacementMaps = new Dictionary<string, PilePlacementFunction>();
+        PilePlacementMaps = [];
         TileMaps = new Dictionary<string, SchematicMetaTile[,]>
         {
             // Shimmer Shrine

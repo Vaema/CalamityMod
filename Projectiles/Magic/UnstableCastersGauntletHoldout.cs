@@ -246,7 +246,7 @@ public class UnstableCastersGauntletHoldout : BaseGunHoldoutProjectile
                     }
                 }
 
-                List<int> availableIndices = new List<int>();
+                List<int> availableIndices = [];
 
                 for (int i = 0; i < maxSigils; i++)
                 {

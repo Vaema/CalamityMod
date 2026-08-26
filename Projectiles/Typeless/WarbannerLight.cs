@@ -33,11 +33,11 @@ public class WarbannerLight : ModProjectile, ILocalizedModType
     public override void AI()
     {
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Goldenrod,
             Color.Orange
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

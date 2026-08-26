@@ -33,13 +33,13 @@ public class PrismShurikenBlade : ModProjectile, ILocalizedModType
         Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         if (Main.rand.NextBool(4))
         {
-            List<Color> eColors = new List<Color>()
-                {
+            List<Color> eColors =
+                [
                     Color.PaleVioletRed,
                     Color.Turquoise,
                     Color.OrangeRed,
                     Color.GreenYellow
-                };
+                ];
             float rate = (Main.GlobalTimeWrappedHourly * 8);
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];

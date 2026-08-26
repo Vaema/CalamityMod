@@ -47,11 +47,11 @@ public class ElephantKillerElephant : ModProjectile, ILocalizedModType
     public override void AI()
     {
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.CornflowerBlue,
             Color.SkyBlue
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
@@ -124,11 +124,11 @@ public class ElephantKillerElephant : ModProjectile, ILocalizedModType
             float colorFade = MathF.Pow(1 - frameLerp, 1.5f);
 
             float rate = Main.GlobalTimeWrappedHourly * 4 + i * 0.03f;
-            List<Color> eColors = new List<Color>()
-            {
+            List<Color> eColors =
+            [
                 Color.CornflowerBlue,
                 Color.SkyBlue
-            };
+            ];
 
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];

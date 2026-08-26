@@ -676,19 +676,19 @@ public partial class CalamityPlayer : ModPlayer
 
     #region Profaned Moonlight Dye Colors
 
-    public static readonly List<Color> MoonlightDyeDayColors = new()
-    {
+    public static readonly List<Color> MoonlightDyeDayColors =
+    [
         new Color(255, 163, 56),
         new Color(235, 30, 19),
         new Color(242, 48, 187),
-    };
+    ];
 
-    public static readonly List<Color> MoonlightDyeNightColors = new()
-    {
+    public static readonly List<Color> MoonlightDyeNightColors =
+    [
         new Color(24, 134, 198),
         new Color(130, 40, 150),
         new Color(40, 64, 150),
-    };
+    ];
 
     public static void DetermineMoonlightDyeColors(out Color drawColor, Color dayColor, Color nightColor)
     {
@@ -736,8 +736,8 @@ public partial class CalamityPlayer : ModPlayer
             (drawPlayer.wings == 0 || drawPlayer.velocity.Y == 0f))
         {
             //Make sure the lists are in the same order
-            List<int> tankItems = new List<int>()
-            {
+            List<int> tankItems =
+            [
                 ModContent.ItemType<FlurrystormCannon>(),
                 ModContent.ItemType<BlightSpewer>(),
                 ModContent.ItemType<HavocsBreath>(),
@@ -755,9 +755,9 @@ public partial class CalamityPlayer : ModPlayer
                 ModContent.ItemType<PristineFury>(),
                 ModContent.ItemType<AuroraBlazer>(),
                 ModContent.ItemType<PurgeGuzzler>()
-            };
-            List<Texture2D> tankTextures = new List<Texture2D>()
-            {
+            ];
+            List<Texture2D> tankTextures =
+            [
                 ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_FlurrystormCannon").Value,
                 ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_BlightSpewer").Value,
                 ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_HavocsBreath").Value,
@@ -775,7 +775,7 @@ public partial class CalamityPlayer : ModPlayer
                 ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PristineFury").Value,
                 ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_AuroraBlazer").Value,
                 ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/Backpack_PurgeGuzzler").Value
-            };
+            ];
             if (tankItems.Contains(item.type) || drawPlayer.Calamity().plaguebringerCarapace)
             {
                 Texture2D thingToDraw = null;

@@ -61,7 +61,7 @@ public abstract class PaintMetaball : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 

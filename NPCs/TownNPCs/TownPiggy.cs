@@ -158,8 +158,8 @@ public class TownPiggy : ModNPC
         }
     }
 
-    public override List<string> SetNPCNameList() => new()
-    {
+    public override List<string> SetNPCNameList() =>
+    [
         // Original names
         this.GetLocalizedValue("Name.Curly"),
 
@@ -185,7 +185,7 @@ public class TownPiggy : ModNPC
         this.GetLocalizedValue("Name.Poogie"), // Monster Hunter
         
         // Dedicated names
-    };
+    ];
 
     public override string GetChat()
     {

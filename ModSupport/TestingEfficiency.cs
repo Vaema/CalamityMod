@@ -51,8 +51,8 @@ public class TestingEfficiencySupport : ModSystem
         return ModLoader.TryGetMod("TestingEfficiency", out testingEfficiency);
     }
 
-    List<(string name, float tier, Func<bool> getter, Action<bool> setter, Func<Asset<Texture2D>> texture)> BossTogles = new()
-    {
+    List<(string name, float tier, Func<bool> getter, Action<bool> setter, Func<Asset<Texture2D>> texture)> BossTogles =
+    [
         ("Desert Scourge", 1.5f,
             () => DownedBossSystem.downedDesertScourge,
             x => DownedBossSystem.downedDesertScourge = x,
@@ -184,7 +184,7 @@ public class TestingEfficiencySupport : ModSystem
             () => DownedBossSystem.downedPrimordialWyrm,
             x => DownedBossSystem.downedPrimordialWyrm = x,
             () => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[ModContent.NPCType<PrimordialWyrmHead>()]])
-    };
+    ];
 
     public override void PostSetupContent()
     {

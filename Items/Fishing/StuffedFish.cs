@@ -10,8 +10,8 @@ namespace CalamityMod.Items.Fishing;
 public class StuffedFish : ModItem, ILocalizedModType
 {
     public new string LocalizationCategory => "Items.Fishing";
-    public static List<int> HerbDisplay = new()
-    {
+    public static List<int> HerbDisplay =
+    [
         ItemID.Daybloom,
         ItemID.Blinkroot,
         ItemID.Waterleaf,
@@ -19,9 +19,9 @@ public class StuffedFish : ModItem, ILocalizedModType
         ItemID.Moonglow,
         ItemID.Deathweed,
         ItemID.Fireblossom
-    };
-    public static List<int> SeedDisplay = new()
-    {
+    ];
+    public static List<int> SeedDisplay =
+    [
         ItemID.DaybloomSeeds,
         ItemID.BlinkrootSeeds,
         ItemID.WaterleafSeeds,
@@ -35,7 +35,7 @@ public class StuffedFish : ModItem, ILocalizedModType
         ItemID.AshGrassSeeds,
         ModContent.ItemType<CinderBlossomSeeds>(),
         ItemID.PumpkinSeed
-    };
+    ];
 
     public override void SetStaticDefaults()
     {

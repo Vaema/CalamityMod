@@ -60,13 +60,13 @@ public class TempTilesManagerSystem : ModSystem
 {
     public static int[] TemporaryTileIDs;
 
-    public static List<TemporaryTile> ManagedTiles = new();
-    public static List<TemporaryTile> DeletableTiles = new();
+    public static List<TemporaryTile> ManagedTiles = [];
+    public static List<TemporaryTile> DeletableTiles = [];
 
     public override void Load()
     {
-        ManagedTiles = new List<TemporaryTile>();
-        DeletableTiles = new List<TemporaryTile>();
+        ManagedTiles = [];
+        DeletableTiles = [];
     }
 
     public override void Unload()
@@ -115,8 +115,8 @@ public class TempTilesManagerSystem : ModSystem
 
     public override void OnWorldUnload()
     {
-        ManagedTiles = new List<TemporaryTile>();
-        DeletableTiles = new List<TemporaryTile>();
+        ManagedTiles = [];
+        DeletableTiles = [];
     }
 
     public override void PostDrawTiles()

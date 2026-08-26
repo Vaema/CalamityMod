@@ -88,7 +88,7 @@ public class MantisClawJet : ModProjectile, ILocalizedModType
 
         Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
 
-        List<Vector2> positions = new();
+        List<Vector2> positions = [];
 
         for (int i = 0; i < Projectile.oldPos.Length; i++)
         {

@@ -16,14 +16,14 @@ public class RavagerBossBar : ModBossBar
 {
     // Used to determine the max health of a multi-segmented boss
     public NPC FalseNPCSegment;
-    public List<int> RavagerParts = new()
-    {
+    public List<int> RavagerParts =
+    [
         NPCType<RavagerClawLeft>(),
         NPCType<RavagerClawRight>(),
         NPCType<RavagerHead>(),
         NPCType<RavagerLegLeft>(),
         NPCType<RavagerLegRight>()
-    };
+    ];
 
     public override Asset<Texture2D> GetIconTexture(ref Rectangle? iconFrame) => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[NPCType<RavagerBody>()]];
 

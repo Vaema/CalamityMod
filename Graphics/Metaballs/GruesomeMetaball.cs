@@ -42,7 +42,7 @@ public class GruesomeMetaball : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     // Check if there are any extraneous particles or if the Gruesome Eminence projectile is present when deciding if this particle should be drawn.
     public override bool AnythingToDraw => Particles.Any() || CalamityUtils.AnyProjectiles(ModContent.ProjectileType<SpiritCongregation>());
@@ -66,7 +66,7 @@ public class GruesomeMetaball : Metaball
             return;
 
         // Load layer assets.
-        layerAssets = new();
+        layerAssets = [];
 
         for (int i = 1; i <= 5; i++)
             layerAssets.Add(ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/GruesomeEminence_Ghost_Layer{i}", AssetRequestMode.ImmediateLoad));

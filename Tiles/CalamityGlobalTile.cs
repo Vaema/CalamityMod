@@ -19,8 +19,8 @@ namespace CalamityMod.Tiles;
 
 public class CalamityGlobalTile : GlobalTile
 {
-    public static List<int> GrowthTiles = new()
-    {
+    public static List<int> GrowthTiles =
+    [
         TileType<SeaPrism>(),
         TileType<AbyssGravel>(),
         TileType<PyreMantle>(),
@@ -34,7 +34,7 @@ public class CalamityGlobalTile : GlobalTile
         TileType<Limestone>(),
         TileType<LimestoneCobble>(),
         TileType<Voidstone>()
-    };
+    ];
 
     public override void SetStaticDefaults()
     {

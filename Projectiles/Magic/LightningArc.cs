@@ -31,7 +31,7 @@ public class LightningArc : ModProjectile, ILocalizedModType
     }
 
 
-    HashSet<NPC> shockedbefore = new();
+    HashSet<NPC> shockedbefore = [];
     int prevX = 0;
     public override void AI()
     {

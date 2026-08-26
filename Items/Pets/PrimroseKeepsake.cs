@@ -31,7 +31,7 @@ public class PrimroseKeepsake : ModItem, ILocalizedModType
 
     public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
     {
-        List<int> pets = new List<int> { ModContent.ProjectileType<Bear>(), ModContent.ProjectileType<KendraPet>() };
+        List<int> pets = [ModContent.ProjectileType<Bear>(), ModContent.ProjectileType<KendraPet>()];
         foreach (int petProjID in pets)
             Projectile.NewProjectile(source, position, velocity, petProjID, damage, knockback, player.whoAmI);
         return false;

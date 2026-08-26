@@ -283,12 +283,12 @@ public partial class CalamityPlayer : ModPlayer
             Color effectColor = Orange ? XyksBlessingOrange.baseMainColor : XyksBlessingBlue.baseMainColor;
 
             float rate = Main.GlobalTimeWrappedHourly * 12;
-            List<Color> eColors = new List<Color>()
-            {
+            List<Color> eColors =
+            [
                 Orange ? XyksBlessingOrange.baseMainColor : XyksBlessingBlue.baseMainColor,
                 Orange ? XyksBlessingOrange.baseAccentColor : XyksBlessingBlue.baseAccentColor,
                 Orange ? XyksBlessingOrange.baseEffectColor : XyksBlessingBlue.baseEffectColor
-            };
+            ];
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
@@ -693,15 +693,15 @@ public partial class CalamityPlayer : ModPlayer
             rageDiff += rageMax * GaelsGreatsword.RagePerSecond / 60f;
 
         float rate = Main.GlobalTimeWrappedHourly * 29;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.PaleVioletRed,
             Color.Coral,
             Color.Khaki,
             Color.PaleGreen,
             Color.Turquoise,
             Color.Violet
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
@@ -919,7 +919,7 @@ public partial class CalamityPlayer : ModPlayer
         float auricRejectionKB = Player.noKnockback ? 20f : 40f;
 
         // Get a list of tiles that are colliding with the player.
-        List<Point> EdgeTiles = new List<Point>();
+        List<Point> EdgeTiles = [];
         Collision.GetEntityEdgeTiles(EdgeTiles, Player);
         foreach (Point touchedTile in EdgeTiles)
         {
@@ -1256,7 +1256,7 @@ public partial class CalamityPlayer : ModPlayer
         if (spiritOrigin)
         {
             int bullseyeType = ModContent.ProjectileType<SpiritOriginBullseye>();
-            List<int> alreadyTargetedNPCs = new List<int>();
+            List<int> alreadyTargetedNPCs = [];
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type != bullseyeType || p.owner != Player.whoAmI)
@@ -4187,8 +4187,8 @@ public partial class CalamityPlayer : ModPlayer
             }
         }
 
-        List<int> summonDeleteList = new List<int>()
-        {
+        List<int> summonDeleteList =
+        [
             ModContent.ProjectileType<BrimstoneElementalMinion>(),
             ModContent.ProjectileType<WaterElementalMinion>(),
             ModContent.ProjectileType<SandElementalHealer>(),
@@ -4201,7 +4201,7 @@ public partial class CalamityPlayer : ModPlayer
             ModContent.ProjectileType<MiniGuardianAttack>(),
             ModContent.ProjectileType<MiniGuardianDefense>(),
             ModContent.ProjectileType<MiniGuardianHealer>()
-        };
+        ];
         int projAmt = 1;
         for (int i = 0; i < summonDeleteList.Count; i++)
         {

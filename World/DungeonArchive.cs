@@ -101,25 +101,25 @@ public class DungeonArchive
     {
         int potionType1 = Utils.SelectRandom(WorldGen.genRand, ItemID.HunterPotion, ItemID.IronskinPotion);
         int potionType2 = Utils.SelectRandom(WorldGen.genRand, ItemID.ShinePotion, ItemID.SwiftnessPotion);
-        List<ChestItem> contents1 = new List<ChestItem>()
-        {
+        List<ChestItem> contents1 =
+        [
             new(ItemID.ShadowKey, 1),
             new(ItemID.HealingPotion, WorldGen.genRand.Next(10, 20)),
             new(ItemID.ManaPotion, WorldGen.genRand.Next(10, 20)),
             new(potionType1, WorldGen.genRand.Next(4, 8)),
             new(potionType2, WorldGen.genRand.Next(4, 8)),
             new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 10)),
-        };
+        ];
 
-        List<ChestItem> contents2 = new List<ChestItem>()
-        {
+        List<ChestItem> contents2 =
+        [
             new(ItemID.SpellTome, WorldGen.genRand.Next(2, 3)),
             new(ItemID.Book, WorldGen.genRand.Next(12, 25)),
             new(ItemID.TallyCounter, 1),
             new(potionType1, WorldGen.genRand.Next(4, 8)),
             new(potionType2, WorldGen.genRand.Next(4, 8)),
             new(ItemID.GoldCoin, WorldGen.genRand.Next(5, 10)),
-        };
+        ];
 
         //this is normally not a good idea with separate items lists, but both lists are the same size so it is fine here
         for (int i = 0; i < contents1.Count; i++)

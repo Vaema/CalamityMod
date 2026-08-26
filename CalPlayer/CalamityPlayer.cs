@@ -226,7 +226,7 @@ public partial class CalamityPlayer : ModPlayer
     /// </summary>
     public int Starshield = 0;
 
-    public List<StarburstEntity> StarburstEntities = new();
+    public List<StarburstEntity> StarburstEntities = [];
 
     public CombatText subtitletext = null;
     public Color[] subtitleColors = new Color[] { Color.White, Color.White };
@@ -1781,7 +1781,7 @@ public partial class CalamityPlayer : ModPlayer
     public bool AbleToSelectExoMech = false;
     public bool HasTalkedAtCodebreaker = false;
     public bool HasCraftedDraedonsForge = false;
-    public List<ulong> SeenDraedonDialogs = new();
+    public List<ulong> SeenDraedonDialogs = [];
     #endregion Draedon Summoning
 
     #region Mouse Controls Syncing
@@ -1933,7 +1933,7 @@ public partial class CalamityPlayer : ModPlayer
         long totalTicks = newSessionTotal.Ticks;
 
         // Save all cooldowns which are marked as persisting through save/load.
-        TagCompound cooldownsTag = new TagCompound();
+        TagCompound cooldownsTag = [];
         var cdIterator = cooldowns.GetEnumerator();
         while (cdIterator.MoveNext())
         {

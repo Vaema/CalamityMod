@@ -42,7 +42,7 @@ public class EnhancedDarknessSystem : ModSystem
         }
     }
 
-    public static List<LightSource> lights = new();
+    public static List<LightSource> lights = [];
     public override void Load()
     {
         On_OverlayManager.Draw += DrawShadowOverlay;

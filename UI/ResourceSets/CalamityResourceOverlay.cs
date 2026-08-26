@@ -15,7 +15,7 @@ namespace CalamityMod.UI.ResourceSets;
 public class CalamityResourceOverlay : ModResourceOverlay
 {
     // Most of this is taken from ExampleMod. See that for additional explanations.
-    private Dictionary<string, Asset<Texture2D>> vanillaAssetCache = new();
+    private Dictionary<string, Asset<Texture2D>> vanillaAssetCache = [];
 
     // Vanilla texture paths
     const string fancyFolder = "Images/UI/PlayerResourceSets/FancyClassic/";

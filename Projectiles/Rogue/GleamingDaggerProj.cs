@@ -13,7 +13,7 @@ public class GleamingDaggerProj : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Rogue";
     private bool hasHitEnemy = false;
     private int targetNPC = -1;
-    private List<int> previousNPCs = new() { -1 };
+    private List<int> previousNPCs = [-1];
 
     public override void SetDefaults()
     {

@@ -28,7 +28,7 @@ public class Teslabeam : BaseLaserbeamProjectile, ILocalizedModType
     public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj", AssetRequestMode.ImmediateLoad).Value;
     public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj", AssetRequestMode.ImmediateLoad).Value;
 
-    List<Vector2> offsetPoints = new();
+    List<Vector2> offsetPoints = [];
     NPC Victim;
     public float damageMultiplier = 1f; // a multiplier for how much damage the beam deals
     public bool damageShouldDecay = false; // if this is true, the weapon's damage will decay if the grace period is over
@@ -172,7 +172,7 @@ public class Teslabeam : BaseLaserbeamProjectile, ILocalizedModType
             return false;
 
         // the final list of points that will be used to draw the lightning which combines a series of points travelling up the beam with the random values from the offset list
-        List<Vector2> finalPoints = new List<Vector2>();
+        List<Vector2> finalPoints = [];
         for (int i = 0; i <= 75; i++)
         {
             Vector2 baseVec = Vector2.Lerp(Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength, i / 73.5f);

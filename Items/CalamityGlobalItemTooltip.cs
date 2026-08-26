@@ -1430,11 +1430,11 @@ public partial class CalamityGlobalItem : GlobalItem
             Vector2 basePosition = new Vector2(line.X, line.Y);
 
             float rate = Main.GlobalTimeWrappedHourly * 6;
-            List<Color> eColors = new List<Color>()
-            {
+            List<Color> eColors =
+            [
                 XyksBlessingBlue.baseMainColor,
                 XyksBlessingBlue.baseAccentColor,
-            };
+            ];
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
@@ -1490,11 +1490,11 @@ public partial class CalamityGlobalItem : GlobalItem
             Vector2 basePosition = new Vector2(line.X, line.Y);
 
             float rate = Main.GlobalTimeWrappedHourly * 6;
-            List<Color> eColors = new List<Color>()
-            {
+            List<Color> eColors =
+            [
                 XyksBlessingOrange.baseMainColor,
                 XyksBlessingOrange.baseAccentColor,
-            };
+            ];
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
@@ -1584,13 +1584,13 @@ public partial class CalamityGlobalItem : GlobalItem
             if (line.Name == "Tooltip1" || line.Name == "Tooltip4" || line.Name == "Tooltip7") // Give the shifting color to the lines that need it
             {
                 float rate = (Main.GlobalTimeWrappedHourly * 3);
-                List<Color> eColors = new List<Color>()
-                {
+                List<Color> eColors =
+                [
                     Owner.shirtColor,
                     Color.Lerp(Owner.shirtColor, Color.Black, 0.15f),
                     Color.Lerp(Owner.shirtColor, Color.White, 0.05f),
                     Color.Lerp(Owner.shirtColor, Color.White, 0.25f)
-                };
+                ];
                 int colorIndex = (int)(rate / 2 % eColors.Count);
                 Color currentColor = eColors[colorIndex];
                 Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

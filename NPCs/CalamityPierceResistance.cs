@@ -20,10 +20,10 @@ public sealed class PierceResistNPC : GlobalNPC
 
     public override void Load()
     {
-        exemptProjectiles = new();
-        pierceResistNPC = new();
-        singleHitboxNPC = new();
-        singleHitboxExemptProjectiles = new();
+        exemptProjectiles = [];
+        pierceResistNPC = [];
+        singleHitboxNPC = [];
+        singleHitboxExemptProjectiles = [];
     }
 
     public override void Unload()

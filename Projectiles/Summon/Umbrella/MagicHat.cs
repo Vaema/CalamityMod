@@ -62,14 +62,14 @@ public class MagicHat : ModProjectile, ILocalizedModType
         // On frame 2, spawn the tools
         if (Projectile.ai[0] == 1f)
         {
-            List<Tuple<int, float>> Projectiles = new List<Tuple<int, float>>()
-            {
+            List<Tuple<int, float>> Projectiles =
+            [
                 new(ModContent.ProjectileType<MagicArrow>(), 2f),
                 new(ModContent.ProjectileType<MagicHammer>(), 3f),
                 new(ModContent.ProjectileType<MagicAxe>(), 1f),
                 new(ModContent.ProjectileType<MagicUmbrella>(), 1f),
                 new(ModContent.ProjectileType<MagicRifle>(), 1f),
-            };
+            ];
             for (int i = 0; i < Projectiles.Count; i++)
             {
                 int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, Projectiles[i].Item1, (int)(Projectile.damage * Projectiles[i].Item2),

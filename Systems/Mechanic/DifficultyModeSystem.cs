@@ -23,7 +23,7 @@ public class DifficultyModeSystem : ModSystem
     internal static bool _hasCheckedItOutYet = false; //Simple variable to add a cool effect to the mode selector 
     internal static int _newGameModeID = GameModeID.Normal;
 
-    public static List<DifficultyMode> Difficulties = new(); //Difficulty modes ordered by ascending difficulty
+    public static List<DifficultyMode> Difficulties = []; //Difficulty modes ordered by ascending difficulty
     public static List<DifficultyMode[]> DifficultyTiers; //Difficulty modes grouped together by difficulty
     public static int MostAlternateDifficulties; //The most alternate difficulties at any tier that exists. Used to know the widest space to take in the ui
 
@@ -33,10 +33,10 @@ public class DifficultyModeSystem : ModSystem
     {
         MostAlternateDifficulties = 1;
         //Initialize base mod difficulties
-        Difficulties = new List<DifficultyMode>() { ModContent.GetInstance<NoDifficulty>(),
+        Difficulties = [ ModContent.GetInstance<NoDifficulty>(),
                                                     ModContent.GetInstance<ExpertDifficulty>(),ModContent.GetInstance<RevengeanceDifficulty>(),
                                                     ModContent.GetInstance<MasterDifficulty>(), ModContent.GetInstance<DeathDifficulty>(),
-                                                    ModContent.GetInstance<LegendaryDifficulty>(), ModContent.GetInstance<MaliceDifficulty>() };
+                                                    ModContent.GetInstance<LegendaryDifficulty>(), ModContent.GetInstance<MaliceDifficulty>() ];
 
         journeyDifficultyUpdateMethod = typeof(CreativePowers.DifficultySliderPower).GetMethod("UpdateInfoFromSliderValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -167,7 +167,7 @@ public class DifficultyModeSystem : ModSystem
         Difficulties = [.. Difficulties.OrderBy(d => d.DifficultyScale)];
 
         //Difficulties are arranged in "tiers". This is done so that multiple mods can add their own alternate difficulties sharing a tier with the base ones
-        DifficultyTiers = new List<DifficultyMode[]>();
+        DifficultyTiers = [];
         float currentTier = -1;
         int tierIndex = -1;
 
@@ -575,7 +575,7 @@ public class DeathDifficulty : DifficultyMode
     {
         DifficultyMode[] tierList = DifficultyModeSystem.DifficultyTiers[tier];
 
-        List<int> difficulties = new List<int>();
+        List<int> difficulties = [];
 
         for (int i = 0; i < tierList.Length; i++)
         {
@@ -637,7 +637,7 @@ public class MaliceDifficulty : DifficultyMode
     {
         DifficultyMode[] tierList = DifficultyModeSystem.DifficultyTiers[tier];
 
-        List<int> difficulties = new List<int>();
+        List<int> difficulties = [];
 
         for (int i = 0; i < tierList.Length; i++)
         {

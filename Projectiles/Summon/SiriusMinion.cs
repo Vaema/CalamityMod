@@ -27,7 +27,7 @@ public class SiriusMinion : ModProjectile, ILocalizedModType
 
     public bool CheckForSpawning = false;
 
-    public List<StarburstEntity> starburstsToFire = new();
+    public List<StarburstEntity> starburstsToFire = [];
 
     public override void SetStaticDefaults()
     {
@@ -265,7 +265,7 @@ public class SiriusMinion : ModProjectile, ILocalizedModType
                     {
                         moddedOwner.StarburstEntities.Remove(item);
                     }
-                    starburstsToFire = new();
+                    starburstsToFire = [];
                 }
             }
         }

@@ -117,14 +117,14 @@ public class MechanicShed
     public static void FillMechanicChest(Chest chest, int Type, bool place)
     {
         int gizmoGoobabGadgets = Utils.SelectRandom(WorldGen.genRand, ItemID.BrickLayer, ItemID.ExtendoGrip, ItemID.PaintSprayer, ItemID.PortableCementMixer);
-        List<ChestItem> contents = new List<ChestItem>()
-        {
+        List<ChestItem> contents =
+        [
             new(ItemID.Toolbox, 1),
             new(ItemID.ActuationAccessory, 1),
             new(gizmoGoobabGadgets, 1),
             new(ItemID.BuilderPotion, WorldGen.genRand.Next(1, 3)),
             new(ItemID.GoldCoin, WorldGen.genRand.Next(1, 3)),
-        };
+        ];
 
         for (int i = 0; i < contents.Count; i++)
         {

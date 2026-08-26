@@ -429,7 +429,7 @@ public class RecipeSystem : ModSystem
     #region Automatic Recipe Groups
     private static RecipeGroup GetFoodItems()
     {
-        List<int> foodIds = new List<int>();
+        List<int> foodIds = [];
         foreach (var i in ContentSamples.ItemsByType)
         {
             Item item = i.Value;

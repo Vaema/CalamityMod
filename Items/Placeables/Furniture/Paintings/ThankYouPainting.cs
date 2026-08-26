@@ -57,8 +57,8 @@ public class ThankYouPainting : ModItem, ILocalizedModType
             holdShift = false;
     }
 
-    public static IList<string> currentDevList = new List<string>()
-    {
+    public static IList<string> currentDevList =
+    [
         "Altixal",
         "apotofkoolaid",
         "ArchonSystem",
@@ -98,10 +98,10 @@ public class ThankYouPainting : ModItem, ILocalizedModType
         "Xyk",
         "YuH",
         "Zarachard",
-    };
+    ];
 
-    public static IList<string> formerDevList = new List<string>()
-    {
+    public static IList<string> formerDevList =
+    [
         "Afzofa",
         "AdipemDragon",
         "Akeeli",
@@ -217,5 +217,5 @@ public class ThankYouPainting : ModItem, ILocalizedModType
         "Yuyutsu",
         "Zach",
         "Ziggums",
-    };
+    ];
 }

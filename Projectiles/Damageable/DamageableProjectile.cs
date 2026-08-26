@@ -98,7 +98,7 @@ public abstract class DamageableProjectile : ModProjectile
     {
         get;
         set;
-    } = new List<int>();
+    } = [];
 
     /// <summary>
     /// List of all projectiles this projectile should ignore when checking if it's colliding with a projectile (assuming this is possible).
@@ -107,7 +107,7 @@ public abstract class DamageableProjectile : ModProjectile
     {
         get;
         set;
-    } = new List<int>();
+    } = [];
     #endregion
 
     #region Virtual Methods + Sealed Counterparts

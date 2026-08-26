@@ -172,11 +172,11 @@ public class CloudElemental : ModNPC
 
         if (AttackTimer >= hoverTime)
         {
-            List<AttackState> potentialAttackStates = new List<AttackState>()
-            {
+            List<AttackState> potentialAttackStates =
+            [
                 AttackState.NimbusSummon,
                 AttackState.TornadoSummon,
-            };
+            ];
 
             // Gain new attacks in phase 2.
             if (Phase2)

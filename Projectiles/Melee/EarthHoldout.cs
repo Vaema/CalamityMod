@@ -80,12 +80,12 @@ public class EarthHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
         DrawUnconditionally = false;
 
         float rate = Main.GlobalTimeWrappedHourly * 12;
-        List<Color> earthColors = new List<Color>()
-        {
+        List<Color> earthColors =
+        [
             Color.OrangeRed,
             Color.MediumTurquoise,
             Color.LimeGreen
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % earthColors.Count);
         Color currentColor = earthColors[colorIndex];

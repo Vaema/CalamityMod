@@ -86,13 +86,13 @@ public class RelicOfDeliveranceSpear : ModProjectile
 
         float rate = Main.GlobalTimeWrappedHourly * 7;
         Color powerColor = Color.Khaki;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Goldenrod,
             Color.OrangeRed,
             Color.Orange,
             Color.Gold
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

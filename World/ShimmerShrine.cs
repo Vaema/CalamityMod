@@ -52,8 +52,8 @@ public class ShimmerShrine
 
     public static void FillShimmerShrineChest(Chest chest, int Type, bool place)
     {
-        List<ChestItem> contents = new List<ChestItem>()
-        {
+        List<ChestItem> contents =
+        [
             new(ItemID.AngelStatue, 1),
             new(WorldGen.genRand.NextBool() ? ItemID.LifeCrystal : ItemID.ManaCrystal, 1),
             new(GenVars.gold == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(5, 16)),
@@ -61,7 +61,7 @@ public class ShimmerShrine
             new(ItemID.HealingPotion, WorldGen.genRand.Next(5, 11)),
             new(ItemID.LuckPotionGreater, WorldGen.genRand.Next(1, 3)),
             new(ItemID.GoldCoin, WorldGen.genRand.Next(2, 5)),
-        };
+        ];
 
         for (int i = 0; i < contents.Count; i++)
         {

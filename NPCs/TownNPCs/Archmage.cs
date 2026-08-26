@@ -94,7 +94,7 @@ public class Archmage : ModNPC
         return DownedBossSystem.downedCryogen;
     }
 
-    public override List<string> SetNPCNameList() => new() { this.GetLocalizedValue("Name.Permafrost") };
+    public override List<string> SetNPCNameList() => [this.GetLocalizedValue("Name.Permafrost")];
 
     public override string GetChat()
     {

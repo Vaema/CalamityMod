@@ -35,7 +35,7 @@ public class PhotoMetaball4 : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 

@@ -18,7 +18,7 @@ public class AuricLandMineExplosion : ModProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
     private Player Owner => Main.player[Projectile.owner];
 
-    public List<List<Vector2>> lightningTrails = new();
+    public List<List<Vector2>> lightningTrails = [];
     public static int lightningCount = 15;
     public static int totalPoints = 10;
 
@@ -49,7 +49,7 @@ public class AuricLandMineExplosion : ModProjectile, ILocalizedModType
                 lightningTrails.Clear();
                 for (int i = 0; i < lightningCount; i++)
                 {
-                    List<Vector2> points = new List<Vector2>();
+                    List<Vector2> points = [];
                     for (int j = 0; j < totalPoints; j++)
                     {
                         float radians = MathHelper.TwoPi / lightningCount;

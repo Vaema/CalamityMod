@@ -25,7 +25,7 @@ public class ExoMechsSky : CustomSky
 
     public float BackgroundIntensity;
     public float LightningIntensity;
-    public List<Lightning> LightningBolts = new();
+    public List<Lightning> LightningBolts = [];
     public static bool CanSkyBeActive
     {
         get

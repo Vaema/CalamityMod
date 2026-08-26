@@ -395,7 +395,7 @@ public class FearlessGoldfishWarrior : ModNPC
     public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
     {
         bool instakill = false;
-        List<string> metarexNames = new List<string> { "LordMetarex", "Metarex" };
+        List<string> metarexNames = ["LordMetarex", "Metarex"];
         foreach (string s in metarexNames)
         {
             if (s.ToLower() == target.name.ToLower())

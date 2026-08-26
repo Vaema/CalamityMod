@@ -69,12 +69,12 @@ public class PauldronDash : ModProjectile, ILocalizedModType
 
 
         float rate = Main.GlobalTimeWrappedHourly * 22;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.OrangeRed,
             Color.Orange,
             Color.DarkOrange
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

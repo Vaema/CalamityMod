@@ -26,8 +26,8 @@ public class MiracleBlight : ModBuff
 
     public static Asset<Texture2D> ShaderTexture => field ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
 
-    public static List<int> ExcludedNPCsForShader => new()
-    {
+    public static List<int> ExcludedNPCsForShader =>
+    [
         // TODO: Remove this list if possible
 
         // List the reason why the NPC(s) are excluded :)
@@ -43,7 +43,7 @@ public class MiracleBlight : ModBuff
         NPCID.MoonLordCore,
         NPCID.MoonLordHand,
         NPCID.MoonLordHead
-    };
+    ];
 
     public override void Load()
     {

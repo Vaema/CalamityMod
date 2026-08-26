@@ -400,8 +400,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "DesertScourge";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> segments = new List<int>() { NPCType<DesertScourgeHead>(), NPCType<DesertScourgeBody>(), NPCType<DesertScourgeTail>() };
-            List<int> collection = new List<int>() { ItemType<DesertScourgeRelic>(), ItemType<DesertScourgeTrophy>(), ItemType<DesertScourgeMask>(), ItemType<LoreDesertScourge>(), ItemType<ThankYouPainting>() };
+            List<int> segments = [NPCType<DesertScourgeHead>(), NPCType<DesertScourgeBody>(), NPCType<DesertScourgeTail>()];
+            List<int> collection = [ItemType<DesertScourgeRelic>(), ItemType<DesertScourgeTrophy>(), ItemType<DesertScourgeMask>(), ItemType<LoreDesertScourge>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/DesertScourge/DesertScourge_BossChecklist").Value;
@@ -424,7 +424,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "GiantClam";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<GiantClam>();
-            List<int> collection = new List<int>() { ItemType<GiantClamRelic>(), ItemType<GiantClamTrophy>() };
+            List<int> collection = [ItemType<GiantClamRelic>(), ItemType<GiantClamTrophy>()];
             AddMiniBoss(bossChecklist, calamity, entryName, order, DownedGiantClam, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -438,7 +438,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Crabulon";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<Crabulon>();
-            List<int> collection = new List<int>() { ItemType<CrabulonRelic>(), ItemType<CrabulonTrophy>(), ItemType<CrabulonMask>(), ItemType<LoreCrabulon>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<CrabulonRelic>(), ItemType<CrabulonTrophy>(), ItemType<CrabulonMask>(), ItemType<LoreCrabulon>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedCrabulon, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -454,7 +454,7 @@ internal class WeakReferenceSupport : ModSystem
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<HiveMind>();
             Func<bool> IsCorruption = () => !WorldGen.crimson || Main.drunkWorld;
-            List<int> collection = new List<int>() { ItemType<HiveMindRelic>(), ItemType<HiveMindTrophy>(), ItemType<HiveMindMask>(), ItemType<LoreHiveMind>(), ItemType<RottingEyeball>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<HiveMindRelic>(), ItemType<HiveMindTrophy>(), ItemType<HiveMindMask>(), ItemType<LoreHiveMind>(), ItemType<RottingEyeball>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedHiveMind, type, new Dictionary<string, object>()
             {
                 ["availability"] = IsCorruption,
@@ -472,7 +472,7 @@ internal class WeakReferenceSupport : ModSystem
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<PerforatorHive>();
             Func<bool> IsCrimson = () => WorldGen.crimson || Main.drunkWorld;
-            List<int> collection = new List<int>() { ItemType<PerforatorsRelic>(), ItemType<PerforatorTrophy>(), ItemType<PerforatorMask>(), ItemType<LorePerforators>(), ItemType<BloodyVein>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<PerforatorsRelic>(), ItemType<PerforatorTrophy>(), ItemType<PerforatorMask>(), ItemType<LorePerforators>(), ItemType<BloodyVein>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedPerforators, type, new Dictionary<string, object>()
             {
                 ["availability"] = IsCrimson,
@@ -489,8 +489,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "SlimeGod";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> bosses = new List<int>() { NPCType<SlimeGodCore>(), NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>() };
-            List<int> collection = new List<int>() { ItemType<SlimeGodRelic>(), ItemType<SlimeGodTrophy>(), ItemType<SlimeGodMask>(), ItemType<SlimeGodMask2>(), ItemType<LoreSlimeGod>(), ItemType<ThankYouPainting>() };
+            List<int> bosses = [NPCType<SlimeGodCore>(), NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>()];
+            List<int> collection = [ItemType<SlimeGodRelic>(), ItemType<SlimeGodTrophy>(), ItemType<SlimeGodMask>(), ItemType<SlimeGodMask2>(), ItemType<LoreSlimeGod>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedSlimeGod, bosses, new Dictionary<string, object>()
             {
                 ["displayName"] = GetDisplayName(entryName),
@@ -506,7 +506,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Cryogen";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<Cryogen>();
-            List<int> collection = new List<int>() { ItemType<CryogenRelic>(), ItemType<CryogenTrophy>(), ItemType<CryogenMask>(), ItemType<LoreArchmage>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<CryogenRelic>(), ItemType<CryogenTrophy>(), ItemType<CryogenMask>(), ItemType<LoreArchmage>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedCryogen, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -521,8 +521,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "AquaticScourge";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> segments = new List<int>() { NPCType<AquaticScourgeHead>(), NPCType<AquaticScourgeBody>(), NPCType<AquaticScourgeBodyAlt>(), NPCType<AquaticScourgeTail>() };
-            List<int> collection = new List<int>() { ItemType<AquaticScourgeRelic>(), ItemType<AquaticScourgeTrophy>(), ItemType<AquaticScourgeMask>(), ItemType<LoreAquaticScourge>(), ItemType<LoreSulphurSea>(), ItemType<ThankYouPainting>() };
+            List<int> segments = [NPCType<AquaticScourgeHead>(), NPCType<AquaticScourgeBody>(), NPCType<AquaticScourgeBodyAlt>(), NPCType<AquaticScourgeTail>()];
+            List<int> collection = [ItemType<AquaticScourgeRelic>(), ItemType<AquaticScourgeTrophy>(), ItemType<AquaticScourgeMask>(), ItemType<LoreAquaticScourge>(), ItemType<LoreSulphurSea>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/AquaticScourge/AquaticScourge_BossChecklist").Value;
@@ -545,7 +545,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "CragmawMire";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<CragmawMire>();
-            List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>() };
+            List<int> collection = [ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>()];
             AddMiniBoss(bossChecklist, calamity, entryName, order, DownedCragmawMire, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -561,7 +561,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "BrimstoneElemental";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<NPCs.BrimstoneElemental.BrimstoneElemental>();
-            List<int> collection = new List<int>() { ItemType<BrimstoneElementalRelic>(), ItemType<BrimstoneElementalTrophy>(), ItemType<BrimstoneElementalMask>(), ItemType<LoreAzafure>(), ItemType<LoreBrimstoneElemental>(), ItemType<CharredRelic>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<BrimstoneElementalRelic>(), ItemType<BrimstoneElementalTrophy>(), ItemType<BrimstoneElementalMask>(), ItemType<LoreAzafure>(), ItemType<LoreBrimstoneElemental>(), ItemType<CharredRelic>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedBrimstoneElemental, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -576,7 +576,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "CalamitasClone";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<CalamitasClone>();
-            List<int> collection = new List<int>() { ItemType<CalamitasCloneRelic>(), ItemType<CalamitasCloneTrophy>(), ItemType<CataclysmTrophy>(), ItemType<CatastropheTrophy>(), ItemType<CalamitasCloneMask>(), ItemType<HoodOfCalamity>(), ItemType<RobesOfCalamity>(), ItemType<LoreCalamitasClone>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<CalamitasCloneRelic>(), ItemType<CalamitasCloneTrophy>(), ItemType<CataclysmTrophy>(), ItemType<CatastropheTrophy>(), ItemType<CalamitasCloneMask>(), ItemType<HoodOfCalamity>(), ItemType<RobesOfCalamity>(), ItemType<LoreCalamitasClone>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedCalClone, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -591,7 +591,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "GreatSandShark";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<GreatSandShark>();
-            List<int> collection = new List<int>() { ItemType<GreatSandSharkRelic>(), ItemType<GreatSandSharkTrophy>(), ItemID.MusicBoxSandstorm };
+            List<int> collection = [ItemType<GreatSandSharkRelic>(), ItemType<GreatSandSharkTrophy>(), ItemID.MusicBoxSandstorm];
             AddMiniBoss(bossChecklist, calamity, entryName, order, DownedGSS, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -605,8 +605,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "Leviathan";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> bosses = new List<int>() { NPCType<Leviathan>(), NPCType<Anahita>() };
-            List<int> collection = new List<int>() { ItemType<LeviathanAnahitaRelic>(), ItemType<LeviathanTrophy>(), ItemType<AnahitaTrophy>(), ItemType<LeviathanMask>(), ItemType<AnahitaMask>(), ItemType<LoreAbyss>(), ItemType<LoreLeviathanAnahita>(), ItemType<ThankYouPainting>() };
+            List<int> bosses = [NPCType<Leviathan>(), NPCType<Anahita>()];
+            List<int> collection = [ItemType<LeviathanAnahitaRelic>(), ItemType<LeviathanTrophy>(), ItemType<AnahitaTrophy>(), ItemType<LeviathanMask>(), ItemType<AnahitaMask>(), ItemType<LoreAbyss>(), ItemType<LoreLeviathanAnahita>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/Leviathan/AnahitaLevi_BossChecklist").Value;
@@ -629,7 +629,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "AstrumAureus";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<AstrumAureus>();
-            List<int> collection = new List<int>() { ItemType<AstrumAureusRelic>(), ItemType<AstrumAureusTrophy>(), ItemType<AstrumAureusMask>(), ItemType<LoreAstrumAureus>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<AstrumAureusRelic>(), ItemType<AstrumAureusTrophy>(), ItemType<AstrumAureusMask>(), ItemType<LoreAstrumAureus>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedAureus, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -644,7 +644,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "PlaguebringerGoliath";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<PlaguebringerGoliath>();
-            List<int> collection = new List<int>() { ItemType<PlaguebringerGoliathRelic>(), ItemType<PlaguebringerGoliathTrophy>(), ItemType<PlaguebringerGoliathMask>(), ItemType<LorePlaguebringerGoliath>(), ItemType<PlagueCaller>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<PlaguebringerGoliathRelic>(), ItemType<PlaguebringerGoliathTrophy>(), ItemType<PlaguebringerGoliathMask>(), ItemType<LorePlaguebringerGoliath>(), ItemType<PlagueCaller>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/PlaguebringerGoliath/PlaguebringerGoliath_BossChecklist").Value;
@@ -665,8 +665,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "Ravager";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> segments = new List<int>() { NPCType<RavagerBody>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerHead>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>() };
-            List<int> collection = new List<int>() { ItemType<RavagerRelic>(), ItemType<RavagerTrophy>(), ItemType<RavagerMask>(), ItemType<LoreRavager>(), ItemType<ThankYouPainting>() };
+            List<int> segments = [NPCType<RavagerBody>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerHead>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>()];
+            List<int> collection = [ItemType<RavagerRelic>(), ItemType<RavagerTrophy>(), ItemType<RavagerMask>(), ItemType<LoreRavager>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/Ravager/Ravager_BossChecklist").Value;
@@ -688,9 +688,9 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "AstrumDeus";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> segments = new List<int>() { NPCType<AstrumDeusHead>(), NPCType<AstrumDeusBody>(), NPCType<AstrumDeusTail>() };
-            List<int> summons = new List<int>() { ItemType<TitanHeart>(), ItemType<Starcore>() };
-            List<int> collection = new List<int>() { ItemType<AstrumDeusRelic>(), ItemType<AstrumDeusTrophy>(), ItemType<AstrumDeusMask>(), ItemType<LoreAstrumDeus>(), ItemType<LoreAstralInfection>(), ItemType<ChromaticOrb>(), ItemType<ThankYouPainting>() };
+            List<int> segments = [NPCType<AstrumDeusHead>(), NPCType<AstrumDeusBody>(), NPCType<AstrumDeusTail>()];
+            List<int> summons = [ItemType<TitanHeart>(), ItemType<Starcore>()];
+            List<int> collection = [ItemType<AstrumDeusRelic>(), ItemType<AstrumDeusTrophy>(), ItemType<AstrumDeusMask>(), ItemType<LoreAstrumDeus>(), ItemType<LoreAstralInfection>(), ItemType<ChromaticOrb>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/AstrumDeus/AstrumDeus_BossChecklist").Value;
@@ -714,7 +714,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "ProfanedGuardians";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<ProfanedGuardianCommander>();
-            List<int> collection = new List<int>() { ItemType<ProfanedGuardiansRelic>(), ItemType<ProfanedGuardianTrophy>(), ItemType<ProfanedGuardianMask>(), ItemType<LoreProfanedGuardians>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<ProfanedGuardiansRelic>(), ItemType<ProfanedGuardianTrophy>(), ItemType<ProfanedGuardianMask>(), ItemType<LoreProfanedGuardians>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardians_BossChecklist").Value;
@@ -739,7 +739,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Dragonfolly";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<Dragonfolly>();
-            List<int> collection = new List<int>() { ItemType<DragonfollyRelic>(), ItemType<DragonfollyTrophy>(), ItemType<BumblefuckMask>(), ItemType<LoreDragonfolly>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<DragonfollyRelic>(), ItemType<DragonfollyTrophy>(), ItemType<BumblefuckMask>(), ItemType<LoreDragonfolly>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedDragonfolly, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -754,7 +754,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Providence";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<Providence>();
-            List<int> collection = new List<int>() { ItemType<ProvidenceRelic>(), ItemType<ProvidenceTrophy>(), ItemType<ProvidenceMask>(), ItemType<LoreProvidence>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<ProvidenceRelic>(), ItemType<ProvidenceTrophy>(), ItemType<ProvidenceMask>(), ItemType<LoreProvidence>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/Providence/Providence_BossChecklist").Value;
@@ -775,8 +775,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "CeaselessVoid";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> bosses = new List<int>() { NPCType<CeaselessVoid>(), NPCType<DarkEnergy>() };
-            List<int> collection = new List<int>() { ItemType<CeaselessVoidRelic>(), ItemType<CeaselessVoidTrophy>(), ItemType<CeaselessVoidMask>(), ItemType<AncientGodSlayerHelm>(), ItemType<AncientGodSlayerChestplate>(), ItemType<AncientGodSlayerLeggings>(), ItemType<LoreCeaselessVoid>(), ItemType<ThankYouPainting>() };
+            List<int> bosses = [NPCType<CeaselessVoid>(), NPCType<DarkEnergy>()];
+            List<int> collection = [ItemType<CeaselessVoidRelic>(), ItemType<CeaselessVoidTrophy>(), ItemType<CeaselessVoidMask>(), ItemType<AncientGodSlayerHelm>(), ItemType<AncientGodSlayerChestplate>(), ItemType<AncientGodSlayerLeggings>(), ItemType<LoreCeaselessVoid>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedCeaselessVoid, bosses, new Dictionary<string, object>()
             {
                 ["displayName"] = GetDisplayName(entryName),
@@ -791,8 +791,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "StormWeaver";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> segments = new List<int>() { NPCType<StormWeaverHead>(), NPCType<StormWeaverBody>(), NPCType<StormWeaverTail>() };
-            List<int> collection = new List<int>() { ItemType<WeaverTrophy>(), ItemType<StormWeaverMask>(), ItemType<AncientGodSlayerHelm>(), ItemType<AncientGodSlayerChestplate>(), ItemType<AncientGodSlayerLeggings>(), ItemType<LoreStormWeaver>(), ItemType<LittleLight>(), ItemType<ThankYouPainting>() };
+            List<int> segments = [NPCType<StormWeaverHead>(), NPCType<StormWeaverBody>(), NPCType<StormWeaverTail>()];
+            List<int> collection = [ItemType<WeaverTrophy>(), ItemType<StormWeaverMask>(), ItemType<AncientGodSlayerHelm>(), ItemType<AncientGodSlayerChestplate>(), ItemType<AncientGodSlayerLeggings>(), ItemType<LoreStormWeaver>(), ItemType<LittleLight>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/StormWeaver/StormWeaver_BossChecklist").Value;
@@ -816,7 +816,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Signus";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<Signus>();
-            List<int> collection = new List<int>() { ItemType<SignusRelic>(), ItemType<SignusTrophy>(), ItemType<SignusMask>(), ItemType<AncientGodSlayerHelm>(), ItemType<AncientGodSlayerChestplate>(), ItemType<AncientGodSlayerLeggings>(), ItemType<LoreSignus>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<SignusRelic>(), ItemType<SignusTrophy>(), ItemType<SignusMask>(), ItemType<AncientGodSlayerHelm>(), ItemType<AncientGodSlayerChestplate>(), ItemType<AncientGodSlayerLeggings>(), ItemType<LoreSignus>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedSignus, type, new Dictionary<string, object>()
             {
                 ["displayName"] = GetDisplayName(entryName),
@@ -831,8 +831,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "Polterghast";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> bosses = new List<int>() { NPCType<Polterghast>(), NPCType<PolterPhantom>() };
-            List<int> collection = new List<int>() { ItemType<PolterghastRelic>(), ItemType<PolterghastTrophy>(), ItemType<PolterghastMask>(), ItemType<LorePolterghast>(), ItemType<ThankYouPainting>() };
+            List<int> bosses = [NPCType<Polterghast>(), NPCType<PolterPhantom>()];
+            List<int> collection = [ItemType<PolterghastRelic>(), ItemType<PolterghastTrophy>(), ItemType<PolterghastMask>(), ItemType<LorePolterghast>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedPolterghast, bosses, new Dictionary<string, object>()
             {
                 ["displayName"] = GetDisplayName(entryName),
@@ -848,7 +848,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Mauler";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<Mauler>();
-            List<int> collection = new List<int>() { ItemType<MaulerRelic>(), ItemType<MaulerTrophy>() };
+            List<int> collection = [ItemType<MaulerRelic>(), ItemType<MaulerTrophy>()];
             AddMiniBoss(bossChecklist, calamity, entryName, order, DownedMauler, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -864,7 +864,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "NuclearTerror";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<NuclearTerror>();
-            List<int> collection = new List<int>() { ItemType<NuclearTerrorRelic>(), ItemType<NuclearTerrorTrophy>() };
+            List<int> collection = [ItemType<NuclearTerrorRelic>(), ItemType<NuclearTerrorTrophy>()];
             AddMiniBoss(bossChecklist, calamity, entryName, order, DownedNuclearTerror, type, new Dictionary<string, object>()
             {
                 ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -880,7 +880,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "OldDuke";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<OldDuke>();
-            List<int> collection = new List<int>() { ItemType<OldDukeRelic>(), ItemType<OldDukeTrophy>(), ItemType<OldDukeMask>(), ItemType<LoreOldDuke>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<OldDukeRelic>(), ItemType<OldDukeTrophy>(), ItemType<OldDukeMask>(), ItemType<LoreOldDuke>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedOldDuke, type, new Dictionary<string, object>()
             {
                 ["displayName"] = GetDisplayName(entryName),
@@ -896,7 +896,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "DevourerofGods";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<DevourerofGodsHead>();
-            List<int> collection = new List<int>() { ItemType<DevourerOfGodsRelic>(), ItemType<DevourerofGodsTrophy>(), ItemType<DevourerofGodsMask>(), ItemType<LoreDevourerofGods>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<DevourerOfGodsRelic>(), ItemType<DevourerofGodsTrophy>(), ItemType<DevourerofGodsMask>(), ItemType<LoreDevourerofGods>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGods_BossChecklist").Value;
@@ -920,7 +920,7 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Yharon";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<Yharon>();
-            List<int> collection = new List<int>() { ItemType<YharonRelic>(), ItemType<YharonTrophy>(), ItemType<YharonMask>(), ItemType<LoreYharon>(), ItemType<ForgottenDragonEgg>(), ItemType<McNuggets>(), ItemType<FoxDrive>(), ItemType<ThankYouPainting>() };
+            List<int> collection = [ItemType<YharonRelic>(), ItemType<YharonTrophy>(), ItemType<YharonMask>(), ItemType<LoreYharon>(), ItemType<ForgottenDragonEgg>(), ItemType<McNuggets>(), ItemType<FoxDrive>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedYharon, type, new Dictionary<string, object>()
             {
                 ["displayName"] = GetDisplayName(entryName),
@@ -935,8 +935,8 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "ExoMechs";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> bosses = new List<int>() { NPCType<Apollo>(), NPCType<AresBody>(), NPCType<Artemis>(), NPCType<ThanatosHead>() };
-            List<int> collection = new List<int>() { ItemType<DraedonRelic>(), ItemType<AresTrophy>(), ItemType<ThanatosTrophy>(), ItemType<ArtemisTrophy>(), ItemType<ApolloTrophy>(), ItemType<DraedonMask>(), ItemType<AresMask>(), ItemType<ThanatosMask>(), ItemType<ArtemisMask>(), ItemType<ApolloMask>(), ItemType<LoreExoMechs>(), ItemType<LoreCynosure>(), ItemType<ThankYouPainting>() };
+            List<int> bosses = [NPCType<Apollo>(), NPCType<AresBody>(), NPCType<Artemis>(), NPCType<ThanatosHead>()];
+            List<int> collection = [ItemType<DraedonRelic>(), ItemType<AresTrophy>(), ItemType<ThanatosTrophy>(), ItemType<ArtemisTrophy>(), ItemType<ApolloTrophy>(), ItemType<DraedonMask>(), ItemType<AresMask>(), ItemType<ThanatosMask>(), ItemType<ArtemisMask>(), ItemType<ApolloMask>(), ItemType<LoreExoMechs>(), ItemType<LoreCynosure>(), ItemType<ThankYouPainting>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/NPCs/ExoMechs/ExoMechs_BossChecklist").Value;
@@ -960,8 +960,8 @@ internal class WeakReferenceSupport : ModSystem
             string entryName = "Calamitas";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             int type = NPCType<SupremeCalamitas>();
-            List<int> summons = new List<int>() { ItemType<AshesofCalamity>(), ItemType<CeremonialUrn>() };
-            List<int> collection = new List<int>() { ItemType<CalamitasRelic>(), ItemType<SupremeCalamitasTrophy>(), ItemType<SupremeCataclysmTrophy>(), ItemType<SupremeCatastropheTrophy>(), ItemType<AshenHorns>(), ItemType<SCalMask>(), ItemType<SCalRobes>(), ItemType<SCalBoots>(), ItemType<LoreCalamitas>(), ItemType<LoreCynosure>(), ItemType<BrimstoneJewel>(), ItemType<Levi>(), ItemType<ThankYouPainting>() };
+            List<int> summons = [ItemType<AshesofCalamity>(), ItemType<CeremonialUrn>()];
+            List<int> collection = [ItemType<CalamitasRelic>(), ItemType<SupremeCalamitasTrophy>(), ItemType<SupremeCataclysmTrophy>(), ItemType<SupremeCatastropheTrophy>(), ItemType<AshenHorns>(), ItemType<SCalMask>(), ItemType<SCalRobes>(), ItemType<SCalBoots>(), ItemType<LoreCalamitas>(), ItemType<LoreCynosure>(), ItemType<BrimstoneJewel>(), ItemType<Levi>(), ItemType<ThankYouPainting>()];
             AddBoss(bossChecklist, calamity, entryName, order, DownedCalamitas, type, new Dictionary<string, object>()
             {
                 ["displayName"] = GetDisplayName(entryName),
@@ -1005,7 +1005,7 @@ internal class WeakReferenceSupport : ModSystem
             List<int> enemies = [.. AcidRainEvent.PossibleEnemiesAS.Select(enemy => enemy.Key)];
             enemies.Add(NPCType<IrradiatedSlime>());
             enemies.AddRange(AcidRainEvent.PossibleMinibossesAS.Select(miniboss => miniboss.Key));
-            List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<RadiatingCrystal>() };
+            List<int> collection = [ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<RadiatingCrystal>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/Events/AcidRainT2_BossChecklist").Value;
@@ -1028,7 +1028,7 @@ internal class WeakReferenceSupport : ModSystem
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
             List<int> enemies = [.. AcidRainEvent.PossibleEnemiesPolter.Select(enemy => enemy.Key)];
             enemies.AddRange(AcidRainEvent.PossibleMinibossesPolter.Select(miniboss => miniboss.Key));
-            List<int> collection = new List<int>() { ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<MaulerRelic>(), ItemType<MaulerTrophy>(), ItemType<NuclearTerrorRelic>(), ItemType<NuclearTerrorTrophy>(), ItemType<RadiatingCrystal>() };
+            List<int> collection = [ItemType<CragmawMireRelic>(), ItemType<CragmawMireTrophy>(), ItemType<MaulerRelic>(), ItemType<MaulerTrophy>(), ItemType<NuclearTerrorRelic>(), ItemType<NuclearTerrorTrophy>(), ItemType<RadiatingCrystal>()];
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/Events/AcidRainT3_BossChecklist").Value;
@@ -1049,7 +1049,7 @@ internal class WeakReferenceSupport : ModSystem
         {
             string entryName = "BossRush";
             BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-            List<int> enemies = new List<int>() { NPCID.None }; // This is for loot purposes, which no bosses give during the event
+            List<int> enemies = [NPCID.None]; // This is for loot purposes, which no bosses give during the event
             Action<SpriteBatch, Rectangle, Color> portrait = (SpriteBatch sb, Rectangle rect, Color color) =>
             {
                 Texture2D texture = Request<Texture2D>("CalamityMod/Skies/XerocEye").Value;

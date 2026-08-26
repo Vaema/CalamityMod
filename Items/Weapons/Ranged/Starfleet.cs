@@ -41,12 +41,12 @@ public class Starfleet : ModItem, ILocalizedModType
         if (Owner is null)
             return;
         float rate = (Main.GlobalTimeWrappedHourly * 3);
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             new(146, 255, 211),
             new(222, 225, 146),
             new(255, 233, 146)
-        };
+        ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

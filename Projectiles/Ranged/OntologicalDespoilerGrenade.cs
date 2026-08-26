@@ -69,13 +69,13 @@ public class OntologicalDespoilerGrenade : ModProjectile, ILocalizedModType
         if (Owner.shirtColor != Color.White)
         {
             float rate = (Main.GlobalTimeWrappedHourly * 15);
-            List<Color> eColors = new List<Color>()
-            {
+            List<Color> eColors =
+            [
                 color1,
                 color2,
                 color3,
                 color4
-            };
+            ];
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

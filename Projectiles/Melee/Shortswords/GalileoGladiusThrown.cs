@@ -230,8 +230,8 @@ public class GalileoGladiusThrown : ModProjectile, ILocalizedModType
         target.AddBuff(ModContent.BuffType<Voidfrost>(), 600);
     }
 
-    List<(float, float)> offsets = new()
-        {
+    List<(float, float)> offsets =
+        [
             (0,0),
             (0,1),
             (4,2),
@@ -239,7 +239,7 @@ public class GalileoGladiusThrown : ModProjectile, ILocalizedModType
             (1,0.2f),
             (0.75f,1.1f),
             (0,0)
-        };
+        ];
     public override bool PreDraw(ref Color lightColor)
     {
 

@@ -734,7 +734,7 @@ public class QueenSlimeAI : VanillaAIOverride
                         }
 
                         // Fire gel balls directly at players with a max of 3
-                        List<int> targets = new List<int>();
+                        List<int> targets = [];
                         for (int p = 0; p < Main.maxPlayers; p++)
                         {
                             if (Main.player[p].active && !Main.player[p].dead)

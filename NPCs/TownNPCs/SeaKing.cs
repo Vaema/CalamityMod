@@ -76,7 +76,7 @@ public class SeaKing : ModNPC
 
     public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCLAM && DownedBossSystem.downedDesertScourge;
 
-    public override List<string> SetNPCNameList() => new() { this.GetLocalizedValue("Name.Amidias") };
+    public override List<string> SetNPCNameList() => [this.GetLocalizedValue("Name.Amidias")];
 
     public override void AI()
     {

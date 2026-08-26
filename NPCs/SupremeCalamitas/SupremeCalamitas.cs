@@ -3153,7 +3153,7 @@ public class SupremeCalamitas : ModNPC
         if (death)
             tempSpawnY -= 50;
 
-        List<Vector2> heartSpawnPositions = new List<Vector2>();
+        List<Vector2> heartSpawnPositions = [];
         for (int i = 0; i < 5; i++)
         {
             heartSpawnPositions.Add(new Vector2(spawnX + spawnXAdd * i + 50, tempSpawnY + spawnYAdd * i));
@@ -3227,7 +3227,7 @@ public class SupremeCalamitas : ModNPC
                 }
                 else
                 {
-                    List<int> hearts = new List<int>();
+                    List<int> hearts = [];
                     for (int x = 0; x < 5; x++)
                     {
                         hearts.Add(NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<BrimstoneHeart>()));

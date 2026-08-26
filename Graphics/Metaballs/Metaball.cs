@@ -12,7 +12,7 @@ namespace CalamityMod.Graphics.Metaballs;
 
 public abstract class Metaball : ModType
 {
-    internal List<RenderTargetLease> LayerTargets = new();
+    internal List<RenderTargetLease> LayerTargets = [];
 
     /// <summary>
     /// Required utility that is used to determine whether this metaball has anything to draw.<br></br>

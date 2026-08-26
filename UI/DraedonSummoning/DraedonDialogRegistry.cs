@@ -43,8 +43,8 @@ public static class DraedonDialogRegistry
 
     public static readonly DraedonDialogEntry Sulphur = CreateFromKey("Sulphur");
 
-    internal static List<DraedonDialogEntry> DialogOptions = new()
-    {
+    internal static List<DraedonDialogEntry> DialogOptions =
+    [
         // The first index is assumed to be the "who are you?" dialog by the UI. All other indices can be freely swapped around, however.
         WhoAreYou,
         WhoAreYouPart2,
@@ -67,7 +67,7 @@ public static class DraedonDialogRegistry
         Plague,
         Astral,
         Sulphur
-    };
+    ];
 
     internal static DraedonDialogEntry CreateFromKey(string key, Func<bool> condition = null) =>
         new($"{CommunicationLocalizationBase}{key}", condition);

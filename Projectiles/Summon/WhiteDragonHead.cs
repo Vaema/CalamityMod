@@ -14,7 +14,7 @@ public class WhiteDragonHead : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Summon";
 
-    Dictionary<int, Projectile> segments = new();
+    Dictionary<int, Projectile> segments = [];
     public override void SetStaticDefaults()
     {
         Main.projPet[Type] = true;

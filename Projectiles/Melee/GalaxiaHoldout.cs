@@ -80,7 +80,7 @@ public class GalaxiaHoldout : ModProjectile, ILocalizedModType //Visuals. Now mu
         Attunement attunement;
         Vector2[] StarPositions;
         Vector2[] ExtraLines; //Extra lines vector give us an indication of the index between the 2 stars we need to connect
-        List<int> IgnoredLines = new List<int>();
+        List<int> IgnoredLines = [];
 
         Particle Star;
         Particle Line;

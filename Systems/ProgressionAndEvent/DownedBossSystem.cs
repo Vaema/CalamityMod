@@ -582,7 +582,7 @@ public class DownedBossSystem : ModSystem
 
     public override void SaveWorldData(TagCompound tag)
     {
-        List<string> downed = new List<string>();
+        List<string> downed = [];
 
         // Pre-hardmode bosses (progression sorted)
         if (downedDesertScourge)

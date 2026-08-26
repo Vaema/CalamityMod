@@ -348,7 +348,7 @@ public class CultistAI : VanillaAIOverride
                             moveDistance = 1f;
 
                         // Add self and clones to list
-                        List<int> list2 = new List<int>();
+                        List<int> list2 = [];
                         int cloneAmt = 0;
                         list2.Add(NPC.whoAmI);
                         for (int k = 0; k < Main.maxNPCs; k++)
@@ -458,7 +458,7 @@ public class CultistAI : VanillaAIOverride
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    List<int> list3 = new List<int>();
+                    List<int> list3 = [];
                     for (int l = 0; l < Main.maxNPCs; l++)
                     {
                         if (Main.npc[l].active && Main.npc[l].type == NPCID.CultistBossClone && Main.npc[l].ai[3] == NPC.whoAmI)
@@ -522,7 +522,7 @@ public class CultistAI : VanillaAIOverride
             {
                 if ((int)(NPC.ai[1] - 4f) / fireballFireRate == 2)
                 {
-                    List<int> list4 = new List<int>();
+                    List<int> list4 = [];
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
                         if (Main.npc[i].active && Main.npc[i].type == NPCID.CultistBossClone && Main.npc[i].ai[3] == NPC.whoAmI)
@@ -591,7 +591,7 @@ public class CultistAI : VanillaAIOverride
 
             if ((NPC.ai[1] == 20f & isCultist) && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                List<int> list5 = new List<int>();
+                List<int> list5 = [];
                 for (int j = 0; j < Main.maxNPCs; j++)
                 {
                     if (Main.npc[j].active && Main.npc[j].type == NPCID.CultistBossClone && Main.npc[j].ai[3] == NPC.whoAmI)
@@ -658,7 +658,7 @@ public class CultistAI : VanillaAIOverride
 
                     Vector2 spinningpoint = new Vector2(180f, 0f);
 
-                    List<int> list6 = new List<int>();
+                    List<int> list6 = [];
                     for (int k = 0; k < Main.maxNPCs; k++)
                     {
                         if (Main.npc[k].active && Main.npc[k].type == NPCID.CultistBossClone && Main.npc[k].ai[3] == NPC.whoAmI)
@@ -865,7 +865,7 @@ public class CultistAI : VanillaAIOverride
             {
                 if ((int)(NPC.ai[1] - 4f) / ancientLightSpawnRate == 2)
                 {
-                    List<int> list7 = new List<int>();
+                    List<int> list7 = [];
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
                         if (Main.npc[i].active && Main.npc[i].type == NPCID.CultistBossClone && Main.npc[i].ai[3] == NPC.whoAmI)
@@ -929,7 +929,7 @@ public class CultistAI : VanillaAIOverride
 
             if ((NPC.ai[1] >= 4f & isCultist) && (int)(NPC.ai[1] - 4f) % 20f == 0f && NPC.ai[1] <= 64)
             {
-                List<int> list8 = new List<int>();
+                List<int> list8 = [];
                 for (int k = 0; k < Main.maxNPCs; k++)
                 {
                     if (Main.npc[k].active && Main.npc[k].type == NPCID.CultistBossClone && Main.npc[k].ai[3] == NPC.whoAmI)

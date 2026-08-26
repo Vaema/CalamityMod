@@ -22,7 +22,7 @@ public class NuclearTorrentForeground : LoopingTextureForeground
 
     public override float IntensityMaximum => 0.045f;
 
-    public static List<NuclearRaindrop> Raindrops = new();
+    public static List<NuclearRaindrop> Raindrops = [];
 
     public class NuclearRaindrop
     {

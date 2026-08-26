@@ -31,7 +31,7 @@ public class SeekingScorcherProj : ModProjectile, ILocalizedModType
     public const float MaxAxeHomingRange = 640f; // 40 tiles + up to 2x empowerment boosts
     public const float BonusRangePerEmpowerment = 80f; // 5 tiles
 
-    private List<int> PreviousNPCs = new() { -1 };
+    private List<int> PreviousNPCs = [-1];
     public Player Owner => Main.player[Projectile.owner];
 
     public ref float WindupSwingProgress => ref Projectile.ai[0];

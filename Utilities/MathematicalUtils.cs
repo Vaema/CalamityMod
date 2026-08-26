@@ -7,9 +7,8 @@ namespace CalamityMod;
 
 public static partial class CalamityUtils
 {
-
-    internal static readonly List<Vector2> Directions = new()
-    {
+    internal static readonly List<Vector2> Directions =
+    [
         new Vector2(-1f, -1f),
         new Vector2(1f, -1f),
         new Vector2(-1f, 1f),
@@ -18,7 +17,7 @@ public static partial class CalamityUtils
         new Vector2(-1f, 0f),
         new Vector2(0f, 1f),
         new Vector2(1f, 0f),
-    };
+    ];
 
     /// <summary>
     /// Computes 2-dimensional Perlin Noise, which gives "random" but continuous values.
@@ -267,7 +266,7 @@ public static partial class CalamityUtils
         {
             if (!WorldGen.InWorld(start.X, start.Y))
                 break;
-            
+
             // Add the current cell to the list
             intersectingCells.Add(start);
 

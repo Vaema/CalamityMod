@@ -106,8 +106,8 @@ public class Bandit : ModNPC
         return false;
     }
 
-    public override List<string> SetNPCNameList() => new()
-    {
+    public override List<string> SetNPCNameList() =>
+    [
         // Dedicated names
         "Xplizzy", // <@!98826096237109248> (whitegiraffe)
         "Freakish", // <@!750363283520749598> (freak5650)
@@ -142,7 +142,7 @@ public class Bandit : ModNPC
         this.GetLocalizedValue("Name.Amber"),
         this.GetLocalizedValue("Name.Anne"),
         this.GetLocalizedValue("Name.Indiana")
-    };
+    ];
 
     public override string GetChat()
     {

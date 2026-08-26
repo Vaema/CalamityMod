@@ -148,7 +148,7 @@ public static class CalamityItemSets
     /// </summary>
     public static List<int>[] ExtraDebuffTooltip_Enemy = Factory.CreateNamedSet("EnemyDebuffTooltip")
         .Description("Defines buff IDs to force display as expandable tooltip with debuff info for enemy infliction.")
-        .RegisterCustomSet<List<int>>(new());
+        .RegisterCustomSet<List<int>>([]);
 
     /// <summary>
     /// Defines a list of buff IDs to force display as an expandable tooltip with debuff info for player infliction on an item.<br/>
@@ -156,7 +156,7 @@ public static class CalamityItemSets
     /// </summary>
     public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateNamedSet("PlayerDebuffTooltip")
         .Description("Defines buff IDs to force display as expandable tooltip with debuff info for player infliction.")
-        .RegisterCustomSet<List<int>>(new());
+        .RegisterCustomSet<List<int>>([]);
 
     /// <summary>
     /// Does not support vanilla items. If <see langword="true"/> for an item type, this item has special "sales pitch" flavor text from the Shady Salesman.<br/>

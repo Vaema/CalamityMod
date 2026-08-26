@@ -62,11 +62,11 @@ public class DoomsdayDeviceProjectile : ModProjectile, ILocalizedModType
         }
         // The main color shifting
         float rate = (Main.GlobalTimeWrappedHourly * 6);
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             c1,
             c2
-        };
+        ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

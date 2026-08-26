@@ -98,14 +98,14 @@ public class SunkenSea
                     array[j, i] = WorldGen.genRand.NextBool(2);
                 }
             }
-            List<List<Point>> list = new List<List<Point>>();
+            List<List<Point>> list = [];
             for (int k = 0; k < array.GetLength(0); k++)
             {
                 for (int l = 0; l < array.GetLength(1); l++)
                 {
                     if (array[k, l] && WorldGen.genRand.NextBool(2))
                     {
-                        List<Point> list2 = new List<Point>();
+                        List<Point> list2 = [];
                         SearchForCluster(array, list2, k, l, 2);
                         if (list2.Count > 2)
                         {

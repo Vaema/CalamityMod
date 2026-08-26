@@ -14,7 +14,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas;
 public class BrimstoneHeart : ModNPC
 {
     public int ChainHeartIndex => (int)NPC.ai[0];
-    public List<Vector2> ChainEndpoints = new();
+    public List<Vector2> ChainEndpoints = [];
     public override void SetStaticDefaults()
     {
         this.HideFromBestiary();
@@ -115,7 +115,7 @@ public class BrimstoneHeart : ModNPC
         for (int i = 0; i < ChainEndpoints.Count; i++)
         {
             float dist = NPC.Distance(ChainEndpoints[i]);
-            List<Vector2> points = new List<Vector2>();
+            List<Vector2> points = [];
             for (int j = 0; j < 4; j++)
                 points.Add(NPC.Center + NPC.DirectionTo(ChainEndpoints[i]) * dist * 0.25f * j);
             points.Add(ChainEndpoints[i] + NPC.DirectionTo(ChainEndpoints[i]) * 18f);

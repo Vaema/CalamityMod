@@ -1445,7 +1445,7 @@ public class Artemis : ModNPC
             ribbonOffset += Vector2.UnitX.RotatedBy(NPC.rotation) * direction * 26f;
 
             float currentSegmentRotation = NPC.rotation;
-            List<Vector2> ribbonDrawPositions = new List<Vector2>();
+            List<Vector2> ribbonDrawPositions = [];
             for (int i = 0; i < 12; i++)
             {
                 float ribbonCompletionRatio = i / 12f;

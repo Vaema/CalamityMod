@@ -30,7 +30,7 @@ public class AresGaussNukeProjectileBoom : BaseMassiveExplosionProjectile, ILoca
     }
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-    private List<int> PlayersHit = new() { -1 };
+    private List<int> PlayersHit = [-1];
 
     public override void SetStaticDefaults()
     {

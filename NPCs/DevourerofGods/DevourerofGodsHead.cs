@@ -2338,11 +2338,11 @@ public class DevourerofGodsHead : ModNPC
             if (Main.rand.NextBool(5))
                 SoundEngine.PlaySound(DeathSegmentSound, NPC.Center);
 
-            List<int> segments = new List<int>()
-            {
+            List<int> segments =
+            [
                 ModContent.NPCType<DevourerofGodsBody>(),
                 ModContent.NPCType<DevourerofGodsTail>()
-            };
+            ];
             foreach (NPC n in Main.ActiveNPCs)
             {
                 if (segments.Contains(n.type) && n.active &&

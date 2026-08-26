@@ -78,13 +78,13 @@ public class WulfrumAmplifier : ModNPC
 
     public override void AI()
     {
-        List<int> SuperchargableEnemies = new List<int>()
-        {
+        List<int> SuperchargableEnemies =
+        [
             ModContent.NPCType<WulfrumDrone>(),
             ModContent.NPCType<WulfrumGyrator>(),
             ModContent.NPCType<WulfrumHovercraft>(),
             ModContent.NPCType<WulfrumRover>()
-        };
+        ];
 
         NPC.TargetClosest(false);
 

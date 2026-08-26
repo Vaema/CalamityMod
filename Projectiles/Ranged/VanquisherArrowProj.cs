@@ -51,11 +51,11 @@ public class VanquisherArrowProj : ModProjectile, ILocalizedModType
         if (targeted != null && Projectile.localNPCImmunity[targeted.whoAmI] == -1)
             Projectile.localNPCImmunity[targeted.whoAmI] = 15 * Projectile.extraUpdates;
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Cyan,
             Color.Magenta
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

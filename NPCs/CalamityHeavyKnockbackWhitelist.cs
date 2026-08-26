@@ -14,7 +14,7 @@ public sealed class CalamityHeavyKnockbackWhitelist : GlobalNPC
     internal static HashSet<int> whitelistNPC;
     public override void Load()
     {
-        whitelistNPC = new();
+        whitelistNPC = [];
     }
     public override void Unload()
     {

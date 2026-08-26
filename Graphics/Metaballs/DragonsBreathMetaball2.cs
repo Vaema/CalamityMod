@@ -57,7 +57,7 @@ public abstract class DragonsBreathMetaball2 : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 

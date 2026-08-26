@@ -53,11 +53,11 @@ public class AmuletEnergy : ModProjectile, ILocalizedModType
         // Color is in blues if idle or healing, but becomes orange if they are attacking
         float colorShift = (idle || healing ? 0 : Utils.GetLerpValue(0, startTime, time));
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Lerp(Color.Aquamarine, Color.LightSalmon, colorShift),
             Color.Lerp(Color.MediumTurquoise, Color.Coral, colorShift)
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

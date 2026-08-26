@@ -63,12 +63,12 @@ public class GalactusBlade : ModItem, ILocalizedModType
         int swordSize = (int)(33 * Item.scale);
 
         float rate = Main.GlobalTimeWrappedHourly * 18;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Gold,
             Color.HotPink,
             Color.Cyan
-        };
+        ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

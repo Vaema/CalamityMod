@@ -16,13 +16,13 @@ public class SlimeGodBossBar : ModBossBar
 {
     // Used to determine the max health of a multi-segmented boss
     public NPC FalseNPCSegment;
-    public List<int> SlimeGodSlimes = new()
-    {
+    public List<int> SlimeGodSlimes =
+    [
         NPCType<CrimulanPaladin>(),
         NPCType<EbonianPaladin>(),
         NPCType<SplitCrimulanPaladin>(),
         NPCType<SplitEbonianPaladin>()
-    };
+    ];
 
     public override Asset<Texture2D> GetIconTexture(ref Rectangle? iconFrame) => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[NPCType<SlimeGodCore>()]];
 

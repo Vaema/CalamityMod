@@ -100,7 +100,7 @@ public class WorldEvilIsland
         int leftOffset = 86;
         int rightOffset = 86;
         int maxVerticalOffset = 24;
-        List<Point> cloudPositions = new List<Point>();
+        List<Point> cloudPositions = [];
         for (int dx = -leftOffset; dx < rightOffset; dx += WorldGen.genRand.Next(21, 26))
         {
             float completionRatio = Utils.GetLerpValue(-leftOffset - 22f, rightOffset + 22f, dx, true);
@@ -156,7 +156,7 @@ public class WorldEvilIsland
         }
 
         // Determine the lines at which clouds begin to form.
-        List<Point> borderPoints = new List<Point>();
+        List<Point> borderPoints = [];
         for (int dx = -leftOffset + 14; dx < rightOffset - 14; dx++)
         {
             int verticalBorder = j - 10;
@@ -215,7 +215,7 @@ public class WorldEvilIsland
         }
 
         // Determine the lines at which ground begins to appear. This only applies if the ground is an evil tile.
-        List<Point> surfacePoints = new List<Point>();
+        List<Point> surfacePoints = [];
         for (int dx = -leftOffset + 24; dx < rightOffset - 24; dx++)
         {
             // Ignore points near the center because bumps there could cause the house to offset in weird ways.

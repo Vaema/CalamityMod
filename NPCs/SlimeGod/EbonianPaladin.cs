@@ -502,7 +502,7 @@ public class EbonianPaladin : ModNPC
                         // Fire slime balls directly at players with a max of 2
                         if (enraged && expertMode)
                         {
-                            List<int> targets = new List<int>();
+                            List<int> targets = [];
                             foreach (Player plr in Main.ActivePlayers)
                             {
                                 if (!plr.dead)

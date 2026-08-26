@@ -57,7 +57,7 @@ public class ElephantKillerThrown : ModProjectile, ILocalizedModType
     public int tileHits = 0;
     public bool setReturnTime = false;
 
-    public List<(NPC, float, bool)> hitNPCs = new();
+    public List<(NPC, float, bool)> hitNPCs = [];
     public static Asset<Texture2D> Gun { get; private set; }
     public static Asset<Texture2D> GunFlash { get; private set; }
     public static Asset<Texture2D> Smear { get; private set; }

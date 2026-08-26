@@ -154,15 +154,15 @@ public static partial class RevengeanceAndDeathAI
             // Note: The Possessed rely on an AI shift rather than a transformation NPC
             // As a result, they are not included in this method
 
-            List<int> spiders = new List<int>()
-        {
+            List<int> spiders =
+        [
             NPCID.BlackRecluse,
             NPCID.BloodCrawler,
             NPCID.DesertScorpionWalk,
             NPCID.JungleCreeper,
             NPCID.WallCreeper,
             ModContent.NPCType<AstralachneaGround>()
-        };
+        ];
             // These checks are not required if the npc is not a real spider
             if (!spiders.Contains(npc.type))
                 return;

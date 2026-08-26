@@ -65,7 +65,7 @@ public class SignusMetaball : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 
@@ -98,12 +98,12 @@ public class SignusMetaball : Metaball
         scrollDir = Vector2.Lerp(scrollDir, goalDir, 0.01f);
 
         float rate = Main.GlobalTimeWrappedHourly * 19;
-        List<Color> colors = new List<Color>()
-        {
+        List<Color> colors =
+        [
             Color.Purple,
             Color.BlueViolet,
             Color.DarkViolet
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % colors.Count);
         Color currentColor = colors[colorIndex];

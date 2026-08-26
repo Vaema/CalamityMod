@@ -16,7 +16,7 @@ public class VolterionShot : ModProjectile, ILocalizedModType
     public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
     // Due to how far/fast this thing moves, it'd require way too many points for a smooth long trail using oldPos
-    public List<Vector2> TrailPos = new();
+    public List<Vector2> TrailPos = [];
     public const int TrailLength = 50;
 
     public ref float OrbType => ref Projectile.ai[0];

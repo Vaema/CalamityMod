@@ -947,14 +947,14 @@ public partial class CalamityPlayer : ModPlayer
         }
 
         //Priorities: Nucleogenesis => Starbuster Core => Nuclear Rod => Jelly-Charged Battery
-        List<int> summonExceptionList = new List<int>()
-        {
+        List<int> summonExceptionList =
+        [
             ProjectileType<EnergyOrb>(),
             ProjectileType<IrradiatedAura>(),
             ProjectileType<SummonAstralExplosion>(),
             ProjectileType<ApparatusExplosion>(),
             ProjectileType<HallowedStarSummon>()
-        };
+        ];
 
         if (summonExceptionList.TrueForAll(x => proj.type != x))
         {

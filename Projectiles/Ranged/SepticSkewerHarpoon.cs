@@ -405,10 +405,10 @@ public class SepticSkewerHarpoon : ModProjectile, ILocalizedModType
         Texture2D chain = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/SepticChain").Value;
         Vector2 end = Projectile.Center - storedVelocity.SafeNormalize(Vector2.UnitX) * 35;
 
-        List<Vector2> controlPoints = new List<Vector2>
-        {
+        List<Vector2> controlPoints =
+        [
             DrawStartPosition
-        };
+        ];
         for (int i = 0; i < OldVelocities.Length; i++)
         {
             float swayResponsiveness = Utils.GetLerpValue(0f, 6f, i, true) * Utils.GetLerpValue(OldVelocities.Length, OldVelocities.Length - 6f, i, true);

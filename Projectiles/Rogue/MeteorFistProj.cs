@@ -171,7 +171,7 @@ public class MeteorFistProj : ModProjectile, ILocalizedModType
     public override bool PreDraw(ref Color lightColor)
     {
         // Draw the wire
-        List<Vector2> wirePoints = new List<Vector2>();
+        List<Vector2> wirePoints = [];
         if (Wire != null && Wire.Count > 0)
         {
             for (int i = 0; i < Wire.Count; i++)

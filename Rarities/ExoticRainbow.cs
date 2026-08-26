@@ -40,24 +40,24 @@ public class ExoticRainbow : ModRarity
                 var font = FontAssets.MouseText.Value;
                 var time = Main.GlobalTimeWrappedHourly;
 
-                List<Color> eColors = new List<Color>()
-                {
+                List<Color> eColors =
+                [
                     new(255,107,107), //Ares
                     new(125,196,225), //Thanatos
                     new(211,235,108), //Apollo
                     //new Color(255,160,71), //Artemis
-                };
+                ];
 
                 if (IsExpert)
-                    eColors = new List<Color>()
-                    {
+                    eColors =
+                    [
                     new(255,70,70),
                     new(255,70,255),
                     new(70,70,255),
                     new(70,255,255),
                     new(70,255,90),
                     new(255,255,70)
-                };
+                ];
 
 
                 var pos = position;

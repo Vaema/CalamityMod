@@ -4359,7 +4359,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
             if (!(DownedBossSystem.downedPolterghast && AcidRainEvent.AccumulatedKillPoints == 1))
             {
                 Dictionary<int, AcidRainSpawnData> PossibleEnemies = AcidRainEvent.PossibleEnemiesPreHM;
-                Dictionary<int, AcidRainSpawnData> PossibleMinibosses = new Dictionary<int, AcidRainSpawnData>();
+                Dictionary<int, AcidRainSpawnData> PossibleMinibosses = [];
                 if (DownedBossSystem.downedAquaticScourge)
                 {
                     PossibleEnemies = AcidRainEvent.PossibleEnemiesAS;
@@ -4898,7 +4898,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
         {
             if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityNPCSets.ForceDrawDebuffDisplay[npc.type]))
             {
-                List<Texture2D> currentDebuffs = new List<Texture2D>() { };
+                List<Texture2D> currentDebuffs = [];
 
                 for (int b = 0; b < moddedDebuffTextureList.Count(); b++)
                 {

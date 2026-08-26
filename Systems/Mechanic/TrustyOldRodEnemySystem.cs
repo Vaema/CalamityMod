@@ -59,9 +59,9 @@ public sealed class TrustyOldRodEnemySystem : ModSystem
         bool useHardmode = hardmode && Main.rand.NextBool(2, 3);
 
         // ReduceEnemyDrops is used for some reels that pull crazy numbers of enemies by making 1/3rd of them not drop loot
-        List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsCommon = new List<(int npc, int spawnCount, bool reduceEnemyDrops)>();
-        List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsRare = new List<(int npc, int spawnCount, bool reduceEnemyDrops)>();
-        List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsUltraRare = new List<(int npc, int spawnCount, bool reduceEnemyDrops)>();
+        List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsCommon = [];
+        List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsRare = [];
+        List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsUltraRare = [];
 
         Tile backWall = Framing.GetTileSafely((int)(owner.Center.X / 16), (int)(owner.Center.Y / 16));
 

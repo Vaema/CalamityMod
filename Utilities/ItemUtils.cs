@@ -653,13 +653,13 @@ public static partial class CalamityUtils
     public static bool NegativeRoguePrefix(int prefix)
     {
         Mod mod = ModContent.GetInstance<CalamityMod>();
-        List<int> badPrefixes = new List<int>()
-        {
+        List<int> badPrefixes =
+        [
             mod.Find<ModPrefix>("Blunt").Type,
             mod.Find<ModPrefix>("Flimsy").Type,
             mod.Find<ModPrefix>("Unbalanced").Type,
             mod.Find<ModPrefix>("Atrocious").Type
-        };
+        ];
         return badPrefixes.Contains(prefix);
     }
     #endregion

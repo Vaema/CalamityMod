@@ -38,7 +38,7 @@ public class CalamityMainMenu : ModMenu
     {
         get;
         internal set;
-    } = new();
+    } = [];
 
     public float remixLogoRotation = 0f;
     public override string DisplayName => CalamityUtils.GetTextValue("UI.MainMenu");

@@ -118,11 +118,11 @@ public class DevilsDevastationThrownBlade : ModProjectile, ILocalizedModType
             Projectile.extraUpdates = 3;
 
         float rate = (Main.GlobalTimeWrappedHourly + time * 3) * 2;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             clr,
             Color.BlueViolet
-        };
+        ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

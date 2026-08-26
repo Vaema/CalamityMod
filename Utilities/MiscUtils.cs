@@ -282,7 +282,7 @@ public static partial class CalamityUtils
             }
         }
 
-        List<bool> morseState = new List<bool>();
+        List<bool> morseState = [];
 
         for (int i = 0; i < morseText.Length; i++)
         {

@@ -41,13 +41,13 @@ public class ExoFire : ModProjectile, ILocalizedModType
         Player Owner = Main.player[Projectile.owner];
         bool photosens = CalamityClientConfig.Instance.Photosensitivity;
         float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.OrangeRed,
             photosens ? Color.DodgerBlue : Color.MediumTurquoise,
             Color.Orange,
             Color.LawnGreen
-        };
+        ];
         float rate = Main.GlobalTimeWrappedHourly * (photosens ? 2 : 8);
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

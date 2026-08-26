@@ -343,8 +343,8 @@ public static class CalamityNPCSets
     /// Allows an NPC to be automatically registered as a critter in the Bestiary when the player is near them. <br/>
     /// Should only be used in cases where an NPC does NOT follow the Vanilla definition of a critter. See <see cref="NPC.CountsAsACritter"/>.
     /// </summary>
-    public static List<int> ForciblyRegisterAsCritterInBestiary = new()
-    {
+    public static List<int> ForciblyRegisterAsCritterInBestiary =
+    [
         NPCType<Androomba>(),
         NPCType<RepairUnitCritter>(),
         NPCType<Burrower>(),
@@ -353,7 +353,7 @@ public static class CalamityNPCSets
         NPCType<Piggy>(),
         NPCType<PiggyGold>(),
         NPCType<Shroomble>()
-    };
+    ];
 
     /// <summary>
     /// Allows a variant of an NPC to count as credits towards another in the Bestiary. <br/>

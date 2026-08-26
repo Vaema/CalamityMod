@@ -314,7 +314,7 @@ public class WorldgenManagementSystem : ModSystem
             tasks.Insert(++currentFinalIndex, new PassLegacy("Draedon Structures", (progress, config) =>
             {
                 progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.DraedonLabs").Value;
-                List<Point> workshopPositions = new List<Point>();
+                List<Point> workshopPositions = [];
 
                 // Small: 4, Normal: 7, Large: 9
                 // Tries to scale up reasonably for XL worlds

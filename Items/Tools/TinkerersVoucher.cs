@@ -129,7 +129,7 @@ public abstract class VoucherItem : ModItem
         if (pool.Length == 0)
             return null;
 
-        List<string> names = new();
+        List<string> names = [];
 
         foreach (int p in pool)
         {

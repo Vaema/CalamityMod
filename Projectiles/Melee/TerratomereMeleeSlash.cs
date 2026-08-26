@@ -50,7 +50,7 @@ public class TerratomereMeleeSlash : ModProjectile, ILocalizedModType
         
         TerratomereHoldoutProj.PrepareSlashShader(Flipped);
 
-        List<Vector2> points = new List<Vector2>();
+        List<Vector2> points = [];
         for (int i = 0; i < ControlPoints.Length; i++)
             points.Add(ControlPoints[i] + ControlPoints[i].SafeNormalize(Vector2.Zero) * (Projectile.scale - 1f) * 40f);
 

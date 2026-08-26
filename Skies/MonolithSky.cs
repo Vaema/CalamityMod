@@ -34,7 +34,7 @@ public class MonolithSky : CustomSky
 
     private bool skyActive;
     private float opacity;
-    public List<Cinder> Cinders = new();
+    public List<Cinder> Cinders = [];
 
     public override void Deactivate(params object[] args) => skyActive = false;
 

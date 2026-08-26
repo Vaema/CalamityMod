@@ -21,8 +21,8 @@ public sealed class EnchantmentManager : ModSystem
     internal const int ClearEnchantmentID = -18591774;
     internal const string ExhumedNamePath = "UI.Exhumed.DisplayName";
 
-    public static List<Enchantment> EnchantmentList { get; internal set; } = new List<Enchantment>();
-    public static Dictionary<int, int> ItemUpgradeRelationship { get; internal set; } = new Dictionary<int, int>();
+    public static List<Enchantment> EnchantmentList { get; internal set; } = [];
+    public static Dictionary<int, int> ItemUpgradeRelationship { get; internal set; } = [];
     public static Enchantment ClearEnchantment { get; internal set; }
     public static IEnumerable<Enchantment> GetValidEnchantmentsForItem(Item item)
     {
@@ -146,8 +146,8 @@ public sealed class EnchantmentManager : ModSystem
 
     public override void OnModLoad()
     {
-        EnchantmentList = new List<Enchantment>
-        {
+        EnchantmentList =
+        [
             new(CalamityUtils.GetText(ExhumedNamePath), CalamityUtils.GetText("UI.Exhumed.Description"),
                 1,
                 "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Exhumed",
@@ -301,7 +301,7 @@ public sealed class EnchantmentManager : ModSystem
                     }
                 },
                 item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.CountsAsClass<SummonDamageClass>() && !item.IsTrueMelee()),
-        };
+        ];
 
         // Special disenchantment thing. This is separated from the list on purpose.
         ClearEnchantment = new Enchantment(CalamityUtils.GetText("UI.Disenchant"),

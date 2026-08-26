@@ -55,7 +55,7 @@ public class Elumphant : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRe
     public int attackTimeAdjusted = 0; // Attack speed adjusted for the slam attack
     public float damageScaling = 0; // The damage scaling on the mist and slam attacks
     public int cooldownTime = 0; // The cooldown between attacks
-    public List<NPC> hitNPCs = new();
+    public List<NPC> hitNPCs = [];
     public Vector2 lastHitNPCPos;
     public Vector2 lastProjPos;
     public bool spawnJumpDusts = true;
@@ -148,11 +148,11 @@ public class Elumphant : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRe
     public void GetColor()
     {
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             color1,
             color2
-        };
+        ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

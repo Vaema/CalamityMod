@@ -764,10 +764,10 @@ public static partial class CalamityUtils
     /// <returns></returns>
     public static bool ShouldBeMined(this Tile tile, bool ignoreAbyss = true)
     {
-        List<int> tileExcludeList = new List<int>()
-        {
+        List<int> tileExcludeList =
+        [
             TileID.DemonAltar, TileID.ElderCrystalStand, TileID.LihzahrdAltar, TileID.Dressers, TileID.Containers
-        };
+        ];
 
         if (ignoreAbyss)
         {

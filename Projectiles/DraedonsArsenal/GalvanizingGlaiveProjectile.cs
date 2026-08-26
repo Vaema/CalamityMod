@@ -66,10 +66,10 @@ public class GalvanizingGlaiveProjectile : BaseSpearProjectile
         float animationRatio = player.itemAnimation / (float)player.itemAnimationMax;
         DelegateMethods.f_1 = Utils.GetLerpValue(0f, 0.4f, animationRatio, true) * Utils.GetLerpValue(1f, 0.6f, animationRatio, true);
         DelegateMethods.c_1 = Color.White;
-        List<Vector2> oldPositions = new List<Vector2>()
-        {
+        List<Vector2> oldPositions =
+        [
             Projectile.position
-        };
+        ];
         foreach (var oldPosition in Projectile.oldPos)
         {
             if (oldPosition != Vector2.Zero)

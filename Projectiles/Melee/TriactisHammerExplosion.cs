@@ -18,7 +18,7 @@ public class TriactisHammerExplosion : ModProjectile, ILocalizedModType
     public ref float Timer => ref Projectile.ai[0];
     public Player Owner => Main.player[Projectile.owner];
 
-    public List<List<Vector2>> crackTrails = new();
+    public List<List<Vector2>> crackTrails = [];
     public static int crackCount = 15;
     public static int totalPoints = 12;
 
@@ -54,7 +54,7 @@ public class TriactisHammerExplosion : ModProjectile, ILocalizedModType
             crackTrails.Clear();
             for (int i = 0; i < crackCount; i++)
             {
-                List<Vector2> points = new List<Vector2>();
+                List<Vector2> points = [];
                 for (int j = 0; j < totalPoints; j++)
                 {
                     float radians = MathHelper.TwoPi / crackCount;

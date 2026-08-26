@@ -37,11 +37,11 @@ public class TransformerAura : ModProjectile, ILocalizedModType
     public override void AI()
     {
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.LightSkyBlue,
             Color.DodgerBlue
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

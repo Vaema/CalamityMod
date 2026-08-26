@@ -346,7 +346,7 @@ public class WulfrumPackPlayer : ModPlayer
     public void SetSegments(Vector2 endPoint)
     {
         if (Segments == null)
-            Segments = new List<VerletSimulatedSegment>();
+            Segments = [];
 
         Segments.Clear();
 

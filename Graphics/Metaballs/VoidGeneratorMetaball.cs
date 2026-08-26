@@ -15,7 +15,7 @@ public class VoidGeneratorMetaball : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 

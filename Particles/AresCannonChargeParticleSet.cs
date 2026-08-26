@@ -13,7 +13,7 @@ public class AresCannonChargeParticleSet : BaseParticleSet
     public float MoveRotationOffset;
     public float chargeProgress = 0f;
     public Particle bloom;
-    public List<Particle> Pulses = new();
+    public List<Particle> Pulses = [];
 
     public AresCannonChargeParticleSet(int setLifetime, int particleSpawnRate, float spawnAreaCompactness, Color particleColor) :
         base(setLifetime, particleSpawnRate)

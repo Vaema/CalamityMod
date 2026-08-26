@@ -60,11 +60,11 @@ public class GalaxySmasherHammer : ModProjectile, ILocalizedModType
         float targetDist = Vector2.Distance(player.Center, Projectile.Center);
         Projectile.rotation += MathHelper.ToRadians(rotatehammer * 2) * Projectile.direction;
 
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.Aqua,
             Color.Magenta,
-        };
+        ];
         float rate = (Main.GlobalTimeWrappedHourly * 12);
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

@@ -23,7 +23,7 @@ public class VolatileSlime : ModNPC
     public bool released => NPC.ai[3] != 0;
     public bool doOnSpawnEffects = true;
     public Color effectColor = Color.BlueViolet;
-    public List<Vector2> oldVelocities = new();
+    public List<Vector2> oldVelocities = [];
     public Vector2 randPos = Vector2.Zero;
     public Vector2 goalPositionRand = Vector2.Zero;
     public float travelSpeed = 25;
@@ -96,11 +96,11 @@ public class VolatileSlime : ModNPC
             NPC.netUpdate = true;
         }
         float rate = (time * 0.05f);
-        List<Color> eColors = new List<Color>()
-            {
+        List<Color> eColors =
+            [
                 Color.SlateBlue,
                 Color.BlueViolet
-            };
+            ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
@@ -235,10 +235,10 @@ public class VolatileSlime : ModNPC
             Vector2 end = NPC.Center;
 
             Vector2 drawStart = owner.Center;
-            List<Vector2> controlPoints = new List<Vector2>
-        {
+            List<Vector2> controlPoints =
+        [
             drawStart
-        };
+        ];
             for (int i = 0; i < oldVelocities.Count; i++)
             {
                 float swayResponsiveness = Utils.GetLerpValue(0f, 18f, i, true) * Utils.GetLerpValue(oldVelocities.Count, oldVelocities.Count - 18f, i, true) * Utils.GetLerpValue(5, 20, Utils.Distance(drawStart, end), true);

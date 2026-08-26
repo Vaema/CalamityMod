@@ -214,10 +214,10 @@ public class GammaHead : ModProjectile, ILocalizedModType
         Texture2D chain = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/GammaHeadChain").Value;
         Vector2 end = Projectile.Center + (Projectile.spriteDirection == 1).ToInt() * 10 * Vector2.UnitX;
 
-        List<Vector2> controlPoints = new List<Vector2>
-        {
+        List<Vector2> controlPoints =
+        [
             DrawStartPosition
-        };
+        ];
         for (int i = 0; i < OldVelocities.Length; i++)
         {
             // Incorporate the past movement into neck turns, giving it rubber band-like movment.

@@ -140,7 +140,7 @@ public class TilePingerSystem : ModSystem
         if (solid || !(Lighting.Mode == LightMode.Color))
         {
             if (!pingedTiles.ContainsKey(effect))
-                pingedTiles.Add(effect, new List<Point>());
+                pingedTiles.Add(effect, []);
 
             if (!pingedTiles[effect].Contains(tilePos))
                 pingedTiles[effect].Add(tilePos);

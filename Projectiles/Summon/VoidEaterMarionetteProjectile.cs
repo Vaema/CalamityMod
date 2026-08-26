@@ -33,20 +33,20 @@ public class VoidEaterMarionetteProjectile : BaseWormProjectile, ILocalizedModTy
     public override string Texture => "CalamityMod/Projectiles/Summon/VoidEaterMarionetteHead";
 
     public override string GlowTexture => "CalamityMod/Projectiles/Summon/VoidEaterMarionetteHeadGlow";
-    public override List<string> SegmentTextures => new()
-    {
+    public override List<string> SegmentTextures =>
+    [
         "CalamityMod/Projectiles/Summon/VoidEaterMarionetteBody",
         "CalamityMod/Projectiles/Summon/VoidEaterMarionetteTail"
-    };
+    ];
 
     public override int SegmentCount => (int)(Projectile.minionSlots);
 
-    public override List<float> SegmentTypePositionOffsets => new()
-    {
+    public override List<float> SegmentTypePositionOffsets =>
+    [
         54, //Head
         38, //Body 
         52 //Tail
-    };
+    ];
 
     public override void SetStaticDefaults()
     {
@@ -543,7 +543,7 @@ public class VoidEaterMarionetteProjectile : BaseWormProjectile, ILocalizedModTy
             return internalTexAssetsGlow;
         }
     }
-    private List<Asset<Texture2D>> internalTexAssetsGlow = new();
+    private List<Asset<Texture2D>> internalTexAssetsGlow = [];
 
     private Asset<Texture2D> GlowTexAsset;
     private Asset<Texture2D> Jaws;

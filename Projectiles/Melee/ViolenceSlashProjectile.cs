@@ -103,7 +103,7 @@ public class ViolenceSlashProjectile : ModProjectile
         Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
         Player player = Main.player[Projectile.owner];
-        List<Vector2> positions = new List<Vector2>();
+        List<Vector2> positions = [];
 
         for (int i = 0; i < 16; i++)
         {

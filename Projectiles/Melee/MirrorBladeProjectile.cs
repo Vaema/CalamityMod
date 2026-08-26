@@ -34,7 +34,7 @@ public class MirrorBladeProjectile : BaseSwordHoldoutProjectile, ILocalizedModTy
 
     public override SoundStyle? UseSound => SoundID.Item71 with {Volume = 0.9f};
 
-    public List<int> reflectedProjectiles = new() { };
+    public List<int> reflectedProjectiles = [];
 
     public override void Defaults()
     {

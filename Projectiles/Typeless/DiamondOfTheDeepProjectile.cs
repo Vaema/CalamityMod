@@ -90,11 +90,11 @@ public class DiamondOfTheDeepProjectile : ModProjectile, ILocalizedModType
         }
 
         float rate = Main.GlobalTimeWrappedHourly * 5;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             color1,
             color2
-        };
+        ];
 
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

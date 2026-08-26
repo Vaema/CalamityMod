@@ -15,7 +15,7 @@ public class CobaltEnergy : ModProjectile, ILocalizedModType
 
     private bool hasHitEnemy = false;
     private int targetNPC = -1;
-    private List<int> previousNPCs = new() { -1 };
+    private List<int> previousNPCs = [-1];
 
     public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
     public override void SetDefaults()

@@ -78,31 +78,31 @@ public class Burrower : BaseWormNPC
     public override string Texture => "CalamityMod/NPCs/Deconstructors/DeconstructorMK1Head";
 
     public override int WormHitboxNpcType => ModContent.NPCType<BurrowerHitbox>();
-    public override List<string> SegmentTextures => new()
-    {
+    public override List<string> SegmentTextures =>
+    [
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1Body",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt1",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt2",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1Tail"
-    };
+    ];
 
-    public override List<string?> GlowTextures => new()
-    {
+    public override List<string?> GlowTextures =>
+    [
         null,
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyGlow",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt1Glow",
         "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt2Glow"
-    };
+    ];
     public override int SegmentCount => 10;
 
-    public override List<float> SegmentTypePositionOffsets => new()
-    {
+    public override List<float> SegmentTypePositionOffsets =>
+    [
         32,
         32,
         32,
         32,
         32
-    };
+    ];
 
     public static HashSet<int> VulnerableDebuffs => [BuffID.Electrified, ModContent.BuffType<StaticDischarge>(), ModContent.BuffType<VermillionFlux>(), ModContent.BuffType<AuricRebuke>()];
     public override void SetStaticDefaults()
@@ -216,8 +216,8 @@ public class Burrower : BaseWormNPC
     }
     public static List<List<Point>> FindOreVeins(Point wormTile)
     {
-        List<List<Point>> oreVeins = new();
-        HashSet<Point> visited = new();
+        List<List<Point>> oreVeins = [];
+        HashSet<Point> visited = [];
 
         for (int x = -30; x <= 30; x++)
         {
@@ -240,7 +240,7 @@ public class Burrower : BaseWormNPC
                 //This uses a flood fill to check for the ore vein
                 if (tile.HasTile && TileID.Sets.Ore[tile.TileType])
                 {
-                    List<Point> vein = new();
+                    List<Point> vein = [];
                     Queue<Point> queue = new();
                     queue.Enqueue(start);
                     visited.Add(start);

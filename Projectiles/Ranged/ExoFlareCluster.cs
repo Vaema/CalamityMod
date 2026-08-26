@@ -44,13 +44,13 @@ public class ExoFlareCluster : ModProjectile, ILocalizedModType
         Player Owner = Main.player[Projectile.owner];
         float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
         Time++;
-        List<Color> eColors = new List<Color>()
-        {
+        List<Color> eColors =
+        [
             Color.OrangeRed,
             Color.MediumTurquoise,
             Color.Orange,
             Color.LawnGreen
-        };
+        ];
         float rate = (Main.GlobalTimeWrappedHourly * 8);
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];

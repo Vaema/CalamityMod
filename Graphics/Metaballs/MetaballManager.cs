@@ -12,7 +12,7 @@ namespace CalamityMod.Graphics.Metaballs;
 
 public class MetaballManager : ModSystem
 {
-    internal static readonly List<Metaball> metaballs = new();
+    internal static readonly List<Metaball> metaballs = [];
 
     public override void Load()
     {

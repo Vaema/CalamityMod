@@ -454,9 +454,9 @@ public sealed class RipperUI : ModSystem
 
     private static IList<Vector2> GetPearlOffsets(int count) => count switch
     {
-        1 => new List<Vector2>() { pearlOffsetCenter },
-        2 => new List<Vector2>() { PearlOffsetCenterLeft, PearlOffsetCenterRight },
-        3 => new List<Vector2>() { pearlOffsetLeft, pearlOffsetCenter, pearlOffsetRight },
+        1 => [pearlOffsetCenter],
+        2 => [PearlOffsetCenterLeft, PearlOffsetCenterRight],
+        3 => [pearlOffsetLeft, pearlOffsetCenter, pearlOffsetRight],
         _ => null,
     };
 

@@ -41,12 +41,12 @@ public class StarfleetStar : ModProjectile, ILocalizedModType
             Projectile.extraUpdates = (int)Projectile.ai[1];
 
         float rate = (Projectile.ai[2] * 0.05f);
-        List<Color> eColors = new List<Color>()
-            {
+        List<Color> eColors =
+            [
                 c1,
                 c2,
                 c3,
-            };
+            ];
         int colorIndex = (int)(rate / 2 % eColors.Count);
         Color currentColor = eColors[colorIndex];
         Color nextColor = eColors[(colorIndex + 1) % eColors.Count];

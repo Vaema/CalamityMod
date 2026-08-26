@@ -10,7 +10,7 @@ namespace CalamityMod.Particles;
 
 public class DeathAshParticle
 {
-    internal static Dictionary<NPC, RenderTargetLease> PendingNPCsToDraw = new();
+    internal static Dictionary<NPC, RenderTargetLease> PendingNPCsToDraw = [];
     internal static BasicEffect basicShader = null;
     internal static VertexPositionColorTexture[] VertexCache = new VertexPositionColorTexture[PrimitiveBatchSize * 4];
     internal static short[] IndexCache = new short[PrimitiveBatchSize * 6];
@@ -28,7 +28,7 @@ public class DeathAshParticle
     public Vector2 BottomRight => Center + Vector2.One * Scale * 3.5f;
     public Vector2 BottomLeft => Center + new Vector2(-1f, 1f) * Scale * 3.5f;
 
-    public static HashSet<DeathAshParticle> Ashes = new();
+    public static HashSet<DeathAshParticle> Ashes = [];
     public const int PrimitiveBatchSize = 256;
     public const int AshCountLimit = 45000;
     public static BasicEffect BasicShader
@@ -95,7 +95,7 @@ public class DeathAshParticle
 
     public static Dictionary<Vector2, Color> GetColorCacheFromTexture(Texture2D texture, Rectangle? frame = null, bool pruneForEfficency = false)
     {
-        Dictionary<Vector2, Color> colorCache = new Dictionary<Vector2, Color>();
+        Dictionary<Vector2, Color> colorCache = [];
         Color[] uncleanedCache = new Color[texture.Width * texture.Height];
         texture.GetData(uncleanedCache);
 

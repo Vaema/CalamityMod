@@ -20,7 +20,7 @@ public class StygianShieldThrown : ModProjectile, ILocalizedModType
     public const float MaxHomingRange = 640f; // 40 blocks
     public const float ReturnPiercingDamageMult = 0.6f;
 
-    private List<int> PreviousNPCs = new() { -1 };
+    private List<int> PreviousNPCs = [-1];
     public Player Owner => Main.player[Projectile.owner];
     public ref float AirTime => ref Projectile.ai[0];
     SlotId LoopSoundSlot;

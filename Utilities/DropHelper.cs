@@ -1310,7 +1310,7 @@ public static class DropHelper
             this.dropRate = dropRate;
             this.stacks = stacks;
             usesLuck = luck;
-            ChainedRules = new List<IItemDropRuleChainAttempt>();
+            ChainedRules = [];
         }
 
         public AllOptionsAtOnceWithPityDropRule(Fraction dropRate, bool luck, params int[] itemIDs)
@@ -1320,7 +1320,7 @@ public static class DropHelper
             for (int i = 0; i < stacks.Length; ++i)
                 stacks[i] = itemIDs[i]; // implicit conversion operator
             usesLuck = luck;
-            ChainedRules = new List<IItemDropRuleChainAttempt>();
+            ChainedRules = [];
         }
 
         public bool CanDrop(DropAttemptInfo info) => true;

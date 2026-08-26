@@ -189,10 +189,10 @@ public class EndoHydraHead : ModProjectile, ILocalizedModType
         Vector2 start = body.Center + new Vector2(body.spriteDirection == 1 ? 12 : -14, -30f);
         Vector2 end = Projectile.Center + (Projectile.spriteDirection == 1).ToInt() * 10 * Vector2.UnitX;
 
-        List<Vector2> controlPoints = new List<Vector2>
-        {
+        List<Vector2> controlPoints =
+        [
             start
-        };
+        ];
         for (int i = 0; i < OldVelocities.Length; i++)
         {
             // Incorporate the past movement into neck turns, giving it rubber band-like movment.

@@ -36,7 +36,7 @@ public abstract class BaseWormProjectile : ModProjectile
     /// <summary>
     /// Offsets for drawing each segment
     /// </summary>
-    public List<Vector2> SegmentTypeDrawOffsets = new();
+    public List<Vector2> SegmentTypeDrawOffsets = [];
 
     /// <summary>
     /// A list of all glow textures for the segments to draw with
@@ -78,7 +78,7 @@ public abstract class BaseWormProjectile : ModProjectile
     /// Internal list that stores the textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalTexAssets = new();
+    private List<Asset<Texture2D>> internalTexAssets = [];
     /// <summary>
     /// The textures for each glow type of this worm. Works like getting a texture from TextureAssets
     /// </summary>
@@ -101,9 +101,9 @@ public abstract class BaseWormProjectile : ModProjectile
     /// Internal list that stores the glow textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalGlowAssets = new();
+    private List<Asset<Texture2D>> internalGlowAssets = [];
 
-    public List<BaseWormSegment> Segments = new();
+    public List<BaseWormSegment> Segments = [];
    
     public enum SegmentFollowLogic
     {
@@ -130,7 +130,7 @@ public abstract class BaseWormProjectile : ModProjectile
     /// <summary>
     /// The points used by ExactSegmentLogic to exactly follow the head
     /// </summary>
-    private List<Vector2> segmentPoints = new();
+    private List<Vector2> segmentPoints = [];
 
     /// <summary>
     /// Updates the positions of the segments based on the value set in SegmentFollowType

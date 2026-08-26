@@ -18,7 +18,7 @@ public class DracoConstellation : ModProjectile, ILocalizedModType
     public new string LocalizationCategory => "Projectiles.Magic";
     public override string Texture => "CalamityMod/Particles/Sparkle";
     public float TailLength => 600;
-    public List<DracoSegment> Segments = new();
+    public List<DracoSegment> Segments = [];
     /// <summary>
     /// Do not reference this field directly. Use GetGlowTex() instead.
     /// </summary>
@@ -89,16 +89,18 @@ public class DracoConstellation : ModProjectile, ILocalizedModType
         {
             //These segment lengths were gotten by getting the length between each star from Draco's Wikipedia diagam in pixels, then converting to a percentage of the total length.
             //This ignores the "head" of draco in those calculations. The values here are multiplied by TailLength to get the full length of Draco in game.
-            Segments = new List<DracoSegment>();
-            Segments.Add(new(this, 0.1985f, MathHelper.TwoPi * 0.74f));
-            Segments.Add(new(this, 0.0835f, MathHelper.TwoPi * 0.01f));
-            Segments.Add(new(this, 0.1209f, MathHelper.TwoPi * 0.2f));
-            Segments.Add(new(this, 0.0938f, MathHelper.TwoPi * 0.15f));
-            Segments.Add(new(this, 0.0571f, MathHelper.TwoPi * 0.15f));
-            Segments.Add(new(this, 0.0711f, MathHelper.TwoPi * 0.99f));
-            Segments.Add(new(this, 0.1560f, MathHelper.TwoPi * 0.9f));
-            Segments.Add(new(this, 0.1458f, MathHelper.TwoPi * 0.85f));
-            Segments.Add(new(this, 0.0733f, MathHelper.TwoPi * 0.9f));
+            Segments =
+            [
+                new(this, 0.1985f, MathHelper.TwoPi * 0.74f),
+                new(this, 0.0835f, MathHelper.TwoPi * 0.01f),
+                new(this, 0.1209f, MathHelper.TwoPi * 0.2f),
+                new(this, 0.0938f, MathHelper.TwoPi * 0.15f),
+                new(this, 0.0571f, MathHelper.TwoPi * 0.15f),
+                new(this, 0.0711f, MathHelper.TwoPi * 0.99f),
+                new(this, 0.1560f, MathHelper.TwoPi * 0.9f),
+                new(this, 0.1458f, MathHelper.TwoPi * 0.85f),
+                new(this, 0.0733f, MathHelper.TwoPi * 0.9f),
+            ];
         }
         ;
         if (Projectile.timeLeft <= 240 && Projectile.timeLeft > 60)

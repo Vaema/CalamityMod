@@ -72,7 +72,7 @@ public class GiantHive
                 if (y <= treeHeight - 45)
                 {
                     //create a list of points for the ends of each branch
-                    List<Point> list = new List<Point>();
+                    List<Point> list = [];
 
                     WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-0.6853981852531433,
                     WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237),
@@ -492,7 +492,7 @@ public class GiantHive
     public static Vector2 MakeOuterCell(int x, int y, UnifiedRandom random)
     {
         int numConnections = WorldGen.genRand.Next(3, 6);
-        List<Vector2> placedHexes = new List<Vector2>();
+        List<Vector2> placedHexes = [];
         int chestsPlaced = 0;
         int chestMax = 4; // Number of chests to spawn in outer cells
 

@@ -89,10 +89,10 @@ public class DoGCartMount : ModMount
             return true;
 
         // Account for stupid rotational issues.
-        List<Vector2> rotationAdjustedPositions = new List<Vector2>()
-        {
+        List<Vector2> rotationAdjustedPositions =
+        [
             drawPlayer.Calamity().DoGCartSegments[0].Center
-        };
+        ];
 
         for (int i = 1; i < drawPlayer.Calamity().DoGCartSegments.Length; i++)
         {

@@ -56,7 +56,7 @@ public class ViridVanguardBlade : ModProjectile, ILocalizedModType
         set => Projectile.ai[0] = (int)value;
     }
 
-    public static List<ViridVanguardAIState> ActiveAttackStateList = new() { ViridVanguardAIState.ChargingCircle, ViridVanguardAIState.PhotonRipperZenithSlashes, ViridVanguardAIState.PhotonRipperZenithEndlag };
+    public static List<ViridVanguardAIState> ActiveAttackStateList = [ViridVanguardAIState.ChargingCircle, ViridVanguardAIState.PhotonRipperZenithSlashes, ViridVanguardAIState.PhotonRipperZenithEndlag];
 
 
     public Player Owner => Main.player[Projectile.owner];

@@ -9,8 +9,8 @@ namespace CalamityMod.Items.Fishing;
 public class GlimmeringGemfish : ModItem, ILocalizedModType
 {
     public new string LocalizationCategory => "Items.Fishing";
-    public static List<int> LootDisplay = new()
-    {
+    public static List<int> LootDisplay =
+    [
         ItemID.Amethyst,
         ItemID.Topaz,
         ItemID.Sapphire,
@@ -18,7 +18,7 @@ public class GlimmeringGemfish : ModItem, ILocalizedModType
         ItemID.Ruby,
         ItemID.Diamond,
         ItemID.Amber
-    };
+    ];
 
     public override void SetStaticDefaults()
     {

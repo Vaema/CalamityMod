@@ -49,16 +49,16 @@ public class AcidRainEvent : ModSystem
     public const float BloodwormSpawnRate = 0.1f;
 
     // Collections are not readonly so that if anyone else wants to add stuff to them with their own mod, they can.
-    public static Dictionary<int, AcidRainSpawnData> PossibleEnemiesPreHM = new();
+    public static Dictionary<int, AcidRainSpawnData> PossibleEnemiesPreHM = [];
 
     // Note: Irradiated Slimes spawn naturally
-    public static Dictionary<int, AcidRainSpawnData> PossibleEnemiesAS = new();
+    public static Dictionary<int, AcidRainSpawnData> PossibleEnemiesAS = [];
 
-    public static Dictionary<int, AcidRainSpawnData> PossibleEnemiesPolter = new();
+    public static Dictionary<int, AcidRainSpawnData> PossibleEnemiesPolter = [];
 
-    public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesAS = new();
+    public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesAS = [];
 
-    public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesPolter = new();
+    public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesPolter = [];
 
     public static List<int> AllMinibosses => [.. PossibleMinibossesAS.Select(miniboss => miniboss.Key).Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct()];
 
@@ -169,11 +169,11 @@ public class AcidRainEvent : ModSystem
     // Clear enemy cache lists.
     public override void Unload()
     {
-        PossibleEnemiesPreHM = new();
-        PossibleEnemiesAS = new();
-        PossibleEnemiesPolter = new();
-        PossibleMinibossesAS = new();
-        PossibleMinibossesPolter = new();
+        PossibleEnemiesPreHM = [];
+        PossibleEnemiesAS = [];
+        PossibleEnemiesPolter = [];
+        PossibleMinibossesAS = [];
+        PossibleMinibossesPolter = [];
     }
 
     /// <summary>

@@ -38,7 +38,7 @@ public class BloodBoilerMetaball2 : Metaball
     {
         get;
         private set;
-    } = new();
+    } = [];
 
     public override bool AnythingToDraw => Particles.Any();
 
