@@ -8,16 +8,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos;
 
-public class OzzathothYoyo : ModProjectile
+public class AzathothYoyo : ModProjectile
 {
-    public override LocalizedText DisplayName => CalamityUtils.GetItemName<Ozzathoth>();
+    public override LocalizedText DisplayName => CalamityUtils.GetItemName<Azathoth>();
     public const int MaxUpdates = 3;
 
     public override void SetStaticDefaults()
     {
         ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
-        ProjectileID.Sets.YoyosMaximumRange[Type] = Ozzathoth.Reach;
-        ProjectileID.Sets.YoyosTopSpeed[Type] = Ozzathoth.Speed / MaxUpdates;
+        ProjectileID.Sets.YoyosMaximumRange[Type] = 880f;
+        ProjectileID.Sets.YoyosTopSpeed[Type] = 60f / MaxUpdates;
 
         ProjectileID.Sets.TrailCacheLength[Type] = 8;
         ProjectileID.Sets.TrailingMode[Type] = 1;
@@ -42,7 +42,7 @@ public class OzzathothYoyo : ModProjectile
             if (Projectile.owner == Main.myPlayer)
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 0.55f), ModContent.ProjectileType<CosmicOrb>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f, 0f);
         }
-        if (Main.rand.NextBool((int)(MaxUpdates / 2)))
+        if (Main.rand.NextBool(MaxUpdates / 2))
         {
             Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(1.85f, 2.2f));
             dust.color = Main.rand.NextBool() ? Color.Magenta : Color.HotPink;

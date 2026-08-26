@@ -25,7 +25,7 @@ public class HotPink : ModRarity
     // Hot Pink is used for developer items. It Has a system built in for custom rarity effects.
     // It is a unique rarity and does not have its items rarity change on reforge.
     public override Color RarityColor => TextColor;
-    public static Color TextColor => new Color(255, 0, 255);
+    public static Color TextColor => new(255, 0, 255);
 
     public static Dictionary<int, Func<string, TextSnippet>> CustomRarities = new()
     {
@@ -47,7 +47,7 @@ public class HotPink : ModRarity
         { ModContent.ItemType<FlamsteedRing>(), FlamsteedRing.RarityColor },
         { ModContent.ItemType<IllustriousKnives>(), IllustriousKnives.RarityColor },
         { ModContent.ItemType<NanoblackReaper>(), NanoblackReaper.RarityColor },
-        { ModContent.ItemType<Ozzathoth>(), ShatteredCommunity.GetRarityColor }, // Yes, this reuses Shattered Community's color
+        { ModContent.ItemType<Azathoth>(), ShatteredCommunity.GetRarityColor },
         { ModContent.ItemType<ProfanedSoulCrystal>(), ProfanedSoulCrystal.RarityColor },
         { ModContent.ItemType<RedSun>(), RedSun.RarityColor },
         { ModContent.ItemType<ScarletDevil>(), ScarletDevil.RarityColor },

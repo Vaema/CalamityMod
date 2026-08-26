@@ -8,14 +8,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee;
 
-[LegacyName("Azathoth")]
-public class Ozzathoth : ModItem, ILocalizedModType
+public class Azathoth : ModItem, ILocalizedModType
 {
     public new string LocalizationCategory => "Items.Weapons.Melee";
 
-    public static float Reach = 880f;
-    public static float Speed = 60f;
-    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+    public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(880f.ToTiles(), 60f);
 
     public override void SetStaticDefaults()
     {
@@ -41,7 +38,7 @@ public class Ozzathoth : ModItem, ILocalizedModType
         Item.noUseGraphic = true;
         Item.noMelee = true;
 
-        Item.shoot = ModContent.ProjectileType<OzzathothYoyo>();
+        Item.shoot = ModContent.ProjectileType<AzathothYoyo>();
         Item.shootSpeed = 16f;
 
         Item.autoReuse = true;

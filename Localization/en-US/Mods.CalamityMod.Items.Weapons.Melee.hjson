@@ -973,8 +973,8 @@ Orderbringer: {
 		'''
 }
 
-Ozzathoth: {
-	DisplayName: Ozzathoth
+Azathoth: {
+	DisplayName: Azathoth
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
