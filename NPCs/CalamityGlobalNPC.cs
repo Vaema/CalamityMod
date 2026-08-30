@@ -51,7 +51,6 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
-using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
@@ -1104,10 +1103,10 @@ public partial class CalamityGlobalNPC : GlobalNPC
         DeclareBossHealthUIVariables(npc);
 
         if (BossRushEvent.BossRushActive)
-            BossRushStatChanges(npc, Mod);
+            BossRushStatChanges(npc);
 
         if (CalamityWorld.revenge)
-            RevDeathStatChanges(npc, Mod);
+            RevDeathStatChanges(npc);
 
         OtherStatChanges(npc);
 
@@ -1154,17 +1153,15 @@ public partial class CalamityGlobalNPC : GlobalNPC
     #endregion
 
     #region Boss Rush Stat Changes
-    private void BossRushStatChanges(NPC npc, Mod mod)
+    private static void BossRushStatChanges(NPC npc)
     {
         if (CalamityNPCSets.BossRushHealth.TryGetValue(npc.type, out var newHP))
-        {
             npc.lifeMax = newHP;
-        }
     }
     #endregion
 
     #region Revengeance and Death Mode Stat Changes
-    private void RevDeathStatChanges(NPC npc, Mod mod)
+    private static void RevDeathStatChanges(NPC npc)
     {
         // Health changes (disabled in Boss Rush)
         if (!BossRushEvent.BossRushActive)
@@ -2493,7 +2490,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
     #endregion
 
     #region Edit Coin Drops
-    private void EditGlobalCoinDrops(NPC npc)
+    private static void EditGlobalCoinDrops(NPC npc)
     {
         // Old Rev coin drop math: Normal = 10 Gold, Expert = 25 Gold, Rev = 37 Gold 50 Silver.
         // New Rev coin drop math: Normal = 15 Gold, Expert AND Rev = 22 Gold 50 Silver.
@@ -2608,38 +2605,16 @@ public partial class CalamityGlobalNPC : GlobalNPC
             return;
 
         // Reduction to multiplayer HP scaling for non-boss Calamity enemies in Expert+
-        double scalar;
-        switch (numPlayers)
+        var scalar = numPlayers switch
         {
-            case 1:
-                scalar = 1.0;
-                break;
-
-            case 2:
-                scalar = 0.9; // 1.8
-                break;
-
-            case 3:
-                scalar = 0.82; // 2.46
-                break;
-
-            case 4:
-                scalar = 0.76; // 3.04
-                break;
-
-            case 5:
-                scalar = 0.71; // 3.55
-                break;
-
-            case 6:
-                scalar = 0.67; // 4.02
-                break;
-
-            default:
-                scalar = 0.64; // 4.48 + 0.64 per player beyond 7
-                break;
-        }
-
+            1 => 1.0,
+            2 => 0.9,  // 1.8
+            3 => 0.82, // 2.46
+            4 => 0.76, // 3.04
+            5 => 0.71, // 3.55
+            6 => 0.67, // 4.02
+            _ => 0.64, // 4.48 + 0.64 per player beyond 7
+        };
         npc.lifeMax = (int)Math.Round(npc.lifeMax * scalar);
     }
     #endregion
@@ -2825,7 +2800,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
             npc.damage = 0;
 
         if (BossRushEvent.BossRushActive && !npc.friendly && !npc.townNPC && !DoesNotDisappearInBossRush)
-            BossRushForceDespawnOtherNPCs(npc, Mod);
+            BossRushForceDespawnOtherNPCs(npc);
 
         #region Fairies Edit
         // Fairies don't run away and are immune to damage while wearing Fairy Boots.
@@ -2926,7 +2901,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
     #endregion
 
     #region Boss Rush Force Despawn Other NPCs
-    private void BossRushForceDespawnOtherNPCs(NPC npc, Mod mod)
+    private static void BossRushForceDespawnOtherNPCs(NPC npc)
     {
         if (BossRushEvent.BossRushStage >= BossRushEvent.Bosses.Count)
             return;
@@ -3339,9 +3314,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
 
                 // Force Auric Ore to animate with its crackling electricity
                 if (tile.TileType == auricOreID)
-                {
                     AuricOre.Animate = true;
-                }
 
                 var yeetVec = Vector2.Normalize(npc.Center - touchedTile.ToWorldCoordinates());
                 npc.velocity += yeetVec * 20f;
@@ -3759,7 +3732,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
 
     #region Summon Tag
     //doze 03-15-2025: A full refactor of the summon tag system to make it easier to use and more flexible. Ping me with any questions.
-    private void EditSummonTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
+    private static void EditSummonTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
     {
         // Don't run on non-player-owned projectiles.
         if (proj.npcProj || proj.trap || proj.owner == -1)
@@ -3780,8 +3753,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
             {
                 int type = npc.buffType[i];
                 var tag = CalamityBuffSets.SummonTagDebuff[type];
-                if (tag is not null)
-                    tag.TagModifyHitEffects(proj, npc, ref modifiers, ref TagDamageMult, ref critChance);
+                tag?.TagModifyHitEffects(proj, npc, ref modifiers, ref TagDamageMult, ref critChance);
             }
         }
 
@@ -3804,7 +3776,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
     }
 
     // This is for whip tag effects that run on hit and don't modify the damage of the hit.
-    private void SummonTagOnHitEffects(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
+    private static void SummonTagOnHitEffects(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
     {
         // Don't run on non-player-owned projectiles.
         if (projectile.npcProj || projectile.trap || projectile.owner == -1)
@@ -3818,8 +3790,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
             {
                 int type = npc.buffType[i];
                 var tag = CalamityBuffSets.SummonTagDebuff[type];
-                if (tag is not null)
-                    tag.TagOnHit(npc, projectile, hit, damagedone);
+                tag?.TagOnHit(npc, projectile, hit, damagedone);
             }
         }
     }
@@ -4438,9 +4409,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
     public override void OnSpawn(NPC npc, IEntitySource source)
     {
         if (npc.type == NPCID.Deerclops)
-        {
             DeerclopsAI.hasTargetBeenInRange = false;
-        }
 
         // Despawn Blazing Wheels and Spike Balls when a boss spawns so they're not annoying and stay in the arena
         if (npc.boss)
@@ -4900,7 +4869,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
             {
                 List<Texture2D> currentDebuffs = [];
 
-                for (int b = 0; b < moddedDebuffTextureList.Count(); b++)
+                for (int b = 0; b < moddedDebuffTextureList.Count; b++)
                 {
                     if (moddedDebuffTextureList[b].Item2.Invoke(npc))
                         currentDebuffs.Add(Request<Texture2D>(moddedDebuffTextureList[b].Item1).Value);
@@ -5103,40 +5072,25 @@ public partial class CalamityGlobalNPC : GlobalNPC
         float rotation = 0.6f;
         Texture2D wyvernArm = TextureAssets.Npc[NPCID.WyvernLegs].Value;
         Texture2D wyvernBody = TextureAssets.Npc[NPCID.WyvernBody].Value;
-        switch (npc.netID)
+        return npc.netID switch
         {
-            case NPCID.DiggerHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 24, 0.4f, Vector2.Zero, speed, 10, 10, 0.2f);
-            case NPCID.GiantWormHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f);
-            case NPCID.EaterofWorldsHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 34, 0.2f, new Vector2(30, 0), speed, 10, 16, 0.24f);
-            case NPCID.WyvernHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, [wyvernArm, wyvernBody, wyvernBody, wyvernBody], 4, 28, 0.1f, new Vector2(36, 0), speed, 6, 50, 0.3f, true);
-            case NPCID.StardustWormHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, rotation, new Vector2(0, 10), 4, 10, 6, 0.18f);
-            case NPCID.SolarCrawltipedeHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, 6, 10, 16, 0.22f);
-            case NPCID.CultistDragonHead:
-                return DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor);
-            case NPCID.TheDestroyer:
-                return DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor);
-            case NPCID.LeechHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f);
-            case NPCID.DevourerHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f);
-            case NPCID.TombCrawlerHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 14, rotation, Vector2.Zero, speed, 20, 6, 0.14f);
-            case NPCID.DuneSplicerHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 28, 0.4f, Vector2.Zero, speed, 10, bashLength, bashSpeed);
-            case NPCID.BloodEelHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 6, 22, 0.1f, Vector2.Zero, speed, 6, 20, 0.2f, true);
-            case NPCID.BoneSerpentHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 16, rotation, Vector2.Zero, speed, 10, 30, 0.4f);
-            case NPCID.SeekerHead:
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f);
-        }
-        return true;
+            NPCID.DiggerHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 24, 0.4f, Vector2.Zero, speed, 10, 10, 0.2f),
+            NPCID.GiantWormHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f),
+            NPCID.EaterofWorldsHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 34, 0.2f, new Vector2(30, 0), speed, 10, 16, 0.24f),
+            NPCID.WyvernHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, [wyvernArm, wyvernBody, wyvernBody, wyvernBody], 4, 28, 0.1f, new Vector2(36, 0), speed, 6, 50, 0.3f, true),
+            NPCID.StardustWormHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, rotation, new Vector2(0, 10), 4, 10, 6, 0.18f),
+            NPCID.SolarCrawltipedeHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, 6, 10, 16, 0.22f),
+            NPCID.CultistDragonHead => DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor),
+            NPCID.TheDestroyer => DrawSpecialBestiaryWorm(spriteBatch, npc, drawColor),
+            NPCID.LeechHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 8, 14, 0.6f, new Vector2(20, 0), 4, 10, 6, 0.18f),
+            NPCID.DevourerHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f),
+            NPCID.TombCrawlerHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 14, rotation, Vector2.Zero, speed, 20, 6, 0.14f),
+            NPCID.DuneSplicerHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, 28, 0.4f, Vector2.Zero, speed, 10, bashLength, bashSpeed),
+            NPCID.BloodEelHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 6, 22, 0.1f, Vector2.Zero, speed, 6, 20, 0.2f, true),
+            NPCID.BoneSerpentHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, 9, 16, rotation, Vector2.Zero, speed, 10, 30, 0.4f),
+            NPCID.SeekerHead => CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, npc, drawColor, TextureAssets.Npc[npc.type].Value, TextureAssets.Npc[npc.type + 1].Value, segments, spacing, rotation, Vector2.Zero, speed, 20, 10, 0.2f),
+            _ => true,
+        };
     }
 
     public static bool DrawSpecialBestiaryWorm(SpriteBatch spriteBatch, NPC npc, Color drawColor)
@@ -5366,88 +5320,86 @@ public partial class CalamityGlobalNPC : GlobalNPC
     }
     #endregion
 
-    #region Old Duke Spawn
-    public static void OldDukeSpawn(int plr, int type, int baitType)
-    {
-        Player player = Main.player[plr];
-        if (!player.active || player.dead)
-            return;
+    //#region Old Duke Spawn
+    //public static void OldDukeSpawn(int plr, int type, int baitType)
+    //{
+    //    Player player = Main.player[plr];
+    //    if (!player.active || player.dead)
+    //        return;
 
-        int m = 0;
-        while (m < Main.maxProjectiles)
-        {
-            Projectile projectile = Main.projectile[m];
-            if (projectile.active && projectile.bobber && projectile.owner == plr)
-            {
-                if (plr == Main.myPlayer && projectile.ai[0] == 0f)
-                {
-                    for (int item = 0; item < Main.InventorySlotsTotal; item++)
-                    {
-                        if (player.inventory[item].type == baitType)
-                        {
-                            player.inventory[item].stack--;
-                            if (player.inventory[item].stack <= 0)
-                            {
-                                player.inventory[item].SetDefaults(ItemID.None, false);
-                            }
-                            break;
-                        }
-                    }
+    //    int m = 0;
+    //    while (m < Main.maxProjectiles)
+    //    {
+    //        Projectile projectile = Main.projectile[m];
+    //        if (projectile.active && projectile.bobber && projectile.owner == plr)
+    //        {
+    //            if (plr == Main.myPlayer && projectile.ai[0] == 0f)
+    //            {
+    //                for (int item = 0; item < Main.InventorySlotsTotal; item++)
+    //                {
+    //                    if (player.inventory[item].type == baitType)
+    //                    {
+    //                        player.inventory[item].stack--;
+    //                        if (player.inventory[item].stack <= 0)
+    //                        {
+    //                            player.inventory[item].SetDefaults(ItemID.None, false);
+    //                        }
+    //                        break;
+    //                    }
+    //                }
 
-                    projectile.ai[0] = 2f;
-                    projectile.netUpdate = true;
+    //                projectile.ai[0] = 2f;
+    //                projectile.netUpdate = true;
 
-                    // The vanilla game uses a special packet for Duke Fishron spawning.
-                    // However, this packet doesn't work on modded NPC types, so we must create a custom one.
-                    // Also, you can't use Netmode != NetmodeID.MultiplayerClient in a projectile context that has an owner, hence the MyPlayer check.
-                    if (Main.myPlayer == projectile.owner)
-                    {
-                        if (!player.active || player.dead)
-                            return;
+    //                // The vanilla game uses a special packet for Duke Fishron spawning.
+    //                // However, this packet doesn't work on modded NPC types, so we must create a custom one.
+    //                // Also, you can't use Netmode != NetmodeID.MultiplayerClient in a projectile context that has an owner, hence the MyPlayer check.
+    //                if (Main.myPlayer == projectile.owner)
+    //                {
+    //                    if (!player.active || player.dead)
+    //                        return;
 
-                        Projectile proj = null;
-                        foreach (Projectile p in Main.ActiveProjectiles)
-                        {
-                            proj = p;
-                            if (p.bobber && p.owner == player.whoAmI)
-                            {
-                                break;
-                            }
-                        }
+    //                    Projectile proj = null;
+    //                    foreach (Projectile p in Main.ActiveProjectiles)
+    //                    {
+    //                        proj = p;
+    //                        if (p.bobber && p.owner == player.whoAmI)
+    //                        {
+    //                            break;
+    //                        }
+    //                    }
 
-                        if (proj is null)
-                            return;
+    //                    if (proj is null)
+    //                        return;
 
-                        var spawnPosX = (int)proj.Center.X;
-                        var spawnPosY = (int)proj.Center.Y + 100;
-                        if (Main.netMode == NetmodeID.SinglePlayer)
-                        {
-                            int oldDuke = NPC.NewNPC(NPC.GetBossSpawnSource(player.whoAmI), spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>());
-                            CalamityUtils.BossAwakenMessage(oldDuke);
-                        }
-                        else if (Main.netMode == NetmodeID.MultiplayerClient)
-                        {
-                            SpawnBossOnPositionPacket.Send(spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>(), player);
-                        }
-                    }
-                }
-                break;
-            }
-            else
-            {
-                m++;
-            }
-        }
-    }
-    #endregion
+    //                    var spawnPosX = (int)proj.Center.X;
+    //                    var spawnPosY = (int)proj.Center.Y + 100;
+    //                    if (Main.netMode == NetmodeID.SinglePlayer)
+    //                    {
+    //                        int oldDuke = NPC.NewNPC(NPC.GetBossSpawnSource(player.whoAmI), spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>());
+    //                        CalamityUtils.BossAwakenMessage(oldDuke);
+    //                    }
+    //                    else if (Main.netMode == NetmodeID.MultiplayerClient)
+    //                    {
+    //                        SpawnBossOnPositionPacket.Send(spawnPosX, spawnPosY, NPCType<OldDuke.OldDuke>(), player);
+    //                    }
+    //                }
+    //            }
+    //            break;
+    //        }
+    //        else
+    //        {
+    //            m++;
+    //        }
+    //    }
+    //}
+    //#endregion
 
     #region Astral Things
     public static void DoHitDust(NPC npc, int hitDirection, int dustType = 5, float xSpeedMult = 1f, int numHitDust = 5, int numDeathDust = 20)
     {
         for (int k = 0; k < 5; k++)
-        {
             Dust.NewDust(npc.position, npc.width, npc.height, dustType, hitDirection * xSpeedMult, -1f);
-        }
 
         if (npc.life <= 0)
         {
