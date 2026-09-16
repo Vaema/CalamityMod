@@ -27,8 +27,8 @@ public class Tequila : ModItem, ILocalizedModType, IAlcoholItem
     private static void ApplyTequilaEffect(Player player, float intensity)
     {
         var cplayer = player.Calamity();
-        cplayer.ElectricDebuffMultiplier += Tequila.DebuffBoost;
-        cplayer.ColdDebuffMultiplier -= Tequila.DebuffLoss;
+        cplayer.ElectricDebuffMultiplier += DebuffBoost;
+        cplayer.ColdDebuffMultiplier -= DebuffLoss;
     }
     public override void SetStaticDefaults()
     {

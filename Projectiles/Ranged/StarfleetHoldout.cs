@@ -190,7 +190,7 @@ public class StarfleetHoldout : BaseGunHoldoutProjectile
                 float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
                 float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
                 int starExtraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
-                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, starExtraUpdates, Main.rand.Next(0, 300 + 1));
+                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, starExtraUpdates, Main.rand.Next(0, 300 + 1));
                 shotgun.extraUpdates = starExtraUpdates;
             }
         }
@@ -254,7 +254,7 @@ public class StarfleetHoldout : BaseGunHoldoutProjectile
             float blastSize = 140;
             float minMultiplier = 0.1f;
             int hitsToMinMult = 6;
-            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), Projectile.damage * 3, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileType<BasicBurst>(), Projectile.damage * 3, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
             blast.timeLeft = 15;
         }
 

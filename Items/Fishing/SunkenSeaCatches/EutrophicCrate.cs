@@ -36,19 +36,19 @@ public class EutrophicCrate : ModItem, ILocalizedModType
         // 20-50 Blocks @ 100%; Individually 33.33%
         itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[3]
         {
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.Navystone>(), 1, 20, 50),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>(), 1, 20, 50),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.FurnitureDriftwood.Driftwood>(), 1, 20, 50)
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.SunkenSea.Navystone>(), 1, 20, 50),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.SunkenSea.EutrophicSand>(), 1, 20, 50),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.FurnitureDriftwood.Driftwood>(), 1, 20, 50)
         }));
 
         // 10-20 Coral Blocks @ 100%; Individually 20%
         itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[5]
         {
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.CyanCoral>(), 1, 10, 20),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.OrangeCoral>(), 1, 10, 20),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.LimeCoral>(), 1, 10, 20),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.MagentaCoral>(), 1, 10, 20),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.YellowCoral>(), 1, 10, 20)
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.SunkenSea.CyanCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.SunkenSea.OrangeCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.SunkenSea.LimeCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.SunkenSea.MagentaCoral>(), 1, 10, 20),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.SunkenSea.YellowCoral>(), 1, 10, 20)
         }));
 
         // 4-10 Prism Shards @ 50%

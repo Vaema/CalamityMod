@@ -235,7 +235,7 @@ public class ExoskeletonPanel : ModProjectile, ILocalizedModType
         if (Main.myPlayer != Projectile.owner)
             return false;
 
-        Texture2D panelTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Texture2D panelTexture = TextureAssets.Projectile[Type].Value;
         Texture2D plasmaTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/SmallAresArms/ExoskeletonPanelPlasma").Value;
         Texture2D arrowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/SmallAresArms/Arrow").Value;
         Vector2 area = plasmaTexture.Frame(1, 7, 0, 0).Size();

@@ -41,7 +41,7 @@ public class LiliesOfFinality : ModItem, ILocalizedModType
     {
         Item.damage = 512;
         Item.DamageType = DamageClass.Summon;
-        Item.buffType = ModContent.BuffType<LiliesOfFinalityBuff>();
+        Item.buffType = BuffType<LiliesOfFinalityBuff>();
         Item.shoot = ProjectileType<LiliesOfFinalityElster>();
         Item.knockBack = 5f;
 

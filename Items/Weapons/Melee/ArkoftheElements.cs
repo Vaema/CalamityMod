@@ -53,7 +53,7 @@ public class ArkoftheElements : ModItem, ILocalizedModType
     }
     public override void SetStaticDefaults()
     {
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ElementalMix>()];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<ElementalMix>()];
     }
 
     public override void SetDefaults()

@@ -140,7 +140,7 @@ public class ProfanedCrystalMageFireball : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
+        Texture2D texture = Main.dayTime ? TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
         int num214 = texture.Height / Main.projFrames[Type];
         int y6 = num214 * Projectile.frame;
         Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
@@ -329,7 +329,7 @@ public class ProfanedCrystalMageFireballSplit : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
+        Texture2D texture = Main.dayTime ? TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
         int num214 = texture.Height / Main.projFrames[Type];
         int y6 = num214 * Projectile.frame;
         Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
@@ -498,7 +498,7 @@ public class ProfanedCrystalMeleeSpear : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Type].Value);
+        Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, TextureAssets.Projectile[Type].Value);
         CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha), 1);
         return false;
     }
@@ -739,7 +739,7 @@ public class ProfanedCrystalRangedHuges : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/ProfanedCrystalRangedHugesNight").Value;
+        Texture2D texture = Main.dayTime ? TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/ProfanedCrystalRangedHugesNight").Value;
         int num214 = texture.Height / Main.projFrames[Type];
         int y6 = num214 * Projectile.frame;
         Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
@@ -942,7 +942,7 @@ public class ProfanedCrystalRangedSmalls : ModProjectile, ILocalizedModType
     }
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Texture2D texture = TextureAssets.Projectile[Type].Value;
         int num214 = texture.Height / Main.projFrames[Type];
         int y6 = num214 * Projectile.frame;
         Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
@@ -1370,7 +1370,7 @@ public class ProfanedCrystalWhip : ModProjectile, ILocalizedModType
         SpriteEffects flip = SpriteEffects.FlipHorizontally;
 
         Main.instance.LoadProjectile(Type);
-        Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Texture2D texture = TextureAssets.Projectile[Type].Value;
 
         Vector2 pos = list[0];
 
@@ -1789,7 +1789,7 @@ public class MiniGuardianSpear : ModProjectile, ILocalizedModType
     public override bool PreDraw(ref Color lightColor)
     {
         var psc = Projectile.ai[0] > 0f;
-        Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime && psc, Projectile.alpha, true), 4f, Terraria.GameContent.TextureAssets.Projectile[Type].Value);
+        Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime && psc, Projectile.alpha, true), 4f, TextureAssets.Projectile[Type].Value);
         CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], ProvUtils.GetColorBasedOnEnrage(!Main.dayTime && psc, Projectile.alpha), 1);
         return false;
     }
@@ -1912,7 +1912,7 @@ public class MiniGuardianFireball : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
+        Texture2D texture = Main.dayTime ? TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
         int num214 = texture.Height / Main.projFrames[Type];
         int y6 = num214 * Projectile.frame;
         Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);
@@ -2051,7 +2051,7 @@ public class MiniGuardianFireballSplit : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = Main.dayTime ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
+        Texture2D texture = Main.dayTime ? TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyFire2Night").Value;
         int num214 = texture.Height / Main.projFrames[Type];
         int y6 = num214 * Projectile.frame;
         Projectile.DrawBackglow(ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, Projectile.alpha, true), 4f, texture);

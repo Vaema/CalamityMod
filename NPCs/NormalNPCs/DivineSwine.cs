@@ -247,7 +247,7 @@ public class DivineSwine : ModNPC
                 float lightScale = MathHelper.Lerp(0.5f, 0.8f, particleStrengthInterpolant) * Main.rand.NextFloat(0.5f, 1f);
 
                 SquishyLightParticle transformLight = new(NPC.Center, Main.rand.NextVector2Circular(lightSpeed, lightSpeed), lightScale, Color.White, Main.rand.Next(30, 45));
-                GeneralParticleHandler.SpawnParticle(transformLight, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                GeneralParticleHandler.SpawnParticle(transformLight, true, GeneralDrawLayer.BeforeNPCs);
             }
         }
 
@@ -263,7 +263,7 @@ public class DivineSwine : ModNPC
                 Color sparkleColor = Utils.SelectRandom(Main.rand, drawColorBlue, drawColorYellow);
 
                 QuickSparkleParticle transformSparkle = new(NPC.Center, Main.rand.NextVector2Circular(sparkleSpeed, sparkleSpeed), sparkleColor, sparkleScale, Main.rand.Next(30, 45));
-                GeneralParticleHandler.SpawnParticle(transformSparkle, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                GeneralParticleHandler.SpawnParticle(transformSparkle, true, GeneralDrawLayer.BeforeNPCs);
             }
         }
 
@@ -271,23 +271,23 @@ public class DivineSwine : ModNPC
         {
             float glowRingScale = Utils.Remap(Timer, 180f, 240f, 1.6f, 2.2f, true);
             CustomPulse transformRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, glowRingScale, 45);
-            GeneralParticleHandler.SpawnParticle(transformRing, false, Enums.GeneralDrawLayer.AfterNPCs);
+            GeneralParticleHandler.SpawnParticle(transformRing, false, GeneralDrawLayer.AfterNPCs);
         }
 
         if (Timer >= 240f)
         {
             CustomPulse glowRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 3f, 75);
-            GeneralParticleHandler.SpawnParticle(glowRing, false, Enums.GeneralDrawLayer.AfterNPCs);
+            GeneralParticleHandler.SpawnParticle(glowRing, false, GeneralDrawLayer.AfterNPCs);
 
             BloomParticle bloom = new(NPC.Center, Vector2.Zero, Color.White, 0f, 2f, 125);
             for (int i = 0; i < 3; i++)
-                GeneralParticleHandler.SpawnParticle(bloom, false, Enums.GeneralDrawLayer.AfterNPCs);
+                GeneralParticleHandler.SpawnParticle(bloom, false, GeneralDrawLayer.AfterNPCs);
 
             for (int i = 0; i < 25; i++)
             {
                 QuickSparkleParticle sparkle = new(NPC.Center, Main.rand.NextVector2Circular(20f, 20f), Color.White, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(45, 60));
                 SquishyLightParticle light = new(NPC.Center, Main.rand.NextVector2Circular(10f, 10f), Main.rand.NextFloat(0.6f, 0.8f), Color.White, Main.rand.Next(45, 60));
-                GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? sparkle : light, true, Enums.GeneralDrawLayer.AfterNPCs);
+                GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? sparkle : light, true, GeneralDrawLayer.AfterNPCs);
             }
 
             SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
@@ -378,7 +378,7 @@ public class DivineSwine : ModNPC
                 Color lightColor = Color.Lerp(DivineBlue, DivineYellow, Main.rand.NextFloat());
 
                 SquishyLightParticle meatLight = new(lightSpawnPosition, lightVelocity, lightScale, lightColor, Main.rand.Next(30, 45));
-                GeneralParticleHandler.SpawnParticle(meatLight, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                GeneralParticleHandler.SpawnParticle(meatLight, true, GeneralDrawLayer.BeforeNPCs);
             }
 
             int sparkleSpawnRate = (int)Utils.Remap(Timer, 0f, 180f, 45, 5, true);
@@ -401,7 +401,7 @@ public class DivineSwine : ModNPC
             if (Timer % 15f == 0f)
             {
                 CustomPulse meatLightRing = new(NPC.Center, Vector2.Zero, DivineBlue, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, glowRingScale, 0f, 25);
-                GeneralParticleHandler.SpawnParticle(meatLightRing, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                GeneralParticleHandler.SpawnParticle(meatLightRing, true, GeneralDrawLayer.BeforeNPCs);
             }
         }
 
@@ -415,11 +415,11 @@ public class DivineSwine : ModNPC
             }
 
             CustomPulse meatLightRing = new(NPC.Center, Vector2.Zero, DivineBlue, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 3f, 75);
-            GeneralParticleHandler.SpawnParticle(meatLightRing, false, Enums.GeneralDrawLayer.AfterNPCs);
+            GeneralParticleHandler.SpawnParticle(meatLightRing, false, GeneralDrawLayer.AfterNPCs);
 
             BloomParticle meatBloom = new(NPC.Center, Vector2.Zero, Color.White, 0f, 3f, 125);
             for (int i = 0; i < 3; i++)
-                GeneralParticleHandler.SpawnParticle(meatBloom, false, Enums.GeneralDrawLayer.AfterNPCs);
+                GeneralParticleHandler.SpawnParticle(meatBloom, false, GeneralDrawLayer.AfterNPCs);
 
             for (int i = 0; i < 25; i++)
             {
@@ -431,7 +431,7 @@ public class DivineSwine : ModNPC
                 Color lightColor = Color.Lerp(DivineBlue, DivineYellow, Main.rand.NextFloat());
                 SquishyLightParticle meatLight = new(NPC.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(3f, 5f), Main.rand.NextFloat(1.4f, 1.8f), lightColor, Main.rand.Next(45, 60));
                 
-                GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? meatSparkle : meatLight, true, Enums.GeneralDrawLayer.AfterNPCs);
+                GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? meatSparkle : meatLight, true, GeneralDrawLayer.AfterNPCs);
             }
 
             if (SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out ActiveSound swineSpeakInstance))
@@ -456,18 +456,18 @@ public class DivineSwine : ModNPC
         if (Timer >= 75f)
         {
             CustomPulse meatLightRing = new(NPC.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 2f, 75);
-            GeneralParticleHandler.SpawnParticle(meatLightRing, false, Enums.GeneralDrawLayer.AfterNPCs);
+            GeneralParticleHandler.SpawnParticle(meatLightRing, false, GeneralDrawLayer.AfterNPCs);
 
             BloomParticle meatBloom = new(NPC.Center, Vector2.Zero, Color.White, 0f, 2f, 125);
             for (int i = 0; i < 3; i++)
-                GeneralParticleHandler.SpawnParticle(meatBloom, false, Enums.GeneralDrawLayer.AfterNPCs);
+                GeneralParticleHandler.SpawnParticle(meatBloom, false, GeneralDrawLayer.AfterNPCs);
 
             for (int i = 0; i < 25; i++)
             {
                 QuickSparkleParticle meatSparkle = new(NPC.Center, Main.rand.NextVector2Circular(15f, 15f), Color.White, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(45, 60));
                 SquishyLightParticle meatLight = new(NPC.Center, Main.rand.NextVector2Circular(5f, 5f), Main.rand.NextFloat(0.6f, 0.8f), Color.White, Main.rand.Next(45, 60));
 
-                GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? meatSparkle : meatLight, true, Enums.GeneralDrawLayer.AfterNPCs);
+                GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? meatSparkle : meatLight, true, GeneralDrawLayer.AfterNPCs);
             }
 
             SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
@@ -496,7 +496,7 @@ public class DivineSwine : ModNPC
         {
             float lightScale = Main.rand.NextFloat(0.15f, 0.3f);
             SquishyLightParticle meatLight = new(NPC.Center, Main.rand.NextVector2Circular(2f, 2f), lightScale, Color.White, Main.rand.Next(30, 45));
-            GeneralParticleHandler.SpawnParticle(meatLight, true, Enums.GeneralDrawLayer.BeforeNPCs);
+            GeneralParticleHandler.SpawnParticle(meatLight, true, GeneralDrawLayer.BeforeNPCs);
         }
 
         NPC.velocity *= 0.9f;

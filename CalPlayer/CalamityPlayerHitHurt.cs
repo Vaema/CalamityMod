@@ -1260,7 +1260,7 @@ public partial class CalamityPlayer : ModPlayer
         {
             int cooldownTime = RelicOfResilience.baseCooldown;
             rOfResilienceCooldown = cooldownTime;
-            Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
+            Player.AddCooldown(RelicOfResilienceCooldown.ID, cooldownTime);
             SoundStyle youGotHit = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
             SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.5f }, Player.Center);
         }
@@ -1878,7 +1878,7 @@ public partial class CalamityPlayer : ModPlayer
                     masterChefDurabilityCD.timeLeft = LunicCorpsShieldDurability;
 
                 // Update PSA/PSC durability on the cooldown rack
-                if (pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs) && cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var profanedSoulDurabilityCD))
+                if (pSoulArtifact && (!profanedCrystal || profanedCrystalBuffs) && cooldowns.TryGetValue(ProfanedSoulShield.ID, out var profanedSoulDurabilityCD))
                     profanedSoulDurabilityCD.timeLeft = pSoulShieldDurability;
 
                 // Update Sponge durability on the cooldown rack.

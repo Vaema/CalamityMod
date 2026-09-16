@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Melee;
 
 public class WulfrumScrewdriverProj : ModProjectile
 {
-    public override LocalizedText DisplayName => CalamityUtils.GetItemName<WulfrumScrewdriver>();
+    public override LocalizedText DisplayName => GetItemName<WulfrumScrewdriver>();
     public override string Texture => "CalamityMod/Items/Weapons/Melee/WulfrumScrewdriver";
     public float Timer => MaxTime - Projectile.timeLeft;
     public float LifetimeCompletion => Timer / (float)MaxTime;

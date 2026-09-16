@@ -29,12 +29,6 @@ public class ClassResistBalancingRule : IBalancingRule
 
     public void ApplyBalancingChange(NPC npc, ref NPC.HitModifiers modifiers)
     {
-        // Changed from FinalDamage to SourceDamage to ensure that resists will also apply to on-hit effects.
-        // See this message in the Calamity Dev Discord for full rationale.
-        // https://discord.com/channels/458428222061936650/459003706575421440/1128002932000960592
-        //
-        // There is one limitation to this approach. Flat bonus damage, aka whip tags, won't be reduced.
-        // In the case that summons or whips need to be resisted, the best move is to consider them entirely separately.
         modifiers.SourceDamage *= DamageMultiplier;
     }
 }

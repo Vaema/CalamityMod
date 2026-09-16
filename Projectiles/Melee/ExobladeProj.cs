@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Melee;
 
 public class ExobladeProj : ModProjectile, ILocalizedModType
 {
-    public override LocalizedText DisplayName => CalamityUtils.GetItemName<Exoblade>();
+    public override LocalizedText DisplayName => GetItemName<Exoblade>();
     public Player Owner => Main.player[Projectile.owner];
 
     const float BladeLength = 180;

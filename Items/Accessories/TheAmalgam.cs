@@ -23,7 +23,7 @@ public class TheAmalgam : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(9, 6));
         ItemID.Sets.AnimatesAsSoul[Type] = true;
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrainRot>(), ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<CrushDepth>(), ModContent.BuffType<Plague>(), BuffID.Electrified, BuffID.Frostburn2];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<BrainRot>(), BuffType<BrimstoneFlames>(), BuffType<CrushDepth>(), BuffType<Plague>(), BuffID.Electrified, BuffID.Frostburn2];
     }
 
     public override void SetDefaults()

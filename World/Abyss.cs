@@ -1105,7 +1105,7 @@ public class Abyss
 
         //place the chest itself
         //TODO: will create a proper loot pool to go in abyss chests along with the main item
-        int ChestIndex = WorldGen.PlaceChest(i, j - 2, (ushort)ModContent.TileType<Tiles.Abyss.AbyssTreasureChest>(), false, 1);
+        int ChestIndex = WorldGen.PlaceChest(i, j - 2, (ushort)ModContent.TileType<AbyssTreasureChest>(), false, 1);
 
         int[] Potions1 = new int[] { ItemID.ShinePotion, ItemID.GillsPotion, ItemID.TeleportationPotion, ItemID.LuckPotionLesser };
         int[] Potions2 = new int[] { ItemID.ThornsPotion, ItemID.FlipperPotion, ItemID.BattlePotion, ItemID.IronskinPotion };
@@ -1196,7 +1196,7 @@ public class Abyss
     }
 
     /// <summary>
-    /// Actually Unlocks all abyss chests, This is NOT synced between clients. Call <see cref="Abyss.UnlockAllAbyssChests"/> instead unless you know what you doing.
+    /// Actually Unlocks all abyss chests, This is NOT synced between clients. Call <see cref="UnlockAllAbyssChests"/> instead unless you know what you doing.
     /// </summary>
     internal static void DoUnlockAllAbyssChests()
     {

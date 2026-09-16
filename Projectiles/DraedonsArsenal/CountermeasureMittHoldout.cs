@@ -159,7 +159,7 @@ public class CountermeasureMittHoldout : BaseGunHoldoutProjectile
             return;
         }
 
-        Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, (alteredRotation + MathHelper.PiOver2 * -Projectile.direction) + (Owner.direction == -1 ? MathHelper.Pi : 0));
+        Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, (alteredRotation + MathHelper.PiOver2 * -Projectile.direction) + (Owner.direction == -1 ? MathHelper.Pi : 0));
 
         Vector2 handPos = Owner.GetBackHandPosition(CompositeArmStretchAmount.None, Owner.compositeBackArm.rotation) + (Owner.compositeBackArm.rotation + MathHelper.PiOver2).ToRotationVector2() * 4;
         float armRotation = (Utils.DirectionTo(Owner.Center, handPos).ToRotation() - MathHelper.PiOver2) * Owner.gravDir + (Owner.gravDir == -1 ? MathHelper.Pi : 0f);

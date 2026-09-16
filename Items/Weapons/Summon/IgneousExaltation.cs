@@ -107,7 +107,7 @@ public class IgneousExaltation : ModItem, ILocalizedModType
                 {
                     pro.ModProjectile<IgneousBlade>().BladeIndex = bladeIndex++;
                     pro.ModProjectile<IgneousBlade>().AITimer = -ChargeCooldown;
-                    pro.ModProjectile<IgneousBlade>().DistanceTimer = -IgneousExaltation.ChargeCooldown;
+                    pro.ModProjectile<IgneousBlade>().DistanceTimer = -ChargeCooldown;
                     pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.CircleOwner;
                     pro.netUpdate = true;
                 }

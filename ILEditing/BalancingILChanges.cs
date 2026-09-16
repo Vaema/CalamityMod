@@ -98,7 +98,7 @@ public partial class ILChanges
         cursor.Remove();
 
         // Increase by 10% if the higher jump speed is enabled.
-        cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : VanillaBaseJumpSpeed);
+        cursor.EmitDelegate(() => CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : VanillaBaseJumpSpeed);
     }
     #endregion
 

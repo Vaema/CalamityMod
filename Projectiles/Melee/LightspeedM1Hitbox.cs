@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee;
 
-[PierceResistExceptionAttribute(true)]
+[PierceResistException(true)]
 public class LightspeedM1Hitbox : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Melee";

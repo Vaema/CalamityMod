@@ -55,7 +55,7 @@ public class Exoblade : ModItem, ILocalizedModType
     public static int BeamsPerSwing = 4;
     public override void SetStaticDefaults()
     {
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<MiracleBlight>()];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<MiracleBlight>()];
     }
 
     public override void SetDefaults()

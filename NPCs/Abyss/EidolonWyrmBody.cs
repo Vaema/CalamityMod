@@ -139,7 +139,7 @@ public class EidolonWyrmBody : ModNPC
         Vector2 vector = center - screenPos;
         vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
         vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
-        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightYellow);
+        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.LightYellow);
         Main.spriteBatch.Draw(GlowTexture.Value, vector,
             new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
     }

@@ -47,7 +47,7 @@ public class TheConcoction : ModItem, ILocalizedModType
     }
     public override void OnConsumeItem(Player player)
     {
-        player.HealPlayer(TheConcoction.healValue);
+        player.HealPlayer(healValue);
         SoundEngine.PlaySound(SoundID.Item3, player.Center);
         TheConcoctionPlayer concoctionPlayer = player.GetModPlayer<TheConcoctionPlayer>();
         concoctionPlayer.swinesWrathCounter = 1200; // Creates a 10 second delay before the buff is visible (triggers at 600)

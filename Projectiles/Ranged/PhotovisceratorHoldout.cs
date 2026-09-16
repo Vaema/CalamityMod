@@ -144,7 +144,7 @@ public class PhotovisceratorHoldout : ModProjectile
     {
         if (Time == 1 || Time % 55 == 0)
         {
-            PhotoUseSound = SoundEngine.PlaySound(Photoviscerator.UseSound, Projectile.Center);
+            PhotoUseSound = SoundEngine.PlaySound(UseSound, Projectile.Center);
         }
 
         if (SoundEngine.TryGetActiveSound(PhotoUseSound, out var Sound3))
@@ -294,6 +294,6 @@ public class PhotovisceratorHoldout : ModProjectile
         if (Projectile.spriteDirection == -1)
             spriteEffects = SpriteEffects.FlipHorizontally;
 
-        Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/PhotovisceratorHoldoutGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+        Main.EntitySpriteDraw(Request<Texture2D>("CalamityMod/Projectiles/Ranged/PhotovisceratorHoldoutGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
     }
 }

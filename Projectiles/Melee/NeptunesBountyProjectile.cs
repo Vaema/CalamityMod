@@ -296,7 +296,7 @@ public class NeptunesBountyProjectile : ModProjectile, ILocalizedModType
     {
         if (spinMode2)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Aqua with { A = 0 } * 0.6f, 1);
+            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Aqua with { A = 0 } * 0.6f, 1);
         }
         Asset<Texture2D> p = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearSmokey");
         Asset<Texture2D> p2 = ModContent.Request<Texture2D>("CalamityMod/Particles/SemiCircularSmearSwipe");

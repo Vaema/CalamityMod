@@ -25,10 +25,10 @@ public class EvergreenGin : ModItem, ILocalizedModType, IAlcoholItem
     private static void ApplyEvergreenGinEffect(Player player, float intensity)
     {
         var cplayer = player.Calamity();
-        cplayer.SicknessDebuffMultiplier += EvergreenGin.DebuffBoost;
-        cplayer.WaterDebuffMultiplier += EvergreenGin.DebuffBoost;
-        cplayer.ElectricDebuffMultiplier -= EvergreenGin.DebuffLoss;
-        cplayer.HeatDebuffMultiplier -= EvergreenGin.DebuffLoss;
+        cplayer.SicknessDebuffMultiplier += DebuffBoost;
+        cplayer.WaterDebuffMultiplier += DebuffBoost;
+        cplayer.ElectricDebuffMultiplier -= DebuffLoss;
+        cplayer.HeatDebuffMultiplier -= DebuffLoss;
     }
 
     public override void SetStaticDefaults()

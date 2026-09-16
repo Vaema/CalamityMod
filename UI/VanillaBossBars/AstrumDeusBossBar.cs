@@ -55,7 +55,7 @@ public class AstrumDeusBossBar : ModBossBar
 
     public bool FindMoreWorms(ref BigProgressBarInfo info)
     {
-        info.npcIndexToAimAt = NPC.FindFirstNPC(ModContent.NPCType<AstrumDeusHead>());
+        info.npcIndexToAimAt = NPC.FindFirstNPC(NPCType<AstrumDeusHead>());
         return info.npcIndexToAimAt != -1;
     }
 }

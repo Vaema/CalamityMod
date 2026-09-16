@@ -310,9 +310,9 @@ public class BrainOfCthulhuSystem : ModSystem
                     //Tendril is gone/getting reeled in, attach to newly spawned creeper.
                     if (vTendril.Count < 28 && shouldSpawnTendrilIfNeeded)
                     {
-                        BrainOfCthulhuSystem.VerletTendrils[index] = new(creeper.whoAmI, [], -1);
+                        VerletTendrils[index] = new(creeper.whoAmI, [], -1);
                         for (int j = 0; j < 28; j++)
-                            BrainOfCthulhuSystem.VerletTendrils[index].tendril.Add(new(creeper.Center));
+                            VerletTendrils[index].tendril.Add(new(creeper.Center));
                     }
 
                     Vector2 endPoint = creeper.Center + creeper.netOffset;

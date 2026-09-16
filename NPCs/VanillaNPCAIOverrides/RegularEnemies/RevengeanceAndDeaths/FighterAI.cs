@@ -2257,7 +2257,7 @@ PrepareToShoot:
                 }
                 if (NPC.ai[1] >= 57f)
                 {
-                    int dustType = Utils.SelectRandom<int>(Main.rand, new int[]
+                    int dustType = Utils.SelectRandom(Main.rand, new int[]
                     {
                     161,
                     229

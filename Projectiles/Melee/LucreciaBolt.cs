@@ -90,7 +90,7 @@ public class LucreciaBolt : ModProjectile, ILocalizedModType
         for (int i = 0; i < 6; i++)
         {
             float variance = Main.rand.NextFloat(-0.6f, 0.6f);
-            int dustStyle = ModContent.DustType<SquashDust>();
+            int dustStyle = DustType<SquashDust>();
             Dust dust2 = Dust.NewDustPerfect(target.Center, dustStyle);
             dust2.scale = Main.rand.NextFloat(1.2f, 1.6f) - Math.Abs(variance);
             dust2.velocity = (Projectile.velocity * 1.5f).RotatedBy(variance) * Main.rand.NextFloat(1.2f, 1.5f) * (1 - Math.Abs(variance));

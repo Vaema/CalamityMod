@@ -22,7 +22,7 @@ public class HeartoftheElements : ModItem, ILocalizedModType
     {
         Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 8));
         ItemID.Sets.AnimatesAsSoul[Type] = true;
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<BrimstoneFlames>(), ModContent.BuffType<WindChilled>(), BuffID.Confused];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<BrimstoneFlames>(), BuffType<WindChilled>(), BuffID.Confused];
     }
 
     public override void SetDefaults()

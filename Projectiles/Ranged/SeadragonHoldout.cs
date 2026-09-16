@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Ranged;
 
 public class SeadragonHoldout : BaseGunHoldoutProjectile
 {
-    public override int AssociatedItemID => ModContent.ItemType<Seadragon>();
+    public override int AssociatedItemID => ItemType<Seadragon>();
     public override float MaxOffsetLengthFromArm => 24f;
     public override float OffsetXUpwards => -5f;
     public override float BaseOffsetY => -1f;
@@ -106,7 +106,7 @@ public class SeadragonHoldout : BaseGunHoldoutProjectile
                     }
                     if (swapType)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<BlahajBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner, transEffects ? 0f : 1f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ProjectileType<BlahajBlast>(), Projectile.damage, Projectile.knockBack, Projectile.owner, transEffects ? 0f : 1f);
                     }
                     swapType = !swapType;
                 }
@@ -132,7 +132,7 @@ public class SeadragonHoldout : BaseGunHoldoutProjectile
             {
                 //Activate all fish to rush at the cursor and home in on the nearest enemy
                 Projectile projectile = Main.projectile[x];
-                if (projectile.active && projectile.type == ModContent.ProjectileType<SeaDragonRocket>() && projectile.ai[1] < 5)
+                if (projectile.active && projectile.type == ProjectileType<SeaDragonRocket>() && projectile.ai[1] < 5)
                 {
                     projectile.ai[1] = 5;
                     projectile.velocity = Utils.DirectionTo(projectile.Center, Owner.Calamity().mouseWorld) * 12;
@@ -145,7 +145,7 @@ public class SeadragonHoldout : BaseGunHoldoutProjectile
             }
         }
         //If any fish projectiles are present, create an eye shine effect as they rush the enemy
-        if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeaDragonRocket>()] > 0)
+        if (Owner.ownedProjectileCounts[ProjectileType<SeaDragonRocket>()] > 0)
         {
             if (Time == 3)
             {

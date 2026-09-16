@@ -373,7 +373,7 @@ public partial class CalamityPlayer : ModPlayer
                     ModContent.ItemType<RustedJingleBell>()
                 ];
 
-                legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SerpentsBite>(), Main.hardMode);
+                legendaryCatches.AddWithCondition(ModContent.ItemType<SerpentsBite>(), Main.hardMode);
                 itemDrop = legendaryCatches[Main.rand.Next(legendaryCatches.Count)];
             }
             else if (attempt.veryrare)
@@ -383,8 +383,8 @@ public partial class CalamityPlayer : ModPlayer
                     ModContent.ItemType<GreenwaveLoach>()
                 ];
 
-                veryRareCatches.AddWithCondition<int>(ModContent.ItemType<SparklingEmpress>(), DownedBossSystem.downedDesertScourge);
-                veryRareCatches.AddWithCondition<int>(ModContent.ItemType<SeaSpiritAmulet>(), DownedBossSystem.downedDesertScourge);
+                veryRareCatches.AddWithCondition(ModContent.ItemType<SparklingEmpress>(), DownedBossSystem.downedDesertScourge);
+                veryRareCatches.AddWithCondition(ModContent.ItemType<SeaSpiritAmulet>(), DownedBossSystem.downedDesertScourge);
                 itemDrop = veryRareCatches[Main.rand.Next(veryRareCatches.Count)];
             }
             // Quest fish hover around this priority

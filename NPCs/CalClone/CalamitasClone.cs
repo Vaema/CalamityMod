@@ -608,7 +608,7 @@ public class CalamitasClone : ModNPC
                 }
 
                 if (calamityGlobalNPC.newAI[3] == 900f - 360f)
-                    BulletHellWarnSlot = SoundEngine.PlaySound(CalamitasClone.BulletHellWarning with { Volume = 0.75f }, player.Center);
+                    BulletHellWarnSlot = SoundEngine.PlaySound(BulletHellWarning with { Volume = 0.75f }, player.Center);
                 if (calamityGlobalNPC.newAI[3] > 900f - 360f)
                 {
                     if (SoundEngine.TryGetActiveSound(BulletHellWarnSlot, out var warningSound) && warningSound.IsPlaying)
@@ -622,7 +622,7 @@ public class CalamitasClone : ModNPC
                 NPC.localAI[1] = 0f;
                 calamityGlobalNPC.newAI[2] = 0f;
                 calamityGlobalNPC.newAI[3] = 0f;
-                SoundEngine.PlaySound(CalamitasClone.BulletHellEnd with { Volume = 0.75f }, player.Center);
+                SoundEngine.PlaySound(BulletHellEnd with { Volume = 0.75f }, player.Center);
 
                 // Prevent bullshit charge hits when second bullet hell ends.
                 if (phase4)

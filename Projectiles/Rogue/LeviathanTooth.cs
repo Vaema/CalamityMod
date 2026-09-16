@@ -174,7 +174,7 @@ public class LeviathanTooth : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Texture2D tex = TextureAssets.Projectile[Type].Value;
         if (Projectile.ai[1] == 2)
             tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/LeviathanTooth2").Value;
         if (Projectile.ai[1] == 3)

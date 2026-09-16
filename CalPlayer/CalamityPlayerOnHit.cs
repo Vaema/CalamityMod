@@ -616,7 +616,7 @@ public partial class CalamityPlayer : ModPlayer
 
             ProjLifesteal(target, proj, damageDone, hit.Crit);
             ProjOnHit(proj, target, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
-            NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>() && /*This is for Pigion to not count as a whip*/!(proj.type == ModContent.ProjectileType<BasicBurst>() && proj.minion), hit.Crit, true, proj.noEnchantments);
+            NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>() && /*This is for Pigion to not count as a whip*/!(proj.type == ProjectileType<BasicBurst>() && proj.minion), hit.Crit, true, proj.noEnchantments);
 
             // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
             if (targetIsDummy)

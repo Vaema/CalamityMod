@@ -155,7 +155,7 @@ public class ViridVanguard : ModItem, ILocalizedModType
                 if (pro.type == type && pro.owner == player.whoAmI)
                 {
                     pro.ModProjectile<ViridVanguardBlade>().BladeIndex = bladeIndex++;
-                    pro.ModProjectile<ViridVanguardBlade>().ActiveTimer = ViridVanguard.ActiveAttackCooldown;
+                    pro.ModProjectile<ViridVanguardBlade>().ActiveTimer = ActiveAttackCooldown;
                     pro.ModProjectile<ViridVanguardBlade>().AITimer = 0f;
                     pro.netUpdate = true;
                 }

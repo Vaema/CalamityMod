@@ -315,7 +315,7 @@ public static partial class CalamityUtils
     /// <param name="enabled"></param>
     public static void DrawInventoryDot(SpriteBatch spriteBatch, Vector2 itemPosition, Vector2 dotOffset, bool enabled)
     {
-        var tex = CalamityUtils.GetTextureEfficient(ref ItemDotTexture, "Terraria/Images/Extra_20").Value;
+        var tex = GetTextureEfficient(ref ItemDotTexture, "Terraria/Images/Extra_20").Value;
         var dotFrame = tex.Frame(1, 4, frameY: enabled ? 1 : 2);
         spriteBatch.Draw(tex, itemPosition + dotOffset, dotFrame, Color.White, 0, dotFrame.Size() * 0.5f, Main.inventoryScale, SpriteEffects.None, 0);
     }

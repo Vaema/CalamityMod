@@ -22,12 +22,12 @@ public static class CustomActions
 
         public override bool Apply(Point origin, int x, int y, params object[] args)
         {
-            Tile tile = GenBase._tiles[x, y];
+            Tile tile = _tiles[x, y];
             if (tile.HasTile && Main.tileSolid[tile.TileType])
             {
                 _count++;
             }
-            return base.UnitApply(origin, x, y, args);
+            return UnitApply(origin, x, y, args);
         }
     }
 
@@ -75,7 +75,7 @@ public static class CustomActions
             {
                 WorldGen.PlaceTile(x, y, TileID.MushroomPlants);
             }
-            return base.UnitApply(origin, x, y, args);
+            return UnitApply(origin, x, y, args);
         }
     }
 
@@ -127,11 +127,11 @@ public static class CustomActions
             float distance = Vector2.Distance(worldOrigin, new Vector2(x * 16 + 8, y * 16 + 8));
             if (_greaterThan && distance > _distance)
             {
-                return base.UnitApply(origin, x, y, args);
+                return UnitApply(origin, x, y, args);
             }
             else if (distance < _distance)
             {
-                return base.UnitApply(origin, x, y, args);
+                return UnitApply(origin, x, y, args);
             }
             return false;
         }

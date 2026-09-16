@@ -294,13 +294,13 @@ public class Cataclysm : ModNPC
             if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height) && fireDelay)
             {
                 if (NPC.localAI[2] == 0f)
-                    SoundEngine.PlaySound(Cataclysm.FlamethrowerStart, NPC.Center);
+                    SoundEngine.PlaySound(FlamethrowerStart, NPC.Center);
 
                 NPC.localAI[2] += 1f;
                 if (NPC.localAI[2] > 30f)
                 {
                     NPC.localAI[2] = 1f;
-                    SoundEngine.PlaySound(Cataclysm.FlamethrowerLoop, NPC.Center);
+                    SoundEngine.PlaySound(FlamethrowerLoop, NPC.Center);
                 }
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)

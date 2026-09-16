@@ -879,7 +879,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
             ActiveColdDebuffMultiplier += 1;
             ActiveHeatDebuffMultiplier -= 0.5f;
         }
-        if (npc.HasBuff(ModContent.BuffType<WindChilled>()))
+        if (npc.HasBuff(BuffType<WindChilled>()))
         {
             ActiveWaterDebuffMultiplier += 0.5f;
         }
@@ -5917,7 +5917,7 @@ public partial class CalamityGlobalNPC : GlobalNPC
         ];
 
         // Insert the debuff info into the NPC's bestiary entry
-        bool force = npc.type == ModContent.NPCType<Burrower>(); //Force Burrower to always show the debuff section
+        bool force = npc.type == NPCType<Burrower>(); //Force Burrower to always show the debuff section
         bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements, force));
 
         // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now

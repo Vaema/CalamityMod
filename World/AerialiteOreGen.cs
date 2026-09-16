@@ -61,7 +61,7 @@ public class AerialiteOreGen
                 WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
                 {
                     new Actions.ClearTile(),
-                    new Actions.PlaceTile((ushort)ModContent.TileType<Tiles.Ores.AerialiteOreDisenchanted>())
+                    new Actions.PlaceTile((ushort)ModContent.TileType<AerialiteOreDisenchanted>())
                 }));
             }
         }

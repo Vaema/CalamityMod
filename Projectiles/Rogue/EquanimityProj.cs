@@ -267,7 +267,7 @@ public class EquanimityProj : ModProjectile, ILocalizedModType
                     {
                         closestNPCDistance = potentialNewDistance;
                         newTarget = n;
-                        Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, newTarget, 30f, 3);
+                        Projectile.velocity = CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, newTarget, 30f, 3);
                     }
                 }
             }

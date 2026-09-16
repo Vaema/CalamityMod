@@ -1352,7 +1352,7 @@ public class AstrumAureus : ModNPC
         }
 
         // Drop an Astral Meteor if applicable
-        ThreadPool.QueueUserWorkItem(_ => World.AstralBiome.PlaceAstralMeteor());
+        ThreadPool.QueueUserWorkItem(_ => AstralBiome.PlaceAstralMeteor());
 
         // Mark Astrum Aureus as dead
         DownedBossSystem.downedAstrumAureus = true;

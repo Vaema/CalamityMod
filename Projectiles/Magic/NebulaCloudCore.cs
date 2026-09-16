@@ -75,7 +75,7 @@ public class NebulaCloudCore : ModProjectile, ILocalizedModType
                     if (Main.rand.NextBool())
                     {
                         Vector2 prettyDustDirect = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi);
-                        Dust prettyDust = Main.dust[Dust.NewDust(Projectile.Center - prettyDustDirect * 45f, 0, 0, Utils.SelectRandom<int>(Main.rand, 86, 90))];
+                        Dust prettyDust = Main.dust[Dust.NewDust(Projectile.Center - prettyDustDirect * 45f, 0, 0, Utils.SelectRandom(Main.rand, 86, 90))];
                         prettyDust.noGravity = true;
                         prettyDust.position = Projectile.Center - prettyDustDirect * Main.rand.Next(20, 31);
                         prettyDust.velocity = prettyDustDirect.RotatedBy(MathHelper.PiOver2) * 9f;

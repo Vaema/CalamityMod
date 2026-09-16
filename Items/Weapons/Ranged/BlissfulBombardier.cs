@@ -18,7 +18,7 @@ public class BlissfulBombardier : ModItem, ILocalizedModType
     public new string LocalizationCategory => "Items.Weapons.Ranged";
     public override void SetStaticDefaults()
     {
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<HolyFlames>()];
     }
     public override void SetDefaults()
     {
@@ -34,11 +34,11 @@ public class BlissfulBombardier : ModItem, ILocalizedModType
         Item.channel = true;
         Item.knockBack = 14f;
         Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-        Item.rare = ModContent.RarityType<Turquoise>();
+        Item.rare = RarityType<Turquoise>();
         Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = 0.4f, Pitch = -0.5f, PitchVariance = 0.1f };
         Item.autoReuse = true;
         Item.shootSpeed = 24f;
-        Item.shoot = ModContent.ProjectileType<BlissfulBombardierHoldout>();
+        Item.shoot = ProjectileType<BlissfulBombardierHoldout>();
         Item.useAmmo = AmmoID.Rocket;
     }
     public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;

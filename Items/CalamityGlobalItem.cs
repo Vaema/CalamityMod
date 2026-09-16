@@ -488,7 +488,7 @@ public partial class CalamityGlobalItem : GlobalItem
                     // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
                     int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
 
-                    Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
+                    Projectile.NewProjectile(source, position, velocity * 1.25f, ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
                 }
             }
         }
@@ -627,7 +627,7 @@ public partial class CalamityGlobalItem : GlobalItem
         }
 
         //Mana Potion interactions
-        if (item.healMana > 0 || player.HasBuff(ModContent.BuffType<AstralInjectionBuff>()))
+        if (item.healMana > 0 || player.HasBuff(BuffType<AstralInjectionBuff>()))
         {
             //If mana potion used, kill all active Crown projectiles 
             if ((modPlayer.moonCrown || modPlayer.featherCrown) && modPlayer.mageCrownCount > 0)

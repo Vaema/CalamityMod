@@ -199,10 +199,10 @@ public class Tornado : ModProjectile, ILocalizedModType
             Vector2 spinArea = spinningpoint.RotatedBy((double)incStorageMult, default);
             Vector2 colorChangeVector = new Vector2(0f, colorChanger + 1f);
             colorChangeVector.X = colorChangeVector.Y * vectorMult;
-            Color newCloudColor = Microsoft.Xna.Framework.Color.Lerp(Microsoft.Xna.Framework.Color.Transparent, cloudColor, colorChanger * 2f);
+            Color newCloudColor = Color.Lerp(Color.Transparent, cloudColor, colorChanger * 2f);
             if (colorChanger > 0.5f)
             {
-                newCloudColor = Microsoft.Xna.Framework.Color.Lerp(Microsoft.Xna.Framework.Color.Transparent, cloudColor, 2f - colorChanger * 2f);
+                newCloudColor = Color.Lerp(Color.Transparent, cloudColor, 2f - colorChanger * 2f);
             }
             newCloudColor.A = (byte)((float)newCloudColor.A * 0.5f);
             newCloudColor *= trackerClamp;

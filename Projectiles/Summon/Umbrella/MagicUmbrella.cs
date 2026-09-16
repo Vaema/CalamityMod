@@ -110,7 +110,7 @@ public class MagicUmbrella : ModProjectile, ILocalizedModType
             int targetIdx = FindATarget(blacklist);
             if (targetIdx != -1)
             {
-                Behavior = Main.rand.NextFromList<int>(num, num3);
+                Behavior = Main.rand.NextFromList(num, num3);
                 Behavior = num3;
                 Projectile.ai[1] = targetIdx;
                 Projectile.netUpdate = true;
@@ -134,7 +134,7 @@ public class MagicUmbrella : ModProjectile, ILocalizedModType
             int targetIdx = FindATarget(blacklist);
             if (targetIdx != -1)
             {
-                Behavior = Main.rand.NextFromList<int>(num, num3);
+                Behavior = Main.rand.NextFromList(num, num3);
                 Projectile.ai[1] = targetIdx;
                 Projectile.netUpdate = true;
             }
@@ -154,7 +154,7 @@ public class MagicUmbrella : ModProjectile, ILocalizedModType
             int targetIdx = FindATarget(blacklist);
             if (targetIdx != -1)
             {
-                Behavior = Main.rand.NextFromList<int>(num, num3);
+                Behavior = Main.rand.NextFromList(num, num3);
                 Projectile.ai[1] = targetIdx;
                 Projectile.netUpdate = true;
             }
@@ -223,7 +223,7 @@ public class MagicUmbrella : ModProjectile, ILocalizedModType
             int targetIdx = FindATarget(blacklist);
             if (targetIdx != -1)
             {
-                Behavior = Main.rand.NextFromList<int>(num, num3);
+                Behavior = Main.rand.NextFromList(num, num3);
                 Projectile.ai[1] = targetIdx;
                 Projectile.netUpdate = true;
             }

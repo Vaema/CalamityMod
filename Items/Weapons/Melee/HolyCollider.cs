@@ -18,7 +18,7 @@ public class HolyCollider : CustomUseProjItem, ILocalizedModType
     public new string LocalizationCategory => "Items.Weapons.Melee";
     public override void SetStaticDefaults()
     {
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<HolyFlames>()];
     }
     public override void SetDefaults()
     {
@@ -34,12 +34,12 @@ public class HolyCollider : CustomUseProjItem, ILocalizedModType
         Item.shootSpeed = 10f;
 
         Item.channel = true;
-        Item.shoot = ModContent.ProjectileType<HolyColliderHoldout>();
+        Item.shoot = ProjectileType<HolyColliderHoldout>();
         Item.noUseGraphic = true;
         Item.noMelee = true;
 
         Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-        Item.rare = ModContent.RarityType<Turquoise>();
+        Item.rare = RarityType<Turquoise>();
     }
     public override bool MeleePrefix() => true;
     public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

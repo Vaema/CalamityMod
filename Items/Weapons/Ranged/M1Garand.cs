@@ -26,7 +26,7 @@ public class M1Garand : ModItem, ILocalizedModType
         Item.knockBack = 2f;
         Item.autoReuse = false; // Because holdout
         Item.channel = true; // Because holdout
-        Item.shoot = ModContent.ProjectileType<M1GarandHoldout>();
+        Item.shoot = ProjectileType<M1GarandHoldout>();
         Item.shootSpeed = 12f;
         Item.useAmmo = AmmoID.Bullet;
         Item.noUseGraphic = true;

@@ -27,7 +27,7 @@ public class SlagfireDouser : ModItem, ILocalizedModType
         Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
         Item.rare = ItemRarityID.Orange;
         Item.autoReuse = false; // Because holdout
-        Item.shoot = ModContent.ProjectileType<SlagfireDouserHoldout>();
+        Item.shoot = ProjectileType<SlagfireDouserHoldout>();
         Item.ArmorPenetration = 10;
         Item.shootSpeed = 13f;
         Item.reuseDelay = 0; // Because holdout

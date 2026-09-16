@@ -149,8 +149,8 @@ public partial class CalamityGlobalItem : GlobalItem
 
         WhipAutomaticTooltips(item, tooltips, ref lastTooltipIndex);
         // In GFB, replace all instances of "rogue" with "rouge".
-        string[] rogueKey = [CalamityUtils.GetTextValue($"Misc.GFBRogueUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRogueLowercase")];
-        string[] rougeKey = [CalamityUtils.GetTextValue($"Misc.GFBRougeUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRougeLowercase")];
+        string[] rogueKey = [GetTextValue($"Misc.GFBRogueUppercase"), GetTextValue($"Misc.GFBRogueLowercase")];
+        string[] rougeKey = [GetTextValue($"Misc.GFBRougeUppercase"), GetTextValue($"Misc.GFBRougeLowercase")];
         for (int n = 0; n < rogueKey.Length; n++)
         {
             if (Main.zenithWorld && rogueKey[n] != "")
@@ -163,7 +163,7 @@ public partial class CalamityGlobalItem : GlobalItem
         if (CalamityItemSets.ShowScalingCritDamageTooltip[item.type])
         {
             float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(item.DamageType) * 0.02f;
-            tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
+            tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
         }
 
         //Add "Uses X Minion Slots right above "Uses X Mana"
@@ -174,7 +174,7 @@ public partial class CalamityGlobalItem : GlobalItem
             float cost = ItemID.Sets.StaffMinionSlotsRequired[item.type];
             if (item.type == ModContent.ItemType<YharonsKindleStaff>() && Main.LocalPlayer.Calamity().fadedIdolatry)
                 cost--;
-            tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText(cost > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(cost)));
+            tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", GetText(cost > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(cost)));
         }
 
 
@@ -188,7 +188,7 @@ public partial class CalamityGlobalItem : GlobalItem
         {
             // Convert current charge ratio into a percentage.
             float displayedPercent = ChargeRatio * 100f;
-            TooltipLine line = new TooltipLine(Mod, "CalamityMod:Charge", CalamityUtils.GetText("Misc.Charge").Format(displayedPercent.ToString("N1")));
+            TooltipLine line = new TooltipLine(Mod, "CalamityMod:Charge", GetText("Misc.Charge").Format(displayedPercent.ToString("N1")));
             tooltips.Insert(++lastTooltipIndex, line);
         }
 
@@ -223,7 +223,7 @@ public partial class CalamityGlobalItem : GlobalItem
             // If not holding SHIFT, display the extension indicator if appropriate.
             if (!holdingShift && holdShiftItem.ShowExtensionIndicator)
             {
-                LocalizedText indicatorText = CalamityUtils.GetText(holdShiftItem.ExtensionIndicatorKey);
+                LocalizedText indicatorText = GetText(holdShiftItem.ExtensionIndicatorKey);
                 TooltipLine indicator = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, indicatorText.Value);
                 if (holdShiftItem.ExtensionIndicatorColor is not null)
                     indicator.OverrideColor = holdShiftItem.ExtensionIndicatorColor;
@@ -272,7 +272,7 @@ public partial class CalamityGlobalItem : GlobalItem
         // Adds "Revengeance" to all items which are Revengeance exclusive, like how vanilla does it for Expert and Master items.
         if (revengeanceItem)
         {
-            LocalizedText revText = CalamityUtils.GetText("UI.Revengeance");
+            LocalizedText revText = GetText("UI.Revengeance");
             TooltipLine revLine = new TooltipLine(Mod, "CalamityMod:RevengeanceItem", revText.Value);
             tooltips.Insert(++difficultyTooltipIndex, revLine);
         }
@@ -281,15 +281,15 @@ public partial class CalamityGlobalItem : GlobalItem
         // This is intentionally at the bottom, below everything else.
         if (devItem)
         {
-            LocalizedText devText = CalamityUtils.GetText("UI.DevItemTooltip");
-            string coloredText = CalamityUtils.ColorMessage(devText.Value, CalamityUtils.DevItemColor);
+            LocalizedText devText = GetText("UI.DevItemTooltip");
+            string coloredText = ColorMessage(devText.Value, DevItemColor);
             TooltipLine devLine = new TooltipLine(Mod, "CalamityMod:DevItem", coloredText);
             tooltips.Insert(++difficultyTooltipIndex, devLine);
         }
         else if (donorItem)
         {
-            LocalizedText donorText = CalamityUtils.GetText("UI.DonorItemTooltip");
-            string coloredText = CalamityUtils.ColorMessage(donorText.Value, CalamityUtils.DonatorItemColor);
+            LocalizedText donorText = GetText("UI.DonorItemTooltip");
+            string coloredText = ColorMessage(donorText.Value, DonatorItemColor);
             TooltipLine donorLine = new TooltipLine(Mod, "CalamityMod:DonorItem", coloredText);
             tooltips.Insert(++difficultyTooltipIndex, donorLine);
         }
@@ -422,7 +422,7 @@ public partial class CalamityGlobalItem : GlobalItem
         {
             foreach (string line in AppliedEnchantment.Value.Description.ToString().Split('\n'))
             {
-                TooltipLine descriptionLine = new TooltipLine(Mod, "Enchantment", CalamityUtils.ColorMessage(line, CalamityUtils.DonatorItemColor));
+                TooltipLine descriptionLine = new TooltipLine(Mod, "Enchantment", ColorMessage(line, DonatorItemColor));
                 tooltips.Add(descriptionLine);
             }
         }
@@ -433,9 +433,9 @@ public partial class CalamityGlobalItem : GlobalItem
     private void WhipAutomaticTooltips(Item item, IList<TooltipLine> tooltips, ref int lastTooltipIndex)
     {
         // Multiplicative tag changes
-        string FlatTagTooltip(int dmg) => (CalamityUtils.GetText($"Common.SummonTagDamageFlat").Format(dmg.ToString()));
-        string MultTagTooltip(float mult) => (CalamityUtils.GetText($"Common.SummonTagDamageMult").Format((mult + 1).ToString("0.##")));
-        string CritTagTooltip(float crit) => (CalamityUtils.GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
+        string FlatTagTooltip(int dmg) => (GetText($"Common.SummonTagDamageFlat").Format(dmg.ToString()));
+        string MultTagTooltip(float mult) => (GetText($"Common.SummonTagDamageMult").Format((mult + 1).ToString("0.##")));
+        string CritTagTooltip(float crit) => (GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
 
         var tag = CalamityBuffSets.SummonTagDebuff.FirstOrDefault(x => x is not null && x.TagItem == item.type && x.AutoDrawTooltip, null);
         if (tag is not null)
@@ -488,8 +488,8 @@ public partial class CalamityGlobalItem : GlobalItem
         // These functions are shorthand to invoke ApplyTooltipEdits using the above predicates.
         void EditTooltipByNum(int lineNum, Action<TooltipLine> action) => ApplyTooltipEdits(tooltips, LineNum(lineNum), action);
         void EditTooltipByName(string lineName, Action<TooltipLine> action) => ApplyTooltipEdits(tooltips, LineName(lineName), action);
-        string EditedTooltip(string key) => CalamityUtils.GetTextValue($"Vanilla.EditedTooltip.{key}");
-        LocalizedText GetEditedTooltip(string key) => CalamityUtils.GetText($"Vanilla.EditedTooltip.{key}");
+        string EditedTooltip(string key) => GetTextValue($"Vanilla.EditedTooltip.{key}");
+        LocalizedText GetEditedTooltip(string key) => GetText($"Vanilla.EditedTooltip.{key}");
 
         // For items such as a Copper Helmet which literally have no tooltips at all, add a custom "Tooltip0" which mimics the vanilla Tooltip0.
         void AddTooltip(string key)
@@ -505,10 +505,10 @@ public partial class CalamityGlobalItem : GlobalItem
                     defenseIndex = i;
                     break;
                 }
-            tooltips.Insert(defenseIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", CalamityUtils.GetTextValue($"Vanilla.AddedTooltip.{key}")));
+            tooltips.Insert(defenseIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", GetTextValue($"Vanilla.AddedTooltip.{key}")));
         }
-        string AddedTooltip(string key) => "\n" + CalamityUtils.GetTextValue($"Vanilla.AddedTooltip.{key}");
-        LocalizedText GetAddedTooltip(string key) => CalamityUtils.GetText($"Vanilla.AddedTooltip.{key}");
+        string AddedTooltip(string key) => "\n" + GetTextValue($"Vanilla.AddedTooltip.{key}");
+        LocalizedText GetAddedTooltip(string key) => GetText($"Vanilla.AddedTooltip.{key}");
         #endregion
 
         // Applies to various item categories to clarify exact regen effects
@@ -559,28 +559,28 @@ public partial class CalamityGlobalItem : GlobalItem
         // +1 to Abyss light level
         if (item.type == ItemID.JellyfishNecklace ||
             item.type == ItemID.MiningHelmet || item.type == ItemID.UltrabrightHelmet)
-            EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssGlow"));
+            EditTooltipByNum(0, (line) => line.Text += "\n" + GetTextValue("Common.AbyssGlow"));
         if (item.type == ItemID.JellyfishDivingGear)
-            EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssGlow"));
+            EditTooltipByNum(1, (line) => line.Text += "\n" + GetTextValue("Common.AbyssGlow"));
 
         // +2 to Abyss light level
         if (item.type == ItemID.ShinePotion)
-            EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssGlow"));
+            EditTooltipByName("BuffTime", (line) => line.Text += "\n" + GetTextValue("Common.AbyssGlow"));
 
         // Moderate breath boost
         if (item.type == ItemID.DivingHelmet)
-            EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
+            EditTooltipByNum(0, (line) => line.Text += "\n" + GetTextValue("Common.AbyssBreathLevel2"));
         if (item.type == ItemID.ArcticDivingGear)
-            EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel") + "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
+            EditTooltipByNum(1, (line) => line.Text += "\n" + GetTextValue("Common.AbyssLightLevel") + "\n" + GetTextValue("Common.AbyssBreathLevel2"));
 
         // Great breath boost
         if (item.type == ItemID.GillsPotion)
-            EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
+            EditTooltipByName("BuffTime", (line) => line.Text += "\n" + GetTextValue("Common.AbyssBreathLevel3"));
 
         if (item.type == ItemID.NeptunesShell || item.type == ItemID.MoonShell)
-            EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
+            EditTooltipByNum(1, (line) => line.Text += "\n" + GetTextValue("Common.AbyssBreathLevel3"));
         if (item.type == ItemID.CelestialShell)
-            EditTooltipByNum(4, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
+            EditTooltipByNum(4, (line) => line.Text += "\n" + GetTextValue("Common.AbyssBreathLevel3"));
         #endregion
 
         // Spawn, despawn, and enrage conditions + Non-consumable line
@@ -626,19 +626,19 @@ public partial class CalamityGlobalItem : GlobalItem
 
         if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing
             || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
-            EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
+            EditTooltipByNum(0, (line) => line.Text += "\n" + GetTextValue("Common.NotConsumable"));
         #endregion
         // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
         #region Guaranteed Dodge Tooltips
         if (item.type == ItemID.BlackBelt)
-            EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided") + "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            EditTooltipByNum(0, (line) => line.Text = GetTextValue("Common.DodgeProvided") + "\n" + GetTextValue("Common.DodgeInformation"));
         if (item.type == ItemID.MasterNinjaGear)
-            EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided") + "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            EditTooltipByNum(1, (line) => line.Text = GetTextValue("Common.DodgeProvided") + "\n" + GetTextValue("Common.DodgeInformation"));
         if (item.type == ItemID.BrainOfConfusion)
         {
-            EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided"));
+            EditTooltipByNum(0, (line) => line.Text = GetTextValue("Common.DodgeProvided"));
 
-            EditTooltipByNum(2, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            EditTooltipByNum(2, (line) => line.Text += "\n" + GetTextValue("Common.DodgeInformation"));
         }
         #endregion
 
@@ -798,11 +798,11 @@ public partial class CalamityGlobalItem : GlobalItem
         #region Pre-Hardmode Armor
         // Gladiator
         if (item.type == ItemID.GladiatorHelmet)
-            EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
+            EditTooltipByName("Defense", (line) => line.Text += "\n" + GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
         if (item.type == ItemID.GladiatorBreastplate)
-            EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
+            EditTooltipByName("Defense", (line) => line.Text += "\n" + GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
         if (item.type == ItemID.GladiatorLeggings)
-            EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
+            EditTooltipByName("Defense", (line) => line.Text += "\n" + GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
 
         // Jungle
         if (item.type == ItemID.JungleHat || item.type == ItemID.AncientCobaltHelmet)
@@ -907,11 +907,11 @@ public partial class CalamityGlobalItem : GlobalItem
         // Forbidden (UNLESS you are wearing the Circlet, which is Summon/Rogue and does not get this line)
         if ((item.type == ItemID.AncientBattleArmorHat || item.type == ItemID.AncientBattleArmorShirt || item.type == ItemID.AncientBattleArmorPants)
             && !Main.LocalPlayer.Calamity().forbiddenCirclet)
-            EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(CalamityUtils.GetArmorSetBonusKey()));
+            EditTooltipByName("SetBonus", (line) => line.Text = GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(GetArmorSetBonusKey()));
 
         // Vortex (hotkey spoof)
         if (item.type == ItemID.VortexHelmet || item.type == ItemID.VortexBreastplate || item.type == ItemID.VortexLeggings)
-            EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Vortex").Format(CalamityUtils.GetArmorSetBonusKey()));
+            EditTooltipByName("SetBonus", (line) => line.Text = GetText($"Vanilla.Armor.SetBonus.Vortex").Format(GetArmorSetBonusKey()));
         #endregion
 
         #region Potions
@@ -962,8 +962,8 @@ public partial class CalamityGlobalItem : GlobalItem
         // This function is shorthand for appending a stat sheet to a yoyo.
         void AddYoyoStats(float d, float r, float s)
         {
-            EditTooltipByName("Knockback", (line) => line.Text += "\n" + (d == -1f ? CalamityUtils.GetText("Common.YoyoStatsInfinite").Format(r.ToTiles(), s.ToString())
-            : CalamityUtils.GetText("Common.YoyoStats").Format(r.ToTiles(), s.ToString(), d.ToString())));
+            EditTooltipByName("Knockback", (line) => line.Text += "\n" + (d == -1f ? GetText("Common.YoyoStatsInfinite").Format(r.ToTiles(), s.ToString())
+            : GetText("Common.YoyoStats").Format(r.ToTiles(), s.ToString(), d.ToString())));
         }
 
         if (item.type == ItemID.Amarok)
@@ -1171,7 +1171,7 @@ public partial class CalamityGlobalItem : GlobalItem
         #region Grappling Hook Stat Tooltips
 
         // This function is shorthand for appending a stat sheet to a grappling hook.
-        void AddGrappleStats(float r, float l, float e, float p) => EditTooltipByName("Equipable", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.GrappleStats").Format(r.ToString(), l.ToString(), e.ToString(), p.ToString()));
+        void AddGrappleStats(float r, float l, float e, float p) => EditTooltipByName("Equipable", (line) => line.Text += "\n" + GetText("Common.GrappleStats").Format(r.ToString(), l.ToString(), e.ToString(), p.ToString()));
 
         if (item.type == ItemID.GrapplingHook)
             AddGrappleStats(18.75f, 11.5f, 11f, 11f);
@@ -1237,7 +1237,7 @@ public partial class CalamityGlobalItem : GlobalItem
                     materialIndex = i;
                     break;
                 }
-            tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", CalamityUtils.GetTextValue($"Vanilla.HerbTooltips.{key}")));
+            tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", GetTextValue($"Vanilla.HerbTooltips.{key}")));
         }
 
         if (item.type == ItemID.Daybloom)
@@ -1264,7 +1264,7 @@ public partial class CalamityGlobalItem : GlobalItem
                     materialIndex = i;
                     break;
                 }
-            tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", CalamityUtils.GetTextValue($"Vanilla.SeedTooltips.{key}")));
+            tooltips.Insert(materialIndex + 1, new TooltipLine(CalamityMod.Instance, "Tooltip0", GetTextValue($"Vanilla.SeedTooltips.{key}")));
         }
 
         if (item.type == ItemID.DaybloomSeeds)
@@ -1293,10 +1293,10 @@ public partial class CalamityGlobalItem : GlobalItem
             EditTooltipByNum(0, (line) => line.Text += AddedTooltip("Picksaw"));
 
         if (item.type == ItemID.SolarFlarePickaxe || item.type == ItemID.VortexPickaxe || item.type == ItemID.NebulaPickaxe || item.type == ItemID.StardustPickaxe)
-            EditTooltipByName("Material", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.CanMineUelibloom"));
+            EditTooltipByName("Material", (line) => line.Text += "\n" + GetTextValue("Common.CanMineUelibloom"));
 
         if (item.type == ItemID.SolarFlareDrill || item.type == ItemID.VortexDrill || item.type == ItemID.NebulaDrill || item.type == ItemID.StardustDrill)
-            EditTooltipByName("TileBoost", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.CanMineUelibloom"));
+            EditTooltipByName("TileBoost", (line) => line.Text += "\n" + GetTextValue("Common.CanMineUelibloom"));
         #endregion
 
         // Numerous random tooltip edits which don't fit into another category
@@ -1353,7 +1353,7 @@ public partial class CalamityGlobalItem : GlobalItem
 
         // Replace the double tap line if double tap dash is overridden
         if ((item.type == ItemID.EoCShield || item.type == ItemID.Tabi) && CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count != 0)
-            EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DashKey").Format(CalamityKeybinds.DashHotkey.TooltipHotkeyString()));
+            EditTooltipByNum(1, (line) => line.Text = GetText("Vanilla.DashKey").Format(CalamityKeybinds.DashHotkey.TooltipHotkeyString()));
         #endregion
     }
     #endregion
@@ -1677,24 +1677,24 @@ public partial class CalamityGlobalItem : GlobalItem
     #region Schematic Knowledge Tooltip Utility
     public static void InsertKnowledgeTooltip(List<TooltipLine> tooltips, int tier, bool allowOldWorlds = false)
     {
-        TooltipLine line = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge1", CalamityUtils.GetTextValue("Misc.SchematicKnowledgeTooltip"));
-        TooltipLine line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.SchematicKnowledgeTooltip2"));
+        TooltipLine line = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge1", GetTextValue("Misc.SchematicKnowledgeTooltip"));
+        TooltipLine line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", GetTextValue("Misc.SchematicKnowledgeTooltip2"));
         switch (tier)
         {
             case 1:
-                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier1KnowledgeTooltip"));
+                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", GetTextValue("Misc.Tier1KnowledgeTooltip"));
                 break;
             case 2:
-                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier2KnowledgeTooltip"));
+                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", GetTextValue("Misc.Tier2KnowledgeTooltip"));
                 break;
             case 3:
-                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier3KnowledgeTooltip"));
+                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", GetTextValue("Misc.Tier3KnowledgeTooltip"));
                 break;
             case 4:
-                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier4KnowledgeTooltip"));
+                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", GetTextValue("Misc.Tier4KnowledgeTooltip"));
                 break;
             case 5:
-                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", CalamityUtils.GetTextValue("Misc.Tier5KnowledgeTooltip"));
+                line2 = new TooltipLine(CalamityMod.Instance, "SchematicKnowledge2", GetTextValue("Misc.Tier5KnowledgeTooltip"));
                 break;
         }
         line.OverrideColor = line2.OverrideColor = Color.Cyan;

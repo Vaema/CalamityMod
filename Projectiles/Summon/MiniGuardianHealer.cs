@@ -35,7 +35,7 @@ public class MiniGuardianHealer : ModProjectile, ILocalizedModType
         ProjectileID.Sets.MinionTargettingFeature[Type] = true;
     }
 
-    public bool isEmpowered => Main.player[Projectile.owner].Calamity().pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;
+    public bool isEmpowered => Main.player[Projectile.owner].Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered;
 
     public override void SetDefaults()
     {
@@ -139,7 +139,7 @@ public class MiniGuardianHealer : ModProjectile, ILocalizedModType
                             var star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vector2 * 2.5f, type, dmgAmt, 0f, Main.myPlayer);
                             star.originalDamage = Projectile.originalDamage;
 
-                            Color dustColor = ProfanedSoulCrystal.GetColorForPsc(modPlayer.pscState, Main.dayTime);
+                            Color dustColor = GetColorForPsc(modPlayer.pscState, Main.dayTime);
                             dustColor.A = 255;
                             int maxDust = 3;
                             for (int k = 0; k < maxDust; k++)

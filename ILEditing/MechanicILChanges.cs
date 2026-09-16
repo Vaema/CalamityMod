@@ -99,7 +99,7 @@ public partial class ILChanges
         cursor.Emit(OpCodes.Ldarg_0);
 
         // Emit a delegate which places whether the player has a Calamity dash equipped onto the stack.
-        cursor.EmitDelegate<Func<Player, int>>(CalamityDashEquipped);
+        cursor.EmitDelegate(CalamityDashEquipped);
 
         // Bitwise OR the two values together. This will only return zero if both values were zero.
         // This will occur precisely when the player has no vanilla OR Calamity dash items equipped.
@@ -350,7 +350,7 @@ public partial class ILChanges
         // Don't do town NPC spawning at the end (which lies after a !Main.dayTime return).
         // Do it at the beginning, without the arbitrary time restriction.
         var cursor = new ILCursor(il);
-        cursor.EmitDelegate<Action>(() =>
+        cursor.EmitDelegate(() =>
         {
             if (Main.dayTime || CalamityServerConfig.Instance.TownNPCsSpawnAtNight)
                 Main.UpdateTime_SpawnTownNPCs();
@@ -824,7 +824,7 @@ public partial class ILChanges
         if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<ScreenObstruction>("Draw")))
             return;
 
-        cursor.EmitDelegate<Action>(() =>
+        cursor.EmitDelegate(() =>
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 

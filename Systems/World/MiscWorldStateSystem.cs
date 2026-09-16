@@ -70,7 +70,7 @@ public class MiscWorldStateSystem : ModSystem
         AcidRainEvent.CountdownUntilForcedAcidRain = 0;
 
         HasGeneratedLuminitePlanetoids = false; //Allow generating planetoids in other worlds
-        DownedBossSystem.ResetAllFlags();
+        ResetAllFlags();
     }
     #endregion
 

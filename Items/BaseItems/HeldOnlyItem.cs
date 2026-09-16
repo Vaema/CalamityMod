@@ -29,7 +29,7 @@ public abstract class HeldOnlyItem : ModItem
     {
         public override void Load()
         {
-            Terraria.On_Player.dropItemCheck += DontDropCoolStuff;
+            On_Player.dropItemCheck += DontDropCoolStuff;
             Terraria.UI.On_ItemSlot.LeftClick_ItemArray_int_int += LockMouseToSpecialItem;
             Terraria.UI.On_ItemSlot.Draw_SpriteBatch_ItemArray_int_int_Vector2_Color += DrawSpecial;
         }
@@ -50,7 +50,7 @@ public abstract class HeldOnlyItem : ModItem
         }
 
         //https://media.discordapp.net/attachments/458432092301295618/993675527539916850/unknown.png
-        private static void DontDropCoolStuff(Terraria.On_Player.orig_dropItemCheck orig, Terraria.Player self)
+        private static void DontDropCoolStuff(On_Player.orig_dropItemCheck orig, Player self)
         {
             if (Main.mouseItem.ModItem is not HeldOnlyItem)
                 orig(self);

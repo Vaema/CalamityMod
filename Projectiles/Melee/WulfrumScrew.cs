@@ -165,7 +165,7 @@ public class WulfrumScrew : ModProjectile, ILocalizedModType
 
             //Setup the laser sights effect.
             Effect laserScopeEffect = Filters.Scene["CalamityMod:PixelatedSightLine"].GetShader().Shader;
-            laserScopeEffect.Parameters["sampleTexture2"].SetValue(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/CertifiedCrustyNoise").Value);
+            laserScopeEffect.Parameters["sampleTexture2"].SetValue(Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/CertifiedCrustyNoise").Value);
             laserScopeEffect.Parameters["noiseOffset"].SetValue(Main.GameUpdateCount * -0.003f);
 
             laserScopeEffect.Parameters["mainOpacity"].SetValue((float)Math.Pow(opacity, 0.5f)); //Opacity increases as the screw gets close to the cursor
@@ -225,7 +225,7 @@ public class WulfrumScrew : ModProjectile, ILocalizedModType
 
 
             if (SheenTex == null)
-                SheenTex = ModContent.Request<Texture2D>("CalamityMod/Particles/HalfStar");
+                SheenTex = Request<Texture2D>("CalamityMod/Particles/HalfStar");
             Texture2D shineTex = SheenTex.Value;
             Vector2 shineScale = new Vector2(1f, 3f - opacity * 2f);
 

@@ -72,7 +72,7 @@ public class ScorchedEarthHoldout : BaseGunHoldoutProjectile
         // Spawns the projectile.
         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 12;
         if (Main.myPlayer == Projectile.owner)
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(10f)), ModContent.ProjectileType<ScorchedEarthRocket>(), damage, knockback, Projectile.owner, rocketType);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(10f)), ProjectileType<ScorchedEarthRocket>(), damage, knockback, Projectile.owner, rocketType);
 
         // Inside here go all the things that dedicated servers shouldn't spend resources on.
         // Like visuals and sounds.

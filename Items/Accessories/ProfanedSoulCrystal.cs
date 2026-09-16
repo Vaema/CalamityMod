@@ -548,7 +548,7 @@ public class ProfanedSoulCrystal : TransformationAccessory, ILocalizedModType, I
 
     public override void TransformFrameEffects(Player player)
     {
-        bool enrage = player.Calamity().pscState >= (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Enraged;
+        bool enrage = player.Calamity().pscState >= (int)ProfanedSoulCrystalState.Enraged;
 
         if (profanedCrystalWingCounter.Value == 0)
         {

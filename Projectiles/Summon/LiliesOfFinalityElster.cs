@@ -430,8 +430,8 @@ public class LiliesOfFinalityElster : BaseMinionProjectile
                 }
             }
 
-            Texture2D blinkTexture_FirstEye = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ArianeAndElsterBlink_FirstEye", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D blinkTexture_SecondEye = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ArianeAndElsterBlink_SecondEye", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D blinkTexture_FirstEye = Request<Texture2D>("CalamityMod/ExtraTextures/ArianeAndElsterBlink_FirstEye", AssetRequestMode.ImmediateLoad).Value;
+            Texture2D blinkTexture_SecondEye = Request<Texture2D>("CalamityMod/ExtraTextures/ArianeAndElsterBlink_SecondEye", AssetRequestMode.ImmediateLoad).Value;
 
             Rectangle blinkFrame = blinkTexture_FirstEye.Frame(1, 3, 0, EyeFrameToShow);
             drawPosition += new Vector2(Projectile.spriteDirection == -1 ? 2f : 6f, yOffset);

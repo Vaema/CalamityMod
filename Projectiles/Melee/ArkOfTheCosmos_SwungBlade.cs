@@ -278,7 +278,7 @@ public class ArkoftheCosmosSwungBlade : ModProjectile, ILocalizedModType
                     Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == Owner.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
                     if (sword is not null && parrier is null)
                     {
-                        int parryID = Projectile.NewProjectile(Owner.GetSource_ItemUse(sword.Item), Owner.Center, Owner.DirectionTo(Projectile.Center), ModContent.ProjectileType<ArkoftheCosmosParryHoldout>(), 0, 0, Owner.whoAmI);
+                        int parryID = Projectile.NewProjectile(Owner.GetSource_ItemUse(sword.Item), Owner.Center, Owner.DirectionTo(Projectile.Center), ProjectileType<ArkoftheCosmosParryHoldout>(), 0, 0, Owner.whoAmI);
                     }
                 }
             }

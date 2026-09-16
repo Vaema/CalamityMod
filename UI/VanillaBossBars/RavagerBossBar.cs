@@ -57,7 +57,7 @@ public class RavagerBossBar : ModBossBar
 
     public bool FindRavagerBody(ref BigProgressBarInfo info)
     {
-        info.npcIndexToAimAt = NPC.FindFirstNPC(ModContent.NPCType<RavagerBody>());
+        info.npcIndexToAimAt = NPC.FindFirstNPC(NPCType<RavagerBody>());
         return info.npcIndexToAimAt != -1;
     }
 }

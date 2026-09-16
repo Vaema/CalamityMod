@@ -209,11 +209,11 @@ public class PulseGrenadeProjectile : ModProjectile, ILocalizedModType
             if (completion >= 0.4f && completion <= pinTime && !catching)
             {
                 float goalRot = MathHelper.Lerp(frontArmRot, backArmRot, (float)Math.Pow(Utils.GetLerpValue(caught ? 0.6f : 0.4f, pinTime, completion, true), (Projectile.Calamity().stealthStrike ? 2 : 1) * (caught ? 5 : 3)));
-                Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, goalRot); 
+                Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, goalRot); 
             }
             else
-                Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (completion > pinTime && !catching) ? MathHelper.Lerp(Owner.compositeFrontArm.rotation, frontArmRot, 0.07f) : frontArmRot);
-            Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, backArmRot);
+                Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, (completion > pinTime && !catching) ? MathHelper.Lerp(Owner.compositeFrontArm.rotation, frontArmRot, 0.07f) : frontArmRot);
+            Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, backArmRot);
         }
     }
     public void FlungState()

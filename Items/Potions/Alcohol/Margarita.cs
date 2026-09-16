@@ -27,12 +27,12 @@ public class Margarita : ModItem, ILocalizedModType, IAlcoholItem
     private static void ApplyMargaritaEffect(Player player, float intensity)
     {
         var cplayer = player.Calamity();
-        cplayer.HeatDebuffMultiplier -= Margarita.DebuffLoss;
-        cplayer.SicknessDebuffMultiplier -= Margarita.DebuffLoss;
-        cplayer.ColdDebuffMultiplier -= Margarita.DebuffLoss;
-        cplayer.WaterDebuffMultiplier -= Margarita.DebuffLoss;
-        cplayer.ElectricDebuffMultiplier -= Margarita.DebuffLoss;
-        cplayer.TypelessDebuffMultiplier -= Margarita.DebuffLoss;
+        cplayer.HeatDebuffMultiplier -= DebuffLoss;
+        cplayer.SicknessDebuffMultiplier -= DebuffLoss;
+        cplayer.ColdDebuffMultiplier -= DebuffLoss;
+        cplayer.WaterDebuffMultiplier -= DebuffLoss;
+        cplayer.ElectricDebuffMultiplier -= DebuffLoss;
+        cplayer.TypelessDebuffMultiplier -= DebuffLoss;
         // Also see CalamityPlayerMiscEffects
     }
     public override void SetStaticDefaults()

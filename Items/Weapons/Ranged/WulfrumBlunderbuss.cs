@@ -136,7 +136,7 @@ public class WulfrumBlunderbuss : ModItem, ILocalizedModType
         Vector2 itemSize = new Vector2(46, 16);
         Vector2 itemOrigin = new Vector2(-13, 3);
 
-        CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+        CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
 
         base.UseStyle(player, heldItemFrame);
     }

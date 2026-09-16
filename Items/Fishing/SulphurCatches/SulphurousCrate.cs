@@ -39,9 +39,9 @@ public class SulphurousCrate : ModItem, ILocalizedModType
         // 20-50 Blocks @ 100%; Individually 33.33%
         itemLoot.Add(new OneFromRulesRule(1, new IItemDropRule[3]
         {
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.Abyss.SulphurousSand>(), 1, 20, 50),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.Abyss.SulphurousSandstone>(), 1, 20, 50),
-            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.Abyss.HardenedSulphurousSandstone>(), 1, 20, 50)
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.Abyss.SulphurousSand>(), 1, 20, 50),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.Abyss.SulphurousSandstone>(), 1, 20, 50),
+            ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Placeables.Abyss.HardenedSulphurousSandstone>(), 1, 20, 50)
         }));
 
         // Rusty Chest Loot @ 100%; Individually 25%

@@ -101,7 +101,7 @@ public class WorldMiscUpdateSystem : ModSystem
 
         // Disable sandstorms if the Desert Scourge is still alive and Hardmode hasn't begun.
         if (!DownedBossSystem.downedDesertScourge && Main.netMode != NetmodeID.MultiplayerClient && !Main.hardMode)
-            CalamityWorld.StopSandstorm();
+            StopSandstorm();
 
         // Attempt to summon lab critters and lava-based NPCs manually since they refuse to exist when using vanilla's spawn methods.
         // This needs to check all players since the method only runs server-side.
@@ -586,7 +586,7 @@ public class WorldMiscUpdateSystem : ModSystem
         if (NPC.AnyNPCs(NPCID.SkeletronHead))
             return;
 
-        int oldMan = NPC.NewNPC(NPC.GetSource_TownSpawn(), Main.dungeonX * 16 + 8, Main.dungeonY * 16, NPCID.OldMan);
+        int oldMan = NPC.NewNPC(Entity.GetSource_TownSpawn(), Main.dungeonX * 16 + 8, Main.dungeonY * 16, NPCID.OldMan);
         Main.npc[oldMan].homeless = false;
         Main.npc[oldMan].homeTileX = Main.dungeonX;
         Main.npc[oldMan].homeTileY = Main.dungeonY;

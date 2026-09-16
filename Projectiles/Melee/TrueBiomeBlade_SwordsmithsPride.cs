@@ -219,7 +219,7 @@ public class SwordsmithsPride : ModProjectile, ILocalizedModType
 
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
-        if (CurrentState == 1f && !CalamityUtils.AnyProjectiles(ProjectileType<SwordsmithsPrideMonolith>()))
+        if (CurrentState == 1f && !AnyProjectiles(ProjectileType<SwordsmithsPrideMonolith>()))
         {
             float monolithScale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
             Vector2 monolithDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 10f);

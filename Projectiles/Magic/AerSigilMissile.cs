@@ -84,7 +84,7 @@ public class AerSigilMissile : ModProjectile, ILocalizedModType
         for (int i = 0; i < 8; i++)
         {
             float variance = Main.rand.NextFloat(-0.6f, 0.6f);
-            int dustStyle = ModContent.DustType<SquashDust>();
+            int dustStyle = DustType<SquashDust>();
             Dust dust2 = Dust.NewDustPerfect(target.Center, dustStyle);
             dust2.scale = Main.rand.NextFloat(1.2f, 1.9f) - Math.Abs(variance);
             dust2.velocity = (Projectile.velocity * 1.5f).RotatedBy(variance) * Main.rand.NextFloat(1f, 1.6f) * (1 - Math.Abs(variance));
@@ -105,13 +105,13 @@ public class AerSigilMissile : ModProjectile, ILocalizedModType
             float randomSpeed = Main.rand.NextFloat(6, 10); 
             Vector2 vel = new Vector2((float)Math.Cos(randomAngle) * randomSpeed, (float)Math.Sin(randomAngle) * randomSpeed);
             vel.X *= 3f;
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<AerSigilFeather>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel, ProjectileType<AerSigilFeather>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
         }
 
 
         if (Projectile.owner == Main.myPlayer)
         {
-            Projectile explosion = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<AerSigilBlast>(), Projectile.damage * 2, Projectile.knockBack * 6, Projectile.owner);
+            Projectile explosion = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileType<AerSigilBlast>(), Projectile.damage * 2, Projectile.knockBack * 6, Projectile.owner);
             explosion.ai[1] = 600f;
             explosion.localAI[1] = Main.rand.NextFloat(0.1f, 0.2f); // Interpolate
             explosion.netUpdate = true;
@@ -226,7 +226,7 @@ public class AerSigilMissile : ModProjectile, ILocalizedModType
 
         // Draw bloom circle at the tip
         if (BloomTex == null)
-            BloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            BloomTex = Request<Texture2D>("CalamityMod/Particles/BloomCircle");
         Texture2D bloomTex = BloomTex.Value;
         Main.EntitySpriteDraw(bloomTex, adjustedCenter, null, (Color.White * 4f) with { A = 0 }, 0, bloomTex.Size() / 2f, 0.45f * Projectile.scale, 0, 0);
 

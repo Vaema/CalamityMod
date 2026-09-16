@@ -119,7 +119,7 @@ public class BlissfulBombardierHoldout : BaseGunHoldoutProjectile
             {
                 if (i % 2 == 0)
                 {
-                    Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>(), (Projectile.velocity * 12).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.4f, 1.7f), 0, default, Main.rand.NextFloat(1.8f, 2.3f));
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition, DustType<LightDust>(), (Projectile.velocity * 12).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.4f, 1.7f), 0, default, Main.rand.NextFloat(1.8f, 2.3f));
                     dust.noGravity = true;
                     dust.color = Main.rand.NextBool(3) ? Color.Orange : effectsColor;
                     dust.noLightEmittence = true;
@@ -232,7 +232,7 @@ public class BlissfulBombardierHoldout : BaseGunHoldoutProjectile
             return false;
 
         Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-        Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
+        Texture2D texture2 = Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
         Vector2 drawPosition = Projectile.Center - Main.screenPosition;
         Color drawColor = Projectile.GetAlpha(lightColor);
         float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f);

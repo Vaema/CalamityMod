@@ -231,7 +231,7 @@ public class EarthenTides : ModProjectile, ILocalizedModType
         // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
         Owner.GiveUniversalIFrames(OmegaBiomeBlade.ShockwaveAttunement_DashHitIFrames);
 
-        if (!CalamityUtils.AnyProjectiles(ProjectileType<EarthenTidesShockwave>()))
+        if (!AnyProjectiles(ProjectileType<EarthenTidesShockwave>()))
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<EarthenTidesShockwave>(), (int)(Projectile.damage * 0.75f), 0f, Owner.whoAmI, 1f);
     }
 

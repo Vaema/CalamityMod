@@ -451,7 +451,7 @@ public class DryadsTearMain : ModProjectile, ILocalizedModType, IPixelatedPrimit
                     Main.EntitySpriteDraw(ShineTexture.Value, drawPosition, null, t == 0 ? Color.Teal : Color.White * 0.65f, rot, ShineTexture.Value.Size() * 0.5f, new Vector2((t == 0 ? 3 : 1) * 0.02f, (t == 0 ? 0.6f : 1) * (0.2f + shineMult * 0.4f)) * shineMult * 0.2f, SpriteEffects.None);
             }
             
-        }, ((orbitSine > 0.5f || trueLifetime <= 0) ? Enums.GeneralDrawLayer.AfterProjectiles : Enums.GeneralDrawLayer.BeforeProjectiles), BlendState.Additive);
+        }, ((orbitSine > 0.5f || trueLifetime <= 0) ? GeneralDrawLayer.AfterProjectiles : GeneralDrawLayer.BeforeProjectiles), BlendState.Additive);
         return false;
     }
 

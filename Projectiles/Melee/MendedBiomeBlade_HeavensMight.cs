@@ -207,7 +207,7 @@ public class HeavensMight : ModProjectile, ILocalizedModType
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
         // Spawn a monolith on max power sword throws
-        if (!(CurrentState == 1f && !CalamityUtils.AnyProjectiles(ProjectileType<HeavensMonolith>())))
+        if (!(CurrentState == 1f && !AnyProjectiles(ProjectileType<HeavensMonolith>())))
             return;
 
         if (Empowerment >= maxEmpowerment)

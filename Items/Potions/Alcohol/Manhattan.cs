@@ -26,8 +26,8 @@ public class Manhattan : ModItem, ILocalizedModType, IAlcoholItem
     private static void ApplyManhattanEffect(Player player, float intensity)
     {
         var cplayer = player.Calamity();
-        cplayer.ColdDebuffMultiplier += Manhattan.DebuffBoost;
-        cplayer.WaterDebuffMultiplier -= Manhattan.DebuffLoss;
+        cplayer.ColdDebuffMultiplier += DebuffBoost;
+        cplayer.WaterDebuffMultiplier -= DebuffLoss;
     }
     public override void SetStaticDefaults()
     {

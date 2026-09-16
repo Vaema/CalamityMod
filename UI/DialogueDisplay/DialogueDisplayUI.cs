@@ -1059,7 +1059,7 @@ public class DialogueDisplaySystem : ModSystem
     {
         if (Main.dedServ)
         {
-            StartDialogueDisplayPacket.Send(name, progressDialogue, startPosition, startIndex, Uptime, GetID(effects), wrapWidth, toClient, ignoreClient);
+            Send(name, progressDialogue, startPosition, startIndex, Uptime, GetID(effects), wrapWidth, toClient, ignoreClient);
             return -1;
         }
         else if (Main.netMode == NetmodeID.SinglePlayer)
@@ -1120,7 +1120,7 @@ public class DialogueDisplaySystem : ModSystem
     {
         if (Main.dedServ)
         {
-            StartDialogueDisplayPacket.Send(name, progressDialogue, entity is NPC ? EntityType.NPC : entity is Player ? EntityType.Player : EntityType.Projectile, entity is Projectile p ? p.identity : entity.whoAmI, startIndex, Uptime, GetID(effects), wrapWidth, toClient, ignoreClient);
+            Send(name, progressDialogue, entity is NPC ? EntityType.NPC : entity is Player ? EntityType.Player : EntityType.Projectile, entity is Projectile p ? p.identity : entity.whoAmI, startIndex, Uptime, GetID(effects), wrapWidth, toClient, ignoreClient);
             return -1;
         }
         else if (Main.netMode == NetmodeID.SinglePlayer)

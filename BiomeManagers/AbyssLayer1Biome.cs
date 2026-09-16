@@ -72,11 +72,11 @@ public class AbyssLayer1Biome : ModBiome
 
         if (Main.remixWorld)
         {
-            return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && point.Y < abyssStartHeight &&
+            return MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && point.Y < abyssStartHeight &&
             BiomeTileCounterSystem.Layer1Tiles >= 200 && !player.Calamity().ZoneAbyssLayer2 && !player.Calamity().ZoneAbyssLayer3 && !player.Calamity().ZoneAbyssLayer4;
         }
 
-        return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && point.Y >= abyssStartHeight &&
+        return MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && point.Y >= abyssStartHeight &&
         BiomeTileCounterSystem.Layer1Tiles >= 200 && !player.Calamity().ZoneAbyssLayer2 && !player.Calamity().ZoneAbyssLayer3 && !player.Calamity().ZoneAbyssLayer4;
     }
 }

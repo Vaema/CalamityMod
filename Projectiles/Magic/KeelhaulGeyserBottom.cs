@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic;
 
-[PierceResistExceptionAttribute(true)]
+[PierceResistException(true)]
 public class KeelhaulGeyserBottom : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Magic";

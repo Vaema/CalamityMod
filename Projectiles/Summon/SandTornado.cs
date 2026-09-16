@@ -130,10 +130,10 @@ public class SandTornado : ModProjectile, ILocalizedModType
             Vector2 spinArea = spinningpoint2.RotatedBy((double)incStorageMult, default);
             Vector2 colorChangeVector = new Vector2(0f, colorChanger + 1f);
             colorChangeVector.X = colorChangeVector.Y * vectorMult;
-            Color newSandYellow = Microsoft.Xna.Framework.Color.Lerp(Microsoft.Xna.Framework.Color.Transparent, sandYellow, colorChanger * 2f);
+            Color newSandYellow = Color.Lerp(Color.Transparent, sandYellow, colorChanger * 2f);
             if (colorChanger > 0.5f)
             {
-                newSandYellow = Microsoft.Xna.Framework.Color.Lerp(Microsoft.Xna.Framework.Color.Transparent, sandYellow, 2f - colorChanger * 2f);
+                newSandYellow = Color.Lerp(Color.Transparent, sandYellow, 2f - colorChanger * 2f);
             }
             newSandYellow.A = (byte)((float)newSandYellow.A * 0.5f);
             newSandYellow *= trackerClamp;

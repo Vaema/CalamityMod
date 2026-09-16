@@ -106,11 +106,11 @@ public class WulfrumMetalScrap : ModItem, ILocalizedModType
 
     public override void Load()
     {
-        Terraria.On_Item.CanFillEmptyAmmoSlot += AvoidDefaultingToAmmoSlot;
+        On_Item.CanFillEmptyAmmoSlot += AvoidDefaultingToAmmoSlot;
         altTexture = ModContent.Request<Texture2D>(Texture + "2");
     }
 
-    private bool AvoidDefaultingToAmmoSlot(Terraria.On_Item.orig_CanFillEmptyAmmoSlot orig, Item self)
+    private bool AvoidDefaultingToAmmoSlot(On_Item.orig_CanFillEmptyAmmoSlot orig, Item self)
     {
         if (self.type == Type)
             return false;

@@ -216,9 +216,9 @@ public class ModeIndicatorUI
                     anyActiveMode = true;
                 }
             }
-            string modeStr = CalamityUtils.GetText("UI.ModeAppend").Format(modeToDisplay);
-            string activeText = CalamityUtils.GetTextValue("UI." + (anyActiveMode ? "Active" : "NotActive"));
-            text = CalamityUtils.GetText("UI.DifficultyStatusText").WithFormatArgs(modeStr, activeText.ToLower());
+            string modeStr = GetText("UI.ModeAppend").Format(modeToDisplay);
+            string activeText = GetTextValue("UI." + (anyActiveMode ? "Active" : "NotActive"));
+            text = GetText("UI.DifficultyStatusText").WithFormatArgs(modeStr, activeText.ToLower());
         }
     }
 
@@ -226,11 +226,11 @@ public class ModeIndicatorUI
     public static void GetLockStatus(out LocalizedText text, out bool locked)
     {
         locked = false;
-        text = CalamityUtils.GetText("UI.DifficultyClickText");
+        text = GetText("UI.DifficultyClickText");
         if (CalamityPlayer.areThereAnyDamnBosses || BossRushEvent.BossRushActive)
         {
             locked = true;
-            text = CalamityUtils.GetText("UI.ChangingTheRules");
+            text = GetText("UI.ChangingTheRules");
         }
 
         //Shakes the lock if it automatically changed, because a boss was summoned
@@ -371,7 +371,7 @@ public class ModeIndicatorUI
         bool useFTWName = mode.FTWName is not null && Main.getGoodWorld;
         LocalizedText preface = useFTWName ? mode.FTWName : mode.Name;
         if (mode == GetCurrentDifficulty)
-            preface = CalamityUtils.GetText("UI.CurrentlySelected").WithFormatArgs(useFTWName ? mode.FTWName.ToString() : mode.Name.ToString());
+            preface = GetText("UI.CurrentlySelected").WithFormatArgs(useFTWName ? mode.FTWName.ToString() : mode.Name.ToString());
 
         string text = "\n" + mode.ShortDescription.ToString();
 
@@ -383,7 +383,7 @@ public class ModeIndicatorUI
                 text += "\n" + mode.ExpandedDescription.ToString();
 
             else
-                text += "\n" + CalamityUtils.GetTextValue("UI.DifficultyShiftText");
+                text += "\n" + GetTextValue("UI.DifficultyShiftText");
         }
 
         return preface.ToString() + text;
@@ -403,7 +403,7 @@ public class ModeIndicatorUI
         // Todo, maybe in the future having a way to have multiple difficulty options on the same tier that can coexist, and it works in branching pathes? Not very necessary for cal & addons.
         // But would be super useful so other mods can let their own difficulties go there.
 
-        DifficultyModeSystem._newGameModeID = mode.BackBoneGameModeID;
+        _newGameModeID = mode.BackBoneGameModeID;
 
         // Disable difficulties.
         for (int i = 0; i < Difficulties.Count; i++)

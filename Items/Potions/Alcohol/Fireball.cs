@@ -27,8 +27,8 @@ public class Fireball : ModItem, ILocalizedModType, IAlcoholItem
     private static void ApplyFireballEffect(Player player, float intensity)
     {
         var cplayer = player.Calamity();
-        cplayer.HeatDebuffMultiplier += Fireball.DebuffBoost;
-        cplayer.SicknessDebuffMultiplier -= Fireball.DebuffLoss;
+        cplayer.HeatDebuffMultiplier += DebuffBoost;
+        cplayer.SicknessDebuffMultiplier -= DebuffLoss;
     }
     public override void SetStaticDefaults()
     {

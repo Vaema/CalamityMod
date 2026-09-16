@@ -16,7 +16,7 @@ public class TheFinalDawn : RogueWeapon
     public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/FinalDawnSlash");
     public override void SetStaticDefaults()
     {
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Dragonfire>()];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<Dragonfire>()];
     }
     public override void SetDefaults()
     {

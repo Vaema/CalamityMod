@@ -189,7 +189,7 @@ public class ReaperProjectile : ModProjectile, ILocalizedModType
                     if (target != null)
                     {
                         if (Projectile.numHits <= 0)
-                            CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.85f, 15, 0.97f);
+                            HomeInOnSelectedNPC(Projectile, target, true, 0.85f, 15, 0.97f);
                     }
                     else if (time == 150)
                     {
@@ -208,7 +208,7 @@ public class ReaperProjectile : ModProjectile, ILocalizedModType
                     for (int i = 0; i < numberOfDusts; i++)
                     {
                         float rot = MathHelper.ToRadians(i * rotFactor);
-                        Vector2 velOffset = CalamityUtils.RandomVelocity(100f, 70f, 250f, 0.04f);
+                        Vector2 velOffset = RandomVelocity(100f, 70f, 250f, 0.04f);
                         velOffset *= Main.rand.NextFloat(25, 45) * fade;
                         Particle energy = new GlowOrbParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, (int)(14 - (5 * fade)), Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, Color.Chartreuse);
                         GeneralParticleHandler.SpawnParticle(energy);
@@ -278,9 +278,9 @@ public class ReaperProjectile : ModProjectile, ILocalizedModType
         if (spinning)
         {
             Main.EntitySpriteDraw(p.Value, drawPos + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4, null, Color.Chartreuse with { A = 0 } * 0.45f, Projectile.velocity.ToRotation() + MathHelper.PiOver2, p.Size() * 0.5f, new Vector2(0.9f - 0.3f * Utils.GetLerpValue(25, 0, time, true), 1 + 0.6f * Utils.GetLerpValue(25, 0, time, true)) * Main.rand.NextFloat(1.25f, 1.4f), SpriteEffects.None);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Chartreuse * 0.5f, 1);
+            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Chartreuse * 0.5f, 1);
         }
         return false;
     }
-    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 70, targetHitbox);
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CircularHitboxCollision(Projectile.Center, 70, targetHitbox);
 }

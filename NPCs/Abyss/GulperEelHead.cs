@@ -222,9 +222,9 @@ public class GulperEelHead : ModNPC
         segmentPosition.Y = (float)((int)(segmentPosition.Y / 16f) * 16);
         targetXDirection -= segmentPosition.X;
         targetYDirection -= segmentPosition.Y;
-        float targetDistance = (float)System.Math.Sqrt((double)(targetXDirection * targetXDirection + targetYDirection * targetYDirection));
-        float absoluteTargetX = System.Math.Abs(targetXDirection);
-        float absoluteTargetY = System.Math.Abs(targetYDirection);
+        float targetDistance = (float)Math.Sqrt((double)(targetXDirection * targetXDirection + targetYDirection * targetYDirection));
+        float absoluteTargetX = Math.Abs(targetXDirection);
+        float absoluteTargetY = Math.Abs(targetYDirection);
         float timeToReachTarget = currentSpeed / targetDistance;
         targetXDirection *= timeToReachTarget;
         targetYDirection *= timeToReachTarget;
@@ -252,7 +252,7 @@ public class GulperEelHead : ModNPC
                     NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed;
                 }
             }
-            if ((double)System.Math.Abs(targetYDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDirection < 0f) || (NPC.velocity.X < 0f && targetXDirection > 0f)))
+            if ((double)Math.Abs(targetYDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDirection < 0f) || (NPC.velocity.X < 0f && targetXDirection > 0f)))
             {
                 if (NPC.velocity.Y > 0f)
                 {
@@ -263,7 +263,7 @@ public class GulperEelHead : ModNPC
                     NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 2f;
                 }
             }
-            if ((double)System.Math.Abs(targetXDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDirection < 0f) || (NPC.velocity.Y < 0f && targetYDirection > 0f)))
+            if ((double)Math.Abs(targetXDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDirection < 0f) || (NPC.velocity.Y < 0f && targetYDirection > 0f)))
             {
                 if (NPC.velocity.X > 0f)
                 {
@@ -287,7 +287,7 @@ public class GulperEelHead : ModNPC
                 {
                     NPC.velocity.X = NPC.velocity.X - currentTurnSpeed * 1.1f; //changed from 1.1
                 }
-                if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
+                if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
                 {
                     if (NPC.velocity.Y > 0f)
                     {
@@ -309,7 +309,7 @@ public class GulperEelHead : ModNPC
                 {
                     NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 1.1f;
                 }
-                if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
+                if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
                 {
                     if (NPC.velocity.X > 0f)
                     {
@@ -322,7 +322,7 @@ public class GulperEelHead : ModNPC
                 }
             }
         }
-        NPC.rotation = (float)System.Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + 1.57f;
+        NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + 1.57f;
     }
 
     public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -358,7 +358,7 @@ public class GulperEelHead : ModNPC
         Vector2 vector = center - screenPos;
         vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
         vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
-        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightYellow);
+        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.LightYellow);
         Main.spriteBatch.Draw(GlowTexture.Value, vector,
             new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
     }

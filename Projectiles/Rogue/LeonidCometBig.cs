@@ -89,7 +89,7 @@ public class LeonidCometBig : ModProjectile, ILocalizedModType
         }
         for (int index1 = 0; index1 < 5; ++index1)
         {
-            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Utils.SelectRandom<int>(Main.rand, new int[3] { 6, 259, 158 }), 2.5f * (float)Projectile.direction, -2.5f, 0, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 1f);
+            int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Utils.SelectRandom(Main.rand, new int[3] { 6, 259, 158 }), 2.5f * (float)Projectile.direction, -2.5f, 0, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 1f);
             Dust dust1 = Main.dust[index2];
             dust1.alpha = 200;
             dust1.velocity *= 2.4f;

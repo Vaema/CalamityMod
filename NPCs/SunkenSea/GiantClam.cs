@@ -516,7 +516,7 @@ public class GiantClam : ModNPC
         Vector2 vector = center - screenPos;
         vector -= new Vector2((float)glowmask.Width, (float)(glowmask.Height / Main.npcFrameCount[Type])) * 1f / 2f;
         vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
-        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightBlue);
+        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.LightBlue);
         Main.EntitySpriteDraw(glowmask, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0);
     }
 

@@ -209,7 +209,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
                 Vector2 dustPosition2 = Projectile.Center + Projectile.velocity.RotatedByRandom(0.3f) * 170 * Projectile.scale;
                 Vector2 swingVel = Projectile.velocity.RotatedBy(MathHelper.PiOver2 * (swingCount % 2 == 0 ? 1 : -1) * Owner.direction);
 
-                Dust dust = Dust.NewDustPerfect(dustPosition, ModContent.DustType<VoidDustPixelated>(),
+                Dust dust = Dust.NewDustPerfect(dustPosition, DustType<VoidDustPixelated>(),
                     swingVel.RotatedByRandom(0.1f) * Main.rand.NextFloat(9.5f, 15.5f), 0, default, Main.rand.NextFloat(1.55f, 2.2f));
                 dust.noGravity = true;
                 dust.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Blue;
@@ -218,7 +218,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
                 if (Main.rand.NextBool(3, 4))
                 {   
                     Vector2 vel = swingVel.RotatedByRandom(0.1f) * Main.rand.NextFloat(9.5f, 15.5f);
-                    Dust dust2 = Dust.NewDustPerfect(dustPosition2, ModContent.DustType<SquashDustPixelated>(),
+                    Dust dust2 = Dust.NewDustPerfect(dustPosition2, DustType<SquashDustPixelated>(),
                         vel, 0, default, 2 * Main.rand.NextFloat(1.0f, 1.3f));
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool() ? Color.Gold : Color.Goldenrod;
@@ -257,7 +257,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
         float distanceToTiles = -100;
         bool canBeLaunched = false;
         bool lowEnoughToExecute = target.life <= Projectile.damage * 5;
-        bool jared = target.type == ModContent.NPCType<PrimordialWyrmHead>();
+        bool jared = target.type == NPCType<PrimordialWyrmHead>();
         Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
         Vector2 launchVel = lowEnoughToExecute ? toMouse : Utils.DirectionTo(Owner.Center, target.Center);
 
@@ -325,7 +325,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
             {
                 float hitMult = 1 - 0.15f * Projectile.numHits;
                 float variance = Main.rand.NextFloat(-0.6f, 0.6f);
-                Dust dust = Dust.NewDustPerfect(target.Center, ModContent.DustType<VoidDustPixelated>(),
+                Dust dust = Dust.NewDustPerfect(target.Center, DustType<VoidDustPixelated>(),
                     launchVel.RotatedBy(variance / 2).RotatedByRandom(MathF.Abs(variance) / 3) * Main.rand.NextFloat(30.0f, 33.0f) * hitMult * MathF.Pow((1 - MathF.Abs(variance)), 2), 0, default, 3 * hitMult * Main.rand.NextFloat(2.3f, 3.2f) - MathF.Abs(variance));
                 dust.noGravity = true;
                 dust.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Blue;
@@ -335,7 +335,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
                 if (i % 2 == 0)
                 {
                     Vector2 vel = launchVel.RotatedBy(variance / 2).RotatedByRandom(MathF.Abs(variance) / 3) * Main.rand.NextFloat(20.0f, 23.0f) * hitMult * MathF.Pow((1 - MathF.Abs(variance)), 2);
-                    Dust dust2 = Dust.NewDustPerfect(target.Center + vel * 13, ModContent.DustType<SquashDustPixelated>(),
+                    Dust dust2 = Dust.NewDustPerfect(target.Center + vel * 13, DustType<SquashDustPixelated>(),
                     vel, 0, default, 2 * hitMult * Main.rand.NextFloat(2.3f, 3.2f) - MathF.Abs(variance));
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool() ? Color.Gold : Color.Goldenrod;
@@ -364,7 +364,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
             return false;
 
         Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-        Texture2D swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearLarge").Value;
+        Texture2D swoosh = Request<Texture2D>("CalamityMod/Particles/CircularSmearLarge").Value;
 
         Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
         Vector2 vel = Projectile.rotation.ToRotationVector2();
@@ -393,7 +393,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
                     Main.EntitySpriteDraw(swoosh, drawPosition + Projectile.velocity.RotatedBy(extraRot) * 12.5f + outlineOffset, null, clr * MathF.Pow(bladefx, 3) * 0.4f, swooshDrawRotation, swoosh.Size() * 0.5f, Projectile.scale * 0.6f, swooshFlipSprite);
                     Main.EntitySpriteDraw(texture, drawPosition + placeAdjust + outlineOffset * 2 * bladefx, null, clr * 0.2f * bladefx, drawRotation, rotationPoint, Projectile.scale, flipSprite);
                 }
-            }, Enums.GeneralDrawLayer.AfterProjectiles, BlendState.AlphaBlend);
+            }, GeneralDrawLayer.AfterProjectiles, BlendState.AlphaBlend);
             if (!CalamityClientConfig.Instance.Photosensitivity)
             {
                 PixelationManager.AddPixelatedDrawer((_) =>
@@ -401,7 +401,7 @@ public class GrandDadHoldout : ModProjectile, ILocalizedModType
                     Color clrCenter = Color.DodgerBlue;
                     Main.EntitySpriteDraw(swoosh, drawPosition + Projectile.velocity.RotatedBy(extraRot) * 12.5f, null, clrCenter * MathF.Pow(bladefx, 0.6f), swooshDrawRotation, swoosh.Size() * 0.5f, Projectile.scale * 0.6f, swooshFlipSprite);
                     Main.EntitySpriteDraw(texture, drawPosition + placeAdjust, null, clrCenter * bladefx, drawRotation, rotationPoint, Projectile.scale, flipSprite);
-                }, Enums.GeneralDrawLayer.AfterEverything, BlendState.Additive);
+                }, GeneralDrawLayer.AfterEverything, BlendState.Additive);
 
             }
         }

@@ -58,7 +58,7 @@ public class PlantationStaffSeed : ModProjectile, ILocalizedModType
 
     public override bool PreDraw(ref Color lightColor)
     {
-        Texture2D texture = (RandomTexture == 0f) ? Terraria.GameContent.TextureAssets.Projectile[ProjectileID.PoisonSeedPlantera].Value : TextureAssets.Projectile[Type].Value;
+        Texture2D texture = (RandomTexture == 0f) ? TextureAssets.Projectile[ProjectileID.PoisonSeedPlantera].Value : TextureAssets.Projectile[Type].Value;
         Vector2 drawPosition = Projectile.Center - Main.screenPosition;
         Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
         Vector2 origin = frame.Size() * 0.5f;

@@ -35,7 +35,7 @@ public class MarniteArchitectHeadgear : ModItem, ILocalizedModType
 
     public override void Load()
     {
-        Terraria.On_Player.QuickMount += ActivateLift;
+        On_Player.QuickMount += ActivateLift;
     }
 
     public override void SetStaticDefaults()
@@ -56,7 +56,7 @@ public class MarniteArchitectHeadgear : ModItem, ILocalizedModType
         Item.defense = 4;
     }
 
-    private void ActivateLift(Terraria.On_Player.orig_QuickMount orig, Player self)
+    private void ActivateLift(On_Player.orig_QuickMount orig, Player self)
     {
         //Spoof the mount thing
         if (!self.mount.Active && HasArmorSet(self) && self.miscEquips[Player.miscSlotMount].IsAir)

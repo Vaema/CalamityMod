@@ -189,17 +189,17 @@ IL_25092:
             if (i == 0)
             {
                 lightningScale = new Vector2(Projectile.scale) * 0.6f;
-                DelegateMethods.c_1 = new Microsoft.Xna.Framework.Color(219, 104, 58, 0) * 0.5f;
+                DelegateMethods.c_1 = new Color(219, 104, 58, 0) * 0.5f;
             }
             else if (i == 1)
             {
                 lightningScale = new Vector2(Projectile.scale) * 0.4f;
-                DelegateMethods.c_1 = new Microsoft.Xna.Framework.Color(255, 126, 56, 0) * 0.5f;
+                DelegateMethods.c_1 = new Color(255, 126, 56, 0) * 0.5f;
             }
             else
             {
                 lightningScale = new Vector2(Projectile.scale) * 0.2f;
-                DelegateMethods.c_1 = new Microsoft.Xna.Framework.Color(255, 128, 128, 0) * 0.5f;
+                DelegateMethods.c_1 = new Color(255, 128, 128, 0) * 0.5f;
             }
             DelegateMethods.f_1 = 1f;
             for (int j = Projectile.oldPos.Length - 1; j > 0; j--)

@@ -163,7 +163,7 @@ public class WulfrumDroid : ModProjectile, ILocalizedModType
             Initialized ++;
         }
 
-        if (Owner.Calamity().mouseRight && Owner.HeldItem.type == ModContent.ItemType<WulfrumController>())
+        if (Owner.Calamity().mouseRight && Owner.HeldItem.type == ItemType<WulfrumController>())
         {
             if (Owner.itemTime == Owner.itemTimeMax)
             {
@@ -225,7 +225,7 @@ public class WulfrumDroid : ModProjectile, ILocalizedModType
         }
 
         //Buff stuff
-        player.AddBuff(ModContent.BuffType<WulfrumDroidBuff>(), 3600);
+        player.AddBuff(BuffType<WulfrumDroidBuff>(), 3600);
         if (player.dead)
             modPlayer.wDroid = false;
         if (modPlayer.wDroid)
@@ -466,7 +466,7 @@ public class WulfrumDroid : ModProjectile, ILocalizedModType
 
             if (Main.myPlayer == Projectile.owner)
             {
-                int bolt = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<WulfrumEnergyBurst>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int bolt = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ProjectileType<WulfrumEnergyBurst>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 Main.projectile[bolt].originalDamage = Projectile.originalDamage;
                 Main.projectile[bolt].netUpdate = true;
                 Projectile.netUpdate = true;
@@ -556,7 +556,7 @@ public class WulfrumDroid : ModProjectile, ILocalizedModType
             float opacity = (float)Math.Pow(NuzzleFlashTime / 20f, 1.7f);
 
             if (SheenTex == null)
-                SheenTex = ModContent.Request<Texture2D>("CalamityMod/Particles/HalfStar");
+                SheenTex = Request<Texture2D>("CalamityMod/Particles/HalfStar");
 
             Texture2D shineTex = SheenTex.Value;
             Vector2 shineScale = new Vector2(1.2f, 2f - (opacity) * 1.33f);

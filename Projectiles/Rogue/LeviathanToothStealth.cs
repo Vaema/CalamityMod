@@ -135,7 +135,7 @@ public class LeviathanToothStealth : ModProjectile, ILocalizedModType
         if (time == 0)
             return false;
 
-        Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+        Texture2D tex = TextureAssets.Projectile[Type].Value;
         Vector2 startPoint = Projectile.Center;
         int distance = jawLength;
         int travelLength = 35;

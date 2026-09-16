@@ -28,7 +28,7 @@ public class ScorchedEarth : ModItem, ILocalizedModType
     public static int ProjectilesPerBurst = 4;
     public override void SetStaticDefaults()
     {
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>(), BuffID.Oiled];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<Daybroken>(), BuffID.Oiled];
     }
     public override void SetDefaults()
     {
@@ -46,7 +46,7 @@ public class ScorchedEarth : ModItem, ILocalizedModType
         Item.noUseGraphic = true;
         Item.useAmmo = AmmoID.Rocket;
         Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-        Item.rare = ModContent.RarityType<CosmicPurple>();
+        Item.rare = RarityType<CosmicPurple>();
         Item.useStyle = ItemUseStyleID.Shoot;
         Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };
         Item.Calamity().donorItem = true;

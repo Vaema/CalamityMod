@@ -192,7 +192,7 @@ public class DesertProwlerShirt : ModItem, IBulkyArmor, ILocalizedModType
             AddIngredient<StormlionMandible>(3).
             AddIngredient(ItemID.Silk, 10).
             AddTile(TileID.Loom).
-            SortBeforeFirstRecipesOf(ModContent.ItemType<DesertProwlerPants>()).
+            SortBeforeFirstRecipesOf(ItemType<DesertProwlerPants>()).
             Register();
     }
 }

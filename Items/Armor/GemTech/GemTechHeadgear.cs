@@ -158,7 +158,7 @@ public class GemTechHeadgear : ModItem, ILocalizedModType
             AddIngredient<MeldBlob>(5).
             AddIngredient<CoreofCalamity>(2).
             AddTile<DraedonsForge>().
-            SortBeforeFirstRecipesOf(ModContent.ItemType<GemTechBodyArmor>()).
+            SortBeforeFirstRecipesOf(ItemType<GemTechBodyArmor>()).
             Register();
     }
 }

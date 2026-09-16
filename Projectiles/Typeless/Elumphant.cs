@@ -742,7 +742,7 @@ public class Elumphant : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRe
                         Particle mist = new CustomPulsingSpark(dustPos, velocity, "CalamityMod/Particles/ThinSparkle", "CalamityMod/Particles/BloomCircle", false, 55, Main.rand.NextFloat(1.05f, 1.45f) * Projectile.scale * attackMult, (clrChoose ? color1 : color2) * opacity, (clrChoose ? color2 : color1) * opacity,
                             new Vector2(0.6f, 1.2f), true, true, Main.rand.Next(4, 7 + 1), colorFadeSpeed: 0.85f, noShrink: true, extraRotation: 0, shrinkSpeed: 0.1f, turnRate: (Main.rand.NextBool() ? -1 : 1) * Main.rand.NextFloat(0.0028f, 0.0035f) * velMult,
                             sineRate: Main.rand.NextFloat(0.09f, 0.12f), sineIntensity: (int)(4 + Main.rand.Next(15, 20 + 1)) * Projectile.scale, sineRotation: MathHelper.PiOver2 + velocity.ToRotation());
-                        GeneralParticleHandler.SpawnParticle(mist, true, Main.rand.NextBool() ? Enums.GeneralDrawLayer.AfterNPCs : Enums.GeneralDrawLayer.BeforeNPCs);
+                        GeneralParticleHandler.SpawnParticle(mist, true, Main.rand.NextBool() ? GeneralDrawLayer.AfterNPCs : GeneralDrawLayer.BeforeNPCs);
                     }
 
                     if (i == -1)

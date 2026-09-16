@@ -357,7 +357,7 @@ public class THELORDE : ModNPC
             }
             if (deathrayCounter == 100)
             {
-                SoundEngine.PlaySound(NPCs.ExoMechs.Ares.AresBody.LaserStartSound, NPC.Center);
+                SoundEngine.PlaySound(ExoMechs.Ares.AresBody.LaserStartSound, NPC.Center);
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int type = ModContent.ProjectileType<AresDeathBeamStart>();

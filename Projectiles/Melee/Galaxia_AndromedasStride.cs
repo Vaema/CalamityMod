@@ -211,7 +211,7 @@ public class AndromedasStride : ModProjectile, ILocalizedModType
         Owner.GiveUniversalIFrames(FourSeasonsGalaxia.AndromedaAttunement_DashHitIFrames);
 
         // ai[0] is NPC index to stay locked onto it, ai[1] is charge level to determine how many stars are rained
-        if (!CalamityUtils.AnyProjectiles(ProjectileType<AndromedasStrideBoltSpawner>()))
+        if (!AnyProjectiles(ProjectileType<AndromedasStrideBoltSpawner>()))
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<AndromedasStrideBoltSpawner>(), (int)(Projectile.damage * FourSeasonsGalaxia.AndromedaAttunement_StarDamageMultiplier), Projectile.knockBack, Owner.whoAmI, target.whoAmI, CurrentIndicator);
     }
 

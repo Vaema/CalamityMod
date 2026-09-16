@@ -25,7 +25,7 @@ public class BurningRevelation : ModItem, ILocalizedModType
         ItemID.Sets.Yoyo[Type] = true;
         ItemID.Sets.GamepadExtraRange[Type] = 15;
         ItemID.Sets.GamepadSmartQuickReach[Type] = true;
-        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<HolyFlames>()];
+        CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffType<HolyFlames>()];
     }
 
     public override void SetDefaults()
@@ -45,11 +45,11 @@ public class BurningRevelation : ModItem, ILocalizedModType
         Item.noUseGraphic = true;
         Item.noMelee = true;
 
-        Item.shoot = ModContent.ProjectileType<BurningRevelationYoyo>();
+        Item.shoot = ProjectileType<BurningRevelationYoyo>();
         Item.shootSpeed = 16f;
 
         Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-        Item.rare = ModContent.RarityType<Turquoise>();
+        Item.rare = RarityType<Turquoise>();
     }
     public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
     {

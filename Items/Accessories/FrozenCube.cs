@@ -20,7 +20,7 @@ public class FrozenCube : ModItem, ILocalizedModType
     public static int baseAttackCooldown => 180;
 
     public static int usedDefenseDivide => 3;
-    public static int debuff => ModContent.BuffType<WindChilled>();
+    public static int debuff => BuffType<WindChilled>();
 
     public static readonly SoundStyle noise = new("CalamityMod/Sounds/Item/ElumphantSound") { Volume = 0.6f };
     public static readonly SoundStyle cry = new("CalamityMod/Sounds/Item/ElumphantCry") { Volume = 0.6f };

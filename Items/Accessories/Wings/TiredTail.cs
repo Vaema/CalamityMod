@@ -55,7 +55,7 @@ public class TiredTail : BaseWings
         Item.width = 22;
         Item.height = 20;
         Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-        Item.rare = ModContent.RarityType<HotPink>();
+        Item.rare = RarityType<HotPink>();
         Item.Calamity().devItem = true;
     }
 
@@ -193,7 +193,7 @@ public class TailDraw : PlayerDrawLayer
         Main.QueueMainThreadAction(() =>
         {
             //Load palettes automatically
-            var texture = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Wings/TiredTailPallette", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            var texture = Request<Texture2D>("CalamityMod/Items/Accessories/Wings/TiredTailPallette", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             var BaseArray = new Color[texture.Width * texture.Height];
             texture.GetData(BaseArray);
             List<Vector4> pal = [];

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue;
 
-[PierceResistExceptionAttribute]
+[PierceResistException]
 public class DuststormCloud : ModProjectile, ILocalizedModType
 {
     public new string LocalizationCategory => "Projectiles.Rogue";

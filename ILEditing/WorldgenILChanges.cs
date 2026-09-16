@@ -229,7 +229,7 @@ public partial class ILChanges
 
         // Emit a delegate which reimplements the logic for choosing the primary loot of floating islands with Fledgling Wings, then return the ID of the item.
         var label = il.DefineLabel();
-        cursor.EmitDelegate<Func<int>>(() =>
+        cursor.EmitDelegate(() =>
         {
             int island = GenVars.skyIslandHouseCount;
             if (island > 4)

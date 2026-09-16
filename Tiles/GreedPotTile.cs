@@ -429,7 +429,7 @@ public class GreedTransmutationGlobalItem : GlobalItem
             return null;
 
         if (Main.myPlayer == player.whoAmI)
-            Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), player.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, player.whoAmI, item.type, transmutation.Result, greedPotTE.ID);
+            Projectile.NewProjectile(Entity.GetSource_NaturalSpawn(), player.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, player.whoAmI, item.type, transmutation.Result, greedPotTE.ID);
 
         greedPotTE.Activated = true;
         greedPotTE.TimeSinceActivation = 0;

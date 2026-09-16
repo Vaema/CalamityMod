@@ -342,7 +342,7 @@ public class ExaltedOathbladeThrownBlade : ModProjectile, ILocalizedModType
 
         return base.CanDamage();
     }
-    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => (Projectile.numHits > 0 && !exitedTarget) ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.25f : 1) * Projectile.scale, targetHitbox); // After exiting a target, the hitbox is larger
+    public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => (Projectile.numHits > 0 && !exitedTarget) ? false : CircularHitboxCollision(Projectile.Center, Projectile.width / (exitedTarget ? 0.25f : 1) * Projectile.scale, targetHitbox); // After exiting a target, the hitbox is larger
     public override bool PreDraw(ref Color lightColor)
     {
         Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ExaltedOathblade").Value;

@@ -113,7 +113,7 @@ public class StarmadaStar : ModProjectile, ILocalizedModType
             Vector2 spawnPos = target.Center + target.Center.DirectionFrom(Owner.Center).RotatedByRandom(0.5f) * (target.height / 2 + 40);
             Vector2 vel = spawnPos.DirectionTo(target.Center);
             int damage = (int)(Projectile.damage * 0.25f);
-            Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPos, vel, ModContent.ProjectileType<StarmadaHitProj>(), damage, 0, Projectile.owner, target.whoAmI, Main.rand.Next(0, 7 + 1), Main.rand.Next(0, 300 + 1));
+            Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPos, vel, ProjectileType<StarmadaHitProj>(), damage, 0, Projectile.owner, target.whoAmI, Main.rand.Next(0, 7 + 1), Main.rand.Next(0, 300 + 1));
         }
     }
     public override void OnKill(int timeLeft)

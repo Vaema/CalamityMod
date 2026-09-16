@@ -9,7 +9,7 @@ public class UniverseSplitter : CooldownHandler
 {
     public static new string ID => "UniverseSplitter";
     public override bool ShouldDisplay => true;
-    public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
+    public override LocalizedText DisplayName => GetText($"UI.Cooldowns.{ID}");
     public override string Texture => "CalamityMod/Cooldowns/UniverseSplitter";
     public override Color OutlineColor => rainbowMode;
     public override Color CooldownStartColor => rainbowMode;

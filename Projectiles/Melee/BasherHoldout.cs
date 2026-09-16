@@ -181,7 +181,7 @@ public class BasherHoldout : ModProjectile, ILocalizedModType
                 dust.velocity = swingVel.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.5f, 2.5f);
 
                 bool fall = Main.rand.NextBool(8);
-                Dust dust2 = Dust.NewDustPerfect(dustPosition, ModContent.DustType<SquashDustPixelated>(), swingVel * Main.rand.NextFloat(3.5f, 5.5f));
+                Dust dust2 = Dust.NewDustPerfect(dustPosition, DustType<SquashDustPixelated>(), swingVel * Main.rand.NextFloat(3.5f, 5.5f));
                 dust2.scale = Main.rand.NextFloat(0.65f, 0.85f);
                 dust2.noGravity = fall ? false : true;
                 dust2.color = Color.Chartreuse;
@@ -234,7 +234,7 @@ public class BasherHoldout : ModProjectile, ILocalizedModType
             rumble = 20;
         }
 
-        target.AddBuff(ModContent.BuffType<Irradiated>(), 300);
+        target.AddBuff(BuffType<Irradiated>(), 300);
 
         Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
         target.MoveNPC(launchVel, 14f, true, Owner);
@@ -242,7 +242,7 @@ public class BasherHoldout : ModProjectile, ILocalizedModType
         for (int i = 0; i < MathHelper.Clamp(15 - Projectile.numHits * 3, 2, 15); i++)
         {
             bool dType = i % 4 == 0;
-            Dust dust = Dust.NewDustPerfect(target.Center, !dType ? DustID.Pearlwood : ModContent.DustType<SquashDustPixelated>(), launchVel.RotatedByRandom(dType ? 0.2f : 0.5f) * Main.rand.NextFloat(2.5f, 7f) * (dType ? 3 : 1));
+            Dust dust = Dust.NewDustPerfect(target.Center, !dType ? DustID.Pearlwood : DustType<SquashDustPixelated>(), launchVel.RotatedByRandom(dType ? 0.2f : 0.5f) * Main.rand.NextFloat(2.5f, 7f) * (dType ? 3 : 1));
             dust.scale = Main.rand.NextFloat(0.65f, 1.05f) * ((dType || Main.rand.NextBool(3)) ? 2.2f : 1f);
             dust.noGravity = true;
             dust.color = dType ? Color.Chartreuse : default;
@@ -261,7 +261,7 @@ public class BasherHoldout : ModProjectile, ILocalizedModType
             return false;
 
         Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-        Texture2D swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearThin").Value;
+        Texture2D swoosh = Request<Texture2D>("CalamityMod/Particles/VerticalSmearThin").Value;
 
         Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
         Vector2 vel = Projectile.rotation.ToRotationVector2();

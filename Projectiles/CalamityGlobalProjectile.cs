@@ -618,7 +618,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
                     float variance = Main.rand.NextFloat(-0.4f, 0.4f);
                     Vector2 vel = projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(variance) * Main.rand.NextFloat(12f, 17f) * (1 - Math.Abs(variance * 1.5f));
 
-                    Dust dust2 = Dust.NewDustPerfect(player.Center, ModContent.DustType<LightDustPixelated>(), vel);
+                    Dust dust2 = Dust.NewDustPerfect(player.Center, DustType<LightDustPixelated>(), vel);
                     dust2.scale = Main.rand.NextFloat(1.7f, 2.5f) * (1 - Math.Abs(variance * 1.5f));
                     bool gravity = !Main.rand.NextBool(5);
                     dust2.noGravity = gravity;
@@ -3044,7 +3044,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
         // When using rage bait, gives a chance that your items turn to junk
         bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
         bool canRageBaitThePlayer = Main.rand.NextBool(RageBait.junkChance.Item1, RageBait.junkChance.Item2);
-        if (baitItem?.type == ModContent.ItemType<RageBait>() && reelingIn && !alreadyJunk && canRageBaitThePlayer && projectile.localAI[1] != 0)
+        if (baitItem?.type == ItemType<RageBait>() && reelingIn && !alreadyJunk && canRageBaitThePlayer && projectile.localAI[1] != 0)
         {
             Fishing_DoRageBaitEffects(projectile, owner);
             return false;
@@ -3052,7 +3052,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
 
         // Trusty Old Rod functionality.
         bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
-        if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
+        if (owner.HeldItem.type == ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
         {
             Fishing_DoTrustyOldRodEffects(projectile, owner);
             return false;
@@ -3060,8 +3060,8 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
 
         // For allowing Rage Bait and TOR to function correctly while using custom bobbers.
         // See the ReelTheBobberChecks function.
-        bool canLetRageBaitRunForMinigame = baitItem?.type == ModContent.ItemType<RageBait>() && !alreadyJunk && canRageBaitThePlayer;
-        bool canLetTrustyOldRodRunForMinigame = owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && pulledNPC;
+        bool canLetRageBaitRunForMinigame = baitItem?.type == ItemType<RageBait>() && !alreadyJunk && canRageBaitThePlayer;
+        bool canLetTrustyOldRodRunForMinigame = owner.HeldItem.type == ItemType<TrustyOldRod>() && pulledNPC;
 
         #region Utilities
         void SmallSplashAtOffset(Vector2 offset)
@@ -3490,7 +3490,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
                                     baitPower = (int)Math.Pow((baitPower - 75), 0.5f) + 75;
                                 }
 
-                                var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + baitPower), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
+                                var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + baitPower), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
                                 if (Main.projectile.IndexInRange(projID))
                                 {
                                     Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
@@ -3951,7 +3951,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
                 // I don't care. This effect had to be removed.
                 //
 
-                if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0))
+                if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0))
                     projectile.damage = (int)(projectile.damage * 0.1);
 
                 if (projectile.CountsAsClass<RogueDamageClass>() && stealthStrike)
@@ -4702,24 +4702,24 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
                 {
                     Tile tile = Main.tile[i, j];
 
-                    if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
+                    if (tile.TileType == TileType<AstralTreeSapling>() || tile.TileType == TileType<AstralSnowTreeSapling>())
                     {
                         bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                         bool success = WorldGen.GrowTree(i, j);
                         if (success && isPlayerNear)
                             WorldGen.TreeGrowFXCheck(i, j);
                     }
-                    else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
+                    else if (tile.TileType == TileType<AstralPalmSapling>() || tile.TileType == TileType<AcidWoodTreeSapling>())
                     {
                         bool isPlayerNear = WorldGen.PlayerLOS(i, j);
                         bool success = WorldGen.GrowPalmTree(i, j);
                         if (success && isPlayerNear)
                             WorldGen.TreeGrowFXCheck(i, j);
                     }
-                    else if (tile.TileType == ModContent.TileType<SpineSapling>())
+                    else if (tile.TileType == TileType<SpineSapling>())
                     {
                         bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                        if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
+                        if (isPlayerNear && Main.tile[i, j + 1].TileType != TileType<SpineSapling>())
                             SpineTree.Spawn(i, j, 22, 28, true);
                     }
                     NetMessage.SendTileSquare(-1, i, j, 1, 1);
@@ -4887,7 +4887,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
             {
                 player.Calamity().volatileGelHits = 0;
                 Vector2 spawnPosition = player.Center;
-                int npcType = ModContent.NPCType<VolatileSlime>();
+                int npcType = NPCType<VolatileSlime>();
 
                 int slimeCap = 6;
                 int npcCount = 0;
@@ -5031,7 +5031,7 @@ public partial class CalamityGlobalProjectile : GlobalProjectile
             Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
         }
         if (BloodstoneOrbValue > 0)
-            Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
+            Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
         //Mana Burn
         if (Main.player[projectile.owner].statMana < 0 && Main.player[projectile.owner].Calamity().ChaosStone)
         {

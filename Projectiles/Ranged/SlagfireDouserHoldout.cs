@@ -95,7 +95,7 @@ public class SlagfireDouserHoldout : BaseGunHoldoutProjectile
             Vector2 finalProjectileVelocity = projectileDirection.RotatedByRandom(MathHelper.ToRadians(11f)) * item.shootSpeed;
 
             // Spawn the main projectile
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, finalProjectileVelocity, ModContent.ProjectileType<Slagfire>(), Owner.GetWeaponDamage(item), Owner.GetWeaponKnockback(item, item.knockBack), Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, finalProjectileVelocity, ProjectileType<Slagfire>(), Owner.GetWeaponDamage(item), Owner.GetWeaponKnockback(item, item.knockBack), Projectile.owner);
 
             if (Main.dedServ)
             return;
@@ -113,7 +113,7 @@ public class SlagfireDouserHoldout : BaseGunHoldoutProjectile
         {
             Dust shootDust = Dust.NewDustPerfect(
             GunTipPosition,
-            ModContent.DustType<LightDust>(),
+            DustType<LightDust>(),
             projectileDirection.RotatedByRandom(MathHelper.PiOver4 * 1.2f) * Main.rand.NextFloat(2.5f, 9f),
             newColor: Color.Red);
             shootDust.noGravity = false;

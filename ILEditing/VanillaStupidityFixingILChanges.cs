@@ -86,7 +86,7 @@ public partial class ILChanges
         cursor.Emit(OpCodes.Ldarg_0);
 
         // Emit a delegate which returns whether the item's use time is 2, 3, 4 or 5.
-        cursor.EmitDelegate<Func<Item, bool>>((Item i) => i.useAnimation >= 2 && i.useAnimation <= 5);
+        cursor.EmitDelegate((Item i) => i.useAnimation >= 2 && i.useAnimation <= 5);
 
         cursor.Emit(OpCodes.Brtrue_S, passesUseTimeCheck);
 
@@ -229,7 +229,7 @@ public partial class ILChanges
 
         // Emit a delegate which grabs the value of the screenshake config. Then multiply the local variable by it.
         cursor.Emit(OpCodes.Ldloc_1);
-        cursor.EmitDelegate<Func<float>>(() => CalamityClientConfig.Instance.ScreenshakePower);
+        cursor.EmitDelegate(() => CalamityClientConfig.Instance.ScreenshakePower);
         cursor.Emit(OpCodes.Mul);
         cursor.Emit(OpCodes.Stloc_1);
     }
@@ -575,7 +575,7 @@ public partial class ILChanges
         cursor.Emit(OpCodes.Ldarg_0);
 
         // Emit a delegate which places whether the player has their Magma Stone visuals enabled onto the stack.
-        cursor.EmitDelegate<Func<Player, bool>>(MagmaStoneVisualsEnabled);
+        cursor.EmitDelegate(MagmaStoneVisualsEnabled);
         cursor.Emit(OpCodes.And);
     }
 
@@ -594,7 +594,7 @@ public partial class ILChanges
         cursor.Emit(OpCodes.Ldloc_0);
 
         // Emit a delegate which places whether the player has their Magma Stone visuals enabled onto the stack.
-        cursor.EmitDelegate<Func<Player, bool>>(MagmaStoneVisualsEnabled);
+        cursor.EmitDelegate(MagmaStoneVisualsEnabled);
         cursor.Emit(OpCodes.And);
     }
 

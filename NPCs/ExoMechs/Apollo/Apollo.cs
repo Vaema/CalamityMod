@@ -371,12 +371,12 @@ public class Apollo : ModNPC
         if (NPC.ai[0] < 10f)
         {
             NPC.ai[0] += 1f;
-            if (NPC.ai[0] == 10f && !NPC.AnyNPCs(ModContent.NPCType<Artemis.Artemis>()))
-                NPC.SpawnOnPlayer(Main.player[targetIndex].whoAmI, ModContent.NPCType<Artemis.Artemis>());
+            if (NPC.ai[0] == 10f && !NPC.AnyNPCs(ModContent.NPCType<ArtemisBoss>()))
+                NPC.SpawnOnPlayer(Main.player[targetIndex].whoAmI, ModContent.NPCType<ArtemisBoss>());
         }
         else
         {
-            if (!NPC.AnyNPCs(ModContent.NPCType<Artemis.Artemis>()))
+            if (!NPC.AnyNPCs(ModContent.NPCType<ArtemisBoss>()))
             {
                 NPC.life = 0;
                 NPC.HitEffect();
@@ -577,7 +577,7 @@ public class Apollo : ModNPC
             {
                 for (int a = 0; a < Main.maxNPCs; a++)
                 {
-                    if (Main.npc[a].type == NPC.type || Main.npc[a].type == ModContent.NPCType<Artemis.Artemis>() || Main.npc[a].type == ModContent.NPCType<AresBody>() ||
+                    if (Main.npc[a].type == NPC.type || Main.npc[a].type == ModContent.NPCType<ArtemisBoss>() || Main.npc[a].type == ModContent.NPCType<AresBody>() ||
                         Main.npc[a].type == ModContent.NPCType<AresLaserCannon>() || Main.npc[a].type == ModContent.NPCType<AresPlasmaFlamethrower>() ||
                         Main.npc[a].type == ModContent.NPCType<AresTeslaCannon>() || Main.npc[a].type == ModContent.NPCType<AresGaussNuke>() ||
                         Main.npc[a].type == ModContent.NPCType<ThanatosHead>() || Main.npc[a].type == ModContent.NPCType<ThanatosBody1>() ||
@@ -637,7 +637,7 @@ public class Apollo : ModNPC
                             if (Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[3] < 1f)
                                 Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[3] = 1f;
 
-                            Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)Artemis.Artemis.SecondaryPhase.PassiveAndImmune;
+                            Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)ArtemisBoss.SecondaryPhase.PassiveAndImmune;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[0] = 0f;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[1] = 0f;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[2] = 0f;
@@ -693,7 +693,7 @@ public class Apollo : ModNPC
                         // Set Artemis variables
                         if (exoMechTwinRedAlive)
                         {
-                            Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)Artemis.Artemis.SecondaryPhase.Passive;
+                            Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)ArtemisBoss.SecondaryPhase.Passive;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[1] = 0f;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[2] = 0f;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[0] = 0f;
@@ -727,7 +727,7 @@ public class Apollo : ModNPC
                         // Set Artemis variables
                         if (exoMechTwinRedAlive)
                         {
-                            Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)Artemis.Artemis.SecondaryPhase.PassiveAndImmune;
+                            Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)ArtemisBoss.SecondaryPhase.PassiveAndImmune;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[1] = 0f;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[2] = 0f;
                             Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[0] = 0f;
@@ -769,7 +769,7 @@ public class Apollo : ModNPC
 
                 // Artemis fires lasers while passive
                 if (exoMechTwinRedAlive)
-                    Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[0] = (float)Artemis.Artemis.Phase.Normal;
+                    Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[0] = (float)ArtemisBoss.Phase.Normal;
 
                 // Fire plasma while passive
                 AIState = (float)Phase.Normal;
@@ -783,7 +783,7 @@ public class Apollo : ModNPC
                     // Set Artemis variables
                     if (exoMechTwinRedAlive)
                     {
-                        Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)Artemis.Artemis.SecondaryPhase.PassiveAndImmune;
+                        Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)ArtemisBoss.SecondaryPhase.PassiveAndImmune;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[1] = 0f;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[2] = 0f;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[0] = 0f;
@@ -816,7 +816,7 @@ public class Apollo : ModNPC
                     // Set Artemis variables
                     if (exoMechTwinRedAlive)
                     {
-                        Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)Artemis.Artemis.SecondaryPhase.Nothing;
+                        Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)ArtemisBoss.SecondaryPhase.Nothing;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[1] = 0f;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[2] = 0f;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[0] = 0f;
@@ -912,7 +912,7 @@ public class Apollo : ModNPC
                     // Set Artemis variables
                     if (exoMechTwinRedAlive)
                     {
-                        Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)Artemis.Artemis.SecondaryPhase.Nothing;
+                        Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].Calamity().newAI[1] = (float)ArtemisBoss.SecondaryPhase.Nothing;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[1] = 0f;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].ai[2] = 0f;
                         Main.npc[CalamityGlobalNPC.draedonExoMechTwinRed].localAI[0] = 0f;
@@ -1313,7 +1313,7 @@ public class Apollo : ModNPC
                 // Shoot lens gore at the target at the proper time
                 if (calamityGlobalNPC.newAI[2] == lensPopTime)
                 {
-                    SoundEngine.PlaySound(Artemis.Artemis.LensSound, NPC.Center);
+                    SoundEngine.PlaySound(ArtemisBoss.LensSound, NPC.Center);
                     Vector2 lensDirection = Vector2.Normalize(aimedVector);
                     Vector2 offset = lensDirection * 70f;
 
@@ -1663,7 +1663,7 @@ public class Apollo : ModNPC
     public override bool SpecialOnKill()
     {
         int closestSegmentID = DropHelper.FindClosestWormSegment(NPC,
-            ModContent.NPCType<Artemis.Artemis>(),
+            ModContent.NPCType<ArtemisBoss>(),
             ModContent.NPCType<Apollo>());
         NPC.position = Main.npc[closestSegmentID].position;
         return false;
@@ -1775,7 +1775,7 @@ public class Apollo : ModNPC
         // Kill Artemis if he's still alive when Apollo dies
         foreach (NPC nPC in Main.ActiveNPCs)
         {
-            if (nPC.type == ModContent.NPCType<Artemis.Artemis>() && nPC.life > 0)
+            if (nPC.type == ModContent.NPCType<ArtemisBoss>() && nPC.life > 0)
             {
                 nPC.life = 0;
                 nPC.HitEffect();

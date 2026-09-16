@@ -262,8 +262,8 @@ public class BurrowerPingTileEffect : IPingedTileEffect, ILoadable
 
     public void ModifyTileLight(int x, int y, Color tileLight, ref Color resultColor)
     {
-        float distanceFromCenter = (new Point(x, y).ToWorldCoordinates() - BurrowerPingTileEffect.PingCenter).Length();
-        float currentExpansion = MathHelper.Clamp(BurrowerPingTileEffect.PingProgress * BurrowerPingTileEffect.MaxPingLife / (float)BurrowerPingTileEffect.MaxPingTravelTime, 0f, 1f) * BurrowerPingTileEffect.MaxPingRadius;
+        float distanceFromCenter = (new Point(x, y).ToWorldCoordinates() - PingCenter).Length();
+        float currentExpansion = MathHelper.Clamp(PingProgress * MaxPingLife / (float)MaxPingTravelTime, 0f, 1f) * MaxPingRadius;
 
         if (distanceFromCenter - 8 > currentExpansion)
             return;
@@ -279,7 +279,7 @@ public class BurrowerPingTileEffect : IPingedTileEffect, ILoadable
             brightness *= 1 - (distanceFromCenter - currentExpansion + 8f) / 16f;
 
         //Fade away with the effect
-        brightness *= 1 - Math.Max(BurrowerPingTileEffect.PingProgress - 0.9f, 0) / (0.1f);
+        brightness *= 1 - Math.Max(PingProgress - 0.9f, 0) / (0.1f);
 
         if (tileLight.R < 200 * brightness) tileLight.R = (byte)(200 * brightness);
         if (tileLight.G < 200 * brightness) tileLight.G = (byte)(200 * brightness);

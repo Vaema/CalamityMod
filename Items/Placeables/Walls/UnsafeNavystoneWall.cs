@@ -11,7 +11,7 @@ public class UnsafeNavystoneWall : ModItem, ILocalizedModType
     {
         Item.ResearchUnlockCount = 400;
         ItemID.Sets.DrawUnsafeIndicator[Type] = true;
-        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Items.Placeables.Walls.NavystoneWall>();
+        ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<NavystoneWall>();
     }
 
     public override void SetDefaults() => Item.DefaultToPlaceableWall(ModContent.WallType<WallTiles.UnsafeNavystoneWall>());

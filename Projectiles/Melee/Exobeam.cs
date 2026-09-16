@@ -102,17 +102,17 @@ public class Exobeam : ModProjectile, ILocalizedModType
         SoundEngine.PlaySound(Exoblade.BeamHitSound, target.Center);
         if (Main.myPlayer == Projectile.owner)
         {
-            int slash = Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Projectile.velocity * 0.1f, ModContent.ProjectileType<ExobeamSlashCreator>(), Projectile.damage, 0f, Projectile.owner, target.whoAmI, Projectile.velocity.ToRotation());
+            int slash = Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Projectile.velocity * 0.1f, ProjectileType<ExobeamSlashCreator>(), Projectile.damage, 0f, Projectile.owner, target.whoAmI, Projectile.velocity.ToRotation());
             if (Main.projectile.IndexInRange(slash))
                 Main.projectile[slash].timeLeft = 20;
         }
 
-        target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        target.AddBuff(BuffType<MiracleBlight>(), 300);
     }
 
     public override void OnHitPlayer(Player target, Player.HurtInfo info)
     {
-        target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        target.AddBuff(BuffType<MiracleBlight>(), 300);
     }
 
     public override Color? GetAlpha(Color lightColor) => Color.White with { A = 0 } * Projectile.Opacity;
@@ -149,7 +149,7 @@ public class Exobeam : ModProjectile, ILocalizedModType
         Main.EntitySpriteDraw(texture, Projectile.oldPos[2] + Projectile.Size / 2f - Main.screenPosition, null, Color.White with { A = 0 }, Projectile.rotation + MathHelper.PiOver4, texture.Size() / 2f, bladeScale * Projectile.scale, 0, 0);
 
         if (BloomTex == null)
-            BloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            BloomTex = Request<Texture2D>("CalamityMod/Particles/BloomCircle");
         Texture2D bloomTex = BloomTex.Value;
 
         Color mainColor = MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.5f + Projectile.whoAmI * 0.12f) % 1, Color.Cyan, Color.Lime, Color.GreenYellow, Color.Goldenrod, Color.Orange);

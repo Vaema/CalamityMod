@@ -20,7 +20,7 @@ public class ElementalMastery : CooldownHandler
     public static new string ID => "ElementalMastery";
     public override bool CanTickDown => false;
     public override bool ShouldDisplay => instance.player.HeldItem.type == ItemType<Lightspeed>();
-    public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
+    public override LocalizedText DisplayName => GetText($"UI.Cooldowns.{ID}");
     public override string Texture => $"CalamityMod/Cooldowns/{ID}";
     public override string OutlineTexture => $"CalamityMod/Cooldowns/{ID}Outline";
     public override string OverlayTexture => $"CalamityMod/Cooldowns/{ID}Overlay";

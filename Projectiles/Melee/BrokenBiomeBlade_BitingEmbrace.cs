@@ -103,7 +103,7 @@ public class BitingEmbrace : ModProjectile, ILocalizedModType
         base.OnHitNPC(target, hit, damageDone);
         if (SwingMode == 2)
         {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), 180);
+            target.AddBuff(BuffType<WindChilled>(), 180);
             target.AddBuff(BuffID.Frozen, 20);
         }
     }

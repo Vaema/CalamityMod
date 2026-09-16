@@ -369,8 +369,8 @@ public class OblivionYoyo : ModProjectile
             {
                 Particle backglow = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.25f * (power * 2), 0f, 10, false);
                 GeneralParticleHandler.SpawnParticle(backglow);
-                backglow.DrawLayer = Enums.GeneralDrawLayer.BeforeProjectiles;
-                backglow.DrawLayer = Enums.GeneralDrawLayer.BeforeNPCs;
+                backglow.DrawLayer = GeneralDrawLayer.BeforeProjectiles;
+                backglow.DrawLayer = GeneralDrawLayer.BeforeNPCs;
             }
         }
         else

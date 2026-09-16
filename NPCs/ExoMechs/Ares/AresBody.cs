@@ -1536,7 +1536,7 @@ public class AresBody : ModNPC
             }
         }
         else
-            AresBody.DoMiscDeathEffects(NPC, MechType.Ares);
+            DoMiscDeathEffects(NPC, MechType.Ares);
     }
 
     public override void ModifyNPCLoot(NPCLoot npcLoot) => DefineExoMechLoot(NPC, npcLoot, (int)MechType.Ares);
@@ -1615,7 +1615,7 @@ public class AresBody : ModNPC
         npcLoot.Add(ItemDropRule.BossBagByCondition(DropHelper.If(CanDropLoot), ModContent.ItemType<DraedonBag>()));
 
         // Legendary seed soup
-        mainDrops.Add(ItemDropRule.ByCondition(DropHelper.If(info => info.npc.type == ModContent.NPCType<AresBody>() && info.npc.ModNPC<Ares.AresBody>().exoMechdusa), ModContent.ItemType<LavaChickenBroth>()), hideLootReport: true);
+        mainDrops.Add(ItemDropRule.ByCondition(DropHelper.If(info => info.npc.type == ModContent.NPCType<AresBody>() && info.npc.ModNPC<AresBody>().exoMechdusa), ModContent.ItemType<LavaChickenBroth>()), hideLootReport: true);
 
         // All other drops are contained in the bag, so they only drop directly on Normal
         if (!Main.expertMode)

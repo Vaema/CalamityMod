@@ -40,7 +40,7 @@ public class GloomTorch : ModItem, ILocalizedModType
     {
         CreateRecipe(3).
         AddIngredient(ItemID.Torch, 3).
-        AddIngredient<Items.Placeables.Crags.ScorchedBone>().
+        AddIngredient<Crags.ScorchedBone>().
         Register();
     }
 }

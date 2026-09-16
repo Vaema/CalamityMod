@@ -17,7 +17,7 @@ public class RoundedAnodizedWulfrumPanelWall : ModItem, ILocalizedModType
     public override void AddRecipes()
     {
         CreateRecipe(4).
-            AddIngredient<Items.Placeables.FurnitureWulfrum.RoundedAnodizedWulfrumPanels>().
+            AddIngredient<FurnitureWulfrum.RoundedAnodizedWulfrumPanels>().
             AddTile(TileID.WorkBenches).
             Register();
     }

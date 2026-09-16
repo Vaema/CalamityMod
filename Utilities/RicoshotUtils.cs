@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;

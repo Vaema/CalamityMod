@@ -51,7 +51,7 @@ public class TauCannonBeam : BaseLaserbeamProjectile, ILocalizedModType
     }
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
-        target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 90);
+        target.AddBuff(BuffType<AstralInfectionDebuff>(), 90);
 
         if (Projectile.numHits > 1)
             Projectile.damage = (int)(Projectile.damage * (IsStage3Laser ? 1 : 0.75f));

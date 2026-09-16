@@ -138,7 +138,7 @@ public class SolarNeedle : ModProjectile, ILocalizedModType
 
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
-        target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
+        target.AddBuff(BuffType<ElementalMix>(), 60);
         Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
         for (int i = 0; i < 10; i++)
         {

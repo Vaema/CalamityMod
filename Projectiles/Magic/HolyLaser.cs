@@ -50,7 +50,7 @@ public class HolyLaser : BaseLaserbeamProjectile, ILocalizedModType
     }
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
-        target.AddBuff(ModContent.BuffType<HolyFlames>(), (isBigLaser ? 180 : 90));
+        target.AddBuff(BuffType<HolyFlames>(), (isBigLaser ? 180 : 90));
 
         if (Projectile.numHits > 1)
             Projectile.damage = (int)(Projectile.damage * (isBigLaser ? 0.55f : 0.6f));
@@ -115,7 +115,7 @@ public class HolyLaser : BaseLaserbeamProjectile, ILocalizedModType
             randomLineEffectPosition = effectsPosition + Main.rand.NextVector2Circular(7f, 7f);
             if (i % 2 == 0)
             {
-                Dust laserDust2 = Dust.NewDustPerfect(randomLineEffectPosition, ModContent.DustType<LightDust>(), Projectile.velocity * Main.rand.NextFloat(5f, 40f), Scale: Main.rand.NextFloat(0.8f, 1.1f) * (isBigLaser ? 2 : 1));
+                Dust laserDust2 = Dust.NewDustPerfect(randomLineEffectPosition, DustType<LightDust>(), Projectile.velocity * Main.rand.NextFloat(5f, 40f), Scale: Main.rand.NextFloat(0.8f, 1.1f) * (isBigLaser ? 2 : 1));
                 laserDust2.noGravity = true;
                 laserDust2.color = Main.rand.NextBool(3) ? color2 : color1;
                 laserDust2.noLightEmittence = true;

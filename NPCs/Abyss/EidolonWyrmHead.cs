@@ -272,9 +272,9 @@ public class EidolonWyrmHead : ModNPC
         segmentPosition.Y = (float)((int)(segmentPosition.Y / 16f) * 16);
         targetXDirection -= segmentPosition.X;
         targetYDirection -= segmentPosition.Y;
-        float targetDistance = (float)System.Math.Sqrt((double)(targetXDirection * targetXDirection + targetYDirection * targetYDirection));
-        float absolutetargetX = System.Math.Abs(targetXDirection);
-        float absolutetargetY = System.Math.Abs(targetYDirection);
+        float targetDistance = (float)Math.Sqrt((double)(targetXDirection * targetXDirection + targetYDirection * targetYDirection));
+        float absolutetargetX = Math.Abs(targetXDirection);
+        float absolutetargetY = Math.Abs(targetYDirection);
         float timeToReachTarget = currentSpeed / targetDistance;
         targetXDirection *= timeToReachTarget;
         targetYDirection *= timeToReachTarget;
@@ -302,7 +302,7 @@ public class EidolonWyrmHead : ModNPC
                     NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed;
                 }
             }
-            if ((double)System.Math.Abs(targetYDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDirection < 0f) || (NPC.velocity.X < 0f && targetXDirection > 0f)))
+            if ((double)Math.Abs(targetYDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.X > 0f && targetXDirection < 0f) || (NPC.velocity.X < 0f && targetXDirection > 0f)))
             {
                 if (NPC.velocity.Y > 0f)
                 {
@@ -313,7 +313,7 @@ public class EidolonWyrmHead : ModNPC
                     NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 2f;
                 }
             }
-            if ((double)System.Math.Abs(targetXDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDirection < 0f) || (NPC.velocity.Y < 0f && targetYDirection > 0f)))
+            if ((double)Math.Abs(targetXDirection) < (double)currentSpeed * 0.2 && ((NPC.velocity.Y > 0f && targetYDirection < 0f) || (NPC.velocity.Y < 0f && targetYDirection > 0f)))
             {
                 if (NPC.velocity.X > 0f)
                 {
@@ -337,7 +337,7 @@ public class EidolonWyrmHead : ModNPC
                 {
                     NPC.velocity.X = NPC.velocity.X - currentTurnSpeed * 1.1f; //changed from 1.1
                 }
-                if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
+                if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
                 {
                     if (NPC.velocity.Y > 0f)
                     {
@@ -359,7 +359,7 @@ public class EidolonWyrmHead : ModNPC
                 {
                     NPC.velocity.Y = NPC.velocity.Y - currentTurnSpeed * 1.1f;
                 }
-                if ((double)(System.Math.Abs(NPC.velocity.X) + System.Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
+                if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)currentSpeed * 0.5)
                 {
                     if (NPC.velocity.X > 0f)
                     {
@@ -372,7 +372,7 @@ public class EidolonWyrmHead : ModNPC
                 }
             }
         }
-        NPC.rotation = (float)System.Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + 1.57f;
+        NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + 1.57f;
     }
 
     public override bool CanHitPlayer(Player target, ref int cooldownSlot)

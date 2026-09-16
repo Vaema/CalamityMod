@@ -17,7 +17,7 @@ public struct TileSpecialDrawData : ITileData
     }
 
     /// <summary>
-    /// Used for Tiles that have complicated conditions for <see cref="TileDrawing.AddSpecialPoint(int, int, Terraria.GameContent.Drawing.TileDrawing.TileCounterType)"/>
+    /// Used for Tiles that have complicated conditions for <see cref="TileDrawing.AddSpecialPoint(int, int, TileDrawing.TileCounterType)"/>
     /// </summary>
     public bool HasSpecialPoint
     {

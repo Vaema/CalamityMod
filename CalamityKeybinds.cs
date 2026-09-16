@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.GameInput;

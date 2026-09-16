@@ -553,7 +553,7 @@ public class BrimstoneWitch : ModNPC
                         opponentPick++;
                     }
 
-                    int emoteType = Utils.SelectRandom<int>(Main.rand, EmoteID.RPSPaper, EmoteID.RPSRock, EmoteID.RPSScissors);
+                    int emoteType = Utils.SelectRandom(Main.rand, EmoteID.RPSPaper, EmoteID.RPSRock, EmoteID.RPSScissors);
                     int emoteType2 = emoteType;
                     switch (rockPaperScissorsResultType)
                     {

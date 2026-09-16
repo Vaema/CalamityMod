@@ -20,7 +20,7 @@ public class AstralBeaconItem : ModItem, ILocalizedModType
     public override void AddRecipes()
     {
         CreateRecipe().
-            AddIngredient<Items.Placeables.Astral.AstralStone>(30).
+            AddIngredient<Astral.AstralStone>(30).
             AddIngredient<AureusCell>(5).
             AddIngredient<StarblightSoot>(20).
             AddTile(TileID.HeavyWorkBench).

@@ -33,15 +33,15 @@ public class ExoMechsBossBar : ModBossBar
         if (HideArtemis && HideThanatos && !HideAres)
             return TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[NPCType<AresBody>()]];
         if (HideAres && HideThanatos && !HideArtemis)
-            return ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Artemis/ArtemisHead");
+            return Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Artemis/ArtemisHead");
         if (HideAres && HideArtemis && !HideThanatos)
-            return ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Thanatos/ThanatosNormalHead");
+            return Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Thanatos/ThanatosNormalHead");
         // Otherwise, just run through alphabet sorting: Ares, Artemis, Thanatos
         if (!HideAres)
             return TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[NPCType<AresBody>()]];
         if (!HideArtemis)
-            return ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Artemis/ArtemisHead");
-        return ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Thanatos/ThanatosNormalHead");
+            return Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Artemis/ArtemisHead");
+        return Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Thanatos/ThanatosNormalHead");
     }
 
     public override bool? ModifyInfo(ref BigProgressBarInfo info, ref float life, ref float lifeMax, ref float shield, ref float shieldMax)

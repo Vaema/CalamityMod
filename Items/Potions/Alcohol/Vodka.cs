@@ -26,12 +26,12 @@ public class Vodka : ModItem, ILocalizedModType, IAlcoholItem
     private static void ApplyVodkaEffect(Player player, float intensity)
     {
         var cplayer = player.Calamity();
-        cplayer.TypelessDebuffMultiplier += Vodka.DebuffBoost;
-        cplayer.HeatDebuffMultiplier -= Vodka.DebuffLoss;
-        cplayer.ColdDebuffMultiplier -= Vodka.DebuffLoss;
-        cplayer.SicknessDebuffMultiplier -= Vodka.DebuffLoss;
-        cplayer.WaterDebuffMultiplier -= Vodka.DebuffLoss;
-        cplayer.ElectricDebuffMultiplier -= Vodka.DebuffLoss;
+        cplayer.TypelessDebuffMultiplier += DebuffBoost;
+        cplayer.HeatDebuffMultiplier -= DebuffLoss;
+        cplayer.ColdDebuffMultiplier -= DebuffLoss;
+        cplayer.SicknessDebuffMultiplier -= DebuffLoss;
+        cplayer.WaterDebuffMultiplier -= DebuffLoss;
+        cplayer.ElectricDebuffMultiplier -= DebuffLoss;
     }
     public override void SetStaticDefaults()
     {

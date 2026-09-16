@@ -95,7 +95,7 @@ public class BlindedAngler : ModNPC
         Vector2 vector = center - screenPos;
         vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
         vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
-        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightBlue);
+        Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.LightBlue);
         Main.spriteBatch.Draw(GlowTexture.Value, vector,
             new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
     }

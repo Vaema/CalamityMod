@@ -50,7 +50,7 @@ public class SpineSapling : ModTile
         TileObjectData.newTile.CoordinateHeights = new[] { 16, 16 };
         TileObjectData.newTile.CoordinateWidth = 16;
         TileObjectData.newTile.CoordinatePadding = 2;
-        TileObjectData.newTile.AnchorValidTiles = new[] { ModContent.TileType<Tiles.Crags.BrimstoneSlag>() };
+        TileObjectData.newTile.AnchorValidTiles = new[] { ModContent.TileType<BrimstoneSlag>() };
         TileObjectData.newTile.StyleHorizontal = true;
         TileObjectData.newTile.DrawFlipHorizontal = true;
         TileObjectData.newTile.WaterPlacement = LiquidPlacement.NotAllowed;

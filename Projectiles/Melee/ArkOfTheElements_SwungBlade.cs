@@ -240,7 +240,7 @@ public class ArkoftheElementsSwungBlade : ModProjectile, ILocalizedModType //"Ki
 
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
-        target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
+        target.AddBuff(BuffType<ElementalMix>(), 60);
         for (int i = 0; i < 5; i++)
         {
             Vector2 particleSpeed = Utils.SafeNormalize(target.Center - Projectile.Center, Vector2.One).RotatedByRandom(MathHelper.PiOver4 * 0.8f) * Main.rand.NextFloat(3.6f, 8f);

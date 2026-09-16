@@ -15,7 +15,7 @@ public class RustyChest : ModItem, ILocalizedModType
     public override void AddRecipes()
     {
         CreateRecipe().
-            AddIngredient<Items.Placeables.Abyss.HardenedSulphurousSandstone>(8).
+            AddIngredient<Abyss.HardenedSulphurousSandstone>(8).
             AddRecipeGroup("IronBar", 2).
             AddTile(TileID.Anvils).
             Register();

@@ -15,8 +15,8 @@ public class CryogenBossBar : ModBossBar
     {
         // Pyrogen moment
         if (Main.zenithWorld)
-            return ModContent.Request<Texture2D>("CalamityMod/NPCs/Cryogen/Pyrogen_Head_Boss");
-        return ModContent.Request<Texture2D>("CalamityMod/NPCs/Cryogen/Cryogen_Phase1_Head_Boss");
+            return Request<Texture2D>("CalamityMod/NPCs/Cryogen/Pyrogen_Head_Boss");
+        return Request<Texture2D>("CalamityMod/NPCs/Cryogen/Cryogen_Phase1_Head_Boss");
     }
 
     public override bool? ModifyInfo(ref BigProgressBarInfo info, ref float life, ref float lifeMax, ref float shield, ref float shieldMax)

@@ -1793,7 +1793,7 @@ public partial class CalamityPlayer : ModPlayer
             {
                 int cooldownTime = RelicOfResilience.baseCooldown;
                 rOfResilienceCooldown = cooldownTime;
-                Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
+                Player.AddCooldown(RelicOfResilienceCooldown.ID, cooldownTime);
                 SoundStyle y = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
                 SoundEngine.PlaySound(y with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
             }
@@ -4611,7 +4611,7 @@ public partial class CalamityPlayer : ModPlayer
         // The recharge cooldown is intentionally left in place to prevent hot swapping to recharge the shield
         if (!pSoulArtifact)
         {
-            if (cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var cdDurability))
+            if (cooldowns.TryGetValue(ProfanedSoulShield.ID, out var cdDurability))
                 cdDurability.timeLeft = 0;
 
             // As PSA/PSC's shield can be left in a partially recharged state, this is for safety.
@@ -4633,13 +4633,13 @@ public partial class CalamityPlayer : ModPlayer
                 ? ProfanedSoulCrystal.TotalShieldRechargeTime
                 : ProfanedSoulArtifact.TotalShieldRechargeTime;
 
-            if (pSoulShieldDurability == 0 && !cooldowns.ContainsKey(Cooldowns.ProfanedSoulShieldRecharge.ID))
+            if (pSoulShieldDurability == 0 && !cooldowns.ContainsKey(ProfanedSoulShieldRecharge.ID))
                 Player.AddCooldown(ProfanedSoulShieldRecharge.ID, delay);
 
             // If the shield has greater than zero durability but that durability is not on the cooldown rack, add it to the cooldown rack.
-            if (pSoulShieldDurability > 0 && !cooldowns.ContainsKey(Cooldowns.ProfanedSoulShield.ID))
+            if (pSoulShieldDurability > 0 && !cooldowns.ContainsKey(ProfanedSoulShield.ID))
             {
-                var durabilityCooldown = Player.AddCooldown(Cooldowns.ProfanedSoulShield.ID, maxDurability);
+                var durabilityCooldown = Player.AddCooldown(ProfanedSoulShield.ID, maxDurability);
                 durabilityCooldown.timeLeft = pSoulShieldDurability;
             }
 
@@ -4662,7 +4662,7 @@ public partial class CalamityPlayer : ModPlayer
                 pSoulShieldPartialRechargeProgress -= pointsActuallyRecharged;
 
                 // Update the cooldown rack's durability indicator.
-                if (cooldowns.TryGetValue(Cooldowns.ProfanedSoulShield.ID, out var cdDurability))
+                if (cooldowns.TryGetValue(ProfanedSoulShield.ID, out var cdDurability))
                     cdDurability.timeLeft = pSoulShieldDurability;
             }
 
