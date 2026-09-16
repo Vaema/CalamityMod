@@ -60,9 +60,8 @@ public class BurnishedAuric : ModRarity
                     //Draw the base text
                     spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
                     for (float f = 0f; f < MathHelper.TwoPi; f += MathHelper.TwoPi * 0.125f)
-                    {
                         spriteBatch.Draw(lease.Target, Vector2.Zero + new Vector2(2, 0).RotatedBy(f), null, borderColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    }
+
                     spriteBatch.Draw(lease.Target, Vector2.Zero, null, coreColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     spriteBatch.End();
 
@@ -98,7 +97,7 @@ public class BurnishedAuric : ModRarity
     }
 
     public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, Color textColor, Color lightColor, float rotation,
-    Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font)
+        Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font)
     {
         float flashChance = 0.005f; // Low chance per frame
         float flashDuration = 0.2f; // Flash lasts ~0.2 seconds
@@ -111,9 +110,7 @@ public class BurnishedAuric : ModRarity
                 lastFlashTime = Main.GameUpdateCount;
             }
             else
-            {
                 isFlashing = false;
-            }
         }
         // Get all snippets and convert all plain text snippets to the custom rarity snippet
         TextSnippet[] snippets = [.. ChatManager.ParseMessage(text, textColor)];
@@ -121,9 +118,7 @@ public class BurnishedAuric : ModRarity
         {
             TextSnippet textSnippet = snippets[i];
             if (snippets[i].GetType() == typeof(TextSnippet))
-            {
                 snippets[i] = new CustomTextSnippet(textSnippet.Text);
-            }
         }
 
         if (Item.expert)
@@ -150,14 +145,4 @@ public class BurnishedAuric : ModRarity
     {
         Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
     }
-
-    // TODO: Add a cooler alternative for reforge rarities
-    /*public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
-    {
-        -2 => ModContent.RarityType<PureGreen>(),
-        -1 => ModContent.RarityType<CosmicPurple>(),
-        1 => ModContent.RarityType<HotPink>(),
-        2 => ModContent.RarityType<CalamityRed>(),
-        _ => Type,
-    };*/
 }

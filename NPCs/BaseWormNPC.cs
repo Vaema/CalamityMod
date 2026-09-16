@@ -373,7 +373,7 @@ public abstract class BaseWormNPC : ModNPC
     /// Internal list that stores the textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalTexAssets = [];
+    private readonly List<Asset<Texture2D>> internalTexAssets = [];
     /// <summary>
     /// The textures for each glow type of this worm. Works like getting a texture from TextureAssets
     /// </summary>
@@ -396,7 +396,7 @@ public abstract class BaseWormNPC : ModNPC
     /// Internal list that stores the glow textureassets.
     /// Use SegmentTextureAssets to get the data stored here.
     /// </summary>
-    private List<Asset<Texture2D>> internalGlowAssets = [];
+    private readonly List<Asset<Texture2D>> internalGlowAssets = [];
 
     public enum SegmentFollowLogic
     {
@@ -423,7 +423,7 @@ public abstract class BaseWormNPC : ModNPC
     /// <summary>
     /// The points used by ExactSegmentLogic to exactly follow the head
     /// </summary>
-    private List<Vector2> segmentPoints = [];
+    private readonly List<Vector2> segmentPoints = [];
 
     /// <summary>
     /// Updates the positions of the segments based on the value set in SegmentFollowType
@@ -518,9 +518,7 @@ public abstract class BaseWormNPC : ModNPC
                         break;
                     }
                     else
-                    {
                         segmentPointInUse++;
-                    }
                 }
                 else
                 {
@@ -533,9 +531,7 @@ public abstract class BaseWormNPC : ModNPC
                         break;
                     }
                     else
-                    {
                         segmentPointInUse++;
-                    }
                 }
             }
             if (!hasMoved && segmentPointInUse >= segmentPoints.Count)
@@ -595,9 +591,7 @@ public abstract class BaseWormNPC : ModNPC
     public override void FindFrame(int frameHeight)
     {
         if (NPC.IsABestiaryIconDummy)
-        {
             NPC.rotation = MathF.Sin(Main.GlobalTimeWrappedHourly) * 0.2f + MathHelper.PiOver2;
-        }
     }
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
@@ -621,19 +615,16 @@ public abstract class BaseWormNPC : ModNPC
     {
         var color = Lighting.GetColor(segment.Center.ToTileCoordinates());
         if (NPC.IsABestiaryIconDummy)
-        {
             color = Color.White;
-        }
+
         if (!SegmentTextureAssets.IndexInRange(segment.segmentType))
-        {
             return;
-        }
+
         var tex = SegmentTextureAssets[segment.segmentType].Value;
         spriteBatch.Draw(tex, segment.Center - screenPos, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
         if (!GlowTextures.IndexInRange(segment.segmentType + 1) || GlowTextures[segment.segmentType + 1] is null)
-        {
             return;
-        }
+
         tex = GlowTextureAssets[segment.segmentType + 1].Value;
         spriteBatch.Draw(tex, segment.Center - screenPos, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
     }

@@ -55,9 +55,7 @@ public sealed class CalamityNetImportantNPC : GlobalNPC
 
                 Type typeToCheck = longDistSync.SyncWith ?? type;
                 if (netOffsetTable.TryGetValue(typeToCheck, out int savedUniqueID))
-                {
                     netOffset = savedUniqueID;
-                }
                 else
                 {
                     netOffsetTable[typeToCheck] = netOffset;
@@ -102,11 +100,6 @@ public sealed class CalamityNetImportantNPC : GlobalNPC
 
             npc.SyncNPCPosAndRotOnly(); //Light-weight version to sync it's position
         }
-    }
-
-    private static void MarkNPCToLongDistanceSync<NPCType>(int netUpdateTickOffset = 0) where NPCType : ModNPC
-    {
-        MarkNPCToLongDistanceSync(ModContent.NPCType<NPCType>(), netUpdateTickOffset);
     }
 
     private static void MarkNPCToLongDistanceSync(int npcType, int netUpdateTickOffset = 0)

@@ -59,7 +59,6 @@ public class ExoticRainbow : ModRarity
                     new(255,255,70)
                 ];
 
-
                 var pos = position;
                 using var lease = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
                 var matrix = spriteBatch.transformMatrix;
@@ -71,7 +70,6 @@ public class ExoticRainbow : ModRarity
                         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
                         foreach (var item in text)
                         {
-
                             pos = position;
                             pos.X += FontAssets.MouseText.Value.MeasureString(txt).X;
 
@@ -93,7 +91,7 @@ public class ExoticRainbow : ModRarity
                     int draws = 16;
                     for (int i = 0; i < draws; i++)
                     {
-                        Vector2 backPosition = (MathHelper.TwoPi * i / (float)draws + Main.GlobalTimeWrappedHourly * 1.7f).ToRotationVector2() * (4 + 16 * sine);
+                        Vector2 backPosition = (MathHelper.TwoPi * i / draws + Main.GlobalTimeWrappedHourly * 1.7f).ToRotationVector2() * (4 + 16 * sine);
                         spriteBatch.Draw(lease.Target, Vector2.Zero + backPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
 
@@ -101,9 +99,8 @@ public class ExoticRainbow : ModRarity
 
                     spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
                     for (float f = 0f; f < MathHelper.TwoPi; f += MathHelper.TwoPi * 0.125f)
-                    {
                         spriteBatch.Draw(lease.Target, Vector2.Zero + new Vector2(2, 0).RotatedBy(f), null, Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    }
+
                     spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     spriteBatch.End();
                 }
@@ -113,7 +110,6 @@ public class ExoticRainbow : ModRarity
         public override float GetStringLength(DynamicSpriteFont font)
         {
             float size = font.MeasureString(text).X;
-
             return size * Scale;
         }
     }
@@ -132,7 +128,6 @@ public class ExoticRainbow : ModRarity
             }
         }
 
-
         ChatManager.DrawColorCodedString(spriteBatch, font, snippets, new(X, Y), textColor, 0, Vector2.Zero, baseScale, out _, -1, true);
 
         return;
@@ -148,12 +143,4 @@ public class ExoticRainbow : ModRarity
     {
         Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
     }
-
-    // TODO: Add a cooler alternative for reforge rarities
-    /*public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
-    {
-        -2 => ModContent.RarityType<BurnishedAuric>(),
-        -1 => ModContent.RarityType<HotPink>(),
-        _ => Type,
-    };*/
 }

@@ -139,7 +139,7 @@ public sealed class PierceResistNPC : GlobalNPC
     }
 
     // Generalized pierce resistance that stacks with all other resistances for some specific bosses defined in a list.
-    private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
+    private static void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
     {
         // Thanatos segments do not trigger pierce resistance if they are closed
         if (CalamityNPCTypeSets.Thanatos.Contains(npc.type) && npc.GetGlobalNPC<CalamityGlobalNPC>().unbreakableDR)

@@ -27,9 +27,7 @@ public class CalamityRed : ModRarity
             size = new Vector2(GetStringLength(FontAssets.MouseText.Value), FontAssets.MouseText.Value.MeasureString(" ").Y * scale);
 
             if (color == default || color == Main.MouseTextColorReal)
-            {
                 color = Colors.AlphaDarken(TextClr);
-            }
 
             if (!justCheckingString && (color.R != 0 || color.G != 0 || color.B != 0))
             {
@@ -41,13 +39,12 @@ public class CalamityRed : ModRarity
                 var fontSize = ChatManager.GetStringSize(font, text, new Vector2(1));
                 var center = fontSize / 2f;
 
-                var glowPosition = position + new Vector2(size.X * 0.5f, size.Y * 0.5f);// new Vector2(X + center.X, Y + center.Y / 1.5f);
+                var glowPosition = position + new Vector2(size.X * 0.5f, size.Y * 0.5f);
                 color.A = 0;
                 float pulsing = 10f + (float)Math.Sin(time * 20f);
                 float baseScalePulse = 1.03f;
                 float flameHeight = 5f;
                 float distortionAmount = 2f;
-
 
                 for (float f = 0f; f < MathHelper.TwoPi; f += 0.79f)
                 {
@@ -96,13 +93,12 @@ public class CalamityRed : ModRarity
 
                 color.A = 255;
 
-
                 var bloomColor = ColorTool.Rainbowing(time * 4 - 0.9f);
 
                 spriteBatch.Draw(crystalTextGlow, glowPosition, null, BloomClr, MathHelper.PiOver2, new Vector2(6f, 33f),
                    new Vector2(1.6f, fontSize.X / crystalTextGlow.Height * 1.2f), SpriteEffects.None, 0f);
 
-                ChatManager.DrawColorCodedStringShadow(spriteBatch, font, text, position, Color.Lerp(color,Color.White,0.67f), 0, Vector2.Zero, new(scale));
+                ChatManager.DrawColorCodedStringShadow(spriteBatch, font, text, position, Color.Lerp(color, Color.White, 0.67f), 0, Vector2.Zero, new(scale));
                 ChatManager.DrawColorCodedString(spriteBatch, font, text, position, Color.Black, 0, Vector2.Zero, new(scale));
 
             }
@@ -124,9 +120,7 @@ public class CalamityRed : ModRarity
         {
             TextSnippet textSnippet = snippets[i];
             if (snippets[i].GetType() == typeof(TextSnippet))
-            {
                 snippets[i] = new CustomTextSnippet(textSnippet.Text);
-            }
         }
 
         if (Item.expert)
@@ -147,12 +141,4 @@ public class CalamityRed : ModRarity
     {
         Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
     }
-
-    // TODO: Add a cooler alternative for reforge rarities
-    /*public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
-    {
-        -2 => ModContent.RarityType<BurnishedAuric>(),
-        -1 => ModContent.RarityType<HotPink>(),
-        _ => Type,
-    };*/
 }
